@@ -1,0 +1,204 @@
+######################################################################
+# 操作系统
+######################################################################
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+######################################################################
+# 后端 (Java/Spring Boot)
+######################################################################
+
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.flattened-pom.xml
+
+# Gradle
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Spring Boot
+application-my.yaml
+application-local.yaml.bak
+
+# JRebel
+rebel.xml
+
+######################################################################
+# 前端 (Node.js/Vue)
+######################################################################
+
+# 依赖
+node_modules/
+jspm_packages/
+
+# 构建产物
+dist/
+dist-ssr/
+dist.zip
+dist.tar
+dist.war
+*-dist.zip
+*-dist.tar
+*-dist.war
+dev-dist/
+coverage/
+.nitro
+.output
+.cache
+.temp
+.turbo
+
+# 打包工具缓存
+.stylelintcache
+.eslintcache
+
+# 锁文件 (使用 pnpm)
+yarn.lock
+package-lock.json
+
+# VitePress
+**/.vitepress/cache
+
+# 后端 Mock 数据
+**/backend-mock/data
+
+# 本地环境变量
+.env.local
+.env.*.local
+*.local
+
+# Vite 配置临时文件
+vite.config.mts.*
+vite.config.mjs.*
+vite.config.js.*
+vite.config.ts.*
+
+######################################################################
+# IDE 和编辑器
+######################################################################
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# NetBeans
+nbproject/private/
+build/*
+!*/build/*.java
+!*/build/*.html
+!*/build/*.xml
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code
+# .vscode/
+.history/
+
+# Cursor
+.cursor/
+
+# Vim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Other
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+######################################################################
+# 日志文件
+######################################################################
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+######################################################################
+# 临时文件和备份
+######################################################################
+
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+######################################################################
+# 其他工具
+######################################################################
+
+# VSCode Counter
+.VSCodeCounter/
+
+# 测试覆盖率
+coverage/
+*.coverage
+.nyc_output/
+
+# 压缩文件
+*.zip
+*.tar
+*.gz
+*.rar
+
+######################################################################
+# 项目特定
+######################################################################
+
+# UI App 打包产物
+/yudao-ui-app/unpackage/
+
+# 敏感配置文件 (包含密钥、密码等)
+**/application-prod.yaml
+**/application-dev.yaml
+**/.env.production.local
