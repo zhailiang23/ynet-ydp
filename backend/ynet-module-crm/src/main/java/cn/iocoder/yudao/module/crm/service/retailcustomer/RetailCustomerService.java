@@ -45,11 +45,12 @@ public interface RetailCustomerService {
 
     /**
      * 获得CRM零售客户扩展表(零售客户特有基本信息)
+     * 包含关联的客户共有信息
      *
      * @param id 编号
-     * @return CRM零售客户扩展表(零售客户特有基本信息)
+     * @return CRM零售客户扩展表(零售客户特有基本信息) + 客户共有信息
      */
-    RetailCustomerDO getRetailCustomer(Long id);
+    RetailCustomerRespVO getRetailCustomer(Long id);
 
     /**
      * 获得CRM零售客户扩展表(零售客户特有基本信息)分页

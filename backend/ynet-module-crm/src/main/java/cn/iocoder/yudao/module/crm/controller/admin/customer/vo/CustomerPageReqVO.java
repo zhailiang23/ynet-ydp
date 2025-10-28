@@ -32,4 +32,23 @@ public class CustomerPageReqVO extends PageParam {
     @Schema(description = "所属部门ID(数据权限)", example = "27475")
     private Long deptId;
 
+    @Schema(description = "是否优质客户")
+    private Boolean isHighQuality;
+
+    @Schema(description = "是否重要客户")
+    private Boolean isImportant;
+
+    @Schema(description = "信用等级")
+    private String creditLevel;
+
+    @Schema(description = "客户来源")
+    private String customerSource;
+
+    @Schema(description = "客户标签(支持模糊搜索)")
+    private String customerTag;
+
+    @Schema(description = "创建时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] createTime;
+
 }

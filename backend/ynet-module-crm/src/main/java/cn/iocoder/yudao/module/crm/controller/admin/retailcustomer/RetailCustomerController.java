@@ -76,8 +76,8 @@ public class RetailCustomerController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('crm:retail-customer:query')")
     public CommonResult<RetailCustomerRespVO> getRetailCustomer(@RequestParam("id") Long id) {
-        RetailCustomerDO retailCustomer = retailCustomerService.getRetailCustomer(id);
-        return success(BeanUtils.toBean(retailCustomer, RetailCustomerRespVO.class));
+        RetailCustomerRespVO retailCustomer = retailCustomerService.getRetailCustomer(id);
+        return success(retailCustomer);
     }
 
     @GetMapping("/page")

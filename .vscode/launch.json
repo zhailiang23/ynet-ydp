@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "启动后端服务 (Local)",
+            "request": "launch",
+            "mainClass": "cn.iocoder.yudao.server.YudaoServerApplication",
+            "projectName": "yudao-server",
+            "args": "",
+            "vmArgs": "-Dspring.profiles.active=local",
+            "javaExec": "/opt/homebrew/Cellar/openjdk@17/17.0.16/libexec/openjdk.jdk/Contents/Home/bin/java",
+            "env": {
+                "JAVA_HOME": "/opt/homebrew/Cellar/openjdk@17/17.0.16/libexec/openjdk.jdk/Contents/Home"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "启动后端服务 (Dev)",
+            "request": "launch",
+            "mainClass": "cn.iocoder.yudao.server.YudaoServerApplication",
+            "projectName": "yudao-server",
+            "args": "",
+            "vmArgs": "-Dspring.profiles.active=dev",
+            "javaExec": "/opt/homebrew/Cellar/openjdk@17/17.0.16/libexec/openjdk.jdk/Contents/Home/bin/java",
+            "env": {
+                "JAVA_HOME": "/opt/homebrew/Cellar/openjdk@17/17.0.16/libexec/openjdk.jdk/Contents/Home"
+            },
+            "console": "integratedTerminal"
+        }
+    ]
+}

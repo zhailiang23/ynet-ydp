@@ -45,11 +45,12 @@ public interface CompanyCustomerService {
 
     /**
      * 获得CRM对公客户扩展表(对公客户特有基本信息)
+     * 包含关联的客户共有信息
      *
      * @param id 编号
-     * @return CRM对公客户扩展表(对公客户特有基本信息)
+     * @return CRM对公客户扩展表(对公客户特有基本信息) + 客户共有信息
      */
-    CompanyCustomerDO getCompanyCustomer(Long id);
+    CompanyCustomerRespVO getCompanyCustomer(Long id);
 
     /**
      * 获得CRM对公客户扩展表(对公客户特有基本信息)分页

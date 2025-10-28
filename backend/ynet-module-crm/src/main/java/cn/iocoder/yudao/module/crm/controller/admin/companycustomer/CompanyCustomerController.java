@@ -76,8 +76,8 @@ public class CompanyCustomerController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('crm:company-customer:query')")
     public CommonResult<CompanyCustomerRespVO> getCompanyCustomer(@RequestParam("id") Long id) {
-        CompanyCustomerDO companyCustomer = companyCustomerService.getCompanyCustomer(id);
-        return success(BeanUtils.toBean(companyCustomer, CompanyCustomerRespVO.class));
+        CompanyCustomerRespVO companyCustomer = companyCustomerService.getCompanyCustomer(id);
+        return success(companyCustomer);
     }
 
     @GetMapping("/page")

@@ -47,6 +47,14 @@ public class RetailCustomerDO extends BaseDO {
      */
     private LocalDate birthday;
     /**
+     * 证件类型(如:身份证、护照等)
+     */
+    private String idCardType;
+    /**
+     * 证件号码
+     */
+    private String idCardNo;
+    /**
      * 年龄(可通过出生日期计算)
      */
     private Integer age;
@@ -74,6 +82,14 @@ public class RetailCustomerDO extends BaseDO {
      * 职业(如:专业技术人员、公务员等)
      */
     private String occupation;
+    /**
+     * 工作单位名称
+     */
+    private String employerName;
+    /**
+     * 职位
+     */
+    private String position;
     /**
      * 职业类型分类
      */
@@ -107,6 +123,18 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String vipLevel;
     /**
+     * VIP积分
+     */
+    private Integer vipPoints;
+    /**
+     * VIP开始日期
+     */
+    private LocalDate vipStartDate;
+    /**
+     * VIP到期日期
+     */
+    private LocalDate vipEndDate;
+    /**
      * 是否高净值客户(0=否, 1=是)
      */
     private Boolean isHighNetWorth;
@@ -119,9 +147,53 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String incomeLevel;
     /**
+     * 年收入
+     */
+    private BigDecimal annualIncome;
+    /**
+     * 月收入
+     */
+    private BigDecimal monthlyIncome;
+    /**
+     * 收入来源
+     */
+    private String sourceOfIncome;
+    /**
      * 资产水平(如:高、中、低)
      */
     private String assetLevel;
+    /**
+     * 资产总额
+     */
+    private BigDecimal assets;
+    /**
+     * 负债总额
+     */
+    private BigDecimal liabilities;
+    /**
+     * 是否有房产(0=否, 1=是)
+     */
+    private Boolean hasHouse;
+    /**
+     * 是否有车(0=否, 1=是)
+     */
+    private Boolean hasCar;
+    /**
+     * 是否有保险(0=否, 1=是)
+     */
+    private Boolean hasInsurance;
+    /**
+     * 是否有贷款记录(0=否, 1=是)
+     */
+    private Boolean hasLoanRecord;
+    /**
+     * 是否有逾期记录(0=否, 1=是)
+     */
+    private Boolean hasOverdueRecord;
+    /**
+     * 黑名单标志(0=否, 1=是)
+     */
+    private Boolean blacklistFlag;
     /**
      * 信誉状态(如:优秀、良好、一般、较差)
      */

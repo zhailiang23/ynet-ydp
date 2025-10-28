@@ -14,6 +14,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.crm.dal.mysql.retailcustomer.RetailCustomerMapper;
+import cn.iocoder.yudao.module.crm.dal.mysql.customer.CustomerMapper;
+import cn.iocoder.yudao.module.crm.dal.dataobject.customer.CustomerDO;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
@@ -31,6 +33,9 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
 
     @Resource
     private RetailCustomerMapper retailCustomerMapper;
+
+    @Resource
+    private CustomerMapper customerMapper;
 
     @Override
     public Long createRetailCustomer(RetailCustomerSaveReqVO createReqVO) {
@@ -73,8 +78,40 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
     }
 
     @Override
-    public RetailCustomerDO getRetailCustomer(Long id) {
-        return retailCustomerMapper.selectById(id);
+    public RetailCustomerRespVO getRetailCustomer(Long id) {
+        // 1. 查询零售客户扩展信息
+        RetailCustomerDO retailCustomerDO = retailCustomerMapper.selectById(id);
+        if (retailCustomerDO == null) {
+            return null;
+        }
+
+        // 2. 转换为 VO
+        RetailCustomerRespVO respVO = BeanUtils.toBean(retailCustomerDO, RetailCustomerRespVO.class);
+
+        // 3. 查询客户共有信息
+        Long customerId = retailCustomerDO.getCustomerId();
+        if (customerId != null) {
+            CustomerDO customerDO = customerMapper.selectById(customerId);
+            if (customerDO != null) {
+                // 4. 手动组装共有字段到 VO
+                respVO.setCustomerNo(customerDO.getCustomerNo());
+                respVO.setCustomerType(customerDO.getCustomerType());
+                respVO.setCustomerName(customerDO.getCustomerName());
+                respVO.setCustomerLevel(customerDO.getCustomerLevel());
+                respVO.setCustomerStatus(customerDO.getCustomerStatus());
+                respVO.setIsHighQuality(customerDO.getIsHighQuality());
+                respVO.setIsImportant(customerDO.getIsImportant());
+                respVO.setCreditStatus(customerDO.getCreditStatus());
+                respVO.setCreditLevel(customerDO.getCreditLevel());
+                respVO.setCreditScore(customerDO.getCreditScore());
+                respVO.setCustomerSource(customerDO.getCustomerSource());
+                respVO.setCustomerTag(customerDO.getCustomerTag());
+                respVO.setRemark(customerDO.getRemark());
+                respVO.setDeptId(customerDO.getDeptId());
+            }
+        }
+
+        return respVO;
     }
 
     @Override

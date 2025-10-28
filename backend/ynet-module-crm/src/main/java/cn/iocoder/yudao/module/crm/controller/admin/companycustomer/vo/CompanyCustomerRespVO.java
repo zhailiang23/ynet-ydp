@@ -194,4 +194,66 @@ public class CompanyCustomerRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    // ========== 以下为 CustomerDO 公共字段 ==========
+
+    @Schema(description = "客户编号(唯一标识)")
+    @ExcelProperty("客户编号")
+    private String customerNo;
+
+    @Schema(description = "客户类型(1=零售客户, 2=对公客户)", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("客户类型")
+    private Integer customerType;
+
+    @Schema(description = "客户名称(企业名称)", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋道科技有限公司")
+    @ExcelProperty("客户名称")
+    private String customerName;
+
+    @Schema(description = "客户等级", example = "战略客户")
+    @ExcelProperty("客户等级")
+    private String customerLevel;
+
+    @Schema(description = "客户状态(1=正常, 2=冻结, 3=注销)", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("客户状态")
+    private Integer customerStatus;
+
+    @Schema(description = "是否优质客户")
+    @ExcelProperty("是否优质客户")
+    private Boolean isHighQuality;
+
+    @Schema(description = "是否重要客户")
+    @ExcelProperty("是否重要客户")
+    private Boolean isImportant;
+
+    @Schema(description = "信用状态(如:良好、一般、较差)")
+    @ExcelProperty("信用状态")
+    private String creditStatus;
+
+    @Schema(description = "信用等级(如:AAA、AA、A、BBB等)")
+    @ExcelProperty("信用等级")
+    private String creditLevel;
+
+    @Schema(description = "信用评分")
+    @ExcelProperty("信用评分")
+    private BigDecimal creditScore;
+
+    @Schema(description = "客户来源(如:网点开发、电话营销、网络营销等)")
+    @ExcelProperty("客户来源")
+    private String customerSource;
+
+    @Schema(description = "客户标签(多个标签用逗号分隔)")
+    @ExcelProperty("客户标签")
+    private String customerTag;
+
+    @Schema(description = "备注信息")
+    @ExcelProperty("备注信息")
+    private String remark;
+
+    @Schema(description = "所属部门ID(数据权限)")
+    @ExcelProperty("所属部门ID")
+    private Long deptId;
+
+    @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
+    private LocalDateTime updateTime;
+
 }

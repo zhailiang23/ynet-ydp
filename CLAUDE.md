@@ -677,3 +677,5 @@ VITE_GLOB_API_URL=https://api.yourdomain.com/admin-api
 2. 查看启动文档: https://doc.iocoder.cn/quick-start/
 3. 查看视频教程: https://doc.iocoder.cn/video/
 4. 检查浏览器控制台和后端日志
+- 枚举数据转换应该依靠backend/yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/dict 模块提供的字典管理能力和相关服务实现,而不是硬编码枚举值.如果字典表里没有需要的字典及字典项,则通过 sql 脚本插入数据.
+- 所有后端代码应该写在 ynet-module-crm 模块里。yudao-module-crm是框架自带的 crm 模块，可以读取yudao-module-crm里面的内容，但是不要修改。
