@@ -22,6 +22,9 @@ export namespace AicrmCustomerIdentityApi {
     verificationTime: string | Dayjs; // 核验时间
     verificationRemark: string; // 核验备注
     remark: string; // 备注
+    createTime?: string | Dayjs; // 创建时间
+    updateTime?: string | Dayjs; // 更新时间
+    updater?: string; // 更新人
   }
 }
 

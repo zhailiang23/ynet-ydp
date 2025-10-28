@@ -11,6 +11,7 @@ import { Menu, message } from 'ant-design-vue';
 import { getRetailCustomer } from '#/api/aicrm/retail-customer';
 
 import BasicInfo from './pages/basic-info.vue';
+import IdentityList from './pages/identity-list.vue';
 import Placeholder from './pages/placeholder.vue';
 
 const route = useRoute();
@@ -26,7 +27,7 @@ const menuItems = [
   { key: 'tags', label: '标签画像', component: Placeholder },
   { key: 'graph', label: '知识图谱', component: Placeholder },
   { key: 'basic', label: '客户基本信息', component: BasicInfo },
-  { key: 'certificate', label: '客户证件信息', component: Placeholder },
+  { key: 'certificate', label: '客户证件信息', component: IdentityList },
   { key: 'work', label: '客户工作或经营信息', component: Placeholder },
   { key: 'family', label: '客户家庭信息', component: Placeholder },
   { key: 'management', label: '管理信息', component: Placeholder },
@@ -116,6 +117,7 @@ onMounted(() => {
         :is="currentComponent"
         v-if="customer"
         :customer="customer"
+        :customer-id="customer.id"
         :title="currentTitle"
       />
     </div>
