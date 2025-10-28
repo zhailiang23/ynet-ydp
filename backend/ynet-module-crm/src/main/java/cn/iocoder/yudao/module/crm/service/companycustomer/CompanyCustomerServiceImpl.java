@@ -79,8 +79,8 @@ public class CompanyCustomerServiceImpl implements CompanyCustomerService {
 
     @Override
     public CompanyCustomerRespVO getCompanyCustomer(Long id) {
-        // 1. 查询对公客户扩展信息
-        CompanyCustomerDO companyCustomerDO = companyCustomerMapper.selectById(id);
+        // 1. 根据customer_id查询对公客户扩展信息
+        CompanyCustomerDO companyCustomerDO = companyCustomerMapper.selectOne("customer_id", id);
         if (companyCustomerDO == null) {
             return null;
         }
@@ -94,6 +94,7 @@ public class CompanyCustomerServiceImpl implements CompanyCustomerService {
             CustomerDO customerDO = customerMapper.selectById(customerId);
             if (customerDO != null) {
                 // 4. 手动组装共有字段到 VO
+                respVO.setId(customerDO.getId());
                 respVO.setCustomerNo(customerDO.getCustomerNo());
                 respVO.setCustomerType(customerDO.getCustomerType());
                 respVO.setCustomerName(customerDO.getCustomerName());
@@ -108,6 +109,8 @@ public class CompanyCustomerServiceImpl implements CompanyCustomerService {
                 respVO.setCustomerTag(customerDO.getCustomerTag());
                 respVO.setRemark(customerDO.getRemark());
                 respVO.setDeptId(customerDO.getDeptId());
+                respVO.setCreateTime(customerDO.getCreateTime());
+                respVO.setUpdateTime(customerDO.getUpdateTime());
             }
         }
 

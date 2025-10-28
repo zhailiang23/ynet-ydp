@@ -201,5 +201,222 @@ public class CompanyCustomerDO extends BaseDO {
      */
     private String extField3;
 
+    // ========== 财务信息字段 (5个) ==========
+
+    /**
+     * 资产总额
+     */
+    private BigDecimal totalAssets;
+
+    /**
+     * 负债总额
+     */
+    private BigDecimal totalDebt;
+
+    /**
+     * 年收入
+     */
+    private BigDecimal annualIncome;
+
+    /**
+     * 年利润
+     */
+    private BigDecimal annualProfit;
+
+    /**
+     * 财务报表类型
+     *
+     * 枚举 {@link TODO crm_fin_report_type 对应的类}
+     */
+    private String finReportType;
+
+    // ========== 股权与投资信息 (3个) ==========
+
+    /**
+     * 是否股东
+     */
+    private Boolean isStockHolder;
+
+    /**
+     * 持股金额
+     */
+    private BigDecimal holdStockAmt;
+
+    /**
+     * 投资类型
+     *
+     * 枚举 {@link TODO crm_investment_type 对应的类}
+     */
+    private String investmentType;
+
+    // ========== 企业组织信息 (7个) ==========
+
+    /**
+     * 组织形式
+     *
+     * 枚举 {@link TODO crm_org_form 对应的类}
+     */
+    private String orgForm;
+
+    /**
+     * 治理结构
+     *
+     * 枚举 {@link TODO crm_governance_structure 对应的类}
+     */
+    private String governanceStructure;
+
+    /**
+     * 控股类型
+     *
+     * 枚举 {@link TODO crm_holding_type 对应的类}
+     */
+    private String holdingType;
+
+    /**
+     * 企业归属
+     */
+    private String enterpriseBelong;
+
+    /**
+     * 上级部门
+     */
+    private String superiorDept;
+
+    /**
+     * 公司机构
+     */
+    private String companyOrganization;
+
+    /**
+     * 国家代码
+     */
+    private String nationCode;
+
+    // ========== 业务经营信息 (8个) ==========
+
+    /**
+     * 主营业务
+     */
+    private String mainBusiness;
+
+    /**
+     * 辅营业务
+     */
+    private String minorBusiness;
+
+    /**
+     * 经营模式
+     *
+     * 枚举 {@link TODO crm_business_mode 对应的类}
+     */
+    private String businessMode;
+
+    /**
+     * 营业开始日期
+     */
+    private LocalDate businessStartDate;
+
+    /**
+     * 行业特征
+     *
+     * 枚举 {@link TODO crm_industry_char 对应的类}
+     */
+    private String industryCharacter;
+
+    /**
+     * 行业发展前景
+     *
+     * 枚举 {@link TODO crm_industry_prospect 对应的类}
+     */
+    private String industryDevelopmentProspect;
+
+    /**
+     * 地区代码
+     */
+    private String areaCode;
+
+    /**
+     * 行业地位
+     */
+    private String industryPosition;
+
+    // ========== 企业规模信息 (4个) ==========
+
+    /**
+     * 员工规模
+     *
+     * 枚举 {@link TODO crm_employee_scale 对应的类}
+     */
+    private String employeeScale;
+
+    /**
+     * 资产规模
+     */
+    private String assetsScale;
+
+    /**
+     * 生产能力
+     *
+     * 枚举 {@link TODO crm_production_capacity 对应的类}
+     */
+    private String productionCapacity;
+
+    /**
+     * 企业性质
+     */
+    private String enterpriseProperty;
+
+    // ========== 监管与评级信息 (3个) ==========
+
+    /**
+     * 贷款卡标志
+     */
+    private Boolean loanCardFlag;
+
+    /**
+     * 贷款卡状态
+     *
+     * 枚举 {@link TODO crm_loan_card_status 对应的类}
+     */
+    private String loanCardStatus;
+
+    /**
+     * 贷款卡审核日期
+     */
+    private LocalDate loanCardAuditDate;
+
+    // ========== 其他特殊字段 (2个) ==========
+
+    /**
+     * 人行企业规模
+     */
+    private String enterpriseScalePboc;
+
+    /**
+     * 存款企业规模
+     */
+    private String enterpriseScaleDeposit;
+
+    // ========== 系统管理与追溯字段 (4个) ==========
+
+    /**
+     * ETL导入日期
+     */
+    private LocalDate etlDate;
+
+    /**
+     * 老系统交易序列号
+     */
+    private String oldTxSeqNo;
+
+    /**
+     * 老系统最后更新系统
+     */
+    private String oldLastUpdateSys;
+
+    /**
+     * 老系统客户ID(数据迁移追溯)
+     */
+    private String oldCustId;
 
 }

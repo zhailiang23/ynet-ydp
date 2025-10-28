@@ -319,6 +319,180 @@ public class RetailCustomerRespVO {
     @ExcelProperty("所属部门ID")
     private Long deptId;
 
+    // ==================== 以下为新增字段 ====================
+
+    @Schema(description = "曾用名")
+    @ExcelProperty("曾用名")
+    private String usedName;
+
+    @Schema(description = "姓氏")
+    @ExcelProperty("姓氏")
+    private String surname;
+
+    @Schema(description = "拼音全名")
+    @ExcelProperty("拼音全名")
+    private String pinyinName;
+
+    @Schema(description = "拼音缩写")
+    @ExcelProperty("拼音缩写")
+    private String pinyinAbbr;
+
+    @Schema(description = "人员称谓(先生/女士/小姐等)")
+    @ExcelProperty(value = "人员称谓", converter = DictConvert.class)
+    @DictFormat("crm_person_title")
+    private String personTitle;
+
+    @Schema(description = "出生地")
+    @ExcelProperty("出生地")
+    private String birthLocale;
+
+    @Schema(description = "年龄段")
+    @ExcelProperty("年龄段")
+    private String ageRange;
+
+    @Schema(description = "公民身份")
+    @ExcelProperty("公民身份")
+    private String citizenship;
+
+    @Schema(description = "居住时长类型")
+    @ExcelProperty("居住时长类型")
+    private String residenceDurationType;
+
+    @Schema(description = "户口类型(农业/非农业)")
+    @ExcelProperty(value = "户口类型", converter = DictConvert.class)
+    @DictFormat("crm_household_type")
+    private String householdType;
+
+    @Schema(description = "单位性质(国企/私企/外企等)")
+    @ExcelProperty(value = "单位性质", converter = DictConvert.class)
+    @DictFormat("crm_employer_type")
+    private String employerType;
+
+    @Schema(description = "技术职称")
+    @ExcelProperty("技术职称")
+    private String technicalTitle;
+
+    @Schema(description = "职业状态(在职/离职/退休等)")
+    @ExcelProperty(value = "职业状态", converter = DictConvert.class)
+    @DictFormat("crm_career_status")
+    private String careerStatus;
+
+    @Schema(description = "职业开始日期")
+    @ExcelProperty("职业开始日期")
+    private LocalDate careerStartDate;
+
+    @Schema(description = "简历")
+    @ExcelProperty("简历")
+    private String resume;
+
+    @Schema(description = "健康状况")
+    @ExcelProperty(value = "健康状况", converter = DictConvert.class)
+    @DictFormat("crm_health_status")
+    private String healthStatus;
+
+    @Schema(description = "政治面貌")
+    @ExcelProperty(value = "政治面貌", converter = DictConvert.class)
+    @DictFormat("crm_political_status")
+    private String politicalStatus;
+
+    @Schema(description = "毕业学校")
+    @ExcelProperty("毕业学校")
+    private String graduateSchool;
+
+    @Schema(description = "专业")
+    @ExcelProperty("专业")
+    private String major;
+
+    @Schema(description = "毕业日期")
+    @ExcelProperty("毕业日期")
+    private LocalDate graduationDate;
+
+    @Schema(description = "年收入范围")
+    @ExcelProperty("年收入范围")
+    private String annualIncomeRange;
+
+    @Schema(description = "纳税情况")
+    @ExcelProperty("纳税情况")
+    private String taxPayment;
+
+    @Schema(description = "基金持有金额")
+    @ExcelProperty("基金持有金额")
+    private BigDecimal fundHoldings;
+
+    @Schema(description = "总投资金额")
+    @ExcelProperty("总投资金额")
+    private BigDecimal totalInvestment;
+
+    @Schema(description = "投资性质")
+    @ExcelProperty(value = "投资性质", converter = DictConvert.class)
+    @DictFormat("crm_investment_nature")
+    private String investmentNature;
+
+    @Schema(description = "持股金额")
+    @ExcelProperty("持股金额")
+    private BigDecimal stockHoldings;
+
+    @Schema(description = "个人客户类型(老系统字段)")
+    @ExcelProperty("个人客户类型")
+    private String personCustomerType;
+
+    @Schema(description = "个人行为评价")
+    @ExcelProperty("个人行为评价")
+    private String personConductEval;
+
+    @Schema(description = "客户银行关系")
+    @ExcelProperty("客户银行关系")
+    private String customerBankRelation;
+
+    @Schema(description = "公司关联度")
+    @ExcelProperty("公司关联度")
+    private String companyRelationDegree;
+
+    @Schema(description = "个体类型")
+    @ExcelProperty("个体类型")
+    private String individualType;
+
+    @Schema(description = "工资账户银行")
+    @ExcelProperty("工资账户银行")
+    private String salaryAccountBank;
+
+    @Schema(description = "开始日期")
+    @ExcelProperty("开始日期")
+    private LocalDate startDate;
+
+    @Schema(description = "登记类型")
+    @ExcelProperty(value = "登记类型", converter = DictConvert.class)
+    @DictFormat("crm_registration_type")
+    private String registrationType;
+
+    @Schema(description = "登记号")
+    @ExcelProperty("登记号")
+    private String registrationNo;
+
+    @Schema(description = "登记开始日期")
+    @ExcelProperty("登记开始日期")
+    private LocalDate registrationStartDate;
+
+    @Schema(description = "登记结束日期")
+    @ExcelProperty("登记结束日期")
+    private LocalDate registrationEndDate;
+
+    @Schema(description = "ETL导入日期(数据迁移追溯)")
+    @ExcelProperty("ETL导入日期")
+    private LocalDate etlDate;
+
+    @Schema(description = "老系统交易序列号(数据迁移追溯)")
+    @ExcelProperty("老系统交易序列号")
+    private String oldTxSeqNo;
+
+    @Schema(description = "老系统客户ID(数据迁移追溯)")
+    @ExcelProperty("老系统客户ID")
+    private String oldCustId;
+
+    @Schema(description = "老系统最后更新系统(数据迁移追溯)")
+    @ExcelProperty("老系统最后更新系统")
+    private String oldLastUpdateSys;
+
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;

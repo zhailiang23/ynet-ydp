@@ -8,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import cn.idev.excel.annotation.*;
+import cn.iocoder.yudao.framework.excel.core.annotations.DictFormat;
+import cn.iocoder.yudao.framework.excel.core.convert.DictConvert;
 
 @Schema(description = "管理后台 - CRM对公客户扩展表(对公客户特有基本信息) Response VO")
 @Data
@@ -189,6 +191,177 @@ public class CompanyCustomerRespVO {
     @Schema(description = "扩展字段3")
     @ExcelProperty("扩展字段3")
     private String extField3;
+
+    // ========== 财务信息字段 (5个) ==========
+
+    @Schema(description = "资产总额")
+    @ExcelProperty("资产总额")
+    private BigDecimal totalAssets;
+
+    @Schema(description = "负债总额")
+    @ExcelProperty("负债总额")
+    private BigDecimal totalDebt;
+
+    @Schema(description = "年收入")
+    @ExcelProperty("年收入")
+    private BigDecimal annualIncome;
+
+    @Schema(description = "年利润")
+    @ExcelProperty("年利润")
+    private BigDecimal annualProfit;
+
+    @Schema(description = "财务报表类型")
+    @ExcelProperty(value = "财务报表类型", converter = DictConvert.class)
+    @DictFormat("crm_fin_report_type")
+    private String finReportType;
+
+    // ========== 股权投资字段 (3个) ==========
+
+    @Schema(description = "是否股东(0=否, 1=是)")
+    @ExcelProperty("是否股东")
+    private Boolean isStockHolder;
+
+    @Schema(description = "持股金额")
+    @ExcelProperty("持股金额")
+    private BigDecimal holdStockAmt;
+
+    @Schema(description = "投资类型")
+    @ExcelProperty(value = "投资类型", converter = DictConvert.class)
+    @DictFormat("crm_investment_type")
+    private String investmentType;
+
+    // ========== 企业组织字段 (7个) ==========
+
+    @Schema(description = "组织形式")
+    @ExcelProperty(value = "组织形式", converter = DictConvert.class)
+    @DictFormat("crm_org_form")
+    private String orgForm;
+
+    @Schema(description = "治理结构")
+    @ExcelProperty(value = "治理结构", converter = DictConvert.class)
+    @DictFormat("crm_governance_structure")
+    private String governanceStructure;
+
+    @Schema(description = "控股类型")
+    @ExcelProperty(value = "控股类型", converter = DictConvert.class)
+    @DictFormat("crm_holding_type")
+    private String holdingType;
+
+    @Schema(description = "企业归属")
+    @ExcelProperty("企业归属")
+    private String enterpriseBelong;
+
+    @Schema(description = "上级部门")
+    @ExcelProperty("上级部门")
+    private String superiorDept;
+
+    @Schema(description = "公司机构")
+    @ExcelProperty("公司机构")
+    private String companyOrganization;
+
+    @Schema(description = "国家代码")
+    @ExcelProperty("国家代码")
+    private String nationCode;
+
+    // ========== 业务经营字段 (8个) ==========
+
+    @Schema(description = "主营业务")
+    @ExcelProperty("主营业务")
+    private String mainBusiness;
+
+    @Schema(description = "辅营业务")
+    @ExcelProperty("辅营业务")
+    private String minorBusiness;
+
+    @Schema(description = "经营模式")
+    @ExcelProperty(value = "经营模式", converter = DictConvert.class)
+    @DictFormat("crm_business_mode")
+    private String businessMode;
+
+    @Schema(description = "营业开始日期")
+    @ExcelProperty("营业开始日期")
+    private LocalDate businessStartDate;
+
+    @Schema(description = "行业特征")
+    @ExcelProperty(value = "行业特征", converter = DictConvert.class)
+    @DictFormat("crm_industry_char")
+    private String industryCharacter;
+
+    @Schema(description = "行业发展前景")
+    @ExcelProperty(value = "行业发展前景", converter = DictConvert.class)
+    @DictFormat("crm_industry_prospect")
+    private String industryDevelopmentProspect;
+
+    @Schema(description = "地区代码")
+    @ExcelProperty("地区代码")
+    private String areaCode;
+
+    @Schema(description = "行业地位")
+    @ExcelProperty("行业地位")
+    private String industryPosition;
+
+    // ========== 企业规模字段 (4个) ==========
+
+    @Schema(description = "员工规模")
+    @ExcelProperty(value = "员工规模", converter = DictConvert.class)
+    @DictFormat("crm_employee_scale")
+    private String employeeScale;
+
+    @Schema(description = "资产规模")
+    @ExcelProperty("资产规模")
+    private String assetsScale;
+
+    @Schema(description = "生产能力")
+    @ExcelProperty(value = "生产能力", converter = DictConvert.class)
+    @DictFormat("crm_production_capacity")
+    private String productionCapacity;
+
+    @Schema(description = "企业性质")
+    @ExcelProperty("企业性质")
+    private String enterpriseProperty;
+
+    // ========== 监管评级字段 (3个) ==========
+
+    @Schema(description = "贷款卡标志(0=否, 1=是)")
+    @ExcelProperty("贷款卡标志")
+    private Boolean loanCardFlag;
+
+    @Schema(description = "贷款卡状态")
+    @ExcelProperty(value = "贷款卡状态", converter = DictConvert.class)
+    @DictFormat("crm_loan_card_status")
+    private String loanCardStatus;
+
+    @Schema(description = "贷款卡审核日期")
+    @ExcelProperty("贷款卡审核日期")
+    private LocalDate loanCardAuditDate;
+
+    // ========== 其他特殊字段 (2个) ==========
+
+    @Schema(description = "人行企业规模")
+    @ExcelProperty("人行企业规模")
+    private String enterpriseScalePboc;
+
+    @Schema(description = "存款企业规模")
+    @ExcelProperty("存款企业规模")
+    private String enterpriseScaleDeposit;
+
+    // ========== 系统追溯字段 (4个) ==========
+
+    @Schema(description = "ETL导入日期")
+    @ExcelProperty("ETL导入日期")
+    private LocalDate etlDate;
+
+    @Schema(description = "老系统交易序列号")
+    @ExcelProperty("老系统交易序列号")
+    private String oldTxSeqNo;
+
+    @Schema(description = "老系统最后更新系统")
+    @ExcelProperty("老系统最后更新系统")
+    private String oldLastUpdateSys;
+
+    @Schema(description = "老系统客户ID")
+    @ExcelProperty("老系统客户ID")
+    private String oldCustId;
 
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("创建时间")

@@ -37,6 +37,28 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String nickname;
     /**
+     * 曾用名
+     */
+    private String usedName;
+    /**
+     * 姓氏
+     */
+    private String surname;
+    /**
+     * 拼音全名
+     */
+    private String pinyinName;
+    /**
+     * 拼音缩写
+     */
+    private String pinyinAbbr;
+    /**
+     * 人员称谓(先生/女士/小姐等)
+     *
+     * 枚举 {@link TODO crm_person_title 对应的类}
+     */
+    private String personTitle;
+    /**
      * 性别(0=未知, 1=男, 2=女)
      *
      * 枚举 {@link TODO system_user_sex 对应的类}
@@ -46,6 +68,10 @@ public class RetailCustomerDO extends BaseDO {
      * 出生日期
      */
     private LocalDate birthday;
+    /**
+     * 出生地
+     */
+    private String birthLocale;
     /**
      * 证件类型(如:身份证、护照等)
      */
@@ -59,9 +85,17 @@ public class RetailCustomerDO extends BaseDO {
      */
     private Integer age;
     /**
+     * 年龄段
+     */
+    private String ageRange;
+    /**
      * 国籍
      */
     private String nationality;
+    /**
+     * 公民身份
+     */
+    private String citizenship;
     /**
      * 民族(如:汉族、回族等)
      */
@@ -75,9 +109,19 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String residenceType;
     /**
+     * 居住时长类型
+     */
+    private String residenceDurationType;
+    /**
      * 户口所在地(详细地址)
      */
     private String domicilePlace;
+    /**
+     * 户口类型(农业/非农业)
+     *
+     * 枚举 {@link TODO crm_household_type 对应的类}
+     */
+    private String householdType;
     /**
      * 职业(如:专业技术人员、公务员等)
      */
@@ -87,21 +131,57 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String employerName;
     /**
+     * 单位性质(国企/私企/外企等)
+     *
+     * 枚举 {@link TODO crm_employer_type 对应的类}
+     */
+    private String employerType;
+    /**
      * 职位
      */
     private String position;
+    /**
+     * 技术职称
+     */
+    private String technicalTitle;
     /**
      * 职业类型分类
      */
     private String occupationType;
     /**
+     * 职业状态(在职/离职/退休等)
+     *
+     * 枚举 {@link TODO crm_career_status 对应的类}
+     */
+    private String careerStatus;
+    /**
+     * 职业开始日期
+     */
+    private LocalDate careerStartDate;
+    /**
+     * 简历
+     */
+    private String resume;
+    /**
      * 婚姻状态(1=未婚, 2=已婚, 3=离异, 4=丧偶)
      */
     private Integer maritalStatus;
     /**
+     * 健康状况
+     *
+     * 枚举 {@link TODO crm_health_status 对应的类}
+     */
+    private String healthStatus;
+    /**
      * 宗教信仰
      */
     private String religion;
+    /**
+     * 政治面貌
+     *
+     * 枚举 {@link TODO crm_political_status 对应的类}
+     */
+    private String politicalStatus;
     /**
      * 受教育程度(如:本科、硕士、博士等)
      */
@@ -110,6 +190,18 @@ public class RetailCustomerDO extends BaseDO {
      * 最高学位(如:学士、硕士、博士)
      */
     private String degree;
+    /**
+     * 毕业学校
+     */
+    private String graduateSchool;
+    /**
+     * 专业
+     */
+    private String major;
+    /**
+     * 毕业日期
+     */
+    private LocalDate graduationDate;
     /**
      * 是否VIP客户(0=否, 1=是)
      */
@@ -151,6 +243,10 @@ public class RetailCustomerDO extends BaseDO {
      */
     private BigDecimal annualIncome;
     /**
+     * 年收入范围
+     */
+    private String annualIncomeRange;
+    /**
      * 月收入
      */
     private BigDecimal monthlyIncome;
@@ -159,6 +255,10 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String sourceOfIncome;
     /**
+     * 纳税情况
+     */
+    private String taxPayment;
+    /**
      * 资产水平(如:高、中、低)
      */
     private String assetLevel;
@@ -166,6 +266,24 @@ public class RetailCustomerDO extends BaseDO {
      * 资产总额
      */
     private BigDecimal assets;
+    /**
+     * 基金持有金额
+     */
+    private BigDecimal fundHoldings;
+    /**
+     * 总投资金额
+     */
+    private BigDecimal totalInvestment;
+    /**
+     * 投资性质
+     *
+     * 枚举 {@link TODO crm_investment_nature 对应的类}
+     */
+    private String investmentNature;
+    /**
+     * 持股金额
+     */
+    private BigDecimal stockHoldings;
     /**
      * 负债总额
      */
@@ -211,6 +329,26 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String retailCustomerType;
     /**
+     * 个人客户类型(老系统字段)
+     */
+    private String personCustomerType;
+    /**
+     * 个人行为评价
+     */
+    private String personConductEval;
+    /**
+     * 客户银行关系
+     */
+    private String customerBankRelation;
+    /**
+     * 公司关联度
+     */
+    private String companyRelationDegree;
+    /**
+     * 个体类型
+     */
+    private String individualType;
+    /**
      * 是否高端户(0=否, 1=是)
      */
     private Boolean isHighEndCustomer;
@@ -243,9 +381,35 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String payrollCompanyName;
     /**
+     * 工资账户银行
+     */
+    private String salaryAccountBank;
+    /**
      * 成为我行客户时间(日期)
      */
     private LocalDate becomeCustomerDate;
+    /**
+     * 开始日期
+     */
+    private LocalDate startDate;
+    /**
+     * 登记类型
+     *
+     * 枚举 {@link TODO crm_registration_type 对应的类}
+     */
+    private String registrationType;
+    /**
+     * 登记号
+     */
+    private String registrationNo;
+    /**
+     * 登记开始日期
+     */
+    private LocalDate registrationStartDate;
+    /**
+     * 登记结束日期
+     */
+    private LocalDate registrationEndDate;
     /**
      * 在我行建立信任关系时间(日期)
      */
@@ -266,6 +430,22 @@ public class RetailCustomerDO extends BaseDO {
      * 扩展字段3
      */
     private String extField3;
+    /**
+     * ETL导入日期(数据迁移追溯)
+     */
+    private LocalDate etlDate;
+    /**
+     * 老系统交易序列号(数据迁移追溯)
+     */
+    private String oldTxSeqNo;
+    /**
+     * 老系统客户ID(数据迁移追溯)
+     */
+    private String oldCustId;
+    /**
+     * 老系统最后更新系统(数据迁移追溯)
+     */
+    private String oldLastUpdateSys;
 
 
 }

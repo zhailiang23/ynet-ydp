@@ -52,6 +52,58 @@ export namespace CompanyCustomerApi {
     cooperationMode?: string; // 合作模式
     hasLongTermContract?: boolean; // 是否有长期合同
 
+    // 财务信息(5个)
+    totalAssets?: number; // 资产总额
+    totalDebt?: number; // 负债总额
+    annualIncome?: number; // 年收入
+    annualProfit?: number; // 年利润
+    finReportType?: string; // 财务报表类型
+
+    // 股权投资(3个)
+    isStockHolder?: boolean; // 是否股东
+    holdStockAmt?: number; // 持股金额
+    investmentType?: string; // 投资类型
+
+    // 企业组织(7个)
+    orgForm?: string; // 组织形式
+    governanceStructure?: string; // 治理结构
+    holdingType?: string; // 控股类型
+    enterpriseBelong?: string; // 企业归属
+    superiorDept?: string; // 上级部门
+    companyOrganization?: string; // 公司机构
+    nationCode?: string; // 国家代码
+
+    // 业务经营(8个)
+    mainBusiness?: string; // 主营业务
+    minorBusiness?: string; // 辅营业务
+    businessMode?: string; // 经营模式
+    businessStartDate?: string; // 营业开始日期
+    industryCharacter?: string; // 行业特征
+    industryDevelopmentProspect?: string; // 行业发展前景
+    areaCode?: string; // 地区代码
+    industryPosition?: string; // 行业地位
+
+    // 企业规模(4个)
+    employeeScale?: string; // 员工规模
+    assetsScale?: string; // 资产规模
+    productionCapacity?: string; // 生产能力
+    enterpriseProperty?: string; // 企业性质
+
+    // 监管评级(3个)
+    loanCardFlag?: boolean; // 贷款卡标志
+    loanCardStatus?: string; // 贷款卡状态
+    loanCardAuditDate?: string; // 贷款卡审核日期
+
+    // 其他特殊(2个)
+    enterpriseScalePboc?: string; // 人行企业规模
+    enterpriseScaleDeposit?: string; // 存款企业规模
+
+    // 系统追溯(4个)
+    etlDate?: string; // ETL导入日期
+    oldTxSeqNo?: string; // 老系统交易序列号
+    oldLastUpdateSys?: string; // 老系统最后更新系统
+    oldCustId?: string; // 老系统客户ID
+
     // CustomerDO 共有字段
     customerNo?: string; // 客户编号
     customerType?: number; // 客户类型

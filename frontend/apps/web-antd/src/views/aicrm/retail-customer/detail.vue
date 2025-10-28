@@ -1,50 +1,73 @@
 <script lang="ts" setup>
 import type { RetailCustomerApi } from '#/api/aicrm/retail-customer';
 
-import { onMounted, ref } from 'vue';
+import type { MenuInfo } from 'ant-design-vue/es/menu/src/interface';
+
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { getDictLabel } from '@vben/hooks';
-
-import { Descriptions, Empty, Tabs, message } from 'ant-design-vue';
+import { Menu, message } from 'ant-design-vue';
 
 import { getRetailCustomer } from '#/api/aicrm/retail-customer';
+
+import BasicInfo from './pages/basic-info.vue';
+import Placeholder from './pages/placeholder.vue';
 
 const route = useRoute();
 const router = useRouter();
 
 const loading = ref(false);
 const customer = ref<RetailCustomerApi.RetailCustomer>();
-const activeTab = ref('basic');
+const activeSection = ref('basic');
 
-// 获取字典标签的包装函数
-function getDict(dictType: string, value: any) {
-  if (value === null || value === undefined) return '-';
-  return getDictLabel(dictType, value) || value;
-}
+// 零售客户360视图菜单项
+const menuItems = [
+  { key: 'overview', label: '客户概况', component: Placeholder },
+  { key: 'tags', label: '标签画像', component: Placeholder },
+  { key: 'graph', label: '知识图谱', component: Placeholder },
+  { key: 'basic', label: '客户基本信息', component: BasicInfo },
+  { key: 'certificate', label: '客户证件信息', component: Placeholder },
+  { key: 'work', label: '客户工作或经营信息', component: Placeholder },
+  { key: 'family', label: '客户家庭信息', component: Placeholder },
+  { key: 'management', label: '管理信息', component: Placeholder },
+  { key: 'events', label: '客户大事记信息', component: Placeholder },
+  { key: 'preference', label: '客户偏好', component: Placeholder },
+  { key: 'business', label: '客户业务概览', component: Placeholder },
+  { key: 'account', label: '账户信息', component: Placeholder },
+  { key: 'product', label: '产品持有信息', component: Placeholder },
+  { key: 'guarantee', label: '担保信息', component: Placeholder },
+  { key: 'credit', label: '客户授信信息', component: Placeholder },
+  { key: 'contract', label: '签约信息', component: Placeholder },
+  { key: 'transaction', label: '交易明细信息', component: Placeholder },
+  { key: 'rating', label: '客户评级信息', component: Placeholder },
+  { key: 'contribution', label: '客户贡献度信息', component: Placeholder },
+  { key: 'creditInfo', label: '客户信用信息', component: Placeholder },
+  { key: 'complaint', label: '客户投诉信息', component: Placeholder },
+  { key: 'marketing', label: '客户营销信息', component: Placeholder },
+  { key: 'demand', label: '客户需求信息', component: Placeholder },
+  { key: 'reminder', label: '客户提醒信息', component: Placeholder },
+  { key: 'contact', label: '客户接触轨迹', component: Placeholder },
+  { key: 'recommend', label: '产品推荐', component: Placeholder },
+  { key: 'rights', label: '客户权益积分信息', component: Placeholder },
+  { key: 'behavior', label: '线上渠道行为信息', component: Placeholder },
+  { key: 'important', label: '客户重要事件', component: Placeholder },
+];
 
-// 格式化布尔值
-function formatBoolean(value?: boolean) {
-  if (value === null || value === undefined) return '-';
-  return value ? '是' : '否';
-}
+// 当前激活的组件
+const currentComponent = computed(() => {
+  const item = menuItems.find((m) => m.key === activeSection.value);
+  return item?.component || Placeholder;
+});
 
-// 格式化日期
-function formatDate(value?: string) {
-  if (!value) return '-';
-  return new Date(value).toLocaleDateString('zh-CN');
-}
+// 当前页面标题
+const currentTitle = computed(() => {
+  const item = menuItems.find((m) => m.key === activeSection.value);
+  return item?.label || '';
+});
 
-// 格式化日期时间
-function formatDateTime(value?: string) {
-  if (!value) return '-';
-  return new Date(value).toLocaleString('zh-CN');
-}
-
-// 格式化金额
-function formatMoney(value?: number) {
-  if (value === null || value === undefined) return '-';
-  return `¥${value.toLocaleString('zh-CN')}`;
+// 点击菜单项
+function handleMenuClick(info: MenuInfo) {
+  activeSection.value = String(info.key);
 }
 
 // 加载客户详情
@@ -73,375 +96,97 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-loading="loading" class="customer-detail">
-    <div class="tabs-header-sticky">
-      <Tabs v-model:activeKey="activeTab">
-        <Tabs.TabPane key="basic" tab="基本信息" />
-        <Tabs.TabPane key="contact" tab="联系方式" disabled />
-        <Tabs.TabPane key="family" tab="家庭信息" disabled />
-        <Tabs.TabPane key="business" tab="业务往来" disabled />
-      </Tabs>
+  <div v-loading="loading" class="customer-detail-container">
+    <!-- 左侧菜单 -->
+    <div class="sidebar-menu">
+      <Menu
+        :selectedKeys="[activeSection]"
+        mode="inline"
+        @click="handleMenuClick"
+      >
+        <Menu.Item v-for="item in menuItems" :key="item.key">
+          {{ item.label }}
+        </Menu.Item>
+      </Menu>
     </div>
-    <div class="tabs-content-wrapper">
-      <!-- Tab 1: 基本信息 -->
-      <div v-if="activeTab === 'basic' && customer" class="space-y-6">
-          <!-- 卡片 1: 客户共有信息 -->
-          <a-card title="客户共有信息" :bordered="false">
-            <Descriptions :column="3" bordered size="small">
-              <Descriptions.Item label="客户编号">
-                {{ customer.customerNo || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="客户类型">
-                {{ getDict('crm_customer_type', customer.customerType) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="客户名称">
-                {{ customer.customerName || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="客户等级">
-                {{ getDict('crm_customer_level', customer.customerLevel) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="客户状态">
-                {{ getDict('crm_customer_status', customer.customerStatus) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="优质客户">
-                {{ formatBoolean(customer.isHighQuality) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="重要客户">
-                {{ formatBoolean(customer.isImportant) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="信用状态">
-                {{ customer.creditStatus || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="信用等级">
-                {{ getDict('crm_credit_level', customer.creditLevel) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="信用评分">
-                {{ customer.creditScore || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="客户来源">
-                {{ getDict('crm_customer_source', customer.customerSource) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="客户标签" :span="2">
-                {{ customer.customerTag || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="备注信息" :span="3">
-                {{ customer.remark || '-' }}
-              </Descriptions.Item>
-            </Descriptions>
-          </a-card>
 
-          <!-- 卡片 2: 个人基本信息 -->
-          <a-card title="个人基本信息" :bordered="false">
-            <Descriptions :column="3" bordered size="small">
-              <Descriptions.Item label="昵称/别名">
-                {{ customer.nickname || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="性别">
-                {{
-                  customer.gender === 1
-                    ? '男'
-                    : customer.gender === 2
-                      ? '女'
-                      : customer.gender === 3
-                        ? '其他'
-                        : '-'
-                }}
-              </Descriptions.Item>
-              <Descriptions.Item label="出生日期">
-                {{ formatDate(customer.birthday) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="证件类型">
-                {{ customer.idCardType || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="证件号码">
-                {{ customer.idCardNo || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="国籍">
-                {{ customer.nationality || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="籍贯">
-                {{ customer.nativePlace || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="婚姻状况">
-                {{ customer.maritalStatus || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="学历">
-                {{ customer.education || '-' }}
-              </Descriptions.Item>
-            </Descriptions>
-          </a-card>
-
-          <!-- 卡片 3: 职业信息 -->
-          <a-card title="职业信息" :bordered="false">
-            <Descriptions :column="3" bordered size="small">
-              <Descriptions.Item label="职业">
-                {{ customer.occupation || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="工作单位">
-                {{ customer.employerName || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="职位">
-                {{ customer.position || '-' }}
-              </Descriptions.Item>
-            </Descriptions>
-          </a-card>
-
-          <!-- 卡片 4: VIP信息 -->
-          <a-card title="VIP信息" :bordered="false">
-            <Descriptions :column="3" bordered size="small">
-              <Descriptions.Item label="是否VIP">
-                {{ formatBoolean(customer.isVip) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="VIP等级">
-                {{ customer.vipLevel || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="积分">
-                {{ customer.vipPoints || '-' }}
-              </Descriptions.Item>
-              <Descriptions.Item label="VIP开始日期">
-                {{ formatDate(customer.vipStartDate) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="VIP到期日期" :span="2">
-                {{ formatDate(customer.vipEndDate) }}
-              </Descriptions.Item>
-            </Descriptions>
-          </a-card>
-
-          <!-- 卡片 5: 收入信息 -->
-          <a-card title="收入信息" :bordered="false">
-            <Descriptions :column="3" bordered size="small">
-              <Descriptions.Item label="年收入">
-                {{ formatMoney(customer.annualIncome) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="月收入">
-                {{ formatMoney(customer.monthlyIncome) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="收入来源">
-                {{ customer.sourceOfIncome || '-' }}
-              </Descriptions.Item>
-            </Descriptions>
-          </a-card>
-
-          <!-- 卡片 6: 资产信息 -->
-          <a-card title="资产信息" :bordered="false">
-            <Descriptions :column="3" bordered size="small">
-              <Descriptions.Item label="资产总额">
-                {{ formatMoney(customer.assets) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="负债总额">
-                {{ formatMoney(customer.liabilities) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="有房产">
-                {{ formatBoolean(customer.hasHouse) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="有车">
-                {{ formatBoolean(customer.hasCar) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="有保险" :span="2">
-                {{ formatBoolean(customer.hasInsurance) }}
-              </Descriptions.Item>
-            </Descriptions>
-          </a-card>
-
-          <!-- 卡片 7: 信誉信息 -->
-          <a-card title="信誉信息" :bordered="false">
-            <Descriptions :column="3" bordered size="small">
-              <Descriptions.Item label="有贷款记录">
-                {{ formatBoolean(customer.hasLoanRecord) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="有逾期记录">
-                {{ formatBoolean(customer.hasOverdueRecord) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="黑名单标志">
-                {{ formatBoolean(customer.blacklistFlag) }}
-              </Descriptions.Item>
-            </Descriptions>
-          </a-card>
-
-          <!-- 卡片 8: 系统信息 -->
-          <a-card title="系统信息" :bordered="false">
-            <Descriptions :column="2" bordered size="small">
-              <Descriptions.Item label="创建时间">
-                {{ formatDateTime(customer.createTime) }}
-              </Descriptions.Item>
-              <Descriptions.Item label="更新时间">
-                {{ formatDateTime(customer.updateTime) }}
-              </Descriptions.Item>
-            </Descriptions>
-          </a-card>
-        </div>
-
-      <!-- 预留其他 Tab -->
-      <div v-if="activeTab === 'contact'" class="empty-tab">
-        <Empty description="功能开发中..." />
-      </div>
-      <div v-if="activeTab === 'family'" class="empty-tab">
-        <Empty description="功能开发中..." />
-      </div>
-      <div v-if="activeTab === 'business'" class="empty-tab">
-        <Empty description="功能开发中..." />
-      </div>
+    <!-- 右侧内容区域 -->
+    <div class="content-area">
+      <component
+        :is="currentComponent"
+        v-if="customer"
+        :customer="customer"
+        :title="currentTitle"
+      />
     </div>
   </div>
 </template>
 
-<style>
-.customer-detail {
-  padding: 0;
-}
-
-.tabs-header-sticky {
-  position: fixed;
-  top: 87px;
-  left: 224px;
-  right: 0;
-  z-index: 200;
-  background-color: #fff;
-  padding: 0 16px;
-  height: 46px;
+<style scoped>
+/* 主容器 - Flexbox 布局 */
+.customer-detail-container {
+  display: flex;
+  height: calc(100vh - 87px);
   overflow: hidden;
 }
 
-/* Dark mode 背景 */
-.dark .tabs-header-sticky {
+/* 左侧菜单 */
+.sidebar-menu {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid #f0f0f0;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.dark .sidebar-menu {
   background-color: rgb(20, 22, 26);
+  border-right-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Tabs 容器样式 */
-.tabs-header-sticky :deep(.ant-tabs) {
-  height: auto;
+/* 右侧内容区域 */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background-color: #f5f5f5;
 }
 
-.tabs-header-sticky :deep(.ant-tabs-nav) {
-  margin-bottom: 0 !important;
+.dark .content-area {
+  background-color: rgb(15, 17, 21);
 }
 
-.tabs-header-sticky :deep(.ant-tabs-nav-wrap) {
-  margin-bottom: 0 !important;
+/* 菜单样式 */
+.sidebar-menu :deep(.ant-menu) {
+  border-right: none;
 }
 
-.tabs-header-sticky :deep(.ant-tabs-nav::before) {
-  border-bottom: none !important;
+.sidebar-menu :deep(.ant-menu-item) {
+  height: 40px;
+  line-height: 40px;
+  margin: 0;
+  padding-left: 24px !important;
 }
 
-/* Tab 项基础样式 */
-.tabs-header-sticky :deep(.ant-tabs-tab) {
-  padding: 6px 16px !important;
-  margin: 0 4px !important;
-  border: none !important;
-  background: transparent !important;
-  transition: all 0.2s;
+.sidebar-menu :deep(.ant-menu-item-selected) {
+  background-color: #e6f7ff;
 }
 
-.tabs-header-sticky :deep(.ant-tabs-tab-btn) {
-  color: rgba(0, 0, 0, 0.65);
+.dark .sidebar-menu :deep(.ant-menu-item-selected) {
+  background-color: rgba(24, 144, 255, 0.2);
 }
 
-/* 激活状态 - Light mode */
-.tabs-header-sticky :deep(.ant-tabs-tab-active) {
-  background-color: #f5f5f5 !important;
-  border-radius: 7px 7px 0 0 !important;
-}
-
-.tabs-header-sticky :deep(.ant-tabs-tab-active .ant-tabs-tab-btn) {
-  color: #1890ff !important;
-}
-
-/* Hover 效果 - Light mode */
-.tabs-header-sticky :deep(.ant-tabs-tab:hover:not(.ant-tabs-tab-active) .ant-tabs-tab-btn) {
-  color: rgba(0, 0, 0, 0.85);
-}
-
-/* Dark mode 适配 */
-.dark .tabs-header-sticky :deep(.ant-tabs-tab) {
-  background: transparent !important;
-}
-
-.dark .tabs-header-sticky :deep(.ant-tabs-tab .ant-tabs-tab-btn) {
-  color: #fff !important;
-}
-
-.dark .tabs-header-sticky :deep(.ant-tabs-tab-active) {
-  background-color: rgb(46, 48, 51) !important;
-}
-
-.dark .tabs-header-sticky :deep(.ant-tabs-tab-active .ant-tabs-tab-btn) {
-  color: #fff !important;
-  font-weight: normal !important;
-}
-
-.dark .tabs-header-sticky :deep(.ant-tabs-tab-disabled .ant-tabs-tab-btn) {
-  color: #fff !important;
-}
-
-.dark .tabs-header-sticky :deep(.ant-tabs-tab:hover:not(.ant-tabs-tab-active) .ant-tabs-tab-btn) {
-  color: #fff !important;
-}
-
-/* 禁用状态 */
-.tabs-header-sticky :deep(.ant-tabs-tab-disabled) {
-  opacity: 0.5;
-  cursor: not-allowed !important;
-}
-
-/* 隐藏下划线 */
-.tabs-header-sticky :deep(.ant-tabs-ink-bar) {
-  display: none !important;
-}
-
-/* 隐藏内容区 */
-.tabs-header-sticky :deep(.ant-tabs-content) {
-  display: none !important;
-}
-
-/* 内容区域 */
-.tabs-content-wrapper {
-  padding: 16px 16px 16px 16px;
-  margin-top: 45px;
-}
-
-.tabs-content-wrapper .space-y-6 > *:first-child {
-  margin-top: 0 !important;
-}
-
-.empty-tab {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-}
-
-.space-y-6 > * + * {
-  margin-top: 1.5rem;
-}
-
-/* 统一表格列宽 */
-.tabs-content-wrapper :deep(.ant-descriptions-view table) {
+/* 内容区域的表格列宽统一 */
+.content-area :deep(.ant-descriptions-view table) {
   table-layout: fixed !important;
   width: 100% !important;
 }
 
-.tabs-content-wrapper :deep(.ant-descriptions-view table th.ant-descriptions-item-label) {
+.content-area :deep(.ant-descriptions-view table th.ant-descriptions-item-label) {
   width: 12% !important;
 }
 
-.tabs-content-wrapper :deep(.ant-descriptions-view table td.ant-descriptions-item-content) {
-  width: 21.33% !important;
-}
-</style>
-
-<style>
-/* 全局样式 - 强制统一表格列宽 */
-.customer-detail .tabs-content-wrapper .ant-descriptions-view table {
-  table-layout: fixed !important;
-  width: 100% !important;
-}
-
-.customer-detail .tabs-content-wrapper .ant-descriptions-view table th.ant-descriptions-item-label {
-  width: 12% !important;
-}
-
-.customer-detail .tabs-content-wrapper .ant-descriptions-view table td.ant-descriptions-item-content {
+.content-area :deep(.ant-descriptions-view table td.ant-descriptions-item-content) {
   width: 21.33% !important;
 }
 </style>
