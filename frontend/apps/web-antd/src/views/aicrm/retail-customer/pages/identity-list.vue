@@ -160,8 +160,10 @@ defineExpose({
           </a-tag>
         </template>
       </template>
-      <template #emptyText>
-        <a-empty description="暂无证件信息" />
+      <template #empty>
+        <div style="text-align: center; padding: 40px 0; color: #999;">
+          暂无证件信息
+        </div>
       </template>
     </a-table>
   </div>
