@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.aicrm.dal.dataobject.customeridentity.CustomerIde
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 
 import cn.iocoder.yudao.module.aicrm.dal.mysql.customeridentity.CustomerIdentityMapper;
 
@@ -43,10 +44,34 @@ public class CustomerIdentityServiceImpl implements CustomerIdentityService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateCustomerIdentity(CustomerIdentitySaveReqVO updateReqVO) {
         // 校验存在
         validateCustomerIdentityExists(updateReqVO.getId());
-        // 更新
+
+        // 如果设置为默认证件,需要先取消同一客户的其他默认证件
+        if (Boolean.TRUE.equals(updateReqVO.getIsPrimary())) {
+            CustomerIdentityDO currentIdentity = customerIdentityMapper.selectById(updateReqVO.getId());
+            if (currentIdentity != null) {
+                // 查询该客户的所有默认证件
+                List<CustomerIdentityDO> primaryIdentities = customerIdentityMapper.selectList(
+                    new LambdaQueryWrapperX<CustomerIdentityDO>()
+                        .eq(CustomerIdentityDO::getCustomerId, currentIdentity.getCustomerId())
+                        .eq(CustomerIdentityDO::getIsPrimary, true)
+                        .ne(CustomerIdentityDO::getId, updateReqVO.getId())
+                );
+
+                // 将其他默认证件设为非默认
+                if (CollUtil.isNotEmpty(primaryIdentities)) {
+                    primaryIdentities.forEach(identity -> {
+                        identity.setIsPrimary(false);
+                        customerIdentityMapper.updateById(identity);
+                    });
+                }
+            }
+        }
+
+        // 更新当前证件
         CustomerIdentityDO updateObj = BeanUtils.toBean(updateReqVO, CustomerIdentityDO.class);
         customerIdentityMapper.updateById(updateObj);
     }

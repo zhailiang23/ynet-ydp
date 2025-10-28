@@ -165,7 +165,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'Select',
       componentProps: {
         allowClear: true,
-        options: getDictOptions('crm_customer_type'),
+        options: getDictOptions('aicrm_customer_type'),
         placeholder: '请选择客户类型',
       },
     },
@@ -184,7 +184,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'Select',
       componentProps: {
         allowClear: true,
-        options: getDictOptions('crm_customer_level'),
+        options: getDictOptions('aicrm_customer_level'),
         placeholder: '请选择客户等级',
       },
     },
@@ -194,7 +194,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'Select',
       componentProps: {
         allowClear: true,
-        options: getDictOptions('crm_customer_status'),
+        options: getDictOptions('aicrm_customer_status'),
         placeholder: '请选择客户状态',
       },
     },
@@ -230,7 +230,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'Select',
       componentProps: {
         allowClear: true,
-        options: getDictOptions('crm_credit_level'),
+        options: getDictOptions('aicrm_credit_level'),
         placeholder: '请选择信用等级',
       },
     },
@@ -240,7 +240,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'Select',
       componentProps: {
         allowClear: true,
-        options: getDictOptions('crm_customer_source'),
+        options: getDictOptions('aicrm_customer_source'),
         placeholder: '请选择客户来源',
       },
     },
@@ -277,7 +277,7 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>
       minWidth: 100,
       formatter: ({ cellValue }) => {
         if (!cellValue) return '';
-        return getDictLabel('crm_customer_type', cellValue);
+        return getDictLabel('aicrm_customer_type', cellValue);
       },
     },
     {
@@ -291,7 +291,7 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>
       minWidth: 100,
       formatter: ({ cellValue }) => {
         if (!cellValue) return '';
-        return getDictLabel('crm_customer_level', cellValue);
+        return getDictLabel('aicrm_customer_level', cellValue);
       },
     },
     {
@@ -300,7 +300,7 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>
       minWidth: 100,
       formatter: ({ cellValue }) => {
         if (!cellValue) return '';
-        return getDictLabel('crm_customer_status', cellValue);
+        return getDictLabel('aicrm_customer_status', cellValue);
       },
     },
     {
@@ -321,7 +321,7 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>
       minWidth: 100,
       formatter: ({ cellValue }) => {
         if (!cellValue) return '';
-        return getDictLabel('crm_credit_level', cellValue);
+        return getDictLabel('aicrm_credit_level', cellValue);
       },
     },
     {
@@ -330,7 +330,7 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>
       minWidth: 120,
       formatter: ({ cellValue }) => {
         if (!cellValue) return '';
-        return getDictLabel('crm_customer_source', cellValue);
+        return getDictLabel('aicrm_customer_source', cellValue);
       },
     },
     {

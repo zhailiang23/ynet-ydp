@@ -1,15 +1,15 @@
 package cn.iocoder.yudao.framework.jackson.config;
 
 import cn.iocoder.yudao.framework.common.util.json.JsonUtils;
+import cn.iocoder.yudao.framework.common.util.json.databind.LocalDateStringDeserializer;
+import cn.iocoder.yudao.framework.common.util.json.databind.LocalDateStringSerializer;
 import cn.iocoder.yudao.framework.common.util.json.databind.NumberSerializer;
 import cn.iocoder.yudao.framework.common.util.json.databind.TimestampLocalDateTimeDeserializer;
 import cn.iocoder.yudao.framework.common.util.json.databind.TimestampLocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -34,9 +34,10 @@ public class YudaoJacksonAutoConfiguration {
                 // Long -> Number
                 .serializerByType(Long.class, NumberSerializer.INSTANCE)
                 .serializerByType(Long.TYPE, NumberSerializer.INSTANCE)
-                // LocalDate / LocalTime
-                .serializerByType(LocalDate.class, LocalDateSerializer.INSTANCE)
-                .deserializerByType(LocalDate.class, LocalDateDeserializer.INSTANCE)
+                // LocalDate -> ISO String (yyyy-MM-dd)
+                .serializerByType(LocalDate.class, LocalDateStringSerializer.INSTANCE)
+                .deserializerByType(LocalDate.class, LocalDateStringDeserializer.INSTANCE)
+                // LocalTime
                 .serializerByType(LocalTime.class, LocalTimeSerializer.INSTANCE)
                 .deserializerByType(LocalTime.class, LocalTimeDeserializer.INSTANCE)
                 // LocalDateTime < - > EpochMillis
@@ -53,9 +54,10 @@ public class YudaoJacksonAutoConfiguration {
         // Long -> Number，避免前端精度丢失
         m.addSerializer(Long.class, NumberSerializer.INSTANCE);
         m.addSerializer(Long.TYPE, NumberSerializer.INSTANCE);
-        // LocalDate / LocalTime
-        m.addSerializer(LocalDate.class, LocalDateSerializer.INSTANCE);
-        m.addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
+        // LocalDate -> ISO String (yyyy-MM-dd)
+        m.addSerializer(LocalDate.class, LocalDateStringSerializer.INSTANCE);
+        m.addDeserializer(LocalDate.class, LocalDateStringDeserializer.INSTANCE);
+        // LocalTime
         m.addSerializer(LocalTime.class, LocalTimeSerializer.INSTANCE);
         m.addDeserializer(LocalTime.class, LocalTimeDeserializer.INSTANCE);
         // LocalDateTime < - > EpochMillis
