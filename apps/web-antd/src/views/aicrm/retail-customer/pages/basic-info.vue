@@ -51,16 +51,16 @@ function formatMoney(value?: number) {
           {{ customer.customerNo || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户类型">
-          {{ getDict('crm_customer_type', customer.customerType) }}
+          {{ getDict('aicrm_customer_type', customer.customerType) }}
         </Descriptions.Item>
         <Descriptions.Item label="客户名称">
           {{ customer.customerName || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户等级">
-          {{ getDict('crm_customer_level', customer.customerLevel) }}
+          {{ getDict('aicrm_customer_level', customer.customerLevel) }}
         </Descriptions.Item>
         <Descriptions.Item label="客户状态">
-          {{ getDict('crm_customer_status', customer.customerStatus) }}
+          {{ getDict('aicrm_customer_status', customer.customerStatus) }}
         </Descriptions.Item>
         <Descriptions.Item label="优质客户">
           {{ formatBoolean(customer.isHighQuality) }}
@@ -72,13 +72,13 @@ function formatMoney(value?: number) {
           {{ customer.creditStatus || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="信用等级">
-          {{ getDict('crm_credit_level', customer.creditLevel) }}
+          {{ getDict('aicrm_credit_level', customer.creditLevel) }}
         </Descriptions.Item>
         <Descriptions.Item label="信用评分">
           {{ customer.creditScore || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户来源" :span="2">
-          {{ getDict('crm_customer_source', customer.customerSource) }}
+          {{ getDict('aicrm_customer_source', customer.customerSource) }}
         </Descriptions.Item>
         <Descriptions.Item label="客户标签" :span="3">
           {{ customer.customerTag || '-' }}
