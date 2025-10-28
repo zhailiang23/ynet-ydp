@@ -32,4 +32,9 @@ public interface CrmDictTypeConstants {
      */
     String CREDIT_LEVEL = "crm_credit_level";
 
+    /**
+     * 客户证件类型
+     */
+    String CUSTOMER_IDENTITY_TYPE = "customer_identity_type";
+
 }

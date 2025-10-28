@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
+import cn.iocoder.yudao.framework.excel.core.annotations.DictFormat;
+import cn.iocoder.yudao.module.aicrm.enums.CrmDictTypeConstants;
 
 @Schema(description = "管理后台 - 客户证件信息表（零售客户特有，1对多关系，支持多证件） Response VO")
 @Data
@@ -23,6 +25,7 @@ public class CustomerIdentityRespVO {
 
     @Schema(description = "证件类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("证件类型")
+    @DictFormat(CrmDictTypeConstants.CUSTOMER_IDENTITY_TYPE)
     private String identityType;
 
     @Schema(description = "证件号码", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -80,5 +83,13 @@ public class CustomerIdentityRespVO {
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
+
+    @Schema(description = "更新时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("更新时间")
+    private LocalDateTime updateTime;
+
+    @Schema(description = "更新人")
+    @ExcelProperty("更新人")
+    private String updater;
 
 }
