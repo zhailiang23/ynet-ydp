@@ -101,13 +101,13 @@ const columns = computed(() => [
 async function loadData() {
   try {
     loading.value = true;
-    const { data } = await getCustomerIdentityPage({
+    const response = await getCustomerIdentityPage({
       customerId: props.customerId,
       pageNo: pagination.value.current,
       pageSize: pagination.value.pageSize,
     });
-    dataSource.value = data?.list || [];
-    pagination.value.total = data?.total || 0;
+    dataSource.value = response?.list || [];
+    pagination.value.total = response?.total || 0;
   } catch (error) {
     console.error('加载证件信息失败:', error);
   } finally {
