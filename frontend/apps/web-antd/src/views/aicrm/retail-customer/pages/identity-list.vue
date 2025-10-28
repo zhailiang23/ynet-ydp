@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 
-import { Tag } from 'ant-design-vue';
 import dayjs from 'dayjs';
 
 import { getCustomerIdentityPage } from '#/api/aicrm/customeridentity';
@@ -76,10 +75,6 @@ const columns = computed(() => [
     dataIndex: 'validity',
     width: 100,
     align: 'center' as const,
-    customRender: ({ record }: { record: AicrmCustomerIdentityApi.CustomerIdentity }) => {
-      const status = getValidityStatus(record.expiryDate as string);
-      return <Tag color={status.status === 'success' ? 'green' : status.status === 'processing' ? 'blue' : 'default'}>{status.text}</Tag>;
-    },
   },
   {
     title: '发证机关',
@@ -127,6 +122,14 @@ function handleTableChange(pag: any) {
   loadData();
 }
 
+// 获取Tag颜色
+function getTagColor(record: AicrmCustomerIdentityApi.CustomerIdentity): string {
+  const status = getValidityStatus(record.expiryDate as string);
+  if (status.status === 'success') return 'green';
+  if (status.status === 'processing') return 'blue';
+  return 'default';
+}
+
 // 挂载时加载数据
 onMounted(() => {
   loadData();
@@ -150,6 +153,13 @@ defineExpose({
       size="middle"
       @change="handleTableChange"
     >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'validity'">
+          <a-tag :color="getTagColor(record)">
+            {{ getValidityStatus(record.expiryDate).text }}
+          </a-tag>
+        </template>
+      </template>
       <template #emptyText>
         <a-empty description="暂无证件信息" />
       </template>
