@@ -21,4 +21,7 @@ public interface ErrorCodeConstants {
     // ========== 客户证件信息 1-020-003-000 ==========
     ErrorCode CUSTOMER_IDENTITY_NOT_EXISTS = new ErrorCode(1_020_003_000, "客户证件信息不存在");
 
+    // ========== 客户工作或经营信息 1-020-004-000 ==========
+    ErrorCode CUSTOMER_WORK_NOT_EXISTS = new ErrorCode(1_020_004_000, "客户工作或经营信息不存在");
+
 }
