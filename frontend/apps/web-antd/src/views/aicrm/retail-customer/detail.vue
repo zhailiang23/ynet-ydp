@@ -12,6 +12,8 @@ import { getRetailCustomer } from '#/api/aicrm/retail-customer';
 
 import BasicInfo from './pages/basic-info.vue';
 import IdentityList from './pages/identity-list.vue';
+import FamilyInfo from './pages/family-info.vue';
+import ManagementInfo from './pages/management-info.vue';
 import Placeholder from './pages/placeholder.vue';
 
 const route = useRoute();
@@ -29,8 +31,8 @@ const menuItems = [
   { key: 'basic', label: '客户基本信息', component: BasicInfo },
   { key: 'certificate', label: '客户证件信息', component: IdentityList },
   { key: 'work', label: '客户工作或经营信息', component: Placeholder },
-  { key: 'family', label: '客户家庭信息', component: Placeholder },
-  { key: 'management', label: '管理信息', component: Placeholder },
+  { key: 'family', label: '客户家庭信息', component: FamilyInfo },
+  { key: 'management', label: '管理信息', component: ManagementInfo },
   { key: 'events', label: '客户大事记信息', component: Placeholder },
   { key: 'preference', label: '客户偏好', component: Placeholder },
   { key: 'business', label: '客户业务概览', component: Placeholder },

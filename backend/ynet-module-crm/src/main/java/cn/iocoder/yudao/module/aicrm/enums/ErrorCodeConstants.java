@@ -24,4 +24,16 @@ public interface ErrorCodeConstants {
     // ========== 客户工作或经营信息 1-020-004-000 ==========
     ErrorCode CUSTOMER_WORK_NOT_EXISTS = new ErrorCode(1_020_004_000, "客户工作或经营信息不存在");
 
+    // ========== 客户家庭信息 1-020-005-000 ==========
+    ErrorCode CUSTOMER_FAMILY_NOT_EXISTS = new ErrorCode(1_020_005_000, "客户家庭信息不存在");
+
+    // ========== 客户家庭成员信息 1-020-006-000 ==========
+    ErrorCode CUSTOMER_FAMILY_MEMBER_NOT_EXISTS = new ErrorCode(1_020_006_000, "客户家庭成员信息不存在");
+
+    // ========== 客户归属关系表 1-020-007-000 ==========
+    ErrorCode CUSTOMER_ASSIGNMENT_NOT_EXISTS = new ErrorCode(1_020_007_000, "客户归属关系不存在");
+
+    // ========== 客户归属调整历史表 1-020-008-000 ==========
+    ErrorCode CUSTOMER_ASSIGNMENT_HISTORY_NOT_EXISTS = new ErrorCode(1_020_008_000, "客户归属调整历史不存在");
+
 }

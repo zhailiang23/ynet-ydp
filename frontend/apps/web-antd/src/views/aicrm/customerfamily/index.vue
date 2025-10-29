@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AicrmCustomerWorkApi } from '#/api/aicrm/customerwork';
+import type { AicrmCustomerFamilyApi } from '#/api/aicrm/customerfamily';
 
 import { ref } from 'vue';
 
@@ -11,11 +11,11 @@ import { message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteCustomerWork,
-  deleteCustomerWorkList,
-  exportCustomerWork,
-  getCustomerWorkPage,
-} from '#/api/aicrm/customerwork';
+  deleteCustomerFamily,
+  deleteCustomerFamilyList,
+  exportCustomerFamily,
+  getCustomerFamilyPage,
+} from '#/api/aicrm/customerfamily';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -31,24 +31,24 @@ function handleRefresh() {
   gridApi.query();
 }
 
-/** 创建客户工作或经营信息表 */
+/** 创建客户家庭信息表（零售客户） */
 function handleCreate() {
   formModalApi.setData(null).open();
 }
 
-/** 编辑客户工作或经营信息表 */
-function handleEdit(row: AicrmCustomerWorkApi.CustomerWork) {
+/** 编辑客户家庭信息表（零售客户） */
+function handleEdit(row: AicrmCustomerFamilyApi.CustomerFamily) {
   formModalApi.setData(row).open();
 }
 
-/** 删除客户工作或经营信息表 */
-async function handleDelete(row: AicrmCustomerWorkApi.CustomerWork) {
+/** 删除客户家庭信息表（零售客户） */
+async function handleDelete(row: AicrmCustomerFamilyApi.CustomerFamily) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.id]),
     duration: 0,
   });
   try {
-    await deleteCustomerWork(row.id!);
+    await deleteCustomerFamily(row.id!);
     message.success($t('ui.actionMessage.deleteSuccess', [row.id]));
     handleRefresh();
   } finally {
@@ -56,7 +56,7 @@ async function handleDelete(row: AicrmCustomerWorkApi.CustomerWork) {
   }
 }
 
-/** 批量删除客户工作或经营信息表 */
+/** 批量删除客户家庭信息表（零售客户） */
 async function handleDeleteBatch() {
   await confirm($t('ui.actionMessage.deleteBatchConfirm'));
   const hideLoading = message.loading({
@@ -64,7 +64,7 @@ async function handleDeleteBatch() {
     duration: 0,
   });
   try {
-    await deleteCustomerWorkList(checkedIds.value);
+    await deleteCustomerFamilyList(checkedIds.value);
     checkedIds.value = [];
     message.success($t('ui.actionMessage.deleteSuccess'));
     handleRefresh();
@@ -77,15 +77,15 @@ const checkedIds = ref<number[]>([]);
 function handleRowCheckboxChange({
   records,
 }: {
-  records: AicrmCustomerWorkApi.CustomerWork[];
+  records: AicrmCustomerFamilyApi.CustomerFamily[];
 }) {
   checkedIds.value = records.map((item) => item.id!);
 }
 
 /** 导出表格 */
 async function handleExport() {
-  const data = await exportCustomerWork(await gridApi.formApi.getValues());
-  downloadFileFromBlobPart({ fileName: '客户工作或经营信息表.xls', source: data });
+  const data = await exportCustomerFamily(await gridApi.formApi.getValues());
+  downloadFileFromBlobPart({ fileName: '客户家庭信息表（零售客户）.xls', source: data });
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -99,7 +99,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getCustomerWorkPage({
+          return await getCustomerFamilyPage({
             pageNo: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -115,7 +115,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: true,
       search: true,
     },
-  } as VxeTableGridOptions<AicrmCustomerWorkApi.CustomerWork>,
+  } as VxeTableGridOptions<AicrmCustomerFamilyApi.CustomerFamily>,
   gridEvents: {
     checkboxAll: handleRowCheckboxChange,
     checkboxChange: handleRowCheckboxChange,
@@ -126,22 +126,22 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal @success="handleRefresh" />
-    <Grid table-title="客户工作或经营信息表列表">
+    <Grid table-title="客户家庭信息表（零售客户）列表">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['客户工作或经营信息表']),
+              label: $t('ui.actionTitle.create', ['客户家庭信息表（零售客户）']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
-              auth: ['aicrm:customer-work:create'],
+              auth: ['aicrm:customer-family:create'],
               onClick: handleCreate,
             },
             {
               label: $t('ui.actionTitle.export'),
               type: 'primary',
               icon: ACTION_ICON.DOWNLOAD,
-              auth: ['aicrm:customer-work:export'],
+              auth: ['aicrm:customer-family:export'],
               onClick: handleExport,
             },
             {
@@ -149,7 +149,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'primary',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              auth: ['aicrm:customer-work:delete'],
+              auth: ['aicrm:customer-family:delete'],
               disabled: isEmpty(checkedIds),
               onClick: handleDeleteBatch,
             },
@@ -163,7 +163,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               label: $t('common.edit'),
               type: 'link',
               icon: ACTION_ICON.EDIT,
-              auth: ['aicrm:customer-work:update'],
+              auth: ['aicrm:customer-family:update'],
               onClick: handleEdit.bind(null, row),
             },
             {
@@ -171,7 +171,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'link',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              auth: ['aicrm:customer-work:delete'],
+              auth: ['aicrm:customer-family:delete'],
               popConfirm: {
                 title: $t('ui.actionMessage.deleteConfirm', [row.id]),
                 confirm: handleDelete.bind(null, row),
