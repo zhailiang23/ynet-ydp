@@ -681,5 +681,6 @@ VITE_GLOB_API_URL=https://api.yourdomain.com/admin-api
 - 所有后端代码应该写在 ynet-module-crm 模块里。yudao-module-crm是框架自带的 crm 模块，可以读取yudao-module-crm里面的内容，但是不要修改。
 - 老版本 CRM的数据库连接信息是 url: jdbc:mysql://192.168.201.44:3306/dev_palmbank?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8 username: dev_ibbp_equity password: '1j#ey@jr'
 - 不需要为每个任务创建详细的总结文档，只在任务完成后简单的总结即可。
-- 生成 openspec 的 spec 文件时，需求描述必须使用 SHALL 或 MUST 等强制性关键字，不要用中文替换这些关键字。
+- 生成 openspec 的 spec 文件时，需求描述必须使用 SHALL 或 MUST 等强制性关键字，不要用中文替换这些关键字。除了这些关键字外，其它内容用中文生成。
 - 编写前端列表时，总是参考frontend/apps/web-antd/src/views/aicrm/customer/index.vue中的列表写法，使用VxeTable。
+- 所有的数据库表都必须有主键 id 字段。生成的 sql 统一存放在 backend/sql/mysql 目录下。
