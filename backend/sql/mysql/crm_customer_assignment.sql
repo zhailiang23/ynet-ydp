@@ -11,12 +11,10 @@ CREATE TABLE `crm_customer_assignment` (
 
   -- ==================== 归属机构信息 ====================
   `assignment_type` tinyint NOT NULL COMMENT '归属类型（1=主办，2=协办）',
-  `institution_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '归属机构编码',
-  `institution_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '归属机构名称',
+  `dept_id` bigint NOT NULL COMMENT '归属部门ID（关联 system_dept.id）',
 
   -- ==================== 归属客户经理信息 ====================
-  `manager_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '客户经理ID',
-  `manager_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '客户经理姓名',
+  `user_id` bigint NOT NULL COMMENT '客户经理用户ID（关联 system_users.id）',
 
   -- ==================== 归属权限信息 ====================
   `has_view_right` bit(1) NOT NULL DEFAULT b'1' COMMENT '是否有查看权限',
@@ -28,8 +26,7 @@ CREATE TABLE `crm_customer_assignment` (
   `expiry_date` date NULL DEFAULT NULL COMMENT '失效日期（NULL表示长期有效）',
 
   -- ==================== 分配操作信息 ====================
-  `assign_operator_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '分配操作人ID',
-  `assign_operator_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '分配操作人姓名',
+  `assign_operator_id` bigint NULL DEFAULT NULL COMMENT '分配操作人用户ID（关联 system_users.id）',
 
   -- ==================== 归属状态 ====================
   `status` tinyint NOT NULL DEFAULT 1 COMMENT '归属状态（0=已失效，1=生效中，2=待生效）',
@@ -47,12 +44,12 @@ CREATE TABLE `crm_customer_assignment` (
 
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_customer_id`(`customer_id` ASC) USING BTREE COMMENT '客户ID索引',
-  INDEX `idx_manager_id`(`manager_id` ASC) USING BTREE COMMENT '客户经理ID索引',
-  INDEX `idx_institution_code`(`institution_code` ASC) USING BTREE COMMENT '机构编码索引',
+  INDEX `idx_user_id`(`user_id` ASC) USING BTREE COMMENT '客户经理用户ID索引',
+  INDEX `idx_dept_id`(`dept_id` ASC) USING BTREE COMMENT '部门ID索引',
   INDEX `idx_assignment_type`(`assignment_type` ASC) USING BTREE COMMENT '归属类型索引',
   INDEX `idx_status`(`status` ASC) USING BTREE COMMENT '状态索引',
   INDEX `idx_tenant_id`(`tenant_id` ASC) USING BTREE COMMENT '租户ID索引',
-  UNIQUE INDEX `uk_customer_assignment`(`customer_id` ASC, `assignment_type` ASC, `manager_id` ASC, `deleted` ASC) USING BTREE COMMENT '客户归属唯一索引（同一客户的同一类型归属，同一客户经理只能有一条有效记录）'
+  UNIQUE INDEX `uk_customer_assignment`(`customer_id` ASC, `assignment_type` ASC, `user_id` ASC, `deleted` ASC) USING BTREE COMMENT '客户归属唯一索引（同一客户的同一类型归属，同一客户经理只能有一条有效记录）'
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '客户归属关系表（零售+对公共用，支持主协办模式）';
 
 -- ----------------------------
@@ -73,21 +70,16 @@ CREATE TABLE `crm_customer_assignment_history` (
 
   -- ==================== 调整前归属信息 ====================
   `before_assignment_type` tinyint NULL DEFAULT NULL COMMENT '调整前归属类型（1=主办，2=协办）',
-  `before_institution_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整前机构编码',
-  `before_institution_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整前机构名称',
-  `before_manager_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整前客户经理ID',
-  `before_manager_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整前客户经理姓名',
+  `before_dept_id` bigint NULL DEFAULT NULL COMMENT '调整前部门ID（关联 system_dept.id）',
+  `before_user_id` bigint NULL DEFAULT NULL COMMENT '调整前客户经理用户ID（关联 system_users.id）',
 
   -- ==================== 调整后归属信息 ====================
   `after_assignment_type` tinyint NULL DEFAULT NULL COMMENT '调整后归属类型（1=主办，2=协办）',
-  `after_institution_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整后机构编码',
-  `after_institution_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整后机构名称',
-  `after_manager_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整后客户经理ID',
-  `after_manager_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整后客户经理姓名',
+  `after_dept_id` bigint NULL DEFAULT NULL COMMENT '调整后部门ID（关联 system_dept.id）',
+  `after_user_id` bigint NULL DEFAULT NULL COMMENT '调整后客户经理用户ID（关联 system_users.id）',
 
   -- ==================== 调整操作信息 ====================
-  `assign_operator_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整操作人ID',
-  `assign_operator_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '调整操作人姓名',
+  `assign_operator_id` bigint NULL DEFAULT NULL COMMENT '调整操作人用户ID（关联 system_users.id）',
   `assign_date` date NULL DEFAULT NULL COMMENT '分配日期',
 
   -- ==================== 备注信息 ====================
@@ -104,28 +96,27 @@ CREATE TABLE `crm_customer_assignment_history` (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_customer_id`(`customer_id` ASC) USING BTREE COMMENT '客户ID索引',
   INDEX `idx_transfer_date`(`transfer_date` ASC) USING BTREE COMMENT '调整日期索引',
-  INDEX `idx_before_manager_id`(`before_manager_id` ASC) USING BTREE COMMENT '调整前客户经理索引',
-  INDEX `idx_after_manager_id`(`after_manager_id` ASC) USING BTREE COMMENT '调整后客户经理索引',
+  INDEX `idx_before_user_id`(`before_user_id` ASC) USING BTREE COMMENT '调整前客户经理索引',
+  INDEX `idx_after_user_id`(`after_user_id` ASC) USING BTREE COMMENT '调整后客户经理索引',
+  INDEX `idx_before_dept_id`(`before_dept_id` ASC) USING BTREE COMMENT '调整前部门索引',
+  INDEX `idx_after_dept_id`(`after_dept_id` ASC) USING BTREE COMMENT '调整后部门索引',
   INDEX `idx_tenant_id`(`tenant_id` ASC) USING BTREE COMMENT '租户ID索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '客户归属调整历史表（零售+对公共用，记录所有归属变更历史）';
 
 -- ----------------------------
 -- 为现有所有客户创建默认归属关系
--- 默认分配给系统管理员（ID=1），机构为总行（0043977）
+-- 默认分配给系统管理员（user_id=1），部门为研发部门（dept_id=103）
 -- ----------------------------
 INSERT INTO `crm_customer_assignment` (
   `customer_id`,
   `assignment_type`,
-  `institution_code`,
-  `institution_name`,
-  `manager_id`,
-  `manager_name`,
+  `dept_id`,
+  `user_id`,
   `has_view_right`,
   `has_maintain_right`,
   `assign_date`,
   `effective_date`,
   `assign_operator_id`,
-  `assign_operator_name`,
   `status`,
   `remark`,
   `creator`,
@@ -137,16 +128,13 @@ INSERT INTO `crm_customer_assignment` (
 SELECT
   c.id AS customer_id,
   1 AS assignment_type,  -- 主办
-  '0043977' AS institution_code,
-  '商业银行' AS institution_name,
-  '1' AS manager_id,
-  '芋道' AS manager_name,
+  103 AS dept_id,  -- 研发部门
+  1 AS user_id,  -- 系统管理员
   b'1' AS has_view_right,
   b'1' AS has_maintain_right,
   CURDATE() AS assign_date,
   CURDATE() AS effective_date,
-  '1' AS assign_operator_id,
-  '系统' AS assign_operator_name,
+  1 AS assign_operator_id,
   1 AS status,  -- 生效中
   '系统初始化默认归属' AS remark,
   '1' AS creator,
