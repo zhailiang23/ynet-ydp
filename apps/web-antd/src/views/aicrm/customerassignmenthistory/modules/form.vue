@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { AicrmCustomerWorkApi } from '#/api/aicrm/customerwork';
+import type { AicrmCustomerAssignmentHistoryApi } from '#/api/aicrm/customerassignmenthistory';
 
 import { computed, ref } from 'vue';
 
@@ -8,17 +8,17 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createCustomerWork, getCustomerWork, updateCustomerWork } from '#/api/aicrm/customerwork';
+import { createCustomerAssignmentHistory, getCustomerAssignmentHistory, updateCustomerAssignmentHistory } from '#/api/aicrm/customerassignmenthistory';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<AicrmCustomerWorkApi.CustomerWork>();
+const formData = ref<AicrmCustomerAssignmentHistoryApi.CustomerAssignmentHistory>();
 const getTitle = computed(() => {
   return formData.value?.id
-    ? $t('ui.actionTitle.edit', ['客户工作或经营信息表'])
-    : $t('ui.actionTitle.create', ['客户工作或经营信息表']);
+    ? $t('ui.actionTitle.edit', ['客户归属调整历史表（零售+对公共用，记录所有归属变更历史）'])
+    : $t('ui.actionTitle.create', ['客户归属调整历史表（零售+对公共用，记录所有归属变更历史）']);
 });
 
 const [Form, formApi] = useVbenForm({
@@ -42,9 +42,9 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as AicrmCustomerWorkApi.CustomerWork;
+    const data = (await formApi.getValues()) as AicrmCustomerAssignmentHistoryApi.CustomerAssignmentHistory;
     try {
-      await (formData.value?.id ? updateCustomerWork(data) : createCustomerWork(data));
+      await (formData.value?.id ? updateCustomerAssignmentHistory(data) : createCustomerAssignmentHistory(data));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -59,13 +59,13 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<AicrmCustomerWorkApi.CustomerWork>();
+    const data = modalApi.getData<AicrmCustomerAssignmentHistoryApi.CustomerAssignmentHistory>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      formData.value = await getCustomerWork(data.id);
+      formData.value = await getCustomerAssignmentHistory(data.id);
       // 设置到 values
       await formApi.setValues(formData.value);
     } finally {
