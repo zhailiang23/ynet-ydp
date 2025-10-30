@@ -14,6 +14,8 @@ import BasicInfo from './pages/basic-info.vue';
 import IdentityList from './pages/identity-list.vue';
 import FamilyInfo from './pages/family-info.vue';
 import ManagementInfo from './pages/management-info.vue';
+import TimelineInfo from './pages/timeline-info.vue';
+import PreferenceInfo from './pages/preference-info.vue';
 import Placeholder from './pages/placeholder.vue';
 
 const route = useRoute();
@@ -33,8 +35,8 @@ const menuItems = [
   { key: 'work', label: '客户工作或经营信息', component: Placeholder },
   { key: 'family', label: '客户家庭信息', component: FamilyInfo },
   { key: 'management', label: '管理信息', component: ManagementInfo },
-  { key: 'events', label: '客户大事记信息', component: Placeholder },
-  { key: 'preference', label: '客户偏好', component: Placeholder },
+  { key: 'events', label: '客户大事记信息', component: TimelineInfo },
+  { key: 'preference', label: '客户偏好', component: PreferenceInfo },
   { key: 'business', label: '客户业务概览', component: Placeholder },
   { key: 'account', label: '账户信息', component: Placeholder },
   { key: 'product', label: '产品持有信息', component: Placeholder },
