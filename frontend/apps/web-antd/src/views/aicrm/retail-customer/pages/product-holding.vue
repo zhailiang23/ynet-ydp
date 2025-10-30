@@ -176,7 +176,7 @@ watch(
 </script>
 
 <template>
-  <div class="p-4">
-    <Grid />
+  <div>
+    <Grid table-title="产品持有信息" />
   </div>
 </template>

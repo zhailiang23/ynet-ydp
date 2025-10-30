@@ -12,13 +12,28 @@ import { getRetailCustomer } from '#/api/aicrm/retail-customer';
 
 import AccountInfo from './pages/account-info.vue';
 import BasicInfo from './pages/basic-info.vue';
+import ChannelBehaviorInfo from './pages/channel-behavior-info.vue';
+import ComplaintInfo from './pages/complaint-info.vue';
+import ContactInfo from './pages/contact-info.vue';
+import ContractInfo from './pages/contract-info.vue';
+import ContributionInfo from './pages/contribution-info.vue';
+import CouponInfo from './pages/coupon-info.vue';
+import CreditInfo from './pages/credit-info.vue';
+import DemandInfo from './pages/demand-info.vue';
 import FamilyInfo from './pages/family-info.vue';
+import GuaranteeInfo from './pages/guarantee-info.vue';
 import IdentityList from './pages/identity-list.vue';
 import ManagementInfo from './pages/management-info.vue';
+import MarketingInfo from './pages/marketing-info.vue';
 import Placeholder from './pages/placeholder.vue';
 import PreferenceInfo from './pages/preference-info.vue';
 import ProductHolding from './pages/product-holding.vue';
+import RatingInfo from './pages/rating-info.vue';
+import RecommendInfo from './pages/recommend-info.vue';
+import ReminderInfo from './pages/reminder-info.vue';
+import RightsPointsInfo from './pages/rights-points-info.vue';
 import TimelineInfo from './pages/timeline-info.vue';
+import TransactionInfo from './pages/transaction-info.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -42,21 +57,22 @@ const menuItems = [
   { key: 'business', label: '客户业务概览', component: Placeholder },
   { key: 'account', label: '账户信息', component: AccountInfo },
   { key: 'product', label: '产品持有信息', component: ProductHolding },
-  { key: 'guarantee', label: '担保信息', component: Placeholder },
-  { key: 'credit', label: '客户授信信息', component: Placeholder },
-  { key: 'contract', label: '签约信息', component: Placeholder },
-  { key: 'transaction', label: '交易明细信息', component: Placeholder },
-  { key: 'rating', label: '客户评级信息', component: Placeholder },
-  { key: 'contribution', label: '客户贡献度信息', component: Placeholder },
+  { key: 'guarantee', label: '担保信息', component: GuaranteeInfo },
+  { key: 'credit', label: '客户授信信息', component: CreditInfo },
+  { key: 'contract', label: '签约信息', component: ContractInfo },
+  { key: 'transaction', label: '交易明细信息', component: TransactionInfo },
+  { key: 'rating', label: '客户评级信息', component: RatingInfo },
+  { key: 'contribution', label: '客户贡献度信息', component: ContributionInfo },
   { key: 'creditInfo', label: '客户信用信息', component: Placeholder },
-  { key: 'complaint', label: '客户投诉信息', component: Placeholder },
-  { key: 'marketing', label: '客户营销信息', component: Placeholder },
-  { key: 'demand', label: '客户需求信息', component: Placeholder },
-  { key: 'reminder', label: '客户提醒信息', component: Placeholder },
-  { key: 'contact', label: '客户接触轨迹', component: Placeholder },
-  { key: 'recommend', label: '产品推荐', component: Placeholder },
-  { key: 'rights', label: '客户权益积分信息', component: Placeholder },
-  { key: 'behavior', label: '线上渠道行为信息', component: Placeholder },
+  { key: 'complaint', label: '客户投诉信息', component: ComplaintInfo },
+  { key: 'marketing', label: '客户营销信息', component: MarketingInfo },
+  { key: 'demand', label: '客户需求信息', component: DemandInfo },
+  { key: 'reminder', label: '客户提醒信息', component: ReminderInfo },
+  { key: 'contact', label: '客户接触轨迹', component: ContactInfo },
+  { key: 'recommend', label: '产品推荐', component: RecommendInfo },
+  { key: 'rights', label: '客户权益积分信息', component: RightsPointsInfo },
+  { key: 'coupon', label: '客户卡券信息', component: CouponInfo },
+  { key: 'behavior', label: '线上渠道行为信息', component: ChannelBehaviorInfo },
   { key: 'important', label: '客户重要事件', component: Placeholder },
 ];
 
