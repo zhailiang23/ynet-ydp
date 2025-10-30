@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.aicrm.dal.mysql.customergridassignment.CustomerGridAssignmentMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 联表查询分页结果映射 -->
+    <resultMap id="CustomerGridAssignmentPageResultMap" type="cn.iocoder.yudao.module.aicrm.controller.admin.customergridassignment.vo.CustomerGridAssignmentRespVO">
+        <id property="id" column="id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="gridId" column="grid_id"/>
+        <result property="assignDate" column="assign_date"/>
+        <result property="assignOperatorId" column="assign_operator_id"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <!-- 关联查询字段 -->
+        <result property="gridCode" column="grid_code"/>
+        <result property="gridName" column="grid_name"/>
+        <result property="gridType" column="grid_type"/>
+        <result property="gridManagerName" column="grid_manager_name"/>
+        <result property="assignOperatorName" column="assign_operator_name"/>
+    </resultMap>
+
+    <!-- 分页查询（联表） -->
+    <select id="selectPageWithJoin" resultMap="CustomerGridAssignmentPageResultMap">
+        SELECT
+            cga.id,
+            cga.customer_id,
+            cga.grid_id,
+            cga.assign_date,
+            cga.assign_operator_id,
+            cga.status,
+            cga.remark,
+            cga.create_time,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            u1.nickname AS assign_operator_name,
+            u2.nickname AS grid_manager_name
+        FROM crm_customer_grid_assignment cga
+        LEFT JOIN crm_grid_info g ON cga.grid_id = g.id
+        LEFT JOIN system_users u1 ON cga.assign_operator_id = u1.id
+        LEFT JOIN system_users u2 ON g.manager_user_id = u2.id
+        <where>
+            cga.deleted = 0
+            <if test="reqVO.customerId != null">
+                AND cga.customer_id = #{reqVO.customerId}
+            </if>
+            <if test="reqVO.gridId != null">
+                AND cga.grid_id = #{reqVO.gridId}
+            </if>
+            <if test="reqVO.assignDate != null and reqVO.assignDate.length == 2">
+                AND cga.assign_date BETWEEN #{reqVO.assignDate[0]} AND #{reqVO.assignDate[1]}
+            </if>
+            <if test="reqVO.assignOperatorId != null">
+                AND cga.assign_operator_id = #{reqVO.assignOperatorId}
+            </if>
+            <if test="reqVO.status != null">
+                AND cga.status = #{reqVO.status}
+            </if>
+            <if test="reqVO.remark != null and reqVO.remark != ''">
+                AND cga.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+            </if>
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND cga.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+        ORDER BY cga.id DESC
+    </select>
+
+</mapper>

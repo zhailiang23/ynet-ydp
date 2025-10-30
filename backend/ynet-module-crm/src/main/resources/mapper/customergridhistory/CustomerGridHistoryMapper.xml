@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.aicrm.dal.mysql.customergridhistory.CustomerGridHistoryMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 联表查询分页结果映射 -->
+    <resultMap id="CustomerGridHistoryPageResultMap" type="cn.iocoder.yudao.module.aicrm.controller.admin.customergridhistory.vo.CustomerGridHistoryRespVO">
+        <id property="id" column="id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="adjustDate" column="adjust_date"/>
+        <result property="adjustReason" column="adjust_reason"/>
+        <result property="beforeGridId" column="before_grid_id"/>
+        <result property="beforeGridCode" column="before_grid_code"/>
+        <result property="beforeGridName" column="before_grid_name"/>
+        <result property="beforeGridType" column="before_grid_type"/>
+        <result property="beforeGridManagerUserId" column="before_grid_manager_user_id"/>
+        <result property="afterGridId" column="after_grid_id"/>
+        <result property="afterGridCode" column="after_grid_code"/>
+        <result property="afterGridName" column="after_grid_name"/>
+        <result property="afterGridType" column="after_grid_type"/>
+        <result property="afterGridManagerUserId" column="after_grid_manager_user_id"/>
+        <result property="adjustOperatorId" column="adjust_operator_id"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <!-- 关联查询字段 -->
+        <result property="adjustOperatorName" column="adjust_operator_name"/>
+        <result property="beforeGridManagerName" column="before_grid_manager_name"/>
+        <result property="afterGridManagerName" column="after_grid_manager_name"/>
+    </resultMap>
+
+    <!-- 分页查询（联表） -->
+    <select id="selectPageWithJoin" resultMap="CustomerGridHistoryPageResultMap">
+        SELECT
+            cgh.id,
+            cgh.customer_id,
+            cgh.adjust_date,
+            cgh.adjust_reason,
+            cgh.before_grid_id,
+            cgh.before_grid_code,
+            cgh.before_grid_name,
+            cgh.before_grid_type,
+            cgh.before_grid_manager_user_id,
+            cgh.after_grid_id,
+            cgh.after_grid_code,
+            cgh.after_grid_name,
+            cgh.after_grid_type,
+            cgh.after_grid_manager_user_id,
+            cgh.adjust_operator_id,
+            cgh.remark,
+            cgh.create_time,
+            u1.nickname AS adjust_operator_name,
+            u2.nickname AS before_grid_manager_name,
+            u3.nickname AS after_grid_manager_name
+        FROM crm_customer_grid_history cgh
+        LEFT JOIN system_users u1 ON cgh.adjust_operator_id = u1.id
+        LEFT JOIN system_users u2 ON cgh.before_grid_manager_user_id = u2.id
+        LEFT JOIN system_users u3 ON cgh.after_grid_manager_user_id = u3.id
+        <where>
+            cgh.deleted = 0
+            <if test="reqVO.customerId != null">
+                AND cgh.customer_id = #{reqVO.customerId}
+            </if>
+            <if test="reqVO.adjustDate != null and reqVO.adjustDate.length == 2">
+                AND cgh.adjust_date BETWEEN #{reqVO.adjustDate[0]} AND #{reqVO.adjustDate[1]}
+            </if>
+            <if test="reqVO.adjustReason != null and reqVO.adjustReason != ''">
+                AND cgh.adjust_reason LIKE CONCAT('%', #{reqVO.adjustReason}, '%')
+            </if>
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND cgh.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+        ORDER BY cgh.id DESC
+    </select>
+
+</mapper>

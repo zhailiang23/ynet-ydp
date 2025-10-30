@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { RetailCustomerApi } from '#/api/aicrm/retail-customer';
-
 import type { MenuInfo } from 'ant-design-vue/es/menu/src/interface';
+
+import type { RetailCustomerApi } from '#/api/aicrm/retail-customer';
 
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -10,9 +10,15 @@ import { Menu, message } from 'ant-design-vue';
 
 import { getRetailCustomer } from '#/api/aicrm/retail-customer';
 
+import AccountInfo from './pages/account-info.vue';
 import BasicInfo from './pages/basic-info.vue';
+import FamilyInfo from './pages/family-info.vue';
 import IdentityList from './pages/identity-list.vue';
+import ManagementInfo from './pages/management-info.vue';
 import Placeholder from './pages/placeholder.vue';
+import PreferenceInfo from './pages/preference-info.vue';
+import ProductHolding from './pages/product-holding.vue';
+import TimelineInfo from './pages/timeline-info.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -29,13 +35,13 @@ const menuItems = [
   { key: 'basic', label: '客户基本信息', component: BasicInfo },
   { key: 'certificate', label: '客户证件信息', component: IdentityList },
   { key: 'work', label: '客户工作或经营信息', component: Placeholder },
-  { key: 'family', label: '客户家庭信息', component: Placeholder },
-  { key: 'management', label: '管理信息', component: Placeholder },
-  { key: 'events', label: '客户大事记信息', component: Placeholder },
-  { key: 'preference', label: '客户偏好', component: Placeholder },
+  { key: 'family', label: '客户家庭信息', component: FamilyInfo },
+  { key: 'management', label: '管理信息', component: ManagementInfo },
+  { key: 'events', label: '客户大事记信息', component: TimelineInfo },
+  { key: 'preference', label: '客户偏好', component: PreferenceInfo },
   { key: 'business', label: '客户业务概览', component: Placeholder },
-  { key: 'account', label: '账户信息', component: Placeholder },
-  { key: 'product', label: '产品持有信息', component: Placeholder },
+  { key: 'account', label: '账户信息', component: AccountInfo },
+  { key: 'product', label: '产品持有信息', component: ProductHolding },
   { key: 'guarantee', label: '担保信息', component: Placeholder },
   { key: 'credit', label: '客户授信信息', component: Placeholder },
   { key: 'contract', label: '签约信息', component: Placeholder },
@@ -101,7 +107,7 @@ onMounted(() => {
     <!-- 左侧菜单 -->
     <div class="sidebar-menu">
       <Menu
-        :selectedKeys="[activeSection]"
+        :selected-keys="[activeSection]"
         mode="inline"
         @click="handleMenuClick"
       >
@@ -134,28 +140,28 @@ onMounted(() => {
 
 /* 左侧菜单 */
 .sidebar-menu {
-  width: 220px;
   flex-shrink: 0;
-  border-right: 1px solid #f0f0f0;
+  width: 220px;
   overflow-y: auto;
   background-color: #fff;
+  border-right: 1px solid #f0f0f0;
 }
 
 .dark .sidebar-menu {
-  background-color: rgb(20, 22, 26);
-  border-right-color: rgba(255, 255, 255, 0.1);
+  background-color: rgb(20 22 26);
+  border-right-color: rgb(255 255 255 / 10%);
 }
 
 /* 右侧内容区域 */
 .content-area {
   flex: 1;
-  overflow-y: auto;
   padding: 16px;
+  overflow-y: auto;
   background-color: #f5f5f5;
 }
 
 .dark .content-area {
-  background-color: rgb(15, 17, 21);
+  background-color: rgb(15 17 21);
 }
 
 /* 菜单样式 */
@@ -165,9 +171,9 @@ onMounted(() => {
 
 .sidebar-menu :deep(.ant-menu-item) {
   height: 40px;
-  line-height: 40px;
-  margin: 0;
   padding-left: 24px !important;
+  margin: 0;
+  line-height: 40px;
 }
 
 .sidebar-menu :deep(.ant-menu-item-selected) {
@@ -175,20 +181,22 @@ onMounted(() => {
 }
 
 .dark .sidebar-menu :deep(.ant-menu-item-selected) {
-  background-color: rgba(24, 144, 255, 0.2);
+  background-color: rgb(24 144 255 / 20%);
 }
 
 /* 内容区域的表格列宽统一 */
 .content-area :deep(.ant-descriptions-view table) {
-  table-layout: fixed !important;
   width: 100% !important;
+  table-layout: fixed !important;
 }
 
-.content-area :deep(.ant-descriptions-view table th.ant-descriptions-item-label) {
+.content-area
+  :deep(.ant-descriptions-view table th.ant-descriptions-item-label) {
   width: 12% !important;
 }
 
-.content-area :deep(.ant-descriptions-view table td.ant-descriptions-item-content) {
+.content-area
+  :deep(.ant-descriptions-view table td.ant-descriptions-item-content) {
   width: 21.33% !important;
 }
 </style>
