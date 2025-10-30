@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Schema(description = "管理后台 - 客户证件信息表（零售客户特有，1对多关系，支持多证件）新增/修改 Request VO")
 @Data

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.aicrm.controller.admin.retailcustomer.vo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
