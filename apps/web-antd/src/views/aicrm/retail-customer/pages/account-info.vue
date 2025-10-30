@@ -137,19 +137,19 @@ function refreshCardView() {
   loadCardViewData();
 }
 
-// 当前 Grid API
-const currentGridApi = computed(() => {
-  const gridMap: Record<string, any> = {
-    deposit: depositGridApi,
-    loan: loanGridApi,
-    wealth: wealthGridApi,
-    fund: fundGridApi,
-    trust: trustGridApi,
-    insurance: insuranceGridApi,
-    metal: metalGridApi,
-    creditcard: creditcardGridApi,
+// 当前 Tab 标题
+const currentTabTitle = computed(() => {
+  const titleMap: Record<string, string> = {
+    deposit: '存款账户列表',
+    loan: '贷款账户列表',
+    wealth: '理财账户列表',
+    fund: '基金账户列表',
+    trust: '信托账户列表',
+    insurance: '保险账户列表',
+    metal: '贵金属账户列表',
+    creditcard: '信用卡账户列表',
   };
-  return gridMap[activeTab.value];
+  return titleMap[activeTab.value] || '账户列表';
 });
 
 // ========== 存款账户 ==========
@@ -567,346 +567,599 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
 
 <template>
   <div class="account-info-page">
-    <!-- 视图切换按钮 -->
-    <div class="view-toggle-bar">
-      <a-button-group>
-        <a-button
-          :type="viewMode === 'table' ? 'primary' : 'default'"
-          @click="viewMode = 'table'"
-        >
-          <IconifyIcon icon="ant-design:table-outlined" />
-          表格视图
-        </a-button>
-        <a-button
-          :type="viewMode === 'card' ? 'primary' : 'default'"
-          @click="viewMode = 'card'"
-        >
-          <IconifyIcon icon="ant-design:appstore-outlined" />
-          卡片视图
-        </a-button>
-      </a-button-group>
-    </div>
-
-    <!-- Tab 页 -->
     <a-tabs v-model:activeKey="activeTab" type="card">
       <!-- 存款账户 -->
       <a-tab-pane key="deposit" tab="存款账户">
-        <DepositGrid v-if="viewMode === 'table' && loadedTabs.has('deposit')" />
-        <div v-else-if="viewMode === 'card'" class="card-view-container">
-          <div v-if="cardViewData.length > 0" class="card-grid">
-            <div v-for="item in cardViewData" :key="item.id" class="account-card">
-              <div class="card-header">
-                <span class="card-title">{{ item.accountNo }}</span>
-                <a-tag :color="item.accountStatus === 'active' ? 'green' : 'default'">
-                  {{ getDict('aicrm_deposit_account_status', item.accountStatus) }}
-                </a-tag>
-              </div>
-              <div class="card-body">
-                <div class="card-field">
-                  <span class="field-label">户名：</span>
-                  <span class="field-value">{{ item.accountName || '-' }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">账户类型：</span>
-                  <span class="field-value">{{ getDict('aicrm_deposit_account_type', item.accountType) }}</span>
-                </div>
-                <div class="card-field highlight">
-                  <span class="field-label">账户余额：</span>
-                  <span class="field-value amount">{{ formatMoney(item.balance) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">币种：</span>
-                  <span class="field-value">{{ getDict('aicrm_currency_type', item.currencyType) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">开户日期：</span>
-                  <span class="field-value">{{ formatDate(item.openDate) }}</span>
-                </div>
+        <transition name="fade" mode="out-in">
+          <!-- 表格视图 -->
+          <DepositGrid v-if="viewMode === 'table' && loadedTabs.has('deposit')" key="table" :table-title="currentTabTitle">
+            <template #toolbar-tools>
+              <a-tooltip title="切换到卡片视图">
+                <a-button shape="circle" @click="toggleView">
+                  <template #icon>
+                    <IconifyIcon icon="ant-design:appstore-outlined" />
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </DepositGrid>
+
+          <!-- 卡片视图 -->
+          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+            <div class="card-view-header">
+              <h3>{{ currentTabTitle }}</h3>
+              <div class="card-view-tools">
+                <a-tooltip title="切换到表格视图">
+                  <a-button shape="circle" @click="toggleView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:table-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="刷新">
+                  <a-button shape="circle" @click="refreshCardView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:reload-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </div>
+            <div class="card-view-content">
+              <div v-if="cardViewData.length > 0" class="card-grid">
+                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                  <div class="card-header">
+                    <span class="card-title">{{ item.accountNo }}</span>
+                    <a-tag :color="item.accountStatus === 'active' ? 'green' : 'default'">
+                      {{ getDict('aicrm_deposit_account_status', item.accountStatus) }}
+                    </a-tag>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-field">
+                      <span class="field-label">户名：</span>
+                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">账户类型：</span>
+                      <span class="field-value">{{ getDict('aicrm_deposit_account_type', item.accountType) }}</span>
+                    </div>
+                    <div class="card-field highlight">
+                      <span class="field-label">账户余额：</span>
+                      <span class="field-value amount">{{ formatMoney(item.balance) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">币种：</span>
+                      <span class="field-value">{{ getDict('aicrm_currency_type', item.currencyType) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">开户日期：</span>
+                      <span class="field-value">{{ formatDate(item.openDate) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无存款账户数据" />
+            </div>
           </div>
-          <a-empty v-else description="暂无存款账户数据" />
-        </div>
+        </transition>
       </a-tab-pane>
 
       <!-- 贷款账户 -->
       <a-tab-pane key="loan" tab="贷款账户">
-        <LoanGrid v-if="viewMode === 'table' && loadedTabs.has('loan')" />
-        <div v-else-if="viewMode === 'card'" class="card-view-container">
-          <div v-if="cardViewData.length > 0" class="card-grid">
-            <div v-for="item in cardViewData" :key="item.id" class="account-card">
-              <div class="card-header">
-                <span class="card-title">{{ item.accountNo }}</span>
-                <a-tag :color="item.accountStatus === 'normal' ? 'green' : 'red'">
-                  {{ getDict('aicrm_loan_account_status', item.accountStatus) }}
-                </a-tag>
-              </div>
-              <div class="card-body">
-                <div class="card-field">
-                  <span class="field-label">借款人：</span>
-                  <span class="field-value">{{ item.accountName || '-' }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">产品名称：</span>
-                  <span class="field-value">{{ item.productName || '-' }}</span>
-                </div>
-                <div class="card-field highlight">
-                  <span class="field-label">贷款余额：</span>
-                  <span class="field-value amount">{{ formatMoney(item.balance) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">贷款利率：</span>
-                  <span class="field-value">{{ item.interestRate }}%</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">到期日：</span>
-                  <span class="field-value">{{ formatDate(item.matureDate) }}</span>
-                </div>
+        <transition name="fade" mode="out-in">
+          <LoanGrid v-if="viewMode === 'table' && loadedTabs.has('loan')" key="table" :table-title="currentTabTitle">
+            <template #toolbar-tools>
+              <a-tooltip title="切换到卡片视图">
+                <a-button shape="circle" @click="toggleView">
+                  <template #icon>
+                    <IconifyIcon icon="ant-design:appstore-outlined" />
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </LoanGrid>
+
+          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+            <div class="card-view-header">
+              <h3>{{ currentTabTitle }}</h3>
+              <div class="card-view-tools">
+                <a-tooltip title="切换到表格视图">
+                  <a-button shape="circle" @click="toggleView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:table-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="刷新">
+                  <a-button shape="circle" @click="refreshCardView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:reload-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </div>
+            <div class="card-view-content">
+              <div v-if="cardViewData.length > 0" class="card-grid">
+                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                  <div class="card-header">
+                    <span class="card-title">{{ item.accountNo }}</span>
+                    <a-tag :color="item.accountStatus === 'normal' ? 'green' : 'red'">
+                      {{ getDict('aicrm_loan_account_status', item.accountStatus) }}
+                    </a-tag>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-field">
+                      <span class="field-label">借款人：</span>
+                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">产品名称：</span>
+                      <span class="field-value">{{ item.productName || '-' }}</span>
+                    </div>
+                    <div class="card-field highlight">
+                      <span class="field-label">贷款余额：</span>
+                      <span class="field-value amount">{{ formatMoney(item.balance) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">贷款利率：</span>
+                      <span class="field-value">{{ item.interestRate }}%</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">到期日：</span>
+                      <span class="field-value">{{ formatDate(item.matureDate) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无贷款账户数据" />
+            </div>
           </div>
-          <a-empty v-else description="暂无贷款账户数据" />
-        </div>
+        </transition>
       </a-tab-pane>
 
       <!-- 理财账户 -->
       <a-tab-pane key="wealth" tab="理财账户">
-        <WealthGrid v-if="viewMode === 'table' && loadedTabs.has('wealth')" />
-        <div v-else-if="viewMode === 'card'" class="card-view-container">
-          <div v-if="cardViewData.length > 0" class="card-grid">
-            <div v-for="item in cardViewData" :key="item.id" class="account-card">
-              <div class="card-header">
-                <span class="card-title">{{ item.accountNo }}</span>
-                <a-tag :color="item.accountStatus === 'holding' ? 'green' : 'default'">
-                  {{ getDict('aicrm_wealth_account_status', item.accountStatus) }}
-                </a-tag>
-              </div>
-              <div class="card-body">
-                <div class="card-field">
-                  <span class="field-label">户名：</span>
-                  <span class="field-value">{{ item.accountName || '-' }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">产品名称：</span>
-                  <span class="field-value">{{ item.productName || '-' }}</span>
-                </div>
-                <div class="card-field highlight">
-                  <span class="field-label">当前市值：</span>
-                  <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">预期收益率：</span>
-                  <span class="field-value">{{ item.expectedReturnRate }}%</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">到期日：</span>
-                  <span class="field-value">{{ formatDate(item.matureDate) }}</span>
-                </div>
+        <transition name="fade" mode="out-in">
+          <WealthGrid v-if="viewMode === 'table' && loadedTabs.has('wealth')" key="table" :table-title="currentTabTitle">
+            <template #toolbar-tools>
+              <a-tooltip title="切换到卡片视图">
+                <a-button shape="circle" @click="toggleView">
+                  <template #icon>
+                    <IconifyIcon icon="ant-design:appstore-outlined" />
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </WealthGrid>
+
+          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+            <div class="card-view-header">
+              <h3>{{ currentTabTitle }}</h3>
+              <div class="card-view-tools">
+                <a-tooltip title="切换到表格视图">
+                  <a-button shape="circle" @click="toggleView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:table-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="刷新">
+                  <a-button shape="circle" @click="refreshCardView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:reload-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </div>
+            <div class="card-view-content">
+              <div v-if="cardViewData.length > 0" class="card-grid">
+                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                  <div class="card-header">
+                    <span class="card-title">{{ item.accountNo }}</span>
+                    <a-tag :color="item.accountStatus === 'holding' ? 'green' : 'default'">
+                      {{ getDict('aicrm_wealth_account_status', item.accountStatus) }}
+                    </a-tag>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-field">
+                      <span class="field-label">户名：</span>
+                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">产品名称：</span>
+                      <span class="field-value">{{ item.productName || '-' }}</span>
+                    </div>
+                    <div class="card-field highlight">
+                      <span class="field-label">当前市值：</span>
+                      <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">预期收益率：</span>
+                      <span class="field-value">{{ item.expectedReturnRate }}%</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">到期日：</span>
+                      <span class="field-value">{{ formatDate(item.matureDate) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无理财账户数据" />
+            </div>
           </div>
-          <a-empty v-else description="暂无理财账户数据" />
-        </div>
+        </transition>
       </a-tab-pane>
 
       <!-- 基金账户 -->
       <a-tab-pane key="fund" tab="基金账户">
-        <FundGrid v-if="viewMode === 'table' && loadedTabs.has('fund')" />
-        <div v-else-if="viewMode === 'card'" class="card-view-container">
-          <div v-if="cardViewData.length > 0" class="card-grid">
-            <div v-for="item in cardViewData" :key="item.id" class="account-card">
-              <div class="card-header">
-                <span class="card-title">{{ item.accountNo }}</span>
-                <a-tag :color="item.accountStatus === 'holding' ? 'green' : 'default'">
-                  {{ getDict('aicrm_fund_account_status', item.accountStatus) }}
-                </a-tag>
-              </div>
-              <div class="card-body">
-                <div class="card-field">
-                  <span class="field-label">户名：</span>
-                  <span class="field-value">{{ item.accountName || '-' }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">产品名称：</span>
-                  <span class="field-value">{{ item.productName || '-' }}</span>
-                </div>
-                <div class="card-field highlight">
-                  <span class="field-label">当前市值：</span>
-                  <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">累计收益：</span>
-                  <span class="field-value">{{ formatMoney(item.accumulatedIncome) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">持有份额：</span>
-                  <span class="field-value">{{ item.balance }}</span>
-                </div>
+        <transition name="fade" mode="out-in">
+          <FundGrid v-if="viewMode === 'table' && loadedTabs.has('fund')" key="table" :table-title="currentTabTitle">
+            <template #toolbar-tools>
+              <a-tooltip title="切换到卡片视图">
+                <a-button shape="circle" @click="toggleView">
+                  <template #icon>
+                    <IconifyIcon icon="ant-design:appstore-outlined" />
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </FundGrid>
+
+          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+            <div class="card-view-header">
+              <h3>{{ currentTabTitle }}</h3>
+              <div class="card-view-tools">
+                <a-tooltip title="切换到表格视图">
+                  <a-button shape="circle" @click="toggleView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:table-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="刷新">
+                  <a-button shape="circle" @click="refreshCardView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:reload-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </div>
+            <div class="card-view-content">
+              <div v-if="cardViewData.length > 0" class="card-grid">
+                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                  <div class="card-header">
+                    <span class="card-title">{{ item.accountNo }}</span>
+                    <a-tag :color="item.accountStatus === 'holding' ? 'green' : 'default'">
+                      {{ getDict('aicrm_fund_account_status', item.accountStatus) }}
+                    </a-tag>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-field">
+                      <span class="field-label">户名：</span>
+                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">产品名称：</span>
+                      <span class="field-value">{{ item.productName || '-' }}</span>
+                    </div>
+                    <div class="card-field highlight">
+                      <span class="field-label">当前市值：</span>
+                      <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">累计收益：</span>
+                      <span class="field-value">{{ formatMoney(item.accumulatedIncome) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">持有份额：</span>
+                      <span class="field-value">{{ item.balance }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无基金账户数据" />
+            </div>
           </div>
-          <a-empty v-else description="暂无基金账户数据" />
-        </div>
+        </transition>
       </a-tab-pane>
 
       <!-- 信托账户 -->
       <a-tab-pane key="trust" tab="信托账户">
-        <TrustGrid v-if="viewMode === 'table' && loadedTabs.has('trust')" />
-        <div v-else-if="viewMode === 'card'" class="card-view-container">
-          <div v-if="cardViewData.length > 0" class="card-grid">
-            <div v-for="item in cardViewData" :key="item.id" class="account-card">
-              <div class="card-header">
-                <span class="card-title">{{ item.accountNo }}</span>
-                <a-tag :color="item.accountStatus === 'valid' ? 'green' : 'default'">
-                  {{ getDict('aicrm_trust_status', item.accountStatus) }}
-                </a-tag>
-              </div>
-              <div class="card-body">
-                <div class="card-field">
-                  <span class="field-label">委托人：</span>
-                  <span class="field-value">{{ item.accountName || '-' }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">产品名称：</span>
-                  <span class="field-value">{{ item.productName || '-' }}</span>
-                </div>
-                <div class="card-field highlight">
-                  <span class="field-label">当前价值：</span>
-                  <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">预期收益率：</span>
-                  <span class="field-value">{{ item.expectedReturnRate }}%</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">到期日：</span>
-                  <span class="field-value">{{ formatDate(item.matureDate) }}</span>
-                </div>
+        <transition name="fade" mode="out-in">
+          <TrustGrid v-if="viewMode === 'table' && loadedTabs.has('trust')" key="table" :table-title="currentTabTitle">
+            <template #toolbar-tools>
+              <a-tooltip title="切换到卡片视图">
+                <a-button shape="circle" @click="toggleView">
+                  <template #icon>
+                    <IconifyIcon icon="ant-design:appstore-outlined" />
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </TrustGrid>
+
+          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+            <div class="card-view-header">
+              <h3>{{ currentTabTitle }}</h3>
+              <div class="card-view-tools">
+                <a-tooltip title="切换到表格视图">
+                  <a-button shape="circle" @click="toggleView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:table-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="刷新">
+                  <a-button shape="circle" @click="refreshCardView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:reload-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </div>
+            <div class="card-view-content">
+              <div v-if="cardViewData.length > 0" class="card-grid">
+                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                  <div class="card-header">
+                    <span class="card-title">{{ item.accountNo }}</span>
+                    <a-tag :color="item.accountStatus === 'valid' ? 'green' : 'default'">
+                      {{ getDict('aicrm_trust_status', item.accountStatus) }}
+                    </a-tag>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-field">
+                      <span class="field-label">委托人：</span>
+                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">产品名称：</span>
+                      <span class="field-value">{{ item.productName || '-' }}</span>
+                    </div>
+                    <div class="card-field highlight">
+                      <span class="field-label">当前价值：</span>
+                      <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">预期收益率：</span>
+                      <span class="field-value">{{ item.expectedReturnRate }}%</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">到期日：</span>
+                      <span class="field-value">{{ formatDate(item.matureDate) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无信托账户数据" />
+            </div>
           </div>
-          <a-empty v-else description="暂无信托账户数据" />
-        </div>
+        </transition>
       </a-tab-pane>
 
       <!-- 保险账户 -->
       <a-tab-pane key="insurance" tab="保险账户">
-        <InsuranceGrid v-if="viewMode === 'table' && loadedTabs.has('insurance')" />
-        <div v-else-if="viewMode === 'card'" class="card-view-container">
-          <div v-if="cardViewData.length > 0" class="card-grid">
-            <div v-for="item in cardViewData" :key="item.id" class="account-card">
-              <div class="card-header">
-                <span class="card-title">{{ item.policyNo }}</span>
-                <a-tag :color="item.accountStatus === 'valid' ? 'green' : 'default'">
-                  {{ getDict('aicrm_insurance_status', item.accountStatus) }}
-                </a-tag>
-              </div>
-              <div class="card-body">
-                <div class="card-field">
-                  <span class="field-label">投保人：</span>
-                  <span class="field-value">{{ item.accountName || '-' }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">产品名称：</span>
-                  <span class="field-value">{{ item.productName || '-' }}</span>
-                </div>
-                <div class="card-field highlight">
-                  <span class="field-label">保险金额：</span>
-                  <span class="field-value amount">{{ formatMoney(item.insuredAmount) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">保费：</span>
-                  <span class="field-value">{{ formatMoney(item.premium) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">现金价值：</span>
-                  <span class="field-value">{{ formatMoney(item.cashValue) }}</span>
-                </div>
+        <transition name="fade" mode="out-in">
+          <InsuranceGrid v-if="viewMode === 'table' && loadedTabs.has('insurance')" key="table" :table-title="currentTabTitle">
+            <template #toolbar-tools>
+              <a-tooltip title="切换到卡片视图">
+                <a-button shape="circle" @click="toggleView">
+                  <template #icon>
+                    <IconifyIcon icon="ant-design:appstore-outlined" />
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </InsuranceGrid>
+
+          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+            <div class="card-view-header">
+              <h3>{{ currentTabTitle }}</h3>
+              <div class="card-view-tools">
+                <a-tooltip title="切换到表格视图">
+                  <a-button shape="circle" @click="toggleView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:table-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="刷新">
+                  <a-button shape="circle" @click="refreshCardView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:reload-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </div>
+            <div class="card-view-content">
+              <div v-if="cardViewData.length > 0" class="card-grid">
+                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                  <div class="card-header">
+                    <span class="card-title">{{ item.policyNo }}</span>
+                    <a-tag :color="item.accountStatus === 'valid' ? 'green' : 'default'">
+                      {{ getDict('aicrm_insurance_status', item.accountStatus) }}
+                    </a-tag>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-field">
+                      <span class="field-label">投保人：</span>
+                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">产品名称：</span>
+                      <span class="field-value">{{ item.productName || '-' }}</span>
+                    </div>
+                    <div class="card-field highlight">
+                      <span class="field-label">保险金额：</span>
+                      <span class="field-value amount">{{ formatMoney(item.insuredAmount) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">保费：</span>
+                      <span class="field-value">{{ formatMoney(item.premium) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">现金价值：</span>
+                      <span class="field-value">{{ formatMoney(item.cashValue) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无保险账户数据" />
+            </div>
           </div>
-          <a-empty v-else description="暂无保险账户数据" />
-        </div>
+        </transition>
       </a-tab-pane>
 
       <!-- 贵金属账户 -->
       <a-tab-pane key="metal" tab="贵金属账户">
-        <MetalGrid v-if="viewMode === 'table' && loadedTabs.has('metal')" />
-        <div v-else-if="viewMode === 'card'" class="card-view-container">
-          <div v-if="cardViewData.length > 0" class="card-grid">
-            <div v-for="item in cardViewData" :key="item.id" class="account-card">
-              <div class="card-header">
-                <span class="card-title">{{ item.accountNo }}</span>
-                <a-tag :color="item.accountStatus === 'active' ? 'green' : 'default'">
-                  {{ getDict('aicrm_metal_account_status', item.accountStatus) }}
-                </a-tag>
-              </div>
-              <div class="card-body">
-                <div class="card-field">
-                  <span class="field-label">户名：</span>
-                  <span class="field-value">{{ item.accountName || '-' }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">品种：</span>
-                  <span class="field-value">{{ getDict('aicrm_metal_type', item.metalType) }}</span>
-                </div>
-                <div class="card-field highlight">
-                  <span class="field-label">当前市值：</span>
-                  <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">持有数量：</span>
-                  <span class="field-value">{{ item.holdingQuantity }} {{ getDict('aicrm_metal_unit', item.holdingUnit) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">开户日期：</span>
-                  <span class="field-value">{{ formatDate(item.openDate) }}</span>
-                </div>
+        <transition name="fade" mode="out-in">
+          <MetalGrid v-if="viewMode === 'table' && loadedTabs.has('metal')" key="table" :table-title="currentTabTitle">
+            <template #toolbar-tools>
+              <a-tooltip title="切换到卡片视图">
+                <a-button shape="circle" @click="toggleView">
+                  <template #icon>
+                    <IconifyIcon icon="ant-design:appstore-outlined" />
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </MetalGrid>
+
+          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+            <div class="card-view-header">
+              <h3>{{ currentTabTitle }}</h3>
+              <div class="card-view-tools">
+                <a-tooltip title="切换到表格视图">
+                  <a-button shape="circle" @click="toggleView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:table-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="刷新">
+                  <a-button shape="circle" @click="refreshCardView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:reload-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </div>
+            <div class="card-view-content">
+              <div v-if="cardViewData.length > 0" class="card-grid">
+                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                  <div class="card-header">
+                    <span class="card-title">{{ item.accountNo }}</span>
+                    <a-tag :color="item.accountStatus === 'active' ? 'green' : 'default'">
+                      {{ getDict('aicrm_metal_account_status', item.accountStatus) }}
+                    </a-tag>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-field">
+                      <span class="field-label">户名：</span>
+                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">品种：</span>
+                      <span class="field-value">{{ getDict('aicrm_metal_type', item.metalType) }}</span>
+                    </div>
+                    <div class="card-field highlight">
+                      <span class="field-label">当前市值：</span>
+                      <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">持有数量：</span>
+                      <span class="field-value">{{ item.holdingQuantity }} {{ getDict('aicrm_metal_unit', item.holdingUnit) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">开户日期：</span>
+                      <span class="field-value">{{ formatDate(item.openDate) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无贵金属账户数据" />
+            </div>
           </div>
-          <a-empty v-else description="暂无贵金属账户数据" />
-        </div>
+        </transition>
       </a-tab-pane>
 
       <!-- 信用卡账户 -->
       <a-tab-pane key="creditcard" tab="信用卡账户">
-        <CreditcardGrid v-if="viewMode === 'table' && loadedTabs.has('creditcard')" />
-        <div v-else-if="viewMode === 'card'" class="card-view-container">
-          <div v-if="cardViewData.length > 0" class="card-grid">
-            <div v-for="item in cardViewData" :key="item.id" class="account-card">
-              <div class="card-header">
-                <span class="card-title">{{ maskCardNo(item.cardNo) }}</span>
-                <a-tag :color="item.cardStatus === 'active' ? 'green' : 'default'">
-                  {{ getDict('aicrm_creditcard_status', item.cardStatus) }}
-                </a-tag>
-              </div>
-              <div class="card-body">
-                <div class="card-field">
-                  <span class="field-label">持卡人：</span>
-                  <span class="field-value">{{ item.accountName || '-' }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">卡片类型：</span>
-                  <span class="field-value">{{ getDict('aicrm_creditcard_type', item.cardType) }}</span>
-                </div>
-                <div class="card-field highlight">
-                  <span class="field-label">信用额度：</span>
-                  <span class="field-value amount">{{ formatMoney(item.creditLimit) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">可用额度：</span>
-                  <span class="field-value">{{ formatMoney(item.availableLimit) }}</span>
-                </div>
-                <div class="card-field">
-                  <span class="field-label">到期日：</span>
-                  <span class="field-value">{{ formatDate(item.expireDate) }}</span>
-                </div>
+        <transition name="fade" mode="out-in">
+          <CreditcardGrid v-if="viewMode === 'table' && loadedTabs.has('creditcard')" key="table" :table-title="currentTabTitle">
+            <template #toolbar-tools>
+              <a-tooltip title="切换到卡片视图">
+                <a-button shape="circle" @click="toggleView">
+                  <template #icon>
+                    <IconifyIcon icon="ant-design:appstore-outlined" />
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </CreditcardGrid>
+
+          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+            <div class="card-view-header">
+              <h3>{{ currentTabTitle }}</h3>
+              <div class="card-view-tools">
+                <a-tooltip title="切换到表格视图">
+                  <a-button shape="circle" @click="toggleView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:table-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="刷新">
+                  <a-button shape="circle" @click="refreshCardView">
+                    <template #icon>
+                      <IconifyIcon icon="ant-design:reload-outlined" />
+                    </template>
+                  </a-button>
+                </a-tooltip>
               </div>
             </div>
+            <div class="card-view-content">
+              <div v-if="cardViewData.length > 0" class="card-grid">
+                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                  <div class="card-header">
+                    <span class="card-title">{{ maskCardNo(item.cardNo) }}</span>
+                    <a-tag :color="item.cardStatus === 'active' ? 'green' : 'default'">
+                      {{ getDict('aicrm_creditcard_status', item.cardStatus) }}
+                    </a-tag>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-field">
+                      <span class="field-label">持卡人：</span>
+                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">卡片类型：</span>
+                      <span class="field-value">{{ getDict('aicrm_creditcard_type', item.cardType) }}</span>
+                    </div>
+                    <div class="card-field highlight">
+                      <span class="field-label">信用额度：</span>
+                      <span class="field-value amount">{{ formatMoney(item.creditLimit) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">可用额度：</span>
+                      <span class="field-value">{{ formatMoney(item.availableLimit) }}</span>
+                    </div>
+                    <div class="card-field">
+                      <span class="field-label">到期日：</span>
+                      <span class="field-value">{{ formatDate(item.expireDate) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无信用卡账户数据" />
+            </div>
           </div>
-          <a-empty v-else description="暂无信用卡账户数据" />
-        </div>
+        </transition>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -914,130 +1167,177 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
 
 <style scoped lang="less">
 .account-info-page {
-  padding: 16px;
+  // 移除 padding，让内容充满整个区域
 
-  .view-toggle-bar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 16px;
-  }
-
+  // 去掉 tab 的边框，与 family-info 保持一致
   :deep(.ant-tabs) {
     .ant-tabs-nav {
-      margin-bottom: 16px;
+      margin-bottom: 0;
+
+      &::before {
+        border-bottom: none;
+      }
+    }
+
+    .ant-tabs-content-holder {
+      border: none;
     }
 
     .ant-tabs-tab {
-      padding: 8px 16px;
+      border: none !important;
+      background: transparent !important;
+
+      &.ant-tabs-tab-active {
+        background: #fff !important;
+      }
+    }
+  }
+}
+
+.card-view-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.card-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .card-view-tools {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.card-view-content {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.account-card {
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+    transform: translateY(-2px);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1890ff;
     }
   }
 
-  .card-view-container {
-    padding: 16px 0;
-  }
-
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-
-    @media (max-width: 1200px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .account-card {
-    padding: 16px;
-    background: #fff;
-    border: 1px solid #f0f0f0;
-    border-radius: 8px;
-    transition: all 0.3s;
-
-    &:hover {
-      box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-      transform: translateY(-2px);
-    }
-
-    .card-header {
+  .card-body {
+    .card-field {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 12px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 6px 0;
+      line-height: 1.8;
 
-      .card-title {
-        font-size: 16px;
-        font-weight: 500;
-        color: #1890ff;
+      .field-label {
+        flex-shrink: 0;
+        width: 100px;
+        color: #666;
       }
-    }
 
-    .card-body {
-      .card-field {
-        display: flex;
-        padding: 6px 0;
-        line-height: 1.8;
+      .field-value {
+        flex: 1;
+        color: #333;
 
-        .field-label {
-          flex-shrink: 0;
-          width: 100px;
-          color: #666;
+        &.amount {
+          font-size: 18px;
+          font-weight: 600;
+          color: #1890ff;
         }
+      }
 
+      &.highlight {
+        padding: 8px 0;
+        margin: 8px 0;
+        background: #f6f8fa;
+        border-radius: 4px;
+
+        .field-label,
         .field-value {
-          flex: 1;
-          color: #333;
-
-          &.amount {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1890ff;
-          }
-        }
-
-        &.highlight {
-          padding: 8px 0;
-          margin: 8px 0;
-          background: #f6f8fa;
-          border-radius: 4px;
-
-          .field-label,
-          .field-value {
-            padding-left: 12px;
-          }
+          padding-left: 12px;
         }
       }
     }
   }
+}
 
-  .dark .account-card {
-    background: rgb(20 22 26);
-    border-color: rgb(255 255 255 / 10%);
+.dark .account-card {
+  background: rgb(20 22 26);
+  border-color: rgb(255 255 255 / 10%);
 
-    .card-header {
-      border-bottom-color: rgb(255 255 255 / 10%);
-    }
+  .card-header {
+    border-bottom-color: rgb(255 255 255 / 10%);
+  }
 
-    .card-body {
-      .card-field {
-        .field-label {
-          color: rgb(255 255 255 / 60%);
-        }
+  .card-body {
+    .card-field {
+      .field-label {
+        color: rgb(255 255 255 / 60%);
+      }
 
-        .field-value {
-          color: rgb(255 255 255 / 85%);
-        }
+      .field-value {
+        color: rgb(255 255 255 / 85%);
+      }
 
-        &.highlight {
-          background: rgb(255 255 255 / 5%);
-        }
+      &.highlight {
+        background: rgb(255 255 255 / 5%);
       }
     }
   }
+}
+
+// 淡入淡出动画
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
