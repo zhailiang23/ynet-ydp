@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { RetailCustomerApi } from '#/api/aicrm/retail-customer';
-
 import type { MenuInfo } from 'ant-design-vue/es/menu/src/interface';
+
+import type { RetailCustomerApi } from '#/api/aicrm/retail-customer';
 
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -10,14 +10,15 @@ import { Menu, message } from 'ant-design-vue';
 
 import { getRetailCustomer } from '#/api/aicrm/retail-customer';
 
-import BasicInfo from './pages/basic-info.vue';
-import IdentityList from './pages/identity-list.vue';
-import FamilyInfo from './pages/family-info.vue';
-import ManagementInfo from './pages/management-info.vue';
-import TimelineInfo from './pages/timeline-info.vue';
-import PreferenceInfo from './pages/preference-info.vue';
 import AccountInfo from './pages/account-info.vue';
+import BasicInfo from './pages/basic-info.vue';
+import FamilyInfo from './pages/family-info.vue';
+import IdentityList from './pages/identity-list.vue';
+import ManagementInfo from './pages/management-info.vue';
 import Placeholder from './pages/placeholder.vue';
+import PreferenceInfo from './pages/preference-info.vue';
+import ProductHolding from './pages/product-holding.vue';
+import TimelineInfo from './pages/timeline-info.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -40,7 +41,7 @@ const menuItems = [
   { key: 'preference', label: '客户偏好', component: PreferenceInfo },
   { key: 'business', label: '客户业务概览', component: Placeholder },
   { key: 'account', label: '账户信息', component: AccountInfo },
-  { key: 'product', label: '产品持有信息', component: Placeholder },
+  { key: 'product', label: '产品持有信息', component: ProductHolding },
   { key: 'guarantee', label: '担保信息', component: Placeholder },
   { key: 'credit', label: '客户授信信息', component: Placeholder },
   { key: 'contract', label: '签约信息', component: Placeholder },
@@ -106,7 +107,7 @@ onMounted(() => {
     <!-- 左侧菜单 -->
     <div class="sidebar-menu">
       <Menu
-        :selectedKeys="[activeSection]"
+        :selected-keys="[activeSection]"
         mode="inline"
         @click="handleMenuClick"
       >
@@ -189,11 +190,13 @@ onMounted(() => {
   table-layout: fixed !important;
 }
 
-.content-area :deep(.ant-descriptions-view table th.ant-descriptions-item-label) {
+.content-area
+  :deep(.ant-descriptions-view table th.ant-descriptions-item-label) {
   width: 12% !important;
 }
 
-.content-area :deep(.ant-descriptions-view table td.ant-descriptions-item-content) {
+.content-area
+  :deep(.ant-descriptions-view table td.ant-descriptions-item-content) {
   width: 21.33% !important;
 }
 </style>
