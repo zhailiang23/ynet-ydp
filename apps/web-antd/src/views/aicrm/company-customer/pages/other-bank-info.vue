@@ -689,7 +689,7 @@ onMounted(() => {
 
 /* 数字列右对齐 */
 .other-bank-info-container :deep(.vxe-cell--right) {
-  font-family: 'Consolas', 'Monaco', monospace;
+  font-family: Consolas, Monaco, monospace;
   font-weight: 500;
 }
 </style>
