@@ -1,34 +1,36 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AicrmCustomerAccountDepositApi } from '#/api/aicrm/customeraccountdeposit';
-import type { AicrmCustomerAccountLoanApi } from '#/api/aicrm/customeraccountloan';
-import type { AicrmCustomerAccountWealthApi } from '#/api/aicrm/customeraccountwealth';
-import type { AicrmCustomerAccountFundApi } from '#/api/aicrm/customeraccountfund';
-import type { AicrmCustomerAccountTrustApi } from '#/api/aicrm/customeraccounttrust';
-import type { AicrmCustomerAccountInsuranceApi } from '#/api/aicrm/customeraccountinsurance';
-import type { AicrmCustomerAccountMetalApi } from '#/api/aicrm/customeraccountmetal';
 import type { AicrmCustomerAccountCreditcardApi } from '#/api/aicrm/customeraccountcreditcard';
+import type { AicrmCustomerAccountDepositApi } from '#/api/aicrm/customeraccountdeposit';
+import type { AicrmCustomerAccountFundApi } from '#/api/aicrm/customeraccountfund';
+import type { AicrmCustomerAccountInsuranceApi } from '#/api/aicrm/customeraccountinsurance';
+import type { AicrmCustomerAccountLoanApi } from '#/api/aicrm/customeraccountloan';
+import type { AicrmCustomerAccountMetalApi } from '#/api/aicrm/customeraccountmetal';
+import type { AicrmCustomerAccountTrustApi } from '#/api/aicrm/customeraccounttrust';
+import type { AicrmCustomerAccountWealthApi } from '#/api/aicrm/customeraccountwealth';
 
-import { ref, watch, computed } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import { getDictLabel } from '@vben/hooks';
-
-import { message } from 'ant-design-vue';
-
 import { IconifyIcon } from '@vben/icons';
 
+import { Empty, message } from 'ant-design-vue';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getCustomerAccountDepositPage } from '#/api/aicrm/customeraccountdeposit';
-import { getCustomerAccountLoanPage } from '#/api/aicrm/customeraccountloan';
-import { getCustomerAccountWealthPage } from '#/api/aicrm/customeraccountwealth';
-import { getCustomerAccountFundPage } from '#/api/aicrm/customeraccountfund';
-import { getCustomerAccountTrustPage } from '#/api/aicrm/customeraccounttrust';
-import { getCustomerAccountInsurancePage } from '#/api/aicrm/customeraccountinsurance';
-import { getCustomerAccountMetalPage } from '#/api/aicrm/customeraccountmetal';
 import { getCustomerAccountCreditcardPage } from '#/api/aicrm/customeraccountcreditcard';
+import { getCustomerAccountDepositPage } from '#/api/aicrm/customeraccountdeposit';
+import { getCustomerAccountFundPage } from '#/api/aicrm/customeraccountfund';
+import { getCustomerAccountInsurancePage } from '#/api/aicrm/customeraccountinsurance';
+import { getCustomerAccountLoanPage } from '#/api/aicrm/customeraccountloan';
+import { getCustomerAccountMetalPage } from '#/api/aicrm/customeraccountmetal';
+import { getCustomerAccountTrustPage } from '#/api/aicrm/customeraccounttrust';
+import { getCustomerAccountWealthPage } from '#/api/aicrm/customeraccountwealth';
 
 defineOptions({
   name: 'RetailCustomerAccountInfo',
+  components: {
+    AEmpty: Empty,
+  },
 });
 
 const props = defineProps<{
@@ -39,7 +41,7 @@ const props = defineProps<{
 const activeTab = ref('deposit');
 
 // 视图模式
-type ViewMode = 'table' | 'card';
+type ViewMode = 'card' | 'table';
 const STORAGE_KEY = 'account-info-view-mode';
 const viewMode = ref<ViewMode>(
   (localStorage.getItem(STORAGE_KEY) as ViewMode) || 'table',
@@ -163,13 +165,15 @@ const [DepositGrid, depositGridApi] = useVbenVxeGrid({
         field: 'accountType',
         title: '账户类型',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_deposit_account_type', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_deposit_account_type', cellValue),
       },
       {
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_deposit_account_status', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_deposit_account_status', cellValue),
       },
       {
         field: 'currencyType',
@@ -183,7 +187,12 @@ const [DepositGrid, depositGridApi] = useVbenVxeGrid({
         minWidth: 120,
         formatter: ({ cellValue }) => formatMoney(cellValue),
       },
-      { field: 'openDate', title: '开户日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
+      {
+        field: 'openDate',
+        title: '开户日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
       { field: 'deptName', title: '开户机构', minWidth: 150 },
     ],
     height: 600,
@@ -202,7 +211,7 @@ const [DepositGrid, depositGridApi] = useVbenVxeGrid({
 });
 
 // ========== 贷款账户 ==========
-const [LoanGrid, loanGridApi] = useVbenVxeGrid({
+const [LoanGrid, _loanGridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: [
       { type: 'seq', title: '序号', width: 70, fixed: 'left' },
@@ -213,7 +222,8 @@ const [LoanGrid, loanGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_loan_account_status', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_loan_account_status', cellValue),
       },
       {
         field: 'loanAmount',
@@ -228,8 +238,18 @@ const [LoanGrid, loanGridApi] = useVbenVxeGrid({
         formatter: ({ cellValue }) => formatMoney(cellValue),
       },
       { field: 'interestRate', title: '贷款利率(%)', minWidth: 100 },
-      { field: 'openDate', title: '放款日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
-      { field: 'matureDate', title: '到期日', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
+      {
+        field: 'openDate',
+        title: '放款日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
+      {
+        field: 'matureDate',
+        title: '到期日',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
     ],
     height: 600,
     proxyConfig: {
@@ -247,7 +267,7 @@ const [LoanGrid, loanGridApi] = useVbenVxeGrid({
 });
 
 // ========== 理财账户 ==========
-const [WealthGrid, wealthGridApi] = useVbenVxeGrid({
+const [WealthGrid, _wealthGridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: [
       { type: 'seq', title: '序号', width: 70, fixed: 'left' },
@@ -258,13 +278,15 @@ const [WealthGrid, wealthGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_wealth_account_status', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_wealth_account_status', cellValue),
       },
       {
         field: 'productType',
         title: '理财类型',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_wealth_product_type', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_wealth_product_type', cellValue),
       },
       {
         field: 'purchaseAmount',
@@ -279,8 +301,18 @@ const [WealthGrid, wealthGridApi] = useVbenVxeGrid({
         formatter: ({ cellValue }) => formatMoney(cellValue),
       },
       { field: 'expectedReturnRate', title: '预期收益率(%)', minWidth: 120 },
-      { field: 'openDate', title: '开户日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
-      { field: 'matureDate', title: '到期日', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
+      {
+        field: 'openDate',
+        title: '开户日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
+      {
+        field: 'matureDate',
+        title: '到期日',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
     ],
     height: 600,
     proxyConfig: {
@@ -298,7 +330,7 @@ const [WealthGrid, wealthGridApi] = useVbenVxeGrid({
 });
 
 // ========== 基金账户 ==========
-const [FundGrid, fundGridApi] = useVbenVxeGrid({
+const [FundGrid, _fundGridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: [
       { type: 'seq', title: '序号', width: 70, fixed: 'left' },
@@ -309,7 +341,8 @@ const [FundGrid, fundGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_fund_account_status', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_fund_account_status', cellValue),
       },
       {
         field: 'fundType',
@@ -330,7 +363,12 @@ const [FundGrid, fundGridApi] = useVbenVxeGrid({
         minWidth: 120,
         formatter: ({ cellValue }) => formatMoney(cellValue),
       },
-      { field: 'openDate', title: '开户日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
+      {
+        field: 'openDate',
+        title: '开户日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
     ],
     height: 600,
     proxyConfig: {
@@ -348,7 +386,7 @@ const [FundGrid, fundGridApi] = useVbenVxeGrid({
 });
 
 // ========== 信托账户 ==========
-const [TrustGrid, trustGridApi] = useVbenVxeGrid({
+const [TrustGrid, _trustGridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: [
       { type: 'seq', title: '序号', width: 70, fixed: 'left' },
@@ -380,8 +418,18 @@ const [TrustGrid, trustGridApi] = useVbenVxeGrid({
         formatter: ({ cellValue }) => formatMoney(cellValue),
       },
       { field: 'expectedReturnRate', title: '预期收益率(%)', minWidth: 120 },
-      { field: 'openDate', title: '成立日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
-      { field: 'matureDate', title: '到期日', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
+      {
+        field: 'openDate',
+        title: '成立日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
+      {
+        field: 'matureDate',
+        title: '到期日',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
     ],
     height: 600,
     proxyConfig: {
@@ -399,7 +447,7 @@ const [TrustGrid, trustGridApi] = useVbenVxeGrid({
 });
 
 // ========== 保险账户 ==========
-const [InsuranceGrid, insuranceGridApi] = useVbenVxeGrid({
+const [InsuranceGrid, _insuranceGridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: [
       { type: 'seq', title: '序号', width: 70, fixed: 'left' },
@@ -410,13 +458,15 @@ const [InsuranceGrid, insuranceGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_insurance_status', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_insurance_status', cellValue),
       },
       {
         field: 'insuranceType',
         title: '保险类型',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_insurance_type', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_insurance_type', cellValue),
       },
       {
         field: 'insuredAmount',
@@ -436,8 +486,18 @@ const [InsuranceGrid, insuranceGridApi] = useVbenVxeGrid({
         minWidth: 120,
         formatter: ({ cellValue }) => formatMoney(cellValue),
       },
-      { field: 'openDate', title: '投保日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
-      { field: 'expireDate', title: '到期日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
+      {
+        field: 'openDate',
+        title: '投保日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
+      {
+        field: 'expireDate',
+        title: '到期日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
     ],
     height: 600,
     proxyConfig: {
@@ -455,7 +515,7 @@ const [InsuranceGrid, insuranceGridApi] = useVbenVxeGrid({
 });
 
 // ========== 贵金属账户 ==========
-const [MetalGrid, metalGridApi] = useVbenVxeGrid({
+const [MetalGrid, _metalGridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: [
       { type: 'seq', title: '序号', width: 70, fixed: 'left' },
@@ -471,7 +531,8 @@ const [MetalGrid, metalGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_metal_account_status', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_metal_account_status', cellValue),
       },
       { field: 'holdingQuantity', title: '持有数量', minWidth: 120 },
       {
@@ -486,7 +547,12 @@ const [MetalGrid, metalGridApi] = useVbenVxeGrid({
         minWidth: 120,
         formatter: ({ cellValue }) => formatMoney(cellValue),
       },
-      { field: 'openDate', title: '开户日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
+      {
+        field: 'openDate',
+        title: '开户日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
     ],
     height: 600,
     proxyConfig: {
@@ -504,7 +570,7 @@ const [MetalGrid, metalGridApi] = useVbenVxeGrid({
 });
 
 // ========== 信用卡账户 ==========
-const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
+const [CreditcardGrid, _creditcardGridApi] = useVbenVxeGrid({
   gridOptions: {
     columns: [
       { type: 'seq', title: '序号', width: 70, fixed: 'left' },
@@ -520,13 +586,15 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
         field: 'cardType',
         title: '卡片类型',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_creditcard_type', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_creditcard_type', cellValue),
       },
       {
         field: 'cardStatus',
         title: '卡片状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_creditcard_status', cellValue),
+        formatter: ({ cellValue }) =>
+          getDict('aicrm_creditcard_status', cellValue),
       },
       {
         field: 'creditLimit',
@@ -546,8 +614,18 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
         minWidth: 120,
         formatter: ({ cellValue }) => formatMoney(cellValue),
       },
-      { field: 'openDate', title: '开卡日期', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
-      { field: 'expireDate', title: '到期日', minWidth: 120, formatter: ({ cellValue }) => formatDate(cellValue) },
+      {
+        field: 'openDate',
+        title: '开卡日期',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
+      {
+        field: 'expireDate',
+        title: '到期日',
+        minWidth: 120,
+        formatter: ({ cellValue }) => formatDate(cellValue),
+      },
     ],
     height: 600,
     proxyConfig: {
@@ -563,16 +641,48 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
     toolbarConfig: { refresh: true },
   } as VxeTableGridOptions<AicrmCustomerAccountCreditcardApi.CustomerAccountCreditcard>,
 });
+
+// 组件挂载时加载第一个 tab 的数据
+onMounted(() => {
+  // 表格视图且是存款账户tab时，需要手动触发查询
+  if (viewMode.value === 'table' && activeTab.value === 'deposit') {
+    // 使用 nextTick 确保 DOM 渲染完成
+    setTimeout(() => {
+      depositGridApi.query();
+    }, 100);
+  } else if (viewMode.value === 'card') {
+    loadCardViewData();
+  }
+});
+
+// 监听 customerId 变化，重新加载数据
+watch(
+  () => props.customerId,
+  () => {
+    // 清空已加载的 tabs
+    loadedTabs.value = new Set(['deposit']);
+    // 重新加载当前 tab
+    if (viewMode.value === 'table') {
+      depositGridApi.query();
+    } else {
+      loadCardViewData();
+    }
+  },
+);
 </script>
 
 <template>
   <div class="account-info-page">
-    <a-tabs v-model:activeKey="activeTab" type="card">
+    <a-tabs v-model:active-key="activeTab" type="card">
       <!-- 存款账户 -->
       <a-tab-pane key="deposit" tab="存款账户">
         <transition name="fade" mode="out-in">
           <!-- 表格视图 -->
-          <DepositGrid v-if="viewMode === 'table' && loadedTabs.has('deposit')" key="table" :table-title="currentTabTitle">
+          <DepositGrid
+            v-if="viewMode === 'table' && loadedTabs.has('deposit')"
+            key="table"
+            :table-title="currentTabTitle"
+          >
             <template #toolbar-tools>
               <a-tooltip title="切换到卡片视图">
                 <a-button shape="circle" @click="toggleView">
@@ -585,7 +695,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
           </DepositGrid>
 
           <!-- 卡片视图 -->
-          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+          <div
+            v-else-if="viewMode === 'card'"
+            key="card"
+            class="card-view-container"
+          >
             <div class="card-view-header">
               <h3>{{ currentTabTitle }}</h3>
               <div class="card-view-tools">
@@ -607,33 +721,56 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </div>
             <div class="card-view-content">
               <div v-if="cardViewData.length > 0" class="card-grid">
-                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                <div
+                  v-for="item in cardViewData"
+                  :key="item.id"
+                  class="account-card"
+                >
                   <div class="card-header">
                     <span class="card-title">{{ item.accountNo }}</span>
-                    <a-tag :color="item.accountStatus === 'active' ? 'green' : 'default'">
-                      {{ getDict('aicrm_deposit_account_status', item.accountStatus) }}
+                    <a-tag
+                      :color="
+                        item.accountStatus === 'active' ? 'green' : 'default'
+                      "
+                    >
+                      {{
+                        getDict(
+                          'aicrm_deposit_account_status',
+                          item.accountStatus,
+                        )
+                      }}
                     </a-tag>
                   </div>
                   <div class="card-body">
                     <div class="card-field">
                       <span class="field-label">户名：</span>
-                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.accountName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">账户类型：</span>
-                      <span class="field-value">{{ getDict('aicrm_deposit_account_type', item.accountType) }}</span>
+                      <span class="field-value">{{
+                        getDict('aicrm_deposit_account_type', item.accountType)
+                      }}</span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">账户余额：</span>
-                      <span class="field-value amount">{{ formatMoney(item.balance) }}</span>
+                      <span class="field-value amount">{{
+                        formatMoney(item.balance)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">币种：</span>
-                      <span class="field-value">{{ getDict('aicrm_currency_type', item.currencyType) }}</span>
+                      <span class="field-value">{{
+                        getDict('aicrm_currency_type', item.currencyType)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">开户日期：</span>
-                      <span class="field-value">{{ formatDate(item.openDate) }}</span>
+                      <span class="field-value">{{
+                        formatDate(item.openDate)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -647,7 +784,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
       <!-- 贷款账户 -->
       <a-tab-pane key="loan" tab="贷款账户">
         <transition name="fade" mode="out-in">
-          <LoanGrid v-if="viewMode === 'table' && loadedTabs.has('loan')" key="table" :table-title="currentTabTitle">
+          <LoanGrid
+            v-if="viewMode === 'table' && loadedTabs.has('loan')"
+            key="table"
+            :table-title="currentTabTitle"
+          >
             <template #toolbar-tools>
               <a-tooltip title="切换到卡片视图">
                 <a-button shape="circle" @click="toggleView">
@@ -659,7 +800,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </template>
           </LoanGrid>
 
-          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+          <div
+            v-else-if="viewMode === 'card'"
+            key="card"
+            class="card-view-container"
+          >
             <div class="card-view-header">
               <h3>{{ currentTabTitle }}</h3>
               <div class="card-view-tools">
@@ -681,25 +826,39 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </div>
             <div class="card-view-content">
               <div v-if="cardViewData.length > 0" class="card-grid">
-                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                <div
+                  v-for="item in cardViewData"
+                  :key="item.id"
+                  class="account-card"
+                >
                   <div class="card-header">
                     <span class="card-title">{{ item.accountNo }}</span>
-                    <a-tag :color="item.accountStatus === 'normal' ? 'green' : 'red'">
-                      {{ getDict('aicrm_loan_account_status', item.accountStatus) }}
+                    <a-tag
+                      :color="item.accountStatus === 'normal' ? 'green' : 'red'"
+                    >
+                      {{
+                        getDict('aicrm_loan_account_status', item.accountStatus)
+                      }}
                     </a-tag>
                   </div>
                   <div class="card-body">
                     <div class="card-field">
                       <span class="field-label">借款人：</span>
-                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.accountName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">产品名称：</span>
-                      <span class="field-value">{{ item.productName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.productName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">贷款余额：</span>
-                      <span class="field-value amount">{{ formatMoney(item.balance) }}</span>
+                      <span class="field-value amount">{{
+                        formatMoney(item.balance)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">贷款利率：</span>
@@ -707,7 +866,9 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
                     </div>
                     <div class="card-field">
                       <span class="field-label">到期日：</span>
-                      <span class="field-value">{{ formatDate(item.matureDate) }}</span>
+                      <span class="field-value">{{
+                        formatDate(item.matureDate)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -721,7 +882,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
       <!-- 理财账户 -->
       <a-tab-pane key="wealth" tab="理财账户">
         <transition name="fade" mode="out-in">
-          <WealthGrid v-if="viewMode === 'table' && loadedTabs.has('wealth')" key="table" :table-title="currentTabTitle">
+          <WealthGrid
+            v-if="viewMode === 'table' && loadedTabs.has('wealth')"
+            key="table"
+            :table-title="currentTabTitle"
+          >
             <template #toolbar-tools>
               <a-tooltip title="切换到卡片视图">
                 <a-button shape="circle" @click="toggleView">
@@ -733,7 +898,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </template>
           </WealthGrid>
 
-          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+          <div
+            v-else-if="viewMode === 'card'"
+            key="card"
+            class="card-view-container"
+          >
             <div class="card-view-header">
               <h3>{{ currentTabTitle }}</h3>
               <div class="card-view-tools">
@@ -755,33 +924,56 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </div>
             <div class="card-view-content">
               <div v-if="cardViewData.length > 0" class="card-grid">
-                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                <div
+                  v-for="item in cardViewData"
+                  :key="item.id"
+                  class="account-card"
+                >
                   <div class="card-header">
                     <span class="card-title">{{ item.accountNo }}</span>
-                    <a-tag :color="item.accountStatus === 'holding' ? 'green' : 'default'">
-                      {{ getDict('aicrm_wealth_account_status', item.accountStatus) }}
+                    <a-tag
+                      :color="
+                        item.accountStatus === 'holding' ? 'green' : 'default'
+                      "
+                    >
+                      {{
+                        getDict(
+                          'aicrm_wealth_account_status',
+                          item.accountStatus,
+                        )
+                      }}
                     </a-tag>
                   </div>
                   <div class="card-body">
                     <div class="card-field">
                       <span class="field-label">户名：</span>
-                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.accountName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">产品名称：</span>
-                      <span class="field-value">{{ item.productName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.productName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">当前市值：</span>
-                      <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
+                      <span class="field-value amount">{{
+                        formatMoney(item.currentValue)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">预期收益率：</span>
-                      <span class="field-value">{{ item.expectedReturnRate }}%</span>
+                      <span class="field-value"
+                        >{{ item.expectedReturnRate }}%</span
+                      >
                     </div>
                     <div class="card-field">
                       <span class="field-label">到期日：</span>
-                      <span class="field-value">{{ formatDate(item.matureDate) }}</span>
+                      <span class="field-value">{{
+                        formatDate(item.matureDate)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -795,7 +987,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
       <!-- 基金账户 -->
       <a-tab-pane key="fund" tab="基金账户">
         <transition name="fade" mode="out-in">
-          <FundGrid v-if="viewMode === 'table' && loadedTabs.has('fund')" key="table" :table-title="currentTabTitle">
+          <FundGrid
+            v-if="viewMode === 'table' && loadedTabs.has('fund')"
+            key="table"
+            :table-title="currentTabTitle"
+          >
             <template #toolbar-tools>
               <a-tooltip title="切换到卡片视图">
                 <a-button shape="circle" @click="toggleView">
@@ -807,7 +1003,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </template>
           </FundGrid>
 
-          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+          <div
+            v-else-if="viewMode === 'card'"
+            key="card"
+            class="card-view-container"
+          >
             <div class="card-view-header">
               <h3>{{ currentTabTitle }}</h3>
               <div class="card-view-tools">
@@ -829,29 +1029,47 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </div>
             <div class="card-view-content">
               <div v-if="cardViewData.length > 0" class="card-grid">
-                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                <div
+                  v-for="item in cardViewData"
+                  :key="item.id"
+                  class="account-card"
+                >
                   <div class="card-header">
                     <span class="card-title">{{ item.accountNo }}</span>
-                    <a-tag :color="item.accountStatus === 'holding' ? 'green' : 'default'">
-                      {{ getDict('aicrm_fund_account_status', item.accountStatus) }}
+                    <a-tag
+                      :color="
+                        item.accountStatus === 'holding' ? 'green' : 'default'
+                      "
+                    >
+                      {{
+                        getDict('aicrm_fund_account_status', item.accountStatus)
+                      }}
                     </a-tag>
                   </div>
                   <div class="card-body">
                     <div class="card-field">
                       <span class="field-label">户名：</span>
-                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.accountName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">产品名称：</span>
-                      <span class="field-value">{{ item.productName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.productName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">当前市值：</span>
-                      <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
+                      <span class="field-value amount">{{
+                        formatMoney(item.currentValue)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">累计收益：</span>
-                      <span class="field-value">{{ formatMoney(item.accumulatedIncome) }}</span>
+                      <span class="field-value">{{
+                        formatMoney(item.accumulatedIncome)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">持有份额：</span>
@@ -869,7 +1087,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
       <!-- 信托账户 -->
       <a-tab-pane key="trust" tab="信托账户">
         <transition name="fade" mode="out-in">
-          <TrustGrid v-if="viewMode === 'table' && loadedTabs.has('trust')" key="table" :table-title="currentTabTitle">
+          <TrustGrid
+            v-if="viewMode === 'table' && loadedTabs.has('trust')"
+            key="table"
+            :table-title="currentTabTitle"
+          >
             <template #toolbar-tools>
               <a-tooltip title="切换到卡片视图">
                 <a-button shape="circle" @click="toggleView">
@@ -881,7 +1103,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </template>
           </TrustGrid>
 
-          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+          <div
+            v-else-if="viewMode === 'card'"
+            key="card"
+            class="card-view-container"
+          >
             <div class="card-view-header">
               <h3>{{ currentTabTitle }}</h3>
               <div class="card-view-tools">
@@ -903,33 +1129,51 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </div>
             <div class="card-view-content">
               <div v-if="cardViewData.length > 0" class="card-grid">
-                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                <div
+                  v-for="item in cardViewData"
+                  :key="item.id"
+                  class="account-card"
+                >
                   <div class="card-header">
                     <span class="card-title">{{ item.accountNo }}</span>
-                    <a-tag :color="item.accountStatus === 'valid' ? 'green' : 'default'">
+                    <a-tag
+                      :color="
+                        item.accountStatus === 'valid' ? 'green' : 'default'
+                      "
+                    >
                       {{ getDict('aicrm_trust_status', item.accountStatus) }}
                     </a-tag>
                   </div>
                   <div class="card-body">
                     <div class="card-field">
                       <span class="field-label">委托人：</span>
-                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.accountName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">产品名称：</span>
-                      <span class="field-value">{{ item.productName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.productName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">当前价值：</span>
-                      <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
+                      <span class="field-value amount">{{
+                        formatMoney(item.currentValue)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">预期收益率：</span>
-                      <span class="field-value">{{ item.expectedReturnRate }}%</span>
+                      <span class="field-value"
+                        >{{ item.expectedReturnRate }}%</span
+                      >
                     </div>
                     <div class="card-field">
                       <span class="field-label">到期日：</span>
-                      <span class="field-value">{{ formatDate(item.matureDate) }}</span>
+                      <span class="field-value">{{
+                        formatDate(item.matureDate)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -943,7 +1187,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
       <!-- 保险账户 -->
       <a-tab-pane key="insurance" tab="保险账户">
         <transition name="fade" mode="out-in">
-          <InsuranceGrid v-if="viewMode === 'table' && loadedTabs.has('insurance')" key="table" :table-title="currentTabTitle">
+          <InsuranceGrid
+            v-if="viewMode === 'table' && loadedTabs.has('insurance')"
+            key="table"
+            :table-title="currentTabTitle"
+          >
             <template #toolbar-tools>
               <a-tooltip title="切换到卡片视图">
                 <a-button shape="circle" @click="toggleView">
@@ -955,7 +1203,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </template>
           </InsuranceGrid>
 
-          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+          <div
+            v-else-if="viewMode === 'card'"
+            key="card"
+            class="card-view-container"
+          >
             <div class="card-view-header">
               <h3>{{ currentTabTitle }}</h3>
               <div class="card-view-tools">
@@ -977,33 +1229,53 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </div>
             <div class="card-view-content">
               <div v-if="cardViewData.length > 0" class="card-grid">
-                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                <div
+                  v-for="item in cardViewData"
+                  :key="item.id"
+                  class="account-card"
+                >
                   <div class="card-header">
                     <span class="card-title">{{ item.policyNo }}</span>
-                    <a-tag :color="item.accountStatus === 'valid' ? 'green' : 'default'">
-                      {{ getDict('aicrm_insurance_status', item.accountStatus) }}
+                    <a-tag
+                      :color="
+                        item.accountStatus === 'valid' ? 'green' : 'default'
+                      "
+                    >
+                      {{
+                        getDict('aicrm_insurance_status', item.accountStatus)
+                      }}
                     </a-tag>
                   </div>
                   <div class="card-body">
                     <div class="card-field">
                       <span class="field-label">投保人：</span>
-                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.accountName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">产品名称：</span>
-                      <span class="field-value">{{ item.productName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.productName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">保险金额：</span>
-                      <span class="field-value amount">{{ formatMoney(item.insuredAmount) }}</span>
+                      <span class="field-value amount">{{
+                        formatMoney(item.insuredAmount)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">保费：</span>
-                      <span class="field-value">{{ formatMoney(item.premium) }}</span>
+                      <span class="field-value">{{
+                        formatMoney(item.premium)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">现金价值：</span>
-                      <span class="field-value">{{ formatMoney(item.cashValue) }}</span>
+                      <span class="field-value">{{
+                        formatMoney(item.cashValue)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -1017,7 +1289,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
       <!-- 贵金属账户 -->
       <a-tab-pane key="metal" tab="贵金属账户">
         <transition name="fade" mode="out-in">
-          <MetalGrid v-if="viewMode === 'table' && loadedTabs.has('metal')" key="table" :table-title="currentTabTitle">
+          <MetalGrid
+            v-if="viewMode === 'table' && loadedTabs.has('metal')"
+            key="table"
+            :table-title="currentTabTitle"
+          >
             <template #toolbar-tools>
               <a-tooltip title="切换到卡片视图">
                 <a-button shape="circle" @click="toggleView">
@@ -1029,7 +1305,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </template>
           </MetalGrid>
 
-          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+          <div
+            v-else-if="viewMode === 'card'"
+            key="card"
+            class="card-view-container"
+          >
             <div class="card-view-header">
               <h3>{{ currentTabTitle }}</h3>
               <div class="card-view-tools">
@@ -1051,33 +1331,59 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </div>
             <div class="card-view-content">
               <div v-if="cardViewData.length > 0" class="card-grid">
-                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                <div
+                  v-for="item in cardViewData"
+                  :key="item.id"
+                  class="account-card"
+                >
                   <div class="card-header">
                     <span class="card-title">{{ item.accountNo }}</span>
-                    <a-tag :color="item.accountStatus === 'active' ? 'green' : 'default'">
-                      {{ getDict('aicrm_metal_account_status', item.accountStatus) }}
+                    <a-tag
+                      :color="
+                        item.accountStatus === 'active' ? 'green' : 'default'
+                      "
+                    >
+                      {{
+                        getDict(
+                          'aicrm_metal_account_status',
+                          item.accountStatus,
+                        )
+                      }}
                     </a-tag>
                   </div>
                   <div class="card-body">
                     <div class="card-field">
                       <span class="field-label">户名：</span>
-                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.accountName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">品种：</span>
-                      <span class="field-value">{{ getDict('aicrm_metal_type', item.metalType) }}</span>
+                      <span class="field-value">{{
+                        getDict('aicrm_metal_type', item.metalType)
+                      }}</span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">当前市值：</span>
-                      <span class="field-value amount">{{ formatMoney(item.currentValue) }}</span>
+                      <span class="field-value amount">{{
+                        formatMoney(item.currentValue)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">持有数量：</span>
-                      <span class="field-value">{{ item.holdingQuantity }} {{ getDict('aicrm_metal_unit', item.holdingUnit) }}</span>
+                      <span class="field-value"
+                        >{{ item.holdingQuantity }}
+                        {{
+                          getDict('aicrm_metal_unit', item.holdingUnit)
+                        }}</span
+                      >
                     </div>
                     <div class="card-field">
                       <span class="field-label">开户日期：</span>
-                      <span class="field-value">{{ formatDate(item.openDate) }}</span>
+                      <span class="field-value">{{
+                        formatDate(item.openDate)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -1091,7 +1397,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
       <!-- 信用卡账户 -->
       <a-tab-pane key="creditcard" tab="信用卡账户">
         <transition name="fade" mode="out-in">
-          <CreditcardGrid v-if="viewMode === 'table' && loadedTabs.has('creditcard')" key="table" :table-title="currentTabTitle">
+          <CreditcardGrid
+            v-if="viewMode === 'table' && loadedTabs.has('creditcard')"
+            key="table"
+            :table-title="currentTabTitle"
+          >
             <template #toolbar-tools>
               <a-tooltip title="切换到卡片视图">
                 <a-button shape="circle" @click="toggleView">
@@ -1103,7 +1413,11 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </template>
           </CreditcardGrid>
 
-          <div v-else-if="viewMode === 'card'" key="card" class="card-view-container">
+          <div
+            v-else-if="viewMode === 'card'"
+            key="card"
+            class="card-view-container"
+          >
             <div class="card-view-header">
               <h3>{{ currentTabTitle }}</h3>
               <div class="card-view-tools">
@@ -1125,33 +1439,53 @@ const [CreditcardGrid, creditcardGridApi] = useVbenVxeGrid({
             </div>
             <div class="card-view-content">
               <div v-if="cardViewData.length > 0" class="card-grid">
-                <div v-for="item in cardViewData" :key="item.id" class="account-card">
+                <div
+                  v-for="item in cardViewData"
+                  :key="item.id"
+                  class="account-card"
+                >
                   <div class="card-header">
-                    <span class="card-title">{{ maskCardNo(item.cardNo) }}</span>
-                    <a-tag :color="item.cardStatus === 'active' ? 'green' : 'default'">
+                    <span class="card-title">{{
+                      maskCardNo(item.cardNo)
+                    }}</span>
+                    <a-tag
+                      :color="
+                        item.cardStatus === 'active' ? 'green' : 'default'
+                      "
+                    >
                       {{ getDict('aicrm_creditcard_status', item.cardStatus) }}
                     </a-tag>
                   </div>
                   <div class="card-body">
                     <div class="card-field">
                       <span class="field-label">持卡人：</span>
-                      <span class="field-value">{{ item.accountName || '-' }}</span>
+                      <span class="field-value">{{
+                        item.accountName || '-'
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">卡片类型：</span>
-                      <span class="field-value">{{ getDict('aicrm_creditcard_type', item.cardType) }}</span>
+                      <span class="field-value">{{
+                        getDict('aicrm_creditcard_type', item.cardType)
+                      }}</span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">信用额度：</span>
-                      <span class="field-value amount">{{ formatMoney(item.creditLimit) }}</span>
+                      <span class="field-value amount">{{
+                        formatMoney(item.creditLimit)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">可用额度：</span>
-                      <span class="field-value">{{ formatMoney(item.availableLimit) }}</span>
+                      <span class="field-value">{{
+                        formatMoney(item.availableLimit)
+                      }}</span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">到期日：</span>
-                      <span class="field-value">{{ formatDate(item.expireDate) }}</span>
+                      <span class="field-value">{{
+                        formatDate(item.expireDate)
+                      }}</span>
                     </div>
                   </div>
                 </div>

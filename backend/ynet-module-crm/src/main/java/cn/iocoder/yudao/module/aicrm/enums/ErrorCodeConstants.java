@@ -78,4 +78,75 @@ public interface ErrorCodeConstants {
     // ========== 客户贵金属账户 1-020-027-000 ==========
     ErrorCode CUSTOMER_ACCOUNT_METAL_NOT_EXISTS = new ErrorCode(1_020_027_000, "客户贵金属账户不存在");
 
+    // ========== 客户合同信息 1-020-030-000 ==========
+    ErrorCode CUSTOMER_CONTRACT_NOT_EXISTS = new ErrorCode(1_020_030_000, "客户合同信息不存在");
+
+    // ========== 客户评级信息 1-020-031-000 ==========
+    ErrorCode CUSTOMER_RATING_NOT_EXISTS = new ErrorCode(1_020_031_000, "客户评级信息不存在");
+
+    // ========== 客户评级历史 1-020-032-000 ==========
+    ErrorCode CUSTOMER_RATING_HISTORY_NOT_EXISTS = new ErrorCode(1_020_032_000, "客户评级历史不存在");
+
+    // ========== 客户渠道行为 1-020-033-000 ==========
+    ErrorCode CUSTOMER_CHANNEL_BEHAVIOR_NOT_EXISTS = new ErrorCode(1_020_033_000, "客户渠道行为不存在");
+
+    // ========== 客户提醒信息 1-020-034-000 ==========
+    ErrorCode CUSTOMER_REMINDER_NOT_EXISTS = new ErrorCode(1_020_034_000, "客户提醒信息不存在");
+
+    // ========== 客户担保抵押信息 1-020-035-000 ==========
+    ErrorCode CUSTOMER_GUARANTEE_MORTGAGE_NOT_EXISTS = new ErrorCode(1_020_035_000, "客户担保抵押信息不存在");
+
+    // ========== 客户担保质押信息 1-020-036-000 ==========
+    ErrorCode CUSTOMER_GUARANTEE_PLEDGE_NOT_EXISTS = new ErrorCode(1_020_036_000, "客户担保质押信息不存在");
+
+    // ========== 客户担保人信息 1-020-037-000 ==========
+    ErrorCode CUSTOMER_GUARANTOR_NOT_EXISTS = new ErrorCode(1_020_037_000, "客户担保人信息不存在");
+
+    // ========== 客户积分信息 1-020-038-000 ==========
+    ErrorCode CUSTOMER_POINTS_NOT_EXISTS = new ErrorCode(1_020_038_000, "客户积分信息不存在");
+
+    // ========== 客户积分交易 1-020-039-000 ==========
+    ErrorCode CUSTOMER_POINTS_TRANSACTION_NOT_EXISTS = new ErrorCode(1_020_039_000, "客户积分交易不存在");
+
+    // ========== 客户接触信息 1-020-040-000 ==========
+    ErrorCode CUSTOMER_CONTACT_NOT_EXISTS = new ErrorCode(1_020_040_000, "客户接触信息不存在");
+
+    // ========== 客户营销活动 1-020-041-000 ==========
+    ErrorCode CUSTOMER_MARKETING_ACTIVITY_NOT_EXISTS = new ErrorCode(1_020_041_000, "客户营销活动不存在");
+
+    // ========== 客户产品推荐 1-020-042-000 ==========
+    ErrorCode CUSTOMER_PRODUCT_RECOMMENDATION_NOT_EXISTS = new ErrorCode(1_020_042_000, "客户产品推荐不存在");
+
+    // ========== 客户贡献度 1-020-043-000 ==========
+    ErrorCode CUSTOMER_CONTRIBUTION_NOT_EXISTS = new ErrorCode(1_020_043_000, "客户贡献度不存在");
+
+    // ========== 客户交易明细(模拟) 1-020-044-000 ==========
+    ErrorCode CUSTOMER_TRANSACTION_MOCK_NOT_EXISTS = new ErrorCode(1_020_044_000, "客户交易明细不存在");
+
+    // ========== 客户需求信息 1-020-045-000 ==========
+    ErrorCode CUSTOMER_DEMAND_NOT_EXISTS = new ErrorCode(1_020_045_000, "客户需求信息不存在");
+
+    // ========== 客户投诉信息 1-020-046-000 ==========
+    ErrorCode CUSTOMER_COMPLAINT_NOT_EXISTS = new ErrorCode(1_020_046_000, "客户投诉信息不存在");
+
+    // ========== 客户产品持有信息 1-020-047-000 ==========
+    ErrorCode CUSTOMER_PRODUCT_HOLDING_NOT_EXISTS = new ErrorCode(1_020_047_000, "客户产品持有信息不存在");
+
+    // ========== 客户优惠券信息 1-020-048-000 ==========
+    ErrorCode CUSTOMER_COUPON_NOT_EXISTS = new ErrorCode(1_020_048_000, "客户优惠券信息不存在");
+
+    // ========== 客户授信信息 1-020-049-000 ==========
+    ErrorCode CUSTOMER_CREDIT_NOT_EXISTS = new ErrorCode(1_020_049_000, "客户授信信息不存在");
+
+    // ========== 客户授信明细 1-020-050-000 ==========
+    ErrorCode CUSTOMER_CREDIT_DETAIL_NOT_EXISTS = new ErrorCode(1_020_050_000, "客户授信明细不存在");
+
+    // ========== 产品分类 1-020-060-000 ==========
+    ErrorCode PRODUCT_CATEGORY_NOT_EXISTS = new ErrorCode(1_020_060_000, "产品分类不存在");
+    ErrorCode PRODUCT_CATEGORY_EXITS_CHILDREN = new ErrorCode(1_020_060_001, "产品分类存在子分类，无法删除");
+    ErrorCode PRODUCT_CATEGORY_PARENT_ERROR = new ErrorCode(1_020_060_002, "不能设置自己为父分类");
+    ErrorCode PRODUCT_CATEGORY_PARENT_NOT_EXITS = new ErrorCode(1_020_060_003, "父产品分类不存在");
+    ErrorCode PRODUCT_CATEGORY_PARENT_IS_CHILD = new ErrorCode(1_020_060_004, "父产品分类不能是自己的子分类");
+    ErrorCode PRODUCT_CATEGORY_CATEGORY_NAME_DUPLICATE = new ErrorCode(1_020_060_005, "同一父分类下已存在该分类名称");
+
 }
