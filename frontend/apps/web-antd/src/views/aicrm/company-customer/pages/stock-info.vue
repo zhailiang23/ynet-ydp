@@ -6,7 +6,7 @@ import { computed, onMounted, ref } from 'vue';
 
 import { getDictLabel } from '@vben/hooks';
 
-import { ReloadOutlined, RiseOutlined, FallOutlined, StockOutlined } from '@ant-design/icons-vue';
+import { ReloadOutlined, RiseOutlined, FallOutlined, FundOutlined } from '@ant-design/icons-vue';
 import { message, Tag } from 'ant-design-vue';
 import { VxeTable, VxeColumn } from 'vxe-table';
 
@@ -215,7 +215,7 @@ onMounted(() => {
       <div v-if="stocks.length > 0" class="statistics-bar">
         <a-space :size="20">
           <span>
-            <StockOutlined style="color: #1890ff" />
+            <FundOutlined style="color: #1890ff" />
             <strong>总计:</strong>
             <Tag color="blue">{{ statistics.total }}</Tag>
           </span>
