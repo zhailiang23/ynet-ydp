@@ -10,7 +10,14 @@ import { Menu, message } from 'ant-design-vue';
 
 import { getCompanyCustomer } from '#/api/aicrm/company-customer';
 
+import AddressInfo from './pages/address-info.vue';
 import BasicInfo from './pages/basic-info.vue';
+import BondInfo from './pages/bond-info.vue';
+import ContactInfo from './pages/contact-info.vue';
+import OrganizationInfo from './pages/organization-info.vue';
+import OtherBankInfo from './pages/other-bank-info.vue';
+import ProjectInfo from './pages/project-info.vue';
+import StockInfo from './pages/stock-info.vue';
 import Placeholder from './pages/placeholder.vue';
 
 const route = useRoute();
@@ -26,15 +33,15 @@ const menuItems = [
   { key: 'tags', label: '标签画像', component: Placeholder },
   { key: 'graph', label: '知识图谱', component: Placeholder },
   { key: 'basic', label: '客户基本信息', component: BasicInfo },
-  { key: 'organization', label: '组织架构信息', component: Placeholder },
-  { key: 'address', label: '客户地址信息', component: Placeholder },
-  { key: 'contact', label: '联系人信息', component: Placeholder },
-  { key: 'stock', label: '股票发行人信息', component: Placeholder },
-  { key: 'bond', label: '债权发行信息', component: Placeholder },
+  { key: 'organization', label: '组织架构信息', component: OrganizationInfo },
+  { key: 'address', label: '客户地址信息', component: AddressInfo },
+  { key: 'contact', label: '联系人信息', component: ContactInfo },
+  { key: 'stock', label: '股票发行人信息', component: StockInfo },
+  { key: 'bond', label: '债权发行信息', component: BondInfo },
   { key: 'finance', label: '客户财务信息', component: Placeholder },
-  { key: 'project', label: '客户项目信息', component: Placeholder },
+  { key: 'project', label: '客户项目信息', component: ProjectInfo },
   { key: 'management', label: '管理信息', component: Placeholder },
-  { key: 'otherBank', label: '客户他行信息', component: Placeholder },
+  { key: 'otherBank', label: '客户他行信息', component: OtherBankInfo },
   { key: 'business', label: '客户业务概览', component: Placeholder },
   { key: 'account', label: '账户信息', component: Placeholder },
   { key: 'product', label: '产品持有信息', component: Placeholder },
