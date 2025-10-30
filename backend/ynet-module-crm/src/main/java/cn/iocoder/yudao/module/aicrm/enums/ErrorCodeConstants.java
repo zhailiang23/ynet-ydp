@@ -149,4 +149,13 @@ public interface ErrorCodeConstants {
     ErrorCode PRODUCT_CATEGORY_PARENT_IS_CHILD = new ErrorCode(1_020_060_004, "父产品分类不能是自己的子分类");
     ErrorCode PRODUCT_CATEGORY_CATEGORY_NAME_DUPLICATE = new ErrorCode(1_020_060_005, "同一父分类下已存在该分类名称");
 
+    // ========== 对公客户补充信息 1-020-070-000 ==========
+    ErrorCode COMPANY_ADDRESS_NOT_EXISTS = new ErrorCode(1_020_070_000, "对公客户地址不存在");
+    ErrorCode COMPANY_BOND_NOT_EXISTS = new ErrorCode(1_020_071_000, "对公客户债券不存在");
+    ErrorCode COMPANY_CONTACT_NOT_EXISTS = new ErrorCode(1_020_072_000, "对公客户联系人不存在");
+    ErrorCode COMPANY_ORGANIZATION_NOT_EXISTS = new ErrorCode(1_020_073_000, "对公客户组织架构不存在");
+    ErrorCode COMPANY_OTHER_BANK_NOT_EXISTS = new ErrorCode(1_020_074_000, "对公客户他行信息不存在");
+    ErrorCode COMPANY_PROJECT_NOT_EXISTS = new ErrorCode(1_020_075_000, "对公客户项目信息不存在");
+    ErrorCode COMPANY_STOCK_NOT_EXISTS = new ErrorCode(1_020_076_000, "对公客户股票不存在");
+
 }
