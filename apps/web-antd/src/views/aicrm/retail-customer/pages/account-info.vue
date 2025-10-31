@@ -1552,6 +1552,18 @@ watch(
       }
     }
   }
+
+}
+
+// Dark 模式样式
+.dark .account-info-page {
+  :deep(.ant-tabs) {
+    .ant-tabs-tab {
+      &.ant-tabs-tab-active {
+        background: rgb(28 30 35) !important;
+      }
+    }
+  }
 }
 
 .card-view-container {
@@ -1666,7 +1678,7 @@ watch(
 }
 
 .dark .account-card {
-  background: rgb(20 22 26);
+  background: rgb(28 30 35);
   border-color: rgb(255 255 255 / 10%);
 
   .card-header {

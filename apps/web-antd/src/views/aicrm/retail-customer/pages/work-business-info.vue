@@ -459,7 +459,7 @@ defineExpose({
 }
 
 .dark .empty-wrapper {
-  background-color: rgb(20 22 26);
+  background-color: rgb(28 30 35);
 }
 
 /* 数字列右对齐 */

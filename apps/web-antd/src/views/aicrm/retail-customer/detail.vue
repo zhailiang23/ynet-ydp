@@ -12,6 +12,7 @@ import { getRetailCustomer } from '#/api/aicrm/retail-customer';
 
 import AccountInfo from './pages/account-info.vue';
 import BasicInfo from './pages/basic-info.vue';
+import BusinessOverview from './pages/business-overview.vue';
 import ChannelBehaviorInfo from './pages/channel-behavior-info.vue';
 import ComplaintInfo from './pages/complaint-info.vue';
 import ContactInfo from './pages/contact-info.vue';
@@ -35,6 +36,7 @@ import RightsPointsInfo from './pages/rights-points-info.vue';
 import TimelineInfo from './pages/timeline-info.vue';
 import TransactionInfo from './pages/transaction-info.vue';
 import WorkBusinessInfo from './pages/work-business-info.vue';
+import CustomerHeader from '../components/customer-header.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -55,7 +57,7 @@ const menuItems = [
   { key: 'management', label: '管理信息', component: ManagementInfo },
   { key: 'events', label: '客户大事记信息', component: TimelineInfo },
   { key: 'preference', label: '客户偏好', component: PreferenceInfo },
-  { key: 'business', label: '客户业务概览', component: Placeholder },
+  { key: 'business', label: '客户业务概览', component: BusinessOverview },
   { key: 'account', label: '账户信息', component: AccountInfo },
   { key: 'product', label: '产品持有信息', component: ProductHolding },
   { key: 'guarantee', label: '担保信息', component: GuaranteeInfo },
@@ -120,37 +122,56 @@ onMounted(() => {
 
 <template>
   <div v-loading="loading" class="customer-detail-container">
-    <!-- 左侧菜单 -->
-    <div class="sidebar-menu">
-      <Menu
-        :selected-keys="[activeSection]"
-        mode="inline"
-        @click="handleMenuClick"
-      >
-        <Menu.Item v-for="item in menuItems" :key="item.key">
-          {{ item.label }}
-        </Menu.Item>
-      </Menu>
-    </div>
+    <!-- 固定页头 -->
+    <CustomerHeader
+      v-if="customer"
+      :customer-name="customer.customerName"
+      :customer-type="customer.customerType"
+      :customer-level="customer.customerLevel"
+      :customer-status="customer.customerStatus"
+    />
 
-    <!-- 右侧内容区域 -->
-    <div class="content-area">
-      <component
-        :is="currentComponent"
-        v-if="customer"
-        :customer="customer"
-        :customer-id="customer.id"
-        :title="currentTitle"
-      />
+    <div class="customer-detail-content">
+      <!-- 左侧菜单 -->
+      <div class="sidebar-menu">
+        <Menu
+          :selected-keys="[activeSection]"
+          mode="inline"
+          @click="handleMenuClick"
+        >
+          <Menu.Item v-for="item in menuItems" :key="item.key">
+            {{ item.label }}
+          </Menu.Item>
+        </Menu>
+      </div>
+
+      <!-- 右侧内容区域 -->
+      <div class="content-area">
+        <component
+          :is="currentComponent"
+          v-if="customer"
+          :customer="customer"
+          :customer-id="customer.id"
+          :title="currentTitle"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 主容器 - Flexbox 布局 */
+/* 主容器 - 垂直布局 */
 .customer-detail-container {
   display: flex;
+  flex-direction: column;
   height: calc(100vh - 87px);
+  overflow: hidden;
+}
+
+/* 内容区域容器 - 水平布局 */
+.customer-detail-content {
+  display: flex;
+  flex: 1;
   overflow: hidden;
 }
 

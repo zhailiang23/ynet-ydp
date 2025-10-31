@@ -474,4 +474,38 @@ defineExpose({
     }
   }
 }
+
+// Dark 模式样式
+.dark .preference-info-page {
+  background: rgb(28 30 35);
+
+  :deep(.ant-collapse) {
+    background: rgb(28 30 35);
+    border-color: rgb(48 52 59);
+
+    .ant-collapse-item {
+      border-bottom-color: rgb(48 52 59);
+    }
+
+    .ant-collapse-header {
+      color: rgba(255, 255, 255, 0.85);
+      background: rgb(28 30 35);
+    }
+
+    .ant-collapse-content {
+      border-top-color: rgb(48 52 59);
+      background: rgb(28 30 35);
+    }
+  }
+
+  .preference-section {
+    .other-input-wrapper {
+      border-top-color: rgb(48 52 59);
+
+      .other-label {
+        color: rgba(255, 255, 255, 0.85);
+      }
+    }
+  }
+}
 </style>

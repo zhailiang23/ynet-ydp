@@ -543,5 +543,17 @@ defineExpose({
       }
     }
   }
+
+}
+
+// Dark 模式样式 - 必须在 scoped 块外面
+.dark .guarantee-info-page {
+  :deep(.ant-tabs) {
+    .ant-tabs-tab {
+      &.ant-tabs-tab-active {
+        background: rgb(28 30 35) !important;
+      }
+    }
+  }
 }
 </style>
