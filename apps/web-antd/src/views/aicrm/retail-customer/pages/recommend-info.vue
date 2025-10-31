@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerProductRecommendationPage } from '#/api/aicrm/customerproductrecommendation';
 
@@ -93,21 +95,28 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerProductRecommendationApi.Cus
         field: 'productType',
         title: '产品类型',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_product_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_product_type' },
+      },
       },
       {
         field: 'recommendationType',
         title: '推荐类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_recommendation_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_recommendation_type' },
+      },
       },
       {
         field: 'recommendationSource',
         title: '推荐来源',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_recommendation_source', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_recommendation_source' },
+      },
       },
       {
         field: 'recommendationScore',
@@ -120,14 +129,19 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerProductRecommendationApi.Cus
         field: 'matchDegree',
         title: '匹配度',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_match_degree', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_match_degree' },
+      },
       },
       {
         field: 'recommendationStatus',
         title: '推荐状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_recommendation_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_recommendation_status' },
+      },
       },
       {
         field: 'recommendationDate',
@@ -175,8 +189,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerProductRecommendationApi.Cus
         field: 'pushChannel',
         title: '推送渠道',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_push_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_push_channel' },
+      },
       },
       {
         field: 'viewTime',
@@ -275,7 +291,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerProductRecommendationApi.Cus
         field: 'riskLevel',
         title: '风险等级',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_risk_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_risk_level' },
+      },
       },
       {
         field: 'productFeatures',

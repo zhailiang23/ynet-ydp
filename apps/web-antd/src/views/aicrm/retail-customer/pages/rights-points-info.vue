@@ -9,6 +9,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerPointsPage } from '#/api/aicrm/customerpoints';
 import { getCustomerPointsTransactionPage } from '#/api/aicrm/customerpointstransaction';
@@ -78,7 +80,10 @@ const [PointsGrid, pointsGridApi] = useVbenVxeGrid({
         field: 'pointsLevel',
         title: '积分等级',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_points_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_points_level' },
+      },
       },
       {
         field: 'availablePoints',
@@ -168,8 +173,10 @@ const [PointsGrid, pointsGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_points_account_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_points_account_status' },
+      },
       },
       {
         field: 'openDate',
@@ -275,8 +282,10 @@ const [TransactionGrid, transactionGridApi] = useVbenVxeGrid({
         field: 'transactionType',
         title: '交易类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_points_transaction_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_points_transaction_type' },
+      },
       },
       {
         field: 'pointsChange',
@@ -300,8 +309,10 @@ const [TransactionGrid, transactionGridApi] = useVbenVxeGrid({
         field: 'transactionStatus',
         title: '交易状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_transaction_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_transaction_status' },
+      },
       },
       {
         field: 'transactionDesc',
@@ -325,28 +336,37 @@ const [TransactionGrid, transactionGridApi] = useVbenVxeGrid({
         field: 'orderStatus',
         title: '订单状态',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_order_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_order_status' },
+      },
       },
       {
         field: 'orderApprovalStatus',
         title: '订单审批状态',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_order_approval_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_order_approval_status' },
+      },
       },
       {
         field: 'exchangeChannel',
         title: '兑换渠道',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_exchange_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_exchange_channel' },
+      },
       },
       {
         field: 'giftExchangeMethod',
         title: '礼品兑换方式',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_gift_exchange_method', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_gift_exchange_method' },
+      },
       },
       {
         field: 'giftName',
@@ -377,8 +397,10 @@ const [TransactionGrid, transactionGridApi] = useVbenVxeGrid({
         field: 'deliveryStatus',
         title: '配送状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_delivery_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_delivery_status' },
+      },
       },
       {
         field: 'deliveryTime',
@@ -401,8 +423,10 @@ const [TransactionGrid, transactionGridApi] = useVbenVxeGrid({
         field: 'businessType',
         title: '业务类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_points_business_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_points_business_type' },
+      },
       },
       {
         field: 'businessNo',

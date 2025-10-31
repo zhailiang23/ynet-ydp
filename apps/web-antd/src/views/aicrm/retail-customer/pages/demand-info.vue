@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerDemandPage } from '#/api/aicrm/customerdemand';
 
@@ -81,35 +83,46 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerDemandApi.CustomerDemand> =
         field: 'demandType',
         title: '需求类型',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_demand_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_demand_type' },
+      },
       },
       {
         field: 'demandStatus',
         title: '需求状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_demand_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_demand_status' },
+      },
       },
       {
         field: 'demandPriority',
         title: '需求优先级',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_demand_priority', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_demand_priority' },
+      },
       },
       {
         field: 'demandChannel',
         title: '需求渠道',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_demand_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_demand_channel' },
+      },
       },
       {
         field: 'demandSource',
         title: '需求来源',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_demand_source', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_demand_source' },
+      },
       },
       {
         field: 'demandContent',

@@ -10,6 +10,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerGuaranteeMortgagePage } from '#/api/aicrm/customerguaranteemortgage';
 import { getCustomerGuaranteePledgePage } from '#/api/aicrm/customerguaranteepledge';
@@ -86,8 +88,10 @@ const [MortgageGrid, mortgageGridApi] = useVbenVxeGrid({
         field: 'collateralType',
         title: '押品类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_mortgage_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_mortgage_type' },
+      },
       },
       {
         field: 'mortgagorName',
@@ -98,15 +102,19 @@ const [MortgageGrid, mortgageGridApi] = useVbenVxeGrid({
         field: 'mortgagorType',
         title: '抵押人类型',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_guarantor_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_guarantor_type' },
+      },
       },
       {
         field: 'relationWithBorrower',
         title: '与被担保人关系',
         width: 140,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_relation_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_relation_type' },
+      },
       },
       {
         field: 'guaranteeAmount',
@@ -152,8 +160,10 @@ const [MortgageGrid, mortgageGridApi] = useVbenVxeGrid({
         field: 'mortgageStatus',
         title: '抵押状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_mortgage_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_mortgage_status' },
+      },
       },
       {
         field: 'mortgageDate',
@@ -223,7 +233,10 @@ const [PledgeGrid, pledgeGridApi] = useVbenVxeGrid({
         field: 'collateralType',
         title: '押品类型',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_pledge_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_pledge_type' },
+      },
       },
       {
         field: 'pledgorName',
@@ -234,15 +247,19 @@ const [PledgeGrid, pledgeGridApi] = useVbenVxeGrid({
         field: 'pledgorType',
         title: '质押人类型',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_guarantor_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_guarantor_type' },
+      },
       },
       {
         field: 'relationWithBorrower',
         title: '与被担保人关系',
         width: 140,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_relation_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_relation_type' },
+      },
       },
       {
         field: 'guaranteeAmount',
@@ -269,8 +286,10 @@ const [PledgeGrid, pledgeGridApi] = useVbenVxeGrid({
         field: 'pledgeStatus',
         title: '质押状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_pledge_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_pledge_status' },
+      },
       },
       {
         field: 'pledgeDate',
@@ -339,15 +358,19 @@ const [GuarantorGrid, guarantorGridApi] = useVbenVxeGrid({
         field: 'guarantorType',
         title: '担保人类型',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_guarantor_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_guarantor_type' },
+      },
       },
       {
         field: 'relationWithBorrower',
         title: '与被担保人关系',
         width: 140,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_relation_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_relation_type' },
+      },
       },
       {
         field: 'contractNo',
@@ -359,15 +382,19 @@ const [GuarantorGrid, guarantorGridApi] = useVbenVxeGrid({
         field: 'contractType',
         title: '合同类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_guarantor_contract_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_guarantor_contract_type' },
+      },
       },
       {
         field: 'contractStatus',
         title: '合同状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_guarantor_contract_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_guarantor_contract_status' },
+      },
       },
       {
         field: 'signDate',
@@ -379,8 +406,10 @@ const [GuarantorGrid, guarantorGridApi] = useVbenVxeGrid({
         field: 'guaranteeMethod',
         title: '担保方式',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_guarantee_style', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_guarantee_style' },
+      },
       },
       {
         field: 'guaranteeTotalAmount',
@@ -407,7 +436,10 @@ const [GuarantorGrid, guarantorGridApi] = useVbenVxeGrid({
         field: 'currencyCode',
         title: '币种',
         width: 80,
-        formatter: ({ cellValue }) => getDict('aicrm_currency_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_currency_type' },
+      },
       },
       {
         field: 'businessStartDate',

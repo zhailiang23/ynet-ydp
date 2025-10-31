@@ -12,6 +12,7 @@ packages:
   - scripts/*
   - docs
   - playground
+
 catalog:
   '@ast-grep/napi': ^0.37.0
   '@changesets/changelog-github': ^0.5.1
@@ -219,7 +220,7 @@ catalog:
   vue3-signature: ^0.2.4
   vuedraggable: ^4.1.0
   vxe-pc-ui: ^4.9.29
-  vxe-table: ^4.16.11
+  vxe-table: 4.17.0
   watermark-js-plus: ^1.6.2
   zod: ^3.25.67
   zod-defaults: ^0.1.3

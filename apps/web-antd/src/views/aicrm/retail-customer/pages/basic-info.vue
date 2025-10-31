@@ -7,6 +7,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { Descriptions } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 const props = defineProps<{
   customer: RetailCustomerApi.RetailCustomer;
 }>();
@@ -51,16 +53,16 @@ function formatMoney(value?: number) {
           {{ customer.customerNo || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户类型">
-          {{ getDict('aicrm_customer_type', customer.customerType) }}
+          <DictTag type="aicrm_customer_type" :value="customer.customerType" />
         </Descriptions.Item>
         <Descriptions.Item label="客户名称">
           {{ customer.customerName || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户等级">
-          {{ getDict('aicrm_customer_level', customer.customerLevel) }}
+          <DictTag type="aicrm_customer_level" :value="customer.customerLevel" />
         </Descriptions.Item>
         <Descriptions.Item label="客户状态">
-          {{ getDict('aicrm_customer_status', customer.customerStatus) }}
+          <DictTag type="aicrm_customer_status" :value="customer.customerStatus" />
         </Descriptions.Item>
         <Descriptions.Item label="优质客户">
           {{ formatBoolean(customer.isHighQuality) }}
@@ -72,13 +74,13 @@ function formatMoney(value?: number) {
           {{ customer.creditStatus || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="信用等级">
-          {{ getDict('aicrm_credit_level', customer.creditLevel) }}
+          <DictTag type="aicrm_credit_level" :value="customer.creditLevel" />
         </Descriptions.Item>
         <Descriptions.Item label="信用评分">
           {{ customer.creditScore || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户来源" :span="2">
-          {{ getDict('aicrm_customer_source', customer.customerSource) }}
+          <DictTag type="aicrm_customer_source" :value="customer.customerSource" />
         </Descriptions.Item>
         <Descriptions.Item label="客户标签" :span="3">
           {{ customer.customerTag || '-' }}
@@ -108,7 +110,7 @@ function formatMoney(value?: number) {
           {{ customer.pinyinAbbr || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="人员称谓">
-          {{ getDict('crm_person_title', customer.personTitle) }}
+          <DictTag type="crm_person_title" :value="customer.personTitle" />
         </Descriptions.Item>
         <Descriptions.Item label="性别">
           {{
@@ -149,25 +151,25 @@ function formatMoney(value?: number) {
           {{ customer.residenceType || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="居住时长类型">
-          {{ getDict('crm_residence_duration_type', customer.residenceDurationType) }}
+          <DictTag type="crm_residence_duration_type" :value="customer.residenceDurationType" />
         </Descriptions.Item>
         <Descriptions.Item label="户口所在地" :span="2">
           {{ customer.domicilePlace || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="户口类型">
-          {{ getDict('crm_household_type', customer.householdType) }}
+          <DictTag type="crm_household_type" :value="customer.householdType" />
         </Descriptions.Item>
         <Descriptions.Item label="婚姻状况">
           {{ customer.maritalStatus || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="健康状况">
-          {{ getDict('crm_health_status', customer.healthStatus) }}
+          <DictTag type="crm_health_status" :value="customer.healthStatus" />
         </Descriptions.Item>
         <Descriptions.Item label="宗教信仰">
-          {{ getDict('crm_religion', customer.religion) }}
+          <DictTag type="crm_religion" :value="customer.religion" />
         </Descriptions.Item>
         <Descriptions.Item label="政治面貌" :span="2">
-          {{ getDict('crm_political_status', customer.politicalStatus) }}
+          <DictTag type="crm_political_status" :value="customer.politicalStatus" />
         </Descriptions.Item>
       </Descriptions>
     </a-card>
@@ -215,7 +217,7 @@ function formatMoney(value?: number) {
           {{ customer.occupationType || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="职业状态">
-          {{ getDict('crm_career_status', customer.careerStatus) }}
+          <DictTag type="crm_career_status" :value="customer.careerStatus" />
         </Descriptions.Item>
         <Descriptions.Item label="职业开始日期">
           {{ formatDate(customer.careerStartDate) }}
@@ -224,7 +226,7 @@ function formatMoney(value?: number) {
           {{ customer.employerName || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="单位性质">
-          {{ getDict('crm_employer_type', customer.employerType) }}
+          <DictTag type="crm_employer_type" :value="customer.employerType" />
         </Descriptions.Item>
         <Descriptions.Item label="职位">
           {{ customer.position || '-' }}
@@ -293,7 +295,7 @@ function formatMoney(value?: number) {
           {{ formatMoney(customer.totalInvestment) }}
         </Descriptions.Item>
         <Descriptions.Item label="投资性质">
-          {{ getDict('crm_investment_nature', customer.investmentNature) }}
+          <DictTag type="crm_investment_nature" :value="customer.investmentNature" />
         </Descriptions.Item>
         <Descriptions.Item label="持股金额">
           {{ formatMoney(customer.stockHoldings) }}
@@ -353,7 +355,7 @@ function formatMoney(value?: number) {
     <a-card title="登记信息" :bordered="false">
       <Descriptions :column="3" bordered size="small">
         <Descriptions.Item label="登记类型">
-          {{ getDict('crm_registration_type', customer.registrationType) }}
+          <DictTag type="crm_registration_type" :value="customer.registrationType" />
         </Descriptions.Item>
         <Descriptions.Item label="登记号" :span="2">
           {{ customer.registrationNo || '-' }}

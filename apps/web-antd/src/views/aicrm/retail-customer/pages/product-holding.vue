@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerProductHoldingPage } from '#/api/aicrm/customerproductholding';
 
@@ -108,7 +110,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerProductHoldingApi.CustomerPr
         field: 'currencyCode',
         title: '币种',
         width: 70,
-        formatter: ({ cellValue }) => getDict('aicrm_currency_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_currency_type' },
+      },
       },
       {
         field: 'openDate',
@@ -126,8 +131,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerProductHoldingApi.CustomerPr
         field: 'holdingStatus',
         title: '持有状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_holding_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_holding_status' },
+      },
       },
       {
         field: 'branchName',

@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerContributionPage } from '#/api/aicrm/customercontribution';
 
@@ -139,8 +141,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerContributionApi.CustomerCont
         field: 'contributionLevel',
         title: '贡献度等级',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_contribution_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_contribution_level' },
+      },
       },
       {
         field: 'yearOverYearGrowth',
@@ -160,8 +164,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerContributionApi.CustomerCont
         field: 'statisticsPeriod',
         title: '统计周期',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_statistics_period', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_statistics_period' },
+      },
       },
       {
         field: 'remark',

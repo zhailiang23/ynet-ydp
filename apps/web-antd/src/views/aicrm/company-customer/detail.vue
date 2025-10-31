@@ -19,6 +19,21 @@ import OtherBankInfo from './pages/other-bank-info.vue';
 import ProjectInfo from './pages/project-info.vue';
 import StockInfo from './pages/stock-info.vue';
 import Placeholder from './pages/placeholder.vue';
+// 零售客户和对公客户公用的页面
+import ManagementInfo from '../retail-customer/pages/management-info.vue';
+import AccountInfo from '../retail-customer/pages/account-info.vue';
+import ProductHolding from '../retail-customer/pages/product-holding.vue';
+import CreditInfo from '../retail-customer/pages/credit-info.vue';
+import ContractInfo from '../retail-customer/pages/contract-info.vue';
+import GuaranteeInfo from '../retail-customer/pages/guarantee-info.vue';
+import TransactionInfo from '../retail-customer/pages/transaction-info.vue';
+import RatingInfo from '../retail-customer/pages/rating-info.vue';
+import ContributionInfo from '../retail-customer/pages/contribution-info.vue';
+import MarketingInfo from '../retail-customer/pages/marketing-info.vue';
+import DemandInfo from '../retail-customer/pages/demand-info.vue';
+import RecommendInfo from '../retail-customer/pages/recommend-info.vue';
+import ChannelBehaviorInfo from '../retail-customer/pages/channel-behavior-info.vue';
+import TimelineInfo from '../retail-customer/pages/timeline-info.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -40,23 +55,23 @@ const menuItems = [
   { key: 'bond', label: '债权发行信息', component: BondInfo },
   { key: 'finance', label: '客户财务信息', component: Placeholder },
   { key: 'project', label: '客户项目信息', component: ProjectInfo },
-  { key: 'management', label: '管理信息', component: Placeholder },
+  { key: 'management', label: '管理信息', component: ManagementInfo },
   { key: 'otherBank', label: '客户他行信息', component: OtherBankInfo },
   { key: 'business', label: '客户业务概览', component: Placeholder },
-  { key: 'account', label: '账户信息', component: Placeholder },
-  { key: 'product', label: '产品持有信息', component: Placeholder },
-  { key: 'credit', label: '授信信息', component: Placeholder },
-  { key: 'contract', label: '签约信息', component: Placeholder },
-  { key: 'guarantee', label: '担保信息', component: Placeholder },
-  { key: 'transaction', label: '交易明细信息', component: Placeholder },
-  { key: 'rating', label: '客户评级信息', component: Placeholder },
-  { key: 'contribution', label: '客户贡献度信息', component: Placeholder },
+  { key: 'account', label: '账户信息', component: AccountInfo },
+  { key: 'product', label: '产品持有信息', component: ProductHolding },
+  { key: 'credit', label: '授信信息', component: CreditInfo },
+  { key: 'contract', label: '签约信息', component: ContractInfo },
+  { key: 'guarantee', label: '担保信息', component: GuaranteeInfo },
+  { key: 'transaction', label: '交易明细信息', component: TransactionInfo },
+  { key: 'rating', label: '客户评级信息', component: RatingInfo },
+  { key: 'contribution', label: '客户贡献度信息', component: ContributionInfo },
   { key: 'creditInfo', label: '客户信用信息', component: Placeholder },
-  { key: 'marketing', label: '客户营销信息', component: Placeholder },
-  { key: 'demand', label: '客户需求信息', component: Placeholder },
-  { key: 'recommend', label: '产品推荐', component: Placeholder },
-  { key: 'behavior', label: '线上渠道行为信息', component: Placeholder },
-  { key: 'contactTrack', label: '客户接触轨迹', component: Placeholder },
+  { key: 'marketing', label: '客户营销信息', component: MarketingInfo },
+  { key: 'demand', label: '客户需求信息', component: DemandInfo },
+  { key: 'recommend', label: '产品推荐', component: RecommendInfo },
+  { key: 'behavior', label: '线上渠道行为信息', component: ChannelBehaviorInfo },
+  { key: 'contactTrack', label: '客户接触轨迹', component: TimelineInfo },
   { key: 'important', label: '客户重要事件', component: Placeholder },
 ];
 
@@ -121,10 +136,14 @@ onMounted(() => {
     <div class="content-area">
       <component
         :is="currentComponent"
-        v-if="customer"
+        v-if="customer && customer.customerId"
         :customer="customer"
+        :customer-id="customer.customerId"
         :title="currentTitle"
       />
+      <div v-else-if="customer && !customer.customerId" style="padding: 20px; text-align: center; color: #999;">
+        该对公客户未关联到客户主表,无法查看详细信息
+      </div>
     </div>
   </div>
 </template>

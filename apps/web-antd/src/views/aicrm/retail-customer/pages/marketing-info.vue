@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerMarketingActivityPage } from '#/api/aicrm/customermarketingactivity';
 
@@ -81,29 +83,37 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerMarketingActivityApi.Custome
         field: 'activityType',
         title: '活动类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_activity_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_activity_type' },
+      },
       },
       {
         field: 'activityForm',
         title: '活动形式',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_activity_form', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_activity_form' },
+      },
       },
       {
         field: 'activityStatus',
         title: '活动状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_activity_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_activity_status' },
+      },
       },
       {
         field: 'approvalStatus',
         title: '审批状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_approval_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_approval_status' },
+      },
       },
       {
         field: 'startDt',

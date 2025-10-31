@@ -16,6 +16,8 @@ import { IconifyIcon } from '@vben/icons';
 
 import { Empty, message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerAccountCreditcardPage } from '#/api/aicrm/customeraccountcreditcard';
 import { getCustomerAccountDepositPage } from '#/api/aicrm/customeraccountdeposit';
@@ -165,21 +167,28 @@ const [DepositGrid, depositGridApi] = useVbenVxeGrid({
         field: 'accountType',
         title: '账户类型',
         minWidth: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_deposit_account_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_deposit_account_type' },
+      },
       },
       {
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_deposit_account_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_deposit_account_status' },
+      },
       },
       {
         field: 'currencyType',
         title: '币种',
         minWidth: 80,
-        formatter: ({ cellValue }) => getDict('aicrm_currency_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_currency_type' },
+      },
       },
       {
         field: 'balance',
@@ -222,8 +231,10 @@ const [LoanGrid, _loanGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_loan_account_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_loan_account_status' },
+      },
       },
       {
         field: 'loanAmount',
@@ -278,15 +289,19 @@ const [WealthGrid, _wealthGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_wealth_account_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_wealth_account_status' },
+      },
       },
       {
         field: 'productType',
         title: '理财类型',
         minWidth: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_wealth_product_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_wealth_product_type' },
+      },
       },
       {
         field: 'purchaseAmount',
@@ -341,14 +356,19 @@ const [FundGrid, _fundGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_fund_account_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_fund_account_status' },
+      },
       },
       {
         field: 'fundType',
         title: '基金类型',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_fund_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_fund_type' },
+      },
       },
       { field: 'balance', title: '持有份额', minWidth: 120 },
       {
@@ -397,13 +417,19 @@ const [TrustGrid, _trustGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_trust_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_trust_status' },
+      },
       },
       {
         field: 'trustType',
         title: '信托类型',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_trust_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_trust_type' },
+      },
       },
       {
         field: 'trustAmount',
@@ -458,15 +484,19 @@ const [InsuranceGrid, _insuranceGridApi] = useVbenVxeGrid({
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_insurance_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_insurance_status' },
+      },
       },
       {
         field: 'insuranceType',
         title: '保险类型',
         minWidth: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_insurance_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_insurance_type' },
+      },
       },
       {
         field: 'insuredAmount',
@@ -525,21 +555,29 @@ const [MetalGrid, _metalGridApi] = useVbenVxeGrid({
         field: 'metalType',
         title: '贵金属品种',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_metal_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_metal_type' },
+      },
       },
       {
         field: 'accountStatus',
         title: '账户状态',
         minWidth: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_metal_account_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_metal_account_status' },
+      },
       },
       { field: 'holdingQuantity', title: '持有数量', minWidth: 120 },
       {
         field: 'holdingUnit',
         title: '持有单位',
         minWidth: 80,
-        formatter: ({ cellValue }) => getDict('aicrm_metal_unit', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_metal_unit' },
+      },
       },
       {
         field: 'currentValue',
@@ -586,15 +624,19 @@ const [CreditcardGrid, _creditcardGridApi] = useVbenVxeGrid({
         field: 'cardType',
         title: '卡片类型',
         minWidth: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_creditcard_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_creditcard_type' },
+      },
       },
       {
         field: 'cardStatus',
         title: '卡片状态',
         minWidth: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_creditcard_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_creditcard_status' },
+      },
       },
       {
         field: 'creditLimit',
@@ -750,9 +792,7 @@ watch(
                     </div>
                     <div class="card-field">
                       <span class="field-label">账户类型：</span>
-                      <span class="field-value">{{
-                        getDict('aicrm_deposit_account_type', item.accountType)
-                      }}</span>
+                      <span class="field-value"><DictTag type="aicrm_deposit_account_type" :value="item.accountType" /></span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">账户余额：</span>
@@ -762,9 +802,7 @@ watch(
                     </div>
                     <div class="card-field">
                       <span class="field-label">币种：</span>
-                      <span class="field-value">{{
-                        getDict('aicrm_currency_type', item.currencyType)
-                      }}</span>
+                      <span class="field-value"><DictTag type="aicrm_currency_type" :value="item.currencyType" /></span>
                     </div>
                     <div class="card-field">
                       <span class="field-label">开户日期：</span>
@@ -836,9 +874,7 @@ watch(
                     <a-tag
                       :color="item.accountStatus === 'normal' ? 'green' : 'red'"
                     >
-                      {{
-                        getDict('aicrm_loan_account_status', item.accountStatus)
-                      }}
+                      <DictTag type="aicrm_loan_account_status" :value="item.accountStatus" />
                     </a-tag>
                   </div>
                   <div class="card-body">
@@ -1041,9 +1077,7 @@ watch(
                         item.accountStatus === 'holding' ? 'green' : 'default'
                       "
                     >
-                      {{
-                        getDict('aicrm_fund_account_status', item.accountStatus)
-                      }}
+                      <DictTag type="aicrm_fund_account_status" :value="item.accountStatus" />
                     </a-tag>
                   </div>
                   <div class="card-body">
@@ -1141,7 +1175,7 @@ watch(
                         item.accountStatus === 'valid' ? 'green' : 'default'
                       "
                     >
-                      {{ getDict('aicrm_trust_status', item.accountStatus) }}
+                      <DictTag type="aicrm_trust_status" :value="item.accountStatus" />
                     </a-tag>
                   </div>
                   <div class="card-body">
@@ -1241,9 +1275,7 @@ watch(
                         item.accountStatus === 'valid' ? 'green' : 'default'
                       "
                     >
-                      {{
-                        getDict('aicrm_insurance_status', item.accountStatus)
-                      }}
+                      <DictTag type="aicrm_insurance_status" :value="item.accountStatus" />
                     </a-tag>
                   </div>
                   <div class="card-body">
@@ -1360,9 +1392,7 @@ watch(
                     </div>
                     <div class="card-field">
                       <span class="field-label">品种：</span>
-                      <span class="field-value">{{
-                        getDict('aicrm_metal_type', item.metalType)
-                      }}</span>
+                      <span class="field-value"><DictTag type="aicrm_metal_type" :value="item.metalType" /></span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">当前市值：</span>
@@ -1374,9 +1404,7 @@ watch(
                       <span class="field-label">持有数量：</span>
                       <span class="field-value"
                         >{{ item.holdingQuantity }}
-                        {{
-                          getDict('aicrm_metal_unit', item.holdingUnit)
-                        }}</span
+                        <DictTag type="aicrm_metal_unit" :value="item.holdingUnit" /></span
                       >
                     </div>
                     <div class="card-field">
@@ -1453,7 +1481,7 @@ watch(
                         item.cardStatus === 'active' ? 'green' : 'default'
                       "
                     >
-                      {{ getDict('aicrm_creditcard_status', item.cardStatus) }}
+                      <DictTag type="aicrm_creditcard_status" :value="item.cardStatus" />
                     </a-tag>
                   </div>
                   <div class="card-body">
@@ -1465,9 +1493,7 @@ watch(
                     </div>
                     <div class="card-field">
                       <span class="field-label">卡片类型：</span>
-                      <span class="field-value">{{
-                        getDict('aicrm_creditcard_type', item.cardType)
-                      }}</span>
+                      <span class="field-value"><DictTag type="aicrm_creditcard_type" :value="item.cardType" /></span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">信用额度：</span>

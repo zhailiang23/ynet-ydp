@@ -5,6 +5,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { Descriptions } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 const props = defineProps<{
   customer: CompanyCustomerApi.CompanyCustomer;
 }>();
@@ -49,16 +51,16 @@ function formatMoney(value?: number) {
           {{ customer.customerNo || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户类型">
-          {{ getDict('aicrm_customer_type', customer.customerType) }}
+          <DictTag type="aicrm_customer_type" :value="customer.customerType" />
         </Descriptions.Item>
         <Descriptions.Item label="客户名称">
           {{ customer.customerName || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户等级">
-          {{ getDict('aicrm_customer_level', customer.customerLevel) }}
+          <DictTag type="aicrm_customer_level" :value="customer.customerLevel" />
         </Descriptions.Item>
         <Descriptions.Item label="客户状态">
-          {{ getDict('aicrm_customer_status', customer.customerStatus) }}
+          <DictTag type="aicrm_customer_status" :value="customer.customerStatus" />
         </Descriptions.Item>
         <Descriptions.Item label="优质客户">
           {{ formatBoolean(customer.isHighQuality) }}
@@ -70,13 +72,13 @@ function formatMoney(value?: number) {
           {{ customer.creditStatus || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="信用等级">
-          {{ getDict('aicrm_credit_level', customer.creditLevel) }}
+          <DictTag type="aicrm_credit_level" :value="customer.creditLevel" />
         </Descriptions.Item>
         <Descriptions.Item label="信用评分">
           {{ customer.creditScore || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="客户来源" :span="2">
-          {{ getDict('aicrm_customer_source', customer.customerSource) }}
+          <DictTag type="aicrm_customer_source" :value="customer.customerSource" />
         </Descriptions.Item>
         <Descriptions.Item label="客户标签" :span="3">
           {{ customer.customerTag || '-' }}
@@ -142,13 +144,13 @@ function formatMoney(value?: number) {
           {{ customer.businessTerm || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="组织形式">
-          {{ getDict('crm_org_form', customer.orgForm) }}
+          <DictTag type="crm_org_form" :value="customer.orgForm" />
         </Descriptions.Item>
         <Descriptions.Item label="治理结构">
-          {{ getDict('crm_governance_structure', customer.governanceStructure) }}
+          <DictTag type="crm_governance_structure" :value="customer.governanceStructure" />
         </Descriptions.Item>
         <Descriptions.Item label="控股类型">
-          {{ getDict('crm_holding_type', customer.holdingType) }}
+          <DictTag type="crm_holding_type" :value="customer.holdingType" />
         </Descriptions.Item>
         <Descriptions.Item label="企业归属">
           {{ customer.enterpriseBelong || '-' }}
@@ -190,16 +192,16 @@ function formatMoney(value?: number) {
     <a-card title="业务经营信息" :bordered="false">
       <Descriptions :column="3" bordered size="small">
         <Descriptions.Item label="经营模式">
-          {{ getDict('crm_business_mode', customer.businessMode) }}
+          <DictTag type="crm_business_mode" :value="customer.businessMode" />
         </Descriptions.Item>
         <Descriptions.Item label="营业开始日期">
           {{ formatDate(customer.businessStartDate) }}
         </Descriptions.Item>
         <Descriptions.Item label="行业特征">
-          {{ getDict('crm_industry_char', customer.industryCharacter) }}
+          <DictTag type="crm_industry_char" :value="customer.industryCharacter" />
         </Descriptions.Item>
         <Descriptions.Item label="行业发展前景">
-          {{ getDict('crm_industry_prospect', customer.industryDevelopmentProspect) }}
+          <DictTag type="crm_industry_prospect" :value="customer.industryDevelopmentProspect" />
         </Descriptions.Item>
         <Descriptions.Item label="地区代码" :span="2">
           {{ customer.areaCode || '-' }}
@@ -241,13 +243,13 @@ function formatMoney(value?: number) {
           {{ formatBoolean(customer.isAgricultureRelated) }}
         </Descriptions.Item>
         <Descriptions.Item label="员工规模">
-          {{ getDict('crm_employee_scale', customer.employeeScale) }}
+          <DictTag type="crm_employee_scale" :value="customer.employeeScale" />
         </Descriptions.Item>
         <Descriptions.Item label="资产规模">
           {{ customer.assetsScale || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="生产能力">
-          {{ getDict('crm_production_capacity', customer.productionCapacity) }}
+          <DictTag type="crm_production_capacity" :value="customer.productionCapacity" />
         </Descriptions.Item>
         <Descriptions.Item label="企业性质">
           {{ customer.enterpriseProperty || '-' }}
@@ -259,7 +261,7 @@ function formatMoney(value?: number) {
           {{ formatMoney(customer.holdStockAmt) }}
         </Descriptions.Item>
         <Descriptions.Item label="投资类型">
-          {{ getDict('crm_investment_type', customer.investmentType) }}
+          <DictTag type="crm_investment_type" :value="customer.investmentType" />
         </Descriptions.Item>
         <Descriptions.Item label="人行企业规模">
           {{ customer.enterpriseScalePboc || '-' }}
@@ -316,7 +318,7 @@ function formatMoney(value?: number) {
           {{ formatMoney(customer.annualProfit) }}
         </Descriptions.Item>
         <Descriptions.Item label="财务报表类型" :span="2">
-          {{ getDict('crm_fin_report_type', customer.finReportType) }}
+          <DictTag type="crm_fin_report_type" :value="customer.finReportType" />
         </Descriptions.Item>
       </Descriptions>
     </a-card>
@@ -346,7 +348,7 @@ function formatMoney(value?: number) {
           {{ formatBoolean(customer.loanCardFlag) }}
         </Descriptions.Item>
         <Descriptions.Item label="贷款卡状态">
-          {{ getDict('crm_loan_card_status', customer.loanCardStatus) }}
+          <DictTag type="crm_loan_card_status" :value="customer.loanCardStatus" />
         </Descriptions.Item>
         <Descriptions.Item label="贷款卡审核日期">
           {{ formatDate(customer.loanCardAuditDate) }}

@@ -47,19 +47,28 @@ const [TimelineGrid, timelineGridApi] = useVbenVxeGrid({
         field: 'eventType',
         title: '事件类型',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_event_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_event_type' },
+      },
       },
       {
         field: 'eventStatus',
         title: '事件状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_event_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_event_status' },
+      },
       },
       {
         field: 'eventLevel',
         title: '事件级别',
         minWidth: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_event_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_event_level' },
+      },
       },
       {
         field: 'eventDate',
@@ -71,7 +80,10 @@ const [TimelineGrid, timelineGridApi] = useVbenVxeGrid({
         field: 'eventSource',
         title: '事件来源',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_event_source', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_event_source' },
+      },
       },
       {
         field: 'maintainerName',

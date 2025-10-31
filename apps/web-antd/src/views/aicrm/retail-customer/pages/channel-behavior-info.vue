@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerChannelBehaviorPage } from '#/api/aicrm/customerchannelbehavior';
 
@@ -81,21 +83,28 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'channelType',
         title: '渠道类型',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_channel_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_channel_type' },
+      },
       },
       {
         field: 'operationAction',
         title: '操作行为',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_operation_action', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_operation_action' },
+      },
       },
       {
         field: 'operationObject',
         title: '操作对象',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_operation_object', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_operation_object' },
+      },
       },
       {
         field: 'currentPageName',
@@ -126,7 +135,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'deviceType',
         title: '设备类型',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_device_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_device_type' },
+      },
       },
       {
         field: 'deviceModel',
@@ -174,7 +186,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'networkType',
         title: '网络类型',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_network_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_network_type' },
+      },
       },
       {
         field: 'sessionId',
@@ -222,8 +237,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'operationResult',
         title: '操作结果',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_operation_result', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_operation_result' },
+      },
       },
       {
         field: 'operationDetail',
@@ -235,8 +252,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'businessType',
         title: '业务类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_behavior_business_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_behavior_business_type' },
+      },
       },
       {
         field: 'businessModule',
@@ -260,8 +279,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'conversionType',
         title: '转化类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_conversion_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_conversion_type' },
+      },
       },
       {
         field: 'conversionValue',
