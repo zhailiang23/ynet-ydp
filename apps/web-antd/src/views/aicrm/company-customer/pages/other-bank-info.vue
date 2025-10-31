@@ -40,7 +40,7 @@ function formatBankType({ cellValue }: any) {
   };
 
   const color = colorMap[cellValue] || 'default';
-  return `● ${label}`;
+  return `${label}`;
 }
 
 // 格式化合作类型
@@ -69,7 +69,7 @@ function formatCooperationStatus({ cellValue }: any) {
 
   const status = statusMap[cellValue];
   if (status) {
-    return `● ${status.label}`;
+    return `${status.label}`;
   }
 
   return cellValue;
@@ -87,7 +87,7 @@ function formatIsMainSettlement({ cellValue }: any) {
 // 格式化是否有结算账户
 function formatHasSettlement({ cellValue }: any) {
   if (cellValue === 1) {
-    return '✓ 有';
+    return '有';
   }
   return '无';
 }

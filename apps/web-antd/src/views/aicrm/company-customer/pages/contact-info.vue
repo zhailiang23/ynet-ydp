@@ -6,17 +6,6 @@ import { computed } from 'vue';
 
 import { getDictLabel } from '@vben/hooks';
 
-import { Tag } from 'ant-design-vue';
-
-import { DictTag } from '#/components/dict-tag';
-import {
-  PhoneOutlined,
-  MobileOutlined,
-  MailOutlined,
-  QqOutlined,
-  WechatOutlined,
-} from '@ant-design/icons-vue';
-
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCompanyContactPage } from '#/api/aicrm/companycontact';
 
@@ -36,47 +25,17 @@ function formatContactType({ cellValue }: any) {
   return getDictLabel('aicrm_contact_type', cellValue) || cellValue;
 }
 
-// 格式化联系方式类型(带图标)
+// 格式化联系方式类型
 function formatContactTypeWithIcon({ cellValue }: any) {
   if (!cellValue) return '-';
-
-  const label = getDictLabel('aicrm_contact_type', cellValue) || cellValue;
-  let icon = '';
-  let color = '#1890ff';
-
-  switch (cellValue) {
-    case '手机':
-      icon = '📱';
-      color = '#52c41a';
-      break;
-    case '座机':
-      icon = '☎️';
-      color = '#1890ff';
-      break;
-    case '邮箱':
-      icon = '📧';
-      color = '#722ed1';
-      break;
-    case 'QQ':
-      icon = '💬';
-      color = '#13c2c2';
-      break;
-    case '微信':
-      icon = '💚';
-      color = '#52c41a';
-      break;
-    default:
-      icon = '📞';
-  }
-
-  return `${icon} ${label}`;
+  return getDictLabel('aicrm_contact_type', cellValue) || cellValue;
 }
 
 // 格式化是否首选
 function formatIsPrimary({ cellValue }: any) {
   if (cellValue === null || cellValue === undefined) return '-';
   if (cellValue === true || cellValue === 1) {
-    return '✓ 是';
+    return '是';
   }
   return '否';
 }
@@ -94,9 +53,9 @@ function formatStatus({ cellValue }: any) {
 
   // 根据状态值返回不同的样式类
   if (cellValue === '有效' || cellValue === 'active') {
-    return `● ${label}`;
+    return `${label}`;
   } else if (cellValue === '无效' || cellValue === 'inactive') {
-    return `● ${label}`;
+    return `${label}`;
   }
   return label;
 }
@@ -106,25 +65,9 @@ function formatField({ cellValue }: any) {
   return cellValue || '-';
 }
 
-// 格式化联系方式(可点击)
-function formatContactMethod({ cellValue, row }: any) {
-  if (!cellValue) return '-';
-
-  const type = row.contactType;
-  let href = '';
-
-  // 根据类型生成可点击的链接
-  if (type === '手机' || type === '座机') {
-    href = `tel:${cellValue}`;
-  } else if (type === '邮箱') {
-    href = `mailto:${cellValue}`;
-  }
-
-  if (href) {
-    return `<a href="${href}" style="color: #1890ff; text-decoration: none;">${cellValue}</a>`;
-  }
-
-  return cellValue;
+// 格式化联系方式
+function formatContactMethod({ cellValue }: any) {
+  return cellValue || '-';
 }
 
 // 页面标题
@@ -239,16 +182,3 @@ defineExpose({
 <template>
   <Grid :table-title="pageTitle" />
 </template>
-
-<style scoped>
-/* 联系方式链接样式 */
-:deep(a) {
-  color: #1890ff;
-  text-decoration: none;
-}
-
-:deep(a:hover) {
-  color: #40a9ff;
-  text-decoration: underline;
-}
-</style>

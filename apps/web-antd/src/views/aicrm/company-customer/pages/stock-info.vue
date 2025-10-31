@@ -40,7 +40,7 @@ function formatStockType({ cellValue }: any) {
   };
 
   const color = colorMap[cellValue] || 'default';
-  return `● ${label}`;
+  return `${label}`;
 }
 
 // 格式化上市交易所
@@ -62,7 +62,7 @@ function formatListingStatus({ cellValue }: any) {
 
   const status = statusMap[cellValue];
   if (status) {
-    return `● ${status.label}`;
+    return `${status.label}`;
   }
 
   return getDictLabel('aicrm_listing_status', cellValue) || cellValue;
