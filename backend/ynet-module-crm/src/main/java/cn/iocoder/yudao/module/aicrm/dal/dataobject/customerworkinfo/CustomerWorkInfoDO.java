@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.aicrm.dal.dataobject.customerworkinfo;
 
+import java.time.LocalDate;
+
 import lombok.*;
 import java.util.*;
 import java.math.BigDecimal;

@@ -685,3 +685,4 @@ VITE_GLOB_API_URL=https://api.yourdomain.com/admin-api
 - 生成 openspec 的 spec 文件时，需求描述必须使用 SHALL 或 MUST 等强制性关键字，不要用中文替换这些关键字。
 - 编写前端列表时，总是参考frontend/apps/web-antd/src/views/aicrm/customer/index.vue中的列表写法，使用VxeTable。
 - 编写详情信息表单时，总是参考frontend/apps/web-antd/src/views/aicrm/retail-customer/pages/basic-info.vue的代码开信息表单
+- 确保所有的前端样式在 light模式和 dark 模式都可以正确显示。

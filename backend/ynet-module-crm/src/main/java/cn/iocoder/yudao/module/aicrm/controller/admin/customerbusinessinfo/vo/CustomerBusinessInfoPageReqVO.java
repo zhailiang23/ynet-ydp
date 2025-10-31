@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.aicrm.controller.admin.customerbusinessinfo.vo;
 
+import java.time.LocalDate;
+
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;

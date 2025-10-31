@@ -230,7 +230,15 @@ function formatDate(value: any) {
   font-family: 'Courier New', Courier, monospace;
 }
 
+// Dark 模式样式 - 必须在 scoped 块外面
 .dark {
+  .member-card {
+    :deep(.ant-card) {
+      background: rgb(20 22 26);
+      border-color: rgb(48 52 59);
+    }
+  }
+
   .name-row {
     border-bottom-color: rgba(255, 255, 255, 0.1);
 

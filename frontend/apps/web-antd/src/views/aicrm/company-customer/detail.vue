@@ -21,6 +21,7 @@ import StockInfo from './pages/stock-info.vue';
 import Placeholder from './pages/placeholder.vue';
 // 零售客户和对公客户公用的页面
 import ManagementInfo from '../retail-customer/pages/management-info.vue';
+import BusinessOverview from '../retail-customer/pages/business-overview.vue';
 import AccountInfo from '../retail-customer/pages/account-info.vue';
 import ProductHolding from '../retail-customer/pages/product-holding.vue';
 import CreditInfo from '../retail-customer/pages/credit-info.vue';
@@ -34,6 +35,7 @@ import DemandInfo from '../retail-customer/pages/demand-info.vue';
 import RecommendInfo from '../retail-customer/pages/recommend-info.vue';
 import ChannelBehaviorInfo from '../retail-customer/pages/channel-behavior-info.vue';
 import TimelineInfo from '../retail-customer/pages/timeline-info.vue';
+import CustomerHeader from '../components/customer-header.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -57,7 +59,7 @@ const menuItems = [
   { key: 'project', label: '客户项目信息', component: ProjectInfo },
   { key: 'management', label: '管理信息', component: ManagementInfo },
   { key: 'otherBank', label: '客户他行信息', component: OtherBankInfo },
-  { key: 'business', label: '客户业务概览', component: Placeholder },
+  { key: 'business', label: '客户业务概览', component: BusinessOverview },
   { key: 'account', label: '账户信息', component: AccountInfo },
   { key: 'product', label: '产品持有信息', component: ProductHolding },
   { key: 'credit', label: '授信信息', component: CreditInfo },
@@ -118,40 +120,59 @@ onMounted(() => {
 
 <template>
   <div v-loading="loading" class="customer-detail-container">
-    <!-- 左侧菜单 -->
-    <div class="sidebar-menu">
-      <Menu
-        :selectedKeys="[activeSection]"
-        mode="inline"
-        @click="handleMenuClick"
-      >
-        <Menu.Item v-for="item in menuItems" :key="item.key">
-          {{ item.label }}
-        </Menu.Item>
-      </Menu>
-    </div>
+    <!-- 固定页头 -->
+    <CustomerHeader
+      v-if="customer"
+      :customer-name="customer.customerName"
+      :customer-type="customer.customerType"
+      :customer-level="customer.customerLevel"
+      :customer-status="customer.customerStatus"
+    />
 
-    <!-- 右侧内容区域 -->
-    <div class="content-area">
-      <component
-        :is="currentComponent"
-        v-if="customer && customer.customerId"
-        :customer="customer"
-        :customer-id="customer.customerId"
-        :title="currentTitle"
-      />
-      <div v-else-if="customer && !customer.customerId" style="padding: 20px; text-align: center; color: #999;">
-        该对公客户未关联到客户主表,无法查看详细信息
+    <div class="customer-detail-content">
+      <!-- 左侧菜单 -->
+      <div class="sidebar-menu">
+        <Menu
+          :selectedKeys="[activeSection]"
+          mode="inline"
+          @click="handleMenuClick"
+        >
+          <Menu.Item v-for="item in menuItems" :key="item.key">
+            {{ item.label }}
+          </Menu.Item>
+        </Menu>
+      </div>
+
+      <!-- 右侧内容区域 -->
+      <div class="content-area">
+        <component
+          :is="currentComponent"
+          v-if="customer && customer.customerId"
+          :customer="customer"
+          :customer-id="customer.customerId"
+          :title="currentTitle"
+        />
+        <div v-else-if="customer && !customer.customerId" style="padding: 20px; text-align: center; color: #999;">
+          该对公客户未关联到客户主表,无法查看详细信息
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 主容器 - Flexbox 布局 */
+/* 主容器 - 垂直布局 */
 .customer-detail-container {
   display: flex;
+  flex-direction: column;
   height: calc(100vh - 87px);
+  overflow: hidden;
+}
+
+/* 内容区域容器 - 水平布局 */
+.customer-detail-content {
+  display: flex;
+  flex: 1;
   overflow: hidden;
 }
 

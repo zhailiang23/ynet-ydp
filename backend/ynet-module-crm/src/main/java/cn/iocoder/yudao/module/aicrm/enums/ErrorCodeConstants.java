@@ -164,4 +164,22 @@ public interface ErrorCodeConstants {
     // ========== 客户经营信息 1-020-081-000 ==========
     ErrorCode CUSTOMER_BUSINESS_INFO_NOT_EXISTS = new ErrorCode(1_020_081_000, "客户经营信息不存在");
 
+    // ========== 客户渠道业务概览 1-020-090-000 ==========
+    ErrorCode CUSTOMER_CHANNEL_OVERVIEW_NOT_EXISTS = new ErrorCode(1_020_090_000, "客户渠道业务概览不存在");
+
+    // ========== 客户存款业务概览 1-020-091-000 ==========
+    ErrorCode CUSTOMER_DEPOSIT_OVERVIEW_NOT_EXISTS = new ErrorCode(1_020_091_000, "客户存款业务概览不存在");
+
+    // ========== 客户贴现业务概览 1-020-092-000 ==========
+    ErrorCode CUSTOMER_DISCOUNT_OVERVIEW_NOT_EXISTS = new ErrorCode(1_020_092_000, "客户贴现业务概览不存在");
+
+    // ========== 客户贷款业务概览 1-020-093-000 ==========
+    ErrorCode CUSTOMER_LOAN_OVERVIEW_NOT_EXISTS = new ErrorCode(1_020_093_000, "客户贷款业务概览不存在");
+
+    // ========== 客户中间业务概览 1-020-094-000 ==========
+    ErrorCode CUSTOMER_MIDDLE_BUSINESS_OVERVIEW_NOT_EXISTS = new ErrorCode(1_020_094_000, "客户中间业务概览不存在");
+
+    // ========== 客户表外业务概览 1-020-095-000 ==========
+    ErrorCode CUSTOMER_OFFBALANCE_OVERVIEW_NOT_EXISTS = new ErrorCode(1_020_095_000, "客户表外业务概览不存在");
+
 }

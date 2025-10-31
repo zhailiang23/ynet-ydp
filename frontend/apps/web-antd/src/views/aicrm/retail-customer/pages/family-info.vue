@@ -7,7 +7,7 @@ import { ref, watch, onMounted } from 'vue';
 
 import { getDictLabel } from '@vben/hooks';
 
-import { message } from 'ant-design-vue';
+import { message, Empty } from 'ant-design-vue';
 
 import { DictTag } from '#/components/dict-tag';
 import { Descriptions } from 'ant-design-vue';
@@ -408,7 +408,18 @@ defineExpose({
       background: transparent !important;
 
       &.ant-tabs-tab-active {
-        background: #fff !important;
+        background: #fff;
+      }
+    }
+  }
+}
+
+// Dark 模式样式 - 必须在 scoped 块外面
+.dark .family-info-page {
+  :deep(.ant-tabs) {
+    .ant-tabs-tab {
+      &.ant-tabs-tab-active {
+        background: rgb(28 30 35) !important;
       }
     }
   }

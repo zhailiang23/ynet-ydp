@@ -623,6 +623,20 @@ defineExpose({
         }
       }
     }
+
+  }
+}
+
+// Dark 模式样式
+.dark .management-info-page {
+  .tab-section {
+    :deep(.section-tabs) {
+      .ant-tabs-tab {
+        &.ant-tabs-tab-active {
+          background: rgb(28 30 35) !important;
+        }
+      }
+    }
   }
 }
 </style>
