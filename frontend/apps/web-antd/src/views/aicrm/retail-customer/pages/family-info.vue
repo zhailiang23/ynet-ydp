@@ -498,6 +498,10 @@ defineExpose({
       color: rgba(255, 255, 255, 0.85);
     }
   }
+
+  .card-view-content {
+    background: rgb(20 22 26);
+  }
 }
 
 .fade-enter-active,
