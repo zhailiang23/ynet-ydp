@@ -149,3 +149,123 @@ export function getRetailCustomerPage(params: PageParam) {
     { params },
   );
 }
+
+// ==================== 概况相关类型定义 ====================
+
+export namespace RetailCustomerOverviewApi {
+  /** 财务指标 */
+  export interface FinancialMetrics {
+    totalAssets: number;
+    totalLiabilities: number;
+    netAssets: number;
+    depositBalance: number;
+    loanBalance: number;
+    wealthBalance: number;
+    totalAssetsGrowth: number;
+    depositGrowth: number;
+    wealthGrowth: number;
+  }
+
+  /** 资产趋势 */
+  export interface AssetTrend {
+    month: string;
+    totalAssets: number;
+    deposits: number;
+    wealth: number;
+    loans: number;
+  }
+
+  /** 资产结构 */
+  export interface AssetStructure {
+    depositAmount: number;
+    wealthAmount: number;
+    fundAmount: number;
+    insuranceAmount: number;
+    metalAmount: number;
+    trustAmount: number;
+    otherAmount: number;
+  }
+
+  /** 存款类型分布 */
+  export interface DepositTypeDistribution {
+    currentDepositAmount: number;
+    timeDepositAmount: number;
+    noticeDepositAmount: number;
+    otherDepositAmount: number;
+  }
+
+  /** 客户评级 */
+  export interface CustomerRating {
+    valueLevel: string;
+    serviceLevel: string;
+    riskLevel: string;
+    ratingScore: number;
+  }
+
+  /** 客户贡献度 */
+  export interface CustomerContribution {
+    overallLevel: string;
+    depositScore: number;
+    loanScore: number;
+    middleBusinessScore: number;
+  }
+
+  /** 产品持有统计 */
+  export interface ProductHoldingStat {
+    depositAccountCount: number;
+    wealthProductCount: number;
+    fundCount: number;
+    creditcardCount: number;
+    trustCount: number;
+    insuranceCount: number;
+  }
+
+  /** 客户事件 */
+  export interface CustomerEvent {
+    id: number;
+    eventName: string;
+    eventType: string;
+    eventDate: string;
+    eventDescription: string;
+  }
+
+  /** 产品持有趋势 */
+  export interface ProductHoldingTrend {
+    productType: string;
+    productCount: number;
+  }
+
+  /** 月度交易统计 */
+  export interface MonthlyTransaction {
+    month: string;
+    transactionCount: number;
+    transactionAmount: number;
+  }
+
+  /** 概况响应 */
+  export interface Overview {
+    financialMetrics: FinancialMetrics;
+    assetTrend: AssetTrend[];
+    assetStructure: AssetStructure;
+    depositDistribution: DepositTypeDistribution;
+    rating: CustomerRating;
+    contribution: CustomerContribution;
+    productStat: ProductHoldingStat;
+    recentEvents: CustomerEvent[];
+    productHoldingTrend: ProductHoldingTrend[];
+    monthlyTransactions: MonthlyTransaction[];
+    tags: string[];
+  }
+}
+
+/** 获取零售客户概况信息 */
+export function getRetailCustomerOverview(params: {
+  customerId: number;
+  startDate?: string;
+  endDate?: string;
+}) {
+  return requestClient.get<RetailCustomerOverviewApi.Overview>(
+    '/crm/retail-customer/get-overview',
+    { params },
+  );
+}

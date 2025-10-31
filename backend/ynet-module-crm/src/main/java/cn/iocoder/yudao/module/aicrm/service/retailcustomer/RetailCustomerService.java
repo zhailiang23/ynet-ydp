@@ -60,4 +60,14 @@ public interface RetailCustomerService {
      */
     PageResult<RetailCustomerDO> getRetailCustomerPage(RetailCustomerPageReqVO pageReqVO);
 
+    /**
+     * 获取零售客户概况信息
+     *
+     * @param customerId 客户ID
+     * @param startDate 开始日期 (可选)
+     * @param endDate 结束日期 (可选)
+     * @return 客户概况信息
+     */
+    RetailCustomerOverviewRespVO getCustomerOverview(Long customerId, String startDate, String endDate);
+
 }

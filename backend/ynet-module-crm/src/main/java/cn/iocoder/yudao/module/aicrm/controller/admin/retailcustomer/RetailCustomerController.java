@@ -101,4 +101,15 @@ public class RetailCustomerController {
                         BeanUtils.toBean(list, RetailCustomerRespVO.class));
     }
 
+    @GetMapping("/get-overview")
+    @Operation(summary = "获取零售客户概况信息")
+    @Parameter(name = "customerId", description = "客户ID", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('crm:retail-customer:query')")
+    public CommonResult<RetailCustomerOverviewRespVO> getRetailCustomerOverview(
+            @RequestParam("customerId") Long customerId,
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate) {
+        return success(retailCustomerService.getCustomerOverview(customerId, startDate, endDate));
+    }
+
 }
