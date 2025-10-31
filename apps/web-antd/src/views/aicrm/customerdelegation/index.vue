@@ -2,90 +2,98 @@
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { AicrmCustomerDelegationApi } from '#/api/aicrm/customerdelegation';
 
-import { ref } from 'vue';
+import { Page } from '@vben/common-ui';
+import { useVbenModal } from '@vben/common-ui';
 
-import { confirm, Page, useVbenModal } from '@vben/common-ui';
-import { downloadFileFromBlobPart, isEmpty } from '@vben/utils';
-
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteCustomerDelegation,
-  deleteCustomerDelegationList,
-  exportCustomerDelegation,
+  cancelCustomerDelegation,
+  createCustomerDelegation,
+  endCustomerDelegation,
   getCustomerDelegationPage,
 } from '#/api/aicrm/customerdelegation';
 import { $t } from '#/locales';
 
-import { useGridColumns, useGridFormSchema } from './data';
-import Form from './modules/form.vue';
-
-const [FormModal, formModalApi] = useVbenModal({
-  connectedComponent: Form,
-  destroyOnClose: true,
-});
+import {
+  useCreateFormSchema,
+  useEndFormSchema,
+  useGridColumns,
+  useGridFormSchema,
+} from './data';
 
 /** 刷新表格 */
 function handleRefresh() {
   gridApi.query();
 }
 
-/** 创建客户托管记录 */
+/** 创建托管对话框 */
+const [CreateModal, createModalApi] = useVbenModal({
+  onConfirm: async () => {
+    try {
+      const values = await createModalApi.form?.validate();
+      await createCustomerDelegation(values as AicrmCustomerDelegationApi.CustomerDelegationCreateReq);
+      message.success('创建托管成功');
+      createModalApi.close();
+      handleRefresh();
+    } catch (error) {
+      console.error('创建托管失败:', error);
+    }
+  },
+});
+
+/** 结束托管对话框 */
+const [EndModal, endModalApi] = useVbenModal({
+  onConfirm: async () => {
+    try {
+      const values = await endModalApi.form?.validate();
+      await endCustomerDelegation(values as AicrmCustomerDelegationApi.CustomerDelegationEndReq);
+      message.success('结束托管成功');
+      endModalApi.close();
+      handleRefresh();
+    } catch (error) {
+      console.error('结束托管失败:', error);
+    }
+  },
+});
+
+/** 打开创建托管对话框 */
 function handleCreate() {
-  formModalApi.setData(null).open();
-}
-
-/** 编辑客户托管记录 */
-function handleEdit(row: AicrmCustomerDelegationApi.CustomerDelegation) {
-  formModalApi.setData(row).open();
-}
-
-/** 删除客户托管记录 */
-async function handleDelete(row: AicrmCustomerDelegationApi.CustomerDelegation) {
-  const hideLoading = message.loading({
-    content: $t('ui.actionMessage.deleting', [row.id]),
-    duration: 0,
+  createModalApi.setState({
+    isOpen: true,
+    title: '创建客户托管',
   });
-  try {
-    await deleteCustomerDelegation(row.id!);
-    message.success($t('ui.actionMessage.deleteSuccess', [row.id]));
-    handleRefresh();
-  } finally {
-    hideLoading();
-  }
 }
 
-/** 批量删除客户托管记录 */
-async function handleDeleteBatch() {
-  await confirm($t('ui.actionMessage.deleteBatchConfirm'));
-  const hideLoading = message.loading({
-    content: $t('ui.actionMessage.deletingBatch'),
-    duration: 0,
+/** 结束托管 */
+function handleEnd(row: AicrmCustomerDelegationApi.CustomerDelegation) {
+  endModalApi.setState({
+    isOpen: true,
+    title: '结束客户托管',
   });
-  try {
-    await deleteCustomerDelegationList(checkedIds.value);
-    checkedIds.value = [];
-    message.success($t('ui.actionMessage.deleteSuccess'));
-    handleRefresh();
-  } finally {
-    hideLoading();
-  }
+  setTimeout(() => {
+    endModalApi.form?.setValues({ id: row.id });
+  }, 100);
 }
 
-const checkedIds = ref<number[]>([]);
-function handleRowCheckboxChange({
-  records,
-}: {
-  records: AicrmCustomerDelegationApi.CustomerDelegation[];
-}) {
-  checkedIds.value = records.map((item) => item.id!);
-}
-
-/** 导出表格 */
-async function handleExport() {
-  const data = await exportCustomerDelegation(await gridApi.formApi.getValues());
-  downloadFileFromBlobPart({ fileName: '客户托管记录.xls', source: data });
+/** 取消托管 */
+function handleCancel(row: AicrmCustomerDelegationApi.CustomerDelegation) {
+  Modal.confirm({
+    title: '确认取消托管',
+    content: '确定要取消该托管记录吗？此操作不可恢复。',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: async () => {
+      try {
+        await cancelCustomerDelegation(row.id);
+        message.success('取消托管成功');
+        handleRefresh();
+      } catch (error) {
+        console.error('取消托管失败:', error);
+      }
+    },
+  });
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -116,42 +124,21 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
     },
   } as VxeTableGridOptions<AicrmCustomerDelegationApi.CustomerDelegation>,
-  gridEvents: {
-    checkboxAll: handleRowCheckboxChange,
-    checkboxChange: handleRowCheckboxChange,
-  },
 });
 </script>
 
 <template>
   <Page auto-content-height>
-    <FormModal @success="handleRefresh" />
-    <Grid table-title="客户托管记录列表">
+    <Grid table-title="客户托管记录管理">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['客户托管记录']),
+              label: '创建托管',
               type: 'primary',
               icon: ACTION_ICON.ADD,
               auth: ['aicrm:customer-delegation:create'],
               onClick: handleCreate,
-            },
-            {
-              label: $t('ui.actionTitle.export'),
-              type: 'primary',
-              icon: ACTION_ICON.DOWNLOAD,
-              auth: ['aicrm:customer-delegation:export'],
-              onClick: handleExport,
-            },
-            {
-              label: $t('ui.actionTitle.deleteBatch'),
-              type: 'primary',
-              danger: true,
-              icon: ACTION_ICON.DELETE,
-              auth: ['aicrm:customer-delegation:delete'],
-              disabled: isEmpty(checkedIds),
-              onClick: handleDeleteBatch,
             },
           ]"
         />
@@ -160,26 +147,39 @@ const [Grid, gridApi] = useVbenVxeGrid({
         <TableAction
           :actions="[
             {
-              label: $t('common.edit'),
+              label: '结束托管',
               type: 'link',
               icon: ACTION_ICON.EDIT,
               auth: ['aicrm:customer-delegation:update'],
-              onClick: handleEdit.bind(null, row),
+              ifShow: row.delegationStatus === 1,
+              onClick: handleEnd.bind(null, row),
             },
             {
-              label: $t('common.delete'),
+              label: '取消托管',
               type: 'link',
-              danger: true,
               icon: ACTION_ICON.DELETE,
+              danger: true,
               auth: ['aicrm:customer-delegation:delete'],
-              popConfirm: {
-                title: $t('ui.actionMessage.deleteConfirm', [row.id]),
-                confirm: handleDelete.bind(null, row),
-              },
+              ifShow: row.delegationStatus === 1,
+              onClick: handleCancel.bind(null, row),
             },
           ]"
         />
       </template>
     </Grid>
+
+    <!-- 创建托管对话框 -->
+    <CreateModal
+      :form-schema="useCreateFormSchema()"
+      class="!w-[600px]"
+      confirm-button-text="创建"
+    />
+
+    <!-- 结束托管对话框 -->
+    <EndModal
+      :form-schema="useEndFormSchema()"
+      class="!w-[600px]"
+      confirm-button-text="结束"
+    />
   </Page>
 </template>
