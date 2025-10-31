@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerContactPage } from '#/api/aicrm/customercontact';
 
@@ -81,35 +83,46 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerContactApi.CustomerContact> 
         field: 'contactType',
         title: '接触类型',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_contact_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_contact_type' },
+      },
       },
       {
         field: 'contactStatus',
         title: '接触状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_contact_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_contact_status' },
+      },
       },
       {
         field: 'contactChannel',
         title: '接触渠道',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_contact_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_contact_channel' },
+      },
       },
       {
         field: 'contactResult',
         title: '接触结果',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_contact_result', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_contact_result' },
+      },
       },
       {
         field: 'customerIntention',
         title: '客户意向',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_customer_intention', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_customer_intention' },
+      },
       },
       {
         field: 'contactSubject',
@@ -191,8 +204,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerContactApi.CustomerContact> 
         field: 'followupStatus',
         title: '跟进状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_followup_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_followup_status' },
+      },
       },
       {
         field: 'fuaTm',

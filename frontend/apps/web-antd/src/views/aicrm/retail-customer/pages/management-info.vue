@@ -168,7 +168,10 @@ const [HistoryGrid, historyGridApi] = useVbenVxeGrid({
         field: 'transferLevel',
         title: '调整级别',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_transfer_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_transfer_level' },
+      },
       },
       {
         field: 'transferReason',
@@ -267,7 +270,10 @@ const [GridAssignmentGrid, gridAssignmentGridApi] = useVbenVxeGrid({
         field: 'gridType',
         title: '网格类型',
         minWidth: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_grid_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_grid_type' },
+      },
       },
       {
         field: 'gridManagerName',
@@ -360,7 +366,10 @@ const [GridHistoryGrid, gridHistoryGridApi] = useVbenVxeGrid({
         field: 'beforeGridType',
         title: '调整前网格类型',
         minWidth: 130,
-        formatter: ({ cellValue }) => getDict('aicrm_grid_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_grid_type' },
+      },
       },
       {
         field: 'beforeGridManagerName',
@@ -381,7 +390,10 @@ const [GridHistoryGrid, gridHistoryGridApi] = useVbenVxeGrid({
         field: 'afterGridType',
         title: '调整后网格类型',
         minWidth: 130,
-        formatter: ({ cellValue }) => getDict('aicrm_grid_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_grid_type' },
+      },
       },
       {
         field: 'afterGridManagerName',
@@ -447,19 +459,28 @@ const [GroupAssignmentGrid, groupAssignmentGridApi] = useVbenVxeGrid({
         field: 'groupCategory',
         title: '客户群分类',
         minWidth: 130,
-        formatter: ({ cellValue }) => getDict('aicrm_customer_group_category', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_customer_group_category' },
+      },
       },
       {
         field: 'memberType',
         title: '群级别类型',
         minWidth: 130,
-        formatter: ({ cellValue }) => getDict('aicrm_group_member_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_group_member_type' },
+      },
       },
       {
         field: 'customerSource',
         title: '客户来源',
         minWidth: 130,
-        formatter: ({ cellValue }) => getDict('aicrm_customer_source', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_customer_source' },
+      },
       },
       {
         field: 'memberCount',

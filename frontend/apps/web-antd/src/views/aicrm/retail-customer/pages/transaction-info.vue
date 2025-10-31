@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerTransactionMockPage } from '#/api/aicrm/customertransactionmock';
 
@@ -43,6 +45,15 @@ function formatDate(value?: string) {
 // 格式化时间
 function formatTime(value?: string) {
   if (!value) return '-';
+  // 处理类似 "10,0" 或 "14,30" 这样的时间格式
+  const timeStr = String(value).replace(',', ':');
+  // 确保是 HH:mm 格式
+  const parts = timeStr.split(':');
+  if (parts.length === 2) {
+    const hour = parts[0].padStart(2, '0');
+    const minute = parts[1].padStart(2, '0');
+    return `${hour}:${minute}`;
+  }
   return value;
 }
 
@@ -81,15 +92,19 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerTransactionMockApi.CustomerT
         field: 'tradType',
         title: '交易类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_transaction_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_transaction_type' },
+      },
       },
       {
         field: 'direction',
         title: '交易方向',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_transaction_direction', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_transaction_direction' },
+      },
       },
       {
         field: 'tradMoney',
@@ -109,14 +124,19 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerTransactionMockApi.CustomerT
         field: 'currencyCode',
         title: '币种',
         width: 70,
-        formatter: ({ cellValue }) => getDict('aicrm_currency_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_currency_type' },
+      },
       },
       {
         field: 'transactionStatus',
         title: '交易状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_transaction_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_transaction_status' },
+      },
       },
       {
         field: 'tradAbs',
@@ -128,8 +148,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerTransactionMockApi.CustomerT
         field: 'tradChn',
         title: '交易渠道',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_transaction_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_transaction_channel' },
+      },
       },
       {
         field: 'branchName',
@@ -160,7 +182,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerTransactionMockApi.CustomerT
         field: 'cashFlag',
         title: '现转标志',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_cash_flag', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_cash_flag' },
+      },
       },
       {
         field: 'tradTeller',

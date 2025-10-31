@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerComplaintPage } from '#/api/aicrm/customercomplaint';
 
@@ -72,29 +74,37 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerComplaintApi.CustomerComplai
         field: 'complaintType',
         title: '投诉类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_complaint_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_complaint_type' },
+      },
       },
       {
         field: 'complaintLevel',
         title: '投诉级别',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_complaint_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_complaint_level' },
+      },
       },
       {
         field: 'complaintChannel',
         title: '投诉渠道',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_complaint_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_complaint_channel' },
+      },
       },
       {
         field: 'workOrderStatus',
         title: '工单状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_complaint_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_complaint_status' },
+      },
       },
       {
         field: 'complaintContent',

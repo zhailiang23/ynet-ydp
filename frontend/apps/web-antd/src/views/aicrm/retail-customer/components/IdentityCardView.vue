@@ -6,6 +6,8 @@ import { computed } from 'vue';
 import { getDictLabel } from '@vben/hooks';
 
 import { message, Tag, Button, Empty, Card } from 'ant-design-vue';
+
+import { DictTag } from '#/components/dict-tag';
 import { IconifyIcon } from '@vben/icons';
 
 import { updateCustomerIdentity } from '#/api/aicrm/customeridentity';

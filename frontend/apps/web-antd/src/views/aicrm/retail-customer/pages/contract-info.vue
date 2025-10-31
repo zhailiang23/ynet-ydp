@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerContractPage } from '#/api/aicrm/customercontract';
 
@@ -55,8 +57,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerContractApi.CustomerContract
         field: 'contractStatus',
         title: '签约状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_contract_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_contract_status' },
+      },
       },
       {
         field: 'contractDate',
@@ -80,7 +84,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerContractApi.CustomerContract
         field: 'signChannel',
         title: '签约渠道',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_sign_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_sign_channel' },
+      },
       },
       {
         field: 'branchName',
@@ -98,7 +105,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerContractApi.CustomerContract
         field: 'identityType',
         title: '证件类型',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_identity_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_identity_type' },
+      },
       },
       {
         field: 'identityNo',

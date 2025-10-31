@@ -2,7 +2,7 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { AicrmCustomerApi } from '#/api/aicrm/customer';
 
-import { getDictLabel, getDictOptions } from '@vben/hooks';
+import { getDictOptions } from '@vben/hooks';
 
 import { getRangePickerDefaultProps } from '#/utils';
 
@@ -275,9 +275,9 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>
       field: 'customerType',
       title: '客户类型',
       minWidth: 100,
-      formatter: ({ cellValue }) => {
-        if (!cellValue) return '';
-        return getDictLabel('aicrm_customer_type', cellValue);
+      cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_customer_type' },
       },
     },
     {
@@ -289,18 +289,18 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>
       field: 'customerLevel',
       title: '客户等级',
       minWidth: 100,
-      formatter: ({ cellValue }) => {
-        if (!cellValue) return '';
-        return getDictLabel('aicrm_customer_level', cellValue);
+      cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_customer_level' },
       },
     },
     {
       field: 'customerStatus',
       title: '客户状态',
       minWidth: 100,
-      formatter: ({ cellValue }) => {
-        if (!cellValue) return '';
-        return getDictLabel('aicrm_customer_status', cellValue);
+      cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_customer_status' },
       },
     },
     {
@@ -319,18 +319,18 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>
       field: 'creditLevel',
       title: '信用等级',
       minWidth: 100,
-      formatter: ({ cellValue }) => {
-        if (!cellValue) return '';
-        return getDictLabel('aicrm_credit_level', cellValue);
+      cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_credit_level' },
       },
     },
     {
       field: 'customerSource',
       title: '客户来源',
       minWidth: 120,
-      formatter: ({ cellValue }) => {
-        if (!cellValue) return '';
-        return getDictLabel('aicrm_customer_source', cellValue);
+      cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_customer_source' },
       },
     },
     {

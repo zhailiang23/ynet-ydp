@@ -4,6 +4,8 @@ import type { AicrmCustomerFamilyMemberApi } from '#/api/aicrm/customerfamilymem
 import { getDictLabel } from '@vben/hooks';
 
 import { Empty, Card } from 'ant-design-vue';
+
+import { DictTag } from '#/components/dict-tag';
 import { IconifyIcon } from '@vben/icons';
 
 import { maskIdNumber } from '#/views/aicrm/utils/identity';

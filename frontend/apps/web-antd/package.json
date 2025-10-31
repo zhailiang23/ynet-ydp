@@ -26,6 +26,7 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@form-create/ant-design-vue": "catalog:",
     "@form-create/antd-designer": "catalog:",
     "@tinymce/tinymce-vue": "catalog:",
@@ -61,6 +62,7 @@
     "vue": "catalog:",
     "vue-dompurify-html": "catalog:",
     "vue-router": "catalog:",
-    "vue3-signature": "catalog:"
+    "vue3-signature": "catalog:",
+    "vxe-table": "catalog:"
   }
 }

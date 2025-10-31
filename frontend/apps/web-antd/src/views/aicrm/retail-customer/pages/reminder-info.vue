@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerReminderPage } from '#/api/aicrm/customerreminder';
 
@@ -72,29 +74,37 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerReminderApi.CustomerReminder
         field: 'reminderType',
         title: '提醒类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_reminder_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_reminder_type' },
+      },
       },
       {
         field: 'reminderLevel',
         title: '提醒级别',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_reminder_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_reminder_level' },
+      },
       },
       {
         field: 'reminderStatus',
         title: '提醒状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_reminder_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_reminder_status' },
+      },
       },
       {
         field: 'reminderSource',
         title: '提醒来源',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_reminder_source', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_reminder_source' },
+      },
       },
       {
         field: 'reminderCategoryName',
@@ -124,8 +134,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerReminderApi.CustomerReminder
         field: 'sendChannel',
         title: '发送渠道',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_reminder_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_reminder_channel' },
+      },
       },
       {
         field: 'recipientUserName',
@@ -195,8 +207,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerReminderApi.CustomerReminder
         field: 'relatedBusinessType',
         title: '关联业务类型',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_business_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_business_type' },
+      },
       },
       {
         field: 'expireTime',

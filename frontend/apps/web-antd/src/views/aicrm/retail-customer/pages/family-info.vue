@@ -8,6 +8,8 @@ import { ref, watch, onMounted } from 'vue';
 import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
+
+import { DictTag } from '#/components/dict-tag';
 import { Descriptions } from 'ant-design-vue';
 
 import { IconifyIcon } from '@vben/icons';
@@ -263,7 +265,7 @@ defineExpose({
                 {{ formatBoolean(familyInfo.hasHomeCar) }}
               </Descriptions.Item>
               <Descriptions.Item label="家庭实力">
-                {{ getDict('aicrm_family_strength', familyInfo.familyStrength) }}
+                <DictTag type="aicrm_family_strength" :value="familyInfo.familyStrength" />
               </Descriptions.Item>
               <Descriptions.Item label="家庭住址" :span="3">
                 {{ familyInfo.familyAddress || '-' }}
@@ -281,16 +283,16 @@ defineExpose({
                 {{ formatMoney(familyInfo.familyAnnualIncome) }}
               </Descriptions.Item>
               <Descriptions.Item label="家庭年收入范围">
-                {{ getDict('aicrm_family_income_scope', familyInfo.familyAnnualIncomeScope) }}
+                <DictTag type="aicrm_family_income_scope" :value="familyInfo.familyAnnualIncomeScope" />
               </Descriptions.Item>
               <Descriptions.Item label="主要收入来源">
-                {{ getDict('aicrm_income_source', familyInfo.mainIncomeSource) }}
+                <DictTag type="aicrm_income_source" :value="familyInfo.mainIncomeSource" />
               </Descriptions.Item>
               <Descriptions.Item label="家庭年支出">
                 {{ formatMoney(familyInfo.familyAnnualExpenditure) }}
               </Descriptions.Item>
               <Descriptions.Item label="家庭年支出范围">
-                {{ getDict('aicrm_family_expenditure_scope', familyInfo.familyAnnualExpenditureScope) }}
+                <DictTag type="aicrm_family_expenditure_scope" :value="familyInfo.familyAnnualExpenditureScope" />
               </Descriptions.Item>
               <Descriptions.Item label="经营业务及规模">
                 {{ familyInfo.businessAndScale || '-' }}
@@ -302,7 +304,7 @@ defineExpose({
                 {{ formatMoney(familyInfo.familyDebt) }}
               </Descriptions.Item>
               <Descriptions.Item label="家庭负债范围">
-                {{ getDict('aicrm_debt_scope', familyInfo.familyDebtScope) }}
+                <DictTag type="aicrm_debt_scope" :value="familyInfo.familyDebtScope" />
               </Descriptions.Item>
               <Descriptions.Item label="家庭资产信息" :span="3">
                 {{ familyInfo.familyAssetsInfo || '-' }}
@@ -317,13 +319,13 @@ defineExpose({
                 {{ formatBoolean(familyInfo.isCreditFamily) }}
               </Descriptions.Item>
               <Descriptions.Item label="信用状况">
-                {{ getDict('aicrm_credit_status', familyInfo.creditStatus) }}
+                <DictTag type="aicrm_credit_status" :value="familyInfo.creditStatus" />
               </Descriptions.Item>
               <Descriptions.Item label="授信金额">
                 {{ formatMoney(familyInfo.creditAmount) }}
               </Descriptions.Item>
               <Descriptions.Item label="负债状况">
-                {{ getDict('aicrm_debt_status', familyInfo.debtStatus) }}
+                <DictTag type="aicrm_debt_status" :value="familyInfo.debtStatus" />
               </Descriptions.Item>
               <Descriptions.Item label="家庭信息不良记录" :span="2">
                 {{ familyInfo.familyAdverseRecords || '-' }}

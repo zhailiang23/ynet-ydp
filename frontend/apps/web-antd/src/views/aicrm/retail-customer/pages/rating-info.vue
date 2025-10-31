@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerRatingPage } from '#/api/aicrm/customerrating';
 
@@ -54,20 +56,28 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerRatingApi.CustomerRating> =
         field: 'valueLevel',
         title: '价值等级',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_value_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_value_level' },
+      },
       },
       {
         field: 'serviceLevel',
         title: '服务等级',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_service_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_service_level' },
+      },
       },
       {
         field: 'riskLevel',
         title: '风险等级',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_risk_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_risk_level' },
+      },
       },
       {
         field: 'ratingScore',
@@ -80,15 +90,19 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerRatingApi.CustomerRating> =
         field: 'ratingMethod',
         title: '评级方式',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_rating_method', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_rating_method' },
+      },
       },
       {
         field: 'approvalStatus',
         title: '审批状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_rating_approval_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_rating_approval_status' },
+      },
       },
       {
         field: 'effectiveDate',
@@ -112,8 +126,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerRatingApi.CustomerRating> =
         field: 'serviceLevelBeforeRisk',
         title: '剔除风险前服务等级',
         width: 160,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_service_level', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_service_level' },
+      },
       },
       {
         field: 'riskFactors',

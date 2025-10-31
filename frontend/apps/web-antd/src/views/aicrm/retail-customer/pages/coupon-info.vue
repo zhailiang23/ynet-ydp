@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerCouponPage } from '#/api/aicrm/customercoupon';
 
@@ -75,21 +77,28 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerCouponApi.CustomerCoupon> =
         field: 'couponType',
         title: '卡券类型',
         width: 120,
-        formatter: ({ cellValue }) => getDict('aicrm_coupon_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_coupon_type' },
+      },
       },
       {
         field: 'couponCategory',
         title: '卡券分类',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_coupon_category', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_coupon_category' },
+      },
       },
       {
         field: 'couponStatus',
         title: '卡券状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_coupon_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_coupon_status' },
+      },
       },
       {
         field: 'discountRate',
@@ -176,15 +185,19 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerCouponApi.CustomerCoupon> =
         field: 'issueSource',
         title: '发放来源',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_coupon_issue_source', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_coupon_issue_source' },
+      },
       },
       {
         field: 'issueChannel',
         title: '发放渠道',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_coupon_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_coupon_channel' },
+      },
       },
       {
         field: 'issueActivityName',
@@ -196,15 +209,19 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerCouponApi.CustomerCoupon> =
         field: 'useScenario',
         title: '使用场景',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_coupon_use_scenario', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_coupon_use_scenario' },
+      },
       },
       {
         field: 'useChannel',
         title: '使用渠道',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_coupon_channel', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_coupon_channel' },
+      },
       },
       {
         field: 'useProductName',

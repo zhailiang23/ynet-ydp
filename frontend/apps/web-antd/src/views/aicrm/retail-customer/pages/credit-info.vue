@@ -8,6 +8,8 @@ import { getDictLabel } from '@vben/hooks';
 
 import { message } from 'ant-design-vue';
 
+import { DictTag } from '#/components/dict-tag';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getCustomerCreditPage } from '#/api/aicrm/customercredit';
 
@@ -64,14 +66,19 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerCreditApi.CustomerCredit> =
         field: 'creditProductType',
         title: '授信品种',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_credit_product_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_credit_product_type' },
+      },
       },
       {
         field: 'creditType',
         title: '授信类型',
         width: 100,
-        formatter: ({ cellValue }) => getDict('aicrm_credit_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_credit_type' },
+      },
       },
       {
         field: 'creditLimit',
@@ -105,7 +112,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerCreditApi.CustomerCredit> =
         field: 'currencyCode',
         title: '币种',
         width: 70,
-        formatter: ({ cellValue }) => getDict('aicrm_currency_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_currency_type' },
+      },
       },
       {
         field: 'creditStartDate',
@@ -123,8 +133,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerCreditApi.CustomerCredit> =
         field: 'creditStatus',
         title: '授信状态',
         width: 100,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_credit_status', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_credit_status' },
+      },
       },
       {
         field: 'approveDate',
@@ -150,8 +162,10 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerCreditApi.CustomerCredit> =
         field: 'guaranteeType',
         title: '担保方式',
         width: 120,
-        formatter: ({ cellValue }) =>
-          getDict('aicrm_guarantee_type', cellValue),
+        cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_guarantee_type' },
+      },
       },
       {
         field: 'creditPurpose',
