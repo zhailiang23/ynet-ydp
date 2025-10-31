@@ -34,6 +34,7 @@ import ReminderInfo from './pages/reminder-info.vue';
 import RightsPointsInfo from './pages/rights-points-info.vue';
 import TimelineInfo from './pages/timeline-info.vue';
 import TransactionInfo from './pages/transaction-info.vue';
+import WorkBusinessInfo from './pages/work-business-info.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -49,7 +50,7 @@ const menuItems = [
   { key: 'graph', label: '知识图谱', component: Placeholder },
   { key: 'basic', label: '客户基本信息', component: BasicInfo },
   { key: 'certificate', label: '客户证件信息', component: IdentityList },
-  { key: 'work', label: '客户工作或经营信息', component: Placeholder },
+  { key: 'work', label: '客户工作或经营信息', component: WorkBusinessInfo },
   { key: 'family', label: '客户家庭信息', component: FamilyInfo },
   { key: 'management', label: '管理信息', component: ManagementInfo },
   { key: 'events', label: '客户大事记信息', component: TimelineInfo },
@@ -63,7 +64,6 @@ const menuItems = [
   { key: 'transaction', label: '交易明细信息', component: TransactionInfo },
   { key: 'rating', label: '客户评级信息', component: RatingInfo },
   { key: 'contribution', label: '客户贡献度信息', component: ContributionInfo },
-  { key: 'creditInfo', label: '客户信用信息', component: Placeholder },
   { key: 'complaint', label: '客户投诉信息', component: ComplaintInfo },
   { key: 'marketing', label: '客户营销信息', component: MarketingInfo },
   { key: 'demand', label: '客户需求信息', component: DemandInfo },

@@ -42,7 +42,7 @@ function formatBondType({ cellValue }: any) {
   };
 
   const color = colorMap[cellValue] || 'default';
-  return `● ${label}`;
+  return `${label}`;
 }
 
 // 格式化信用评级
@@ -77,7 +77,7 @@ function formatBondStatus({ cellValue }: any) {
 
   const status = statusMap[cellValue];
   if (status) {
-    return `● ${status.label}`;
+    return `${status.label}`;
   }
 
   return cellValue;

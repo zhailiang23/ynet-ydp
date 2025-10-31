@@ -34,7 +34,7 @@ function formatAddressType({ cellValue }: any) {
 function formatIsPrimary({ cellValue }: any) {
   if (cellValue === null || cellValue === undefined) return '-';
   if (cellValue === true || cellValue === 1) {
-    return '✓ 是';
+    return '是';
   }
   return '否';
 }

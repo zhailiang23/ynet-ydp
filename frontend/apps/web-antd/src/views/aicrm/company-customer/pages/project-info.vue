@@ -42,7 +42,7 @@ function formatProjectType({ cellValue }: any) {
   };
 
   const color = colorMap[cellValue] || 'default';
-  return `● ${label}`;
+  return `${label}`;
 }
 
 // 格式化项目状态
@@ -60,7 +60,7 @@ function formatProjectStatus({ cellValue }: any) {
 
   const status = statusMap[cellValue];
   if (status) {
-    return `● ${status.label}`;
+    return `${status.label}`;
   }
 
   return cellValue;
@@ -80,7 +80,7 @@ function formatFinancingStatus({ cellValue }: any) {
 
   const status = statusMap[cellValue];
   if (status) {
-    return `● ${status.label}`;
+    return `${status.label}`;
   }
 
   return cellValue;

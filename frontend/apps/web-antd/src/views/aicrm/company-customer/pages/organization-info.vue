@@ -32,11 +32,11 @@ function formatOrgStatus({ cellValue }: any) {
 
   // 根据状态值返回不同的样式类
   if (cellValue === 'active') {
-    return `● ${label}`;
+    return `${label}`;
   } else if (cellValue === 'inactive') {
-    return `● ${label}`;
+    return `${label}`;
   } else if (cellValue === 'dissolved') {
-    return `● ${label}`;
+    return `${label}`;
   }
   return label;
 }

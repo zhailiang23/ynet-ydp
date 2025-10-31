@@ -66,7 +66,6 @@ const menuItems = [
   { key: 'transaction', label: '交易明细信息', component: TransactionInfo },
   { key: 'rating', label: '客户评级信息', component: RatingInfo },
   { key: 'contribution', label: '客户贡献度信息', component: ContributionInfo },
-  { key: 'creditInfo', label: '客户信用信息', component: Placeholder },
   { key: 'marketing', label: '客户营销信息', component: MarketingInfo },
   { key: 'demand', label: '客户需求信息', component: DemandInfo },
   { key: 'recommend', label: '产品推荐', component: RecommendInfo },

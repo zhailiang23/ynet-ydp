@@ -158,4 +158,10 @@ public interface ErrorCodeConstants {
     ErrorCode COMPANY_PROJECT_NOT_EXISTS = new ErrorCode(1_020_075_000, "对公客户项目信息不存在");
     ErrorCode COMPANY_STOCK_NOT_EXISTS = new ErrorCode(1_020_076_000, "对公客户股票不存在");
 
+    // ========== 客户工作信息 1-020-080-000 ==========
+    ErrorCode CUSTOMER_WORK_INFO_NOT_EXISTS = new ErrorCode(1_020_080_000, "客户工作信息不存在");
+
+    // ========== 客户经营信息 1-020-081-000 ==========
+    ErrorCode CUSTOMER_BUSINESS_INFO_NOT_EXISTS = new ErrorCode(1_020_081_000, "客户经营信息不存在");
+
 }
