@@ -392,7 +392,7 @@ defineExpose({
   // 去掉 tab 的边框
   :deep(.ant-tabs) {
     .ant-tabs-nav {
-      margin-bottom: 16px;
+      margin-bottom: 0;
 
       &::before {
         border-bottom: none;
@@ -404,40 +404,22 @@ defineExpose({
     }
 
     .ant-tabs-tab {
-      border: 1px solid #f0f0f0;
-      background: #fafafa;
-      margin-right: 4px;
-      border-radius: 4px 4px 0 0;
-      padding: 8px 16px;
+      border: none !important;
+      background: transparent !important;
 
       &.ant-tabs-tab-active {
         background: #fff;
-        border-bottom-color: #fff;
-      }
-
-      &:hover {
-        color: #1890ff;
       }
     }
   }
 }
-</style>
 
-<style lang="less">
 // Dark 模式样式 - 必须在 scoped 块外面
 .dark .family-info-page {
   :deep(.ant-tabs) {
     .ant-tabs-tab {
-      border-color: rgb(40 42 48);
-      background: rgb(20 22 26);
-
       &.ant-tabs-tab-active {
-        background: rgb(28 30 35);
-        border-bottom-color: rgb(28 30 35);
-      }
-
-      &:hover {
-        color: #1890ff;
+        background: rgb(28 30 35) !important;
       }
     }
   }
