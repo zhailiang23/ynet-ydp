@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons-vue';
+import { getDictLabel } from '@vben/hooks';
 import type { RetailCustomerOverviewApi } from '#/api/aicrm/retail-customer';
 
 interface Props {
@@ -12,6 +13,12 @@ interface Props {
 }
 
 defineProps<Props>();
+
+// 获取字典标签
+function getDict(dictType: string, value: any) {
+  if (value === null || value === undefined) return value;
+  return getDictLabel(dictType, value) || value;
+}
 
 // 事件类型颜色
 const getEventColor = (type: string) => {
@@ -22,7 +29,8 @@ const getEventColor = (type: string) => {
     '风险预警': 'red',
     '服务记录': 'cyan',
   };
-  return colorMap[type] || 'default';
+  const label = getDict('aicrm_event_type', type);
+  return colorMap[label] || 'default';
 };
 
 // 事件类型图标
@@ -34,7 +42,8 @@ const getEventIcon = (type: string) => {
     '风险预警': ExclamationCircleOutlined,
     '服务记录': CheckCircleOutlined,
   };
-  return iconMap[type] || ClockCircleOutlined;
+  const label = getDict('aicrm_event_type', type);
+  return iconMap[label] || ClockCircleOutlined;
 };
 </script>
 
@@ -65,7 +74,7 @@ const getEventIcon = (type: string) => {
                   {{ event.eventName }}
                 </span>
                 <Tag :color="getEventColor(event.eventType)" class="text-xs">
-                  {{ event.eventType }}
+                  {{ getDict('aicrm_event_type', event.eventType) }}
                 </Tag>
               </div>
 
@@ -113,7 +122,7 @@ const getEventIcon = (type: string) => {
 }
 
 :deep(.ant-timeline) {
-  margin-top: 0;
+  margin-top: 8px;
   margin-bottom: 0;
 }
 

@@ -42,7 +42,7 @@ const router = useRouter();
 
 const loading = ref(false);
 const customer = ref<CompanyCustomerApi.CompanyCustomer>();
-const activeSection = ref('basic');
+const activeSection = ref('overview');
 
 // 对公客户360视图菜单项
 const menuItems = [
