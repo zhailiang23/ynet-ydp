@@ -229,4 +229,93 @@ public class RetailCustomerOverviewHelper {
         trend.setProductCount(count);
         return trend;
     }
+
+    /**
+     * 转换资产快照为趋势数据
+     */
+    public List<RetailCustomerOverviewRespVO.AssetTrendVO> convertAssetSnapshots(List<?> snapshots) {
+        if (snapshots == null || snapshots.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<RetailCustomerOverviewRespVO.AssetTrendVO> trendList = new ArrayList<>();
+
+        // 使用反射处理不同类型的快照对象
+        for (Object snapshot : snapshots) {
+            try {
+                RetailCustomerOverviewRespVO.AssetTrendVO trend = new RetailCustomerOverviewRespVO.AssetTrendVO();
+
+                // 获取快照日期并格式化为 YYYY-MM
+                java.lang.reflect.Method getSnapshotDate = snapshot.getClass().getMethod("getSnapshotDate");
+                Object dateObj = getSnapshotDate.invoke(snapshot);
+                if (dateObj instanceof java.time.LocalDate) {
+                    java.time.LocalDate date = (java.time.LocalDate) dateObj;
+                    trend.setMonth(date.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM")));
+                }
+
+                // 获取资产数据
+                java.lang.reflect.Method getTotalAssets = snapshot.getClass().getMethod("getTotalAssets");
+                java.lang.reflect.Method getDepositBalance = snapshot.getClass().getMethod("getDepositBalance");
+                java.lang.reflect.Method getWealthBalance = snapshot.getClass().getMethod("getWealthBalance");
+                java.lang.reflect.Method getLoanBalance = snapshot.getClass().getMethod("getLoanBalance");
+
+                trend.setTotalAssets((BigDecimal) getTotalAssets.invoke(snapshot));
+                trend.setDeposits((BigDecimal) getDepositBalance.invoke(snapshot));
+                trend.setWealth((BigDecimal) getWealthBalance.invoke(snapshot));
+                trend.setLoans((BigDecimal) getLoanBalance.invoke(snapshot));
+
+                trendList.add(trend);
+            } catch (Exception e) {
+                // 忽略转换错误，继续处理下一个
+            }
+        }
+
+        return trendList;
+    }
+
+    /**
+     * 统计月度交易数据
+     */
+    public List<RetailCustomerOverviewRespVO.MonthlyTransactionVO> calculateMonthlyTransactions(List<?> transactions) {
+        if (transactions == null || transactions.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // 按月分组统计
+        java.util.Map<String, RetailCustomerOverviewRespVO.MonthlyTransactionVO> monthlyMap = new java.util.LinkedHashMap<>();
+
+        for (Object transaction : transactions) {
+            try {
+                // 获取交易日期
+                java.lang.reflect.Method getTransactionDate = transaction.getClass().getMethod("getTransactionDate");
+                Object dateObj = getTransactionDate.invoke(transaction);
+
+                if (dateObj instanceof java.time.LocalDate) {
+                    java.time.LocalDate date = (java.time.LocalDate) dateObj;
+                    String month = date.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"));
+
+                    // 获取交易金额
+                    java.lang.reflect.Method getTradMoney = transaction.getClass().getMethod("getTradMoney");
+                    BigDecimal amount = (BigDecimal) getTradMoney.invoke(transaction);
+
+                    // 累加到对应月份
+                    monthlyMap.computeIfAbsent(month, k -> {
+                        RetailCustomerOverviewRespVO.MonthlyTransactionVO vo = new RetailCustomerOverviewRespVO.MonthlyTransactionVO();
+                        vo.setMonth(k);
+                        vo.setTransactionCount(0);
+                        vo.setTransactionAmount(BigDecimal.ZERO);
+                        return vo;
+                    });
+
+                    RetailCustomerOverviewRespVO.MonthlyTransactionVO monthlyVO = monthlyMap.get(month);
+                    monthlyVO.setTransactionCount(monthlyVO.getTransactionCount() + 1);
+                    monthlyVO.setTransactionAmount(monthlyVO.getTransactionAmount().add(amount != null ? amount : BigDecimal.ZERO));
+                }
+            } catch (Exception e) {
+                // 忽略转换错误
+            }
+        }
+
+        return new ArrayList<>(monthlyMap.values());
+    }
 }

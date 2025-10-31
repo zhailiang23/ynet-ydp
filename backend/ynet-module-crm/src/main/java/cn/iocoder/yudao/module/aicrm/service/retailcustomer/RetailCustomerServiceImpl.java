@@ -67,6 +67,12 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
     @Resource
     private RetailCustomerOverviewHelper overviewHelper;
 
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customerassetsnapshot.CustomerAssetSnapshotMapper customerAssetSnapshotMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customertransactionmock.CustomerTransactionMockMapper customerTransactionMockMapper;
+
     @Override
     public Long createRetailCustomer(RetailCustomerSaveReqVO createReqVO) {
         // 插入
@@ -176,8 +182,13 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
         RetailCustomerOverviewRespVO.FinancialMetricsVO metrics = overviewHelper.calculateFinancialMetrics(deposits, wealths, loans);
         overview.setFinancialMetrics(metrics);
 
-        // 3. 资产趋势数据 - 暂时返回空列表 (需要历史数据支持)
-        overview.setAssetTrend(new ArrayList<>());
+        // 3. 查询资产快照数据（最近12个月）
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassetsnapshot.CustomerAssetSnapshotDO> snapshots =
+                customerAssetSnapshotMapper.selectRecentMonths(customerId, 12);
+        // 反转列表，使其按时间正序排列
+        java.util.Collections.reverse(snapshots);
+        List<RetailCustomerOverviewRespVO.AssetTrendVO> assetTrend = overviewHelper.convertAssetSnapshots(snapshots);
+        overview.setAssetTrend(assetTrend);
 
         // 4. 计算资产结构
         RetailCustomerOverviewRespVO.AssetStructureVO structure = overviewHelper.calculateAssetStructure(deposits, wealths, funds, insurances);
@@ -224,11 +235,26 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
                 deposits.size(), wealths.size(), funds.size(), creditcards.size(), 0, insurances.size());
         overview.setProductHoldingTrend(holdingTrend);
 
-        // 11. 月度交易统计 - 暂时返回空列表 (需要交易流水数据支持)
-        overview.setMonthlyTransactions(new ArrayList<>());
+        // 11. 查询交易流水并统计月度交易
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customertransactionmock.CustomerTransactionMockDO> transactions =
+                customerTransactionMockMapper.selectList("customer_id", customerId);
+        List<RetailCustomerOverviewRespVO.MonthlyTransactionVO> monthlyTransactions = overviewHelper.calculateMonthlyTransactions(transactions);
+        overview.setMonthlyTransactions(monthlyTransactions);
 
-        // 12. 客户标签 - 暂时返回空列表 (需要标签系统支持)
-        overview.setTags(new ArrayList<>());
+        // 12. 客户标签 - 从 customer 表的 customer_tag 字段解析
+        CustomerDO customerDO = customerMapper.selectById(customerId);
+        List<String> tags = new ArrayList<>();
+        if (customerDO != null && customerDO.getCustomerTag() != null && !customerDO.getCustomerTag().isEmpty()) {
+            // 按逗号分割标签字符串
+            String[] tagArray = customerDO.getCustomerTag().split(",");
+            for (String tag : tagArray) {
+                String trimmedTag = tag.trim();
+                if (!trimmedTag.isEmpty()) {
+                    tags.add(trimmedTag);
+                }
+            }
+        }
+        overview.setTags(tags);
 
         return overview;
     }

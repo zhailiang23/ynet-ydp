@@ -103,7 +103,6 @@ onMounted(() => {
 
 <style scoped>
 .customer-overview {
-  padding: 12px;
   background-color: #f5f5f5;
 }
 
