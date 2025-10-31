@@ -482,6 +482,23 @@ defineExpose({
   overflow: auto;
   padding: 16px;
 }
+</style>
+
+<style lang="less">
+// Dark 模式 - card-view-container 样式
+.dark {
+  .card-view-container {
+    background: rgb(20 22 26);
+  }
+
+  .card-view-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+
+    h3 {
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
+}
 
 .fade-enter-active,
 .fade-leave-active {
