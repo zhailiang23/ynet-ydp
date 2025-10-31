@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Card, Row, Col, Progress, Descriptions } from 'ant-design-vue';
+import { getDictLabel } from '@vben/hooks';
 import type { RetailCustomerOverviewApi } from '#/api/aicrm/retail-customer';
 
 interface Props {
@@ -10,14 +11,24 @@ interface Props {
 
 defineProps<Props>();
 
+// 获取字典标签
+function getDict(dictType: string, value: any) {
+  if (value === null || value === undefined) return value;
+  return getDictLabel(dictType, value) || value;
+}
+
 // 贡献度等级颜色
 const getContributionColor = (level: string) => {
-  switch (level) {
-    case '高':
+  const label = getDict('aicrm_contribution_level', level);
+  switch (label) {
+    case '特级贡献':
+    case '一级贡献':
       return '#52c41a';
-    case '中':
+    case '二级贡献':
+    case '三级贡献':
       return '#1890ff';
-    case '低':
+    case '四级贡献':
+    case '五级贡献':
       return '#faad14';
     default:
       return '#999';
@@ -42,17 +53,17 @@ const getScoreColor = (score: number) => {
           <Descriptions :column="1" size="small">
             <Descriptions.Item label="价值等级">
               <span class="font-semibold text-blue-600 dark:text-blue-400">
-                {{ rating.valueLevel }}
+                {{ getDict('aicrm_value_level', rating.valueLevel) }}
               </span>
             </Descriptions.Item>
             <Descriptions.Item label="服务等级">
               <span class="font-semibold text-purple-600 dark:text-purple-400">
-                {{ rating.serviceLevel }}
+                {{ getDict('aicrm_service_level', rating.serviceLevel) }}
               </span>
             </Descriptions.Item>
             <Descriptions.Item label="风险等级">
               <span class="font-semibold text-green-600 dark:text-green-400">
-                {{ rating.riskLevel }}
+                {{ getDict('aicrm_risk_level', rating.riskLevel) }}
               </span>
             </Descriptions.Item>
           </Descriptions>
@@ -80,7 +91,7 @@ const getScoreColor = (score: number) => {
               :style="{ color: getContributionColor(contribution.overallLevel) }"
               class="text-2xl font-bold"
             >
-              {{ contribution.overallLevel }}
+              {{ getDict('aicrm_contribution_level', contribution.overallLevel) }}
             </div>
           </div>
 

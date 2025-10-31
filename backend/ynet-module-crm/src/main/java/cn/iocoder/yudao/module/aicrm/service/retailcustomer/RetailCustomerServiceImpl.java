@@ -159,7 +159,35 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
     public RetailCustomerOverviewRespVO getCustomerOverview(Long customerId, String startDate, String endDate) {
         RetailCustomerOverviewRespVO overview = new RetailCustomerOverviewRespVO();
 
-        // 1. 查询客户各类账户数据
+        // 1. 查询资产快照数据（最近12个月）
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassetsnapshot.CustomerAssetSnapshotDO> snapshots =
+                customerAssetSnapshotMapper.selectRecentMonths(customerId, 12);
+        // 反转列表，使其按时间正序排列
+        java.util.Collections.reverse(snapshots);
+        List<RetailCustomerOverviewRespVO.AssetTrendVO> assetTrend = overviewHelper.convertAssetSnapshots(snapshots);
+        overview.setAssetTrend(assetTrend);
+
+        // 2. 从最新的资产快照获取财务指标
+        RetailCustomerOverviewRespVO.FinancialMetricsVO metrics = new RetailCustomerOverviewRespVO.FinancialMetricsVO();
+        if (!snapshots.isEmpty()) {
+            // 获取最新的快照（已经是时间正序，所以取最后一个）
+            cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassetsnapshot.CustomerAssetSnapshotDO latestSnapshot = snapshots.get(snapshots.size() - 1);
+            metrics.setTotalAssets(latestSnapshot.getTotalAssets());
+            metrics.setTotalLiabilities(latestSnapshot.getTotalLiabilities());
+            metrics.setNetAssets(latestSnapshot.getNetAssets());
+            metrics.setDepositBalance(latestSnapshot.getDepositBalance());
+            metrics.setLoanBalance(latestSnapshot.getLoanBalance());
+            metrics.setWealthBalance(latestSnapshot.getWealthBalance());
+            metrics.setTotalAssetsGrowth(latestSnapshot.getTotalAssetsGrowth());
+            metrics.setDepositGrowth(latestSnapshot.getDepositGrowth());
+            metrics.setWealthGrowth(latestSnapshot.getWealthGrowth());
+            // TODO: availableBalance和creditLimit需要从其他表获取
+            metrics.setAvailableBalance(null);
+            metrics.setCreditLimit(null);
+        }
+        overview.setFinancialMetrics(metrics);
+
+        // 3. 查询客户各类账户数据（用于产品持有统计和资产结构）
         List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customeraccountdeposit.CustomerAccountDepositDO> deposits =
                 customerAccountDepositMapper.selectList("customer_id", customerId);
 
@@ -178,20 +206,18 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
         List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customeraccountcreditcard.CustomerAccountCreditcardDO> creditcards =
                 customerAccountCreditcardMapper.selectList("customer_id", customerId);
 
-        // 2. 计算财务指标
-        RetailCustomerOverviewRespVO.FinancialMetricsVO metrics = overviewHelper.calculateFinancialMetrics(deposits, wealths, loans);
-        overview.setFinancialMetrics(metrics);
-
-        // 3. 查询资产快照数据（最近12个月）
-        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassetsnapshot.CustomerAssetSnapshotDO> snapshots =
-                customerAssetSnapshotMapper.selectRecentMonths(customerId, 12);
-        // 反转列表，使其按时间正序排列
-        java.util.Collections.reverse(snapshots);
-        List<RetailCustomerOverviewRespVO.AssetTrendVO> assetTrend = overviewHelper.convertAssetSnapshots(snapshots);
-        overview.setAssetTrend(assetTrend);
-
-        // 4. 计算资产结构
-        RetailCustomerOverviewRespVO.AssetStructureVO structure = overviewHelper.calculateAssetStructure(deposits, wealths, funds, insurances);
+        // 4. 从最新资产快照获取资产结构
+        RetailCustomerOverviewRespVO.AssetStructureVO structure = new RetailCustomerOverviewRespVO.AssetStructureVO();
+        if (!snapshots.isEmpty()) {
+            cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassetsnapshot.CustomerAssetSnapshotDO latestSnapshot = snapshots.get(snapshots.size() - 1);
+            structure.setDepositAmount(latestSnapshot.getDepositBalance());
+            structure.setWealthAmount(latestSnapshot.getWealthBalance());
+            structure.setFundAmount(latestSnapshot.getFundBalance());
+            structure.setInsuranceAmount(latestSnapshot.getInsuranceBalance());
+            structure.setMetalAmount(latestSnapshot.getMetalBalance());
+            structure.setTrustAmount(latestSnapshot.getTrustBalance());
+            structure.setOtherAmount(latestSnapshot.getOtherBalance());
+        }
         overview.setAssetStructure(structure);
 
         // 5. 存款类型分布 - 暂时返回空对象 (需要按存款类型汇总)

@@ -4,6 +4,7 @@ import type { EchartsUIType } from '@vben/plugins/echarts';
 import { computed, ref, watch } from 'vue';
 import { Card } from 'ant-design-vue';
 import { EchartsUI, useEcharts } from '@vben/plugins/echarts';
+import { getDictLabel } from '@vben/hooks';
 import type { EChartsOption } from 'echarts';
 import type { RetailCustomerOverviewApi } from '#/api/aicrm/retail-customer';
 
@@ -16,9 +17,17 @@ const props = defineProps<Props>();
 const chartRef = ref<EchartsUIType>();
 const { renderEcharts } = useEcharts(chartRef);
 
+// 获取字典标签
+function getDict(dictType: string, value: any) {
+  if (value === null || value === undefined) return value;
+  return getDictLabel(dictType, value) || value;
+}
+
 // 构建图表配置
 const chartOptions = computed<EChartsOption>(() => {
-  const categories = props.holdingData.map((item) => item.productType);
+  const categories = props.holdingData.map((item) =>
+    getDict('aicrm_product_type', item.productType)
+  );
   const counts = props.holdingData.map((item) => item.productCount);
 
   return {

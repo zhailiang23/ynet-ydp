@@ -44,7 +44,7 @@ const router = useRouter();
 
 const loading = ref(false);
 const customer = ref<RetailCustomerApi.RetailCustomer>();
-const activeSection = ref('basic');
+const activeSection = ref('overview');
 
 // 零售客户360视图菜单项
 const menuItems = [
