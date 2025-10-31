@@ -408,7 +408,7 @@ defineExpose({
       background: transparent !important;
 
       &.ant-tabs-tab-active {
-        background: #fff;
+        background: #fff !important;
       }
     }
   }
