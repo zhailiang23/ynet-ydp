@@ -24,6 +24,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 
 import cn.iocoder.yudao.module.aicrm.controller.admin.customerassignment.vo.*;
 import cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassignment.CustomerAssignmentDO;
@@ -123,6 +124,44 @@ public class CustomerAssignmentController {
         // 导出 Excel
         ExcelUtils.write(response, "客户归属关系表（零售+对公共用，支持主协办模式）.xls", "数据", CustomerAssignmentRespVO.class,
                         BeanUtils.toBean(list, CustomerAssignmentRespVO.class));
+    }
+
+    // ==================== 批量操作接口 ====================
+
+    @PostMapping("/assign")
+    @Operation(summary = "批量分配客户")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:assign')")
+    public CommonResult<Boolean> assignCustomers(@Valid @RequestBody AssignCustomerReqVO reqVO) {
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        customerAssignmentService.assignCustomers(userId, reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/transfer")
+    @Operation(summary = "批量移交客户")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:transfer')")
+    public CommonResult<Boolean> transferCustomers(@Valid @RequestBody TransferCustomerReqVO reqVO) {
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        customerAssignmentService.transferCustomers(userId, reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/reclaim")
+    @Operation(summary = "批量回收客户")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:reclaim')")
+    public CommonResult<Boolean> reclaimCustomers(@Valid @RequestBody ReclaimCustomerReqVO reqVO) {
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        customerAssignmentService.reclaimCustomers(userId, reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/change-dept")
+    @Operation(summary = "批量变更主办部门")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:change-dept')")
+    public CommonResult<Boolean> changeDept(@Valid @RequestBody ChangeDeptReqVO reqVO) {
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        customerAssignmentService.changeDept(userId, reqVO);
+        return success(true);
     }
 
 }

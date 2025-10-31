@@ -182,4 +182,15 @@ public interface ErrorCodeConstants {
     // ========== 客户表外业务概览 1-020-095-000 ==========
     ErrorCode CUSTOMER_OFFBALANCE_OVERVIEW_NOT_EXISTS = new ErrorCode(1_020_095_000, "客户表外业务概览不存在");
 
+    // ========== 客户托管记录 1-020-100-000 ==========
+    ErrorCode CUSTOMER_DELEGATION_NOT_EXISTS = new ErrorCode(1_020_100_000, "客户托管记录不存在");
+    ErrorCode CUSTOMER_DELEGATION_ALREADY_EXISTS = new ErrorCode(1_020_100_001, "客户已存在进行中的托管记录");
+    ErrorCode CUSTOMER_DELEGATION_NOT_ACTIVE = new ErrorCode(1_020_100_002, "客户托管记录不是进行中状态");
+
+    // ========== 客户认领申请 1-020-101-000 ==========
+    ErrorCode CUSTOMER_CLAIM_APPLICATION_NOT_EXISTS = new ErrorCode(1_020_101_000, "客户认领申请不存在");
+
+    // ========== 客户退回申请 1-020-102-000 ==========
+    ErrorCode CUSTOMER_RETURN_APPLICATION_NOT_EXISTS = new ErrorCode(1_020_102_000, "客户退回申请不存在");
+
 }

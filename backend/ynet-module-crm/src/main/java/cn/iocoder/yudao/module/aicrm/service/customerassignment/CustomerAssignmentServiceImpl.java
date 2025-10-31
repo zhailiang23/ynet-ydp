@@ -1,11 +1,15 @@
 package cn.iocoder.yudao.module.aicrm.service.customerassignment;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassignmenthistory.CustomerAssignmentHistoryDO;
+import cn.iocoder.yudao.module.aicrm.dal.mysql.customerassignmenthistory.CustomerAssignmentHistoryMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 import cn.iocoder.yudao.module.aicrm.controller.admin.customerassignment.vo.*;
 import cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassignment.CustomerAssignmentDO;
@@ -31,6 +35,9 @@ public class CustomerAssignmentServiceImpl implements CustomerAssignmentService 
 
     @Resource
     private CustomerAssignmentMapper customerAssignmentMapper;
+
+    @Resource
+    private CustomerAssignmentHistoryMapper customerAssignmentHistoryMapper;
 
     @Override
     public Long createCustomerAssignment(CustomerAssignmentSaveReqVO createReqVO) {
@@ -80,6 +87,159 @@ public class CustomerAssignmentServiceImpl implements CustomerAssignmentService 
     @Override
     public PageResult<CustomerAssignmentDO> getCustomerAssignmentPage(CustomerAssignmentPageReqVO pageReqVO) {
         return customerAssignmentMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignCustomers(Long userId, AssignCustomerReqVO reqVO) {
+        for (Long customerId : reqVO.getCustomerIds()) {
+            // 1. 创建归属关系
+            CustomerAssignmentDO assignment = new CustomerAssignmentDO();
+            assignment.setCustomerId(customerId);
+            assignment.setAssignmentType(reqVO.getAssignmentType());
+            assignment.setDeptId(reqVO.getDeptId());
+            assignment.setUserId(reqVO.getUserId());
+            assignment.setHasViewRight(reqVO.getHasViewRight());
+            assignment.setHasMaintainRight(reqVO.getHasMaintainRight());
+            assignment.setAssignDate(LocalDate.now());
+            assignment.setEffectiveDate(reqVO.getEffectiveDate() != null ? reqVO.getEffectiveDate() : LocalDate.now());
+            assignment.setExpiryDate(reqVO.getExpiryDate());
+            assignment.setAssignOperatorId(userId);
+            assignment.setStatus(1); // 生效中
+            assignment.setRemark(reqVO.getRemark());
+            customerAssignmentMapper.insert(assignment);
+
+            // 2. 记录历史
+            recordAssignmentHistory(customerId, "manual_assign", null, null,
+                    reqVO.getDeptId(), reqVO.getUserId(), "手动分配客户", userId, null);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void transferCustomers(Long userId, TransferCustomerReqVO reqVO) {
+        for (Long customerId : reqVO.getCustomerIds()) {
+            // 1. 查询当前归属关系
+            CustomerAssignmentDO oldAssignment = getActiveAssignmentByCustomerId(customerId);
+            if (oldAssignment == null) {
+                continue;
+            }
+
+            // 2. 将当前归属关系设置为失效
+            customerAssignmentMapper.updateById(
+                    new CustomerAssignmentDO()
+                            .setId(oldAssignment.getId())
+                            .setStatus(0) // 已失效
+                            .setExpiryDate(LocalDate.now()));
+
+            // 3. 创建新的归属关系
+            CustomerAssignmentDO newAssignment = new CustomerAssignmentDO();
+            newAssignment.setCustomerId(customerId);
+            newAssignment.setAssignmentType(oldAssignment.getAssignmentType());
+            newAssignment.setDeptId(oldAssignment.getDeptId());
+            newAssignment.setUserId(reqVO.getToUserId());
+            newAssignment.setHasViewRight(oldAssignment.getHasViewRight());
+            newAssignment.setHasMaintainRight(oldAssignment.getHasMaintainRight());
+            newAssignment.setAssignDate(LocalDate.now());
+            newAssignment.setEffectiveDate(LocalDate.now());
+            newAssignment.setAssignOperatorId(userId);
+            newAssignment.setStatus(1); // 生效中
+            newAssignment.setRemark("客户移交");
+            customerAssignmentMapper.insert(newAssignment);
+
+            // 4. 记录历史
+            recordAssignmentHistory(customerId, "transfer", oldAssignment.getDeptId(), oldAssignment.getUserId(),
+                    oldAssignment.getDeptId(), reqVO.getToUserId(), reqVO.getTransferReason(), userId, null);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void reclaimCustomers(Long userId, ReclaimCustomerReqVO reqVO) {
+        for (Long customerId : reqVO.getCustomerIds()) {
+            // 1. 查询当前归属关系
+            CustomerAssignmentDO oldAssignment = getActiveAssignmentByCustomerId(customerId);
+            if (oldAssignment == null) {
+                continue;
+            }
+
+            // 2. 将当前归属关系设置为失效
+            customerAssignmentMapper.updateById(
+                    new CustomerAssignmentDO()
+                            .setId(oldAssignment.getId())
+                            .setStatus(0) // 已失效
+                            .setExpiryDate(LocalDate.now()));
+
+            // 3. 记录历史
+            recordAssignmentHistory(customerId, "reclaim", oldAssignment.getDeptId(), oldAssignment.getUserId(),
+                    null, null, reqVO.getReclaimReason(), userId, null);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void changeDept(Long userId, ChangeDeptReqVO reqVO) {
+        for (Long customerId : reqVO.getCustomerIds()) {
+            // 1. 查询当前主办归属关系
+            CustomerAssignmentDO oldAssignment = getActiveAssignmentByCustomerId(customerId);
+            if (oldAssignment == null) {
+                continue;
+            }
+
+            // 2. 将当前归属关系设置为失效
+            customerAssignmentMapper.updateById(
+                    new CustomerAssignmentDO()
+                            .setId(oldAssignment.getId())
+                            .setStatus(0) // 已失效
+                            .setExpiryDate(LocalDate.now()));
+
+            // 3. 创建新的归属关系
+            CustomerAssignmentDO newAssignment = new CustomerAssignmentDO();
+            newAssignment.setCustomerId(customerId);
+            newAssignment.setAssignmentType(1); // 主办
+            newAssignment.setDeptId(reqVO.getNewDeptId());
+            newAssignment.setUserId(reqVO.getNewUserId());
+            newAssignment.setHasViewRight(true);
+            newAssignment.setHasMaintainRight(true);
+            newAssignment.setAssignDate(LocalDate.now());
+            newAssignment.setEffectiveDate(LocalDate.now());
+            newAssignment.setAssignOperatorId(userId);
+            newAssignment.setStatus(1); // 生效中
+            newAssignment.setRemark("主办变更");
+            customerAssignmentMapper.insert(newAssignment);
+
+            // 4. 记录历史
+            recordAssignmentHistory(customerId, "dept_transfer", oldAssignment.getDeptId(), oldAssignment.getUserId(),
+                    reqVO.getNewDeptId(), reqVO.getNewUserId(), reqVO.getChangeReason(), userId, null);
+        }
+    }
+
+    // ==================== 私有方法 ====================
+
+    private CustomerAssignmentDO getActiveAssignmentByCustomerId(Long customerId) {
+        return customerAssignmentMapper.selectOne(
+                new LambdaQueryWrapper<CustomerAssignmentDO>()
+                        .eq(CustomerAssignmentDO::getCustomerId, customerId)
+                        .eq(CustomerAssignmentDO::getAssignmentType, 1) // 主办
+                        .eq(CustomerAssignmentDO::getStatus, 1) // 生效中
+        );
+    }
+
+    private void recordAssignmentHistory(Long customerId, String operationType, Long oldDeptId, Long oldUserId,
+                                          Long newDeptId, Long newUserId, String changeReason, Long operatorId, String processInstanceId) {
+        CustomerAssignmentHistoryDO history = new CustomerAssignmentHistoryDO();
+        history.setCustomerId(customerId);
+        history.setOperationType(operationType);
+        history.setIsDelegateOperation(false);
+        history.setOldDeptId(oldDeptId);
+        history.setOldUserId(oldUserId);
+        history.setNewDeptId(newDeptId);
+        history.setNewUserId(newUserId);
+        history.setChangeReason(changeReason);
+        history.setChangeDate(LocalDate.now());
+        history.setOperatorId(operatorId);
+        history.setProcessInstanceId(processInstanceId);
+        customerAssignmentHistoryMapper.insert(history);
     }
 
 }

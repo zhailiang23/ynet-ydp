@@ -75,6 +75,25 @@ public class CustomerAssignmentDO extends BaseDO {
      * 备注
      */
     private String remark;
-
+    /**
+     * 是否托管状态
+     */
+    private Boolean isDelegated;
+    /**
+     * 托管方客户经理ID（托管时保存原客户经理ID）
+     */
+    private Long delegateFromUserId;
+    /**
+     * 托管开始日期
+     */
+    private LocalDate delegateStartDate;
+    /**
+     * 托管结束日期（计划）
+     */
+    private LocalDate delegateEndDate;
+    /**
+     * 托管原因
+     */
+    private String delegateReason;
 
 }
