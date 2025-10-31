@@ -230,39 +230,6 @@ function formatDate(value: any) {
   font-family: 'Courier New', Courier, monospace;
 }
 
-// Dark 模式样式 - 必须在 scoped 块外面
-.dark {
-  .member-card {
-    :deep(.ant-card) {
-      background: rgb(20 22 26);
-      border-color: rgb(48 52 59);
-    }
-  }
-
-  .name-row {
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-
-    .member-name {
-      color: #fff;
-    }
-
-    .member-relation {
-      background: rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.8);
-    }
-  }
-
-  .info-row {
-    .info-label {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .info-value {
-      color: rgba(255, 255, 255, 0.85);
-    }
-  }
-}
-
 @media (max-width: 768px) {
   .avatar-wrapper {
     width: 50px;
@@ -280,6 +247,41 @@ function formatDate(value: any) {
 
     .member-relation {
       font-size: 11px;
+    }
+  }
+}
+</style>
+
+<style lang="less">
+// Dark 模式样式 - 必须在单独的非 scoped 块中
+.dark {
+  .member-card {
+    :deep(.ant-card) {
+      background: rgb(20 22 26) !important;
+      border-color: rgb(48 52 59) !important;
+    }
+  }
+
+  .name-row {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+
+    .member-name {
+      color: #fff !important;
+    }
+
+    .member-relation {
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+  }
+
+  .info-row {
+    .info-label {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .info-value {
+      color: rgba(255, 255, 255, 0.85) !important;
     }
   }
 }
