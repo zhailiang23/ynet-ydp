@@ -20,6 +20,7 @@ import ContractInfo from './pages/contract-info.vue';
 import ContributionInfo from './pages/contribution-info.vue';
 import CouponInfo from './pages/coupon-info.vue';
 import CreditInfo from './pages/credit-info.vue';
+import CustomerOverview from './pages/customer-overview.vue';
 import DemandInfo from './pages/demand-info.vue';
 import FamilyInfo from './pages/family-info.vue';
 import GuaranteeInfo from './pages/guarantee-info.vue';
@@ -47,7 +48,7 @@ const activeSection = ref('basic');
 
 // 零售客户360视图菜单项
 const menuItems = [
-  { key: 'overview', label: '客户概况', component: Placeholder },
+  { key: 'overview', label: '客户概况', component: CustomerOverview },
   { key: 'tags', label: '标签画像', component: Placeholder },
   { key: 'graph', label: '知识图谱', component: Placeholder },
   { key: 'basic', label: '客户基本信息', component: BasicInfo },
