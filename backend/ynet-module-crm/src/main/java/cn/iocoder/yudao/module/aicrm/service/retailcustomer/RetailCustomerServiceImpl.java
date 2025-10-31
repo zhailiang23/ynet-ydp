@@ -37,6 +37,36 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
     @Resource
     private CustomerMapper customerMapper;
 
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customeraccountdeposit.CustomerAccountDepositMapper customerAccountDepositMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customeraccountwealth.CustomerAccountWealthMapper customerAccountWealthMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customeraccountloan.CustomerAccountLoanMapper customerAccountLoanMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customeraccountfund.CustomerAccountFundMapper customerAccountFundMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customeraccountinsurance.CustomerAccountInsuranceMapper customerAccountInsuranceMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customeraccountcreditcard.CustomerAccountCreditcardMapper customerAccountCreditcardMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customerrating.CustomerRatingMapper customerRatingMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customercontribution.CustomerContributionMapper customerContributionMapper;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customerimportantevent.CustomerImportantEventMapper customerImportantEventMapper;
+
+    @Resource
+    private RetailCustomerOverviewHelper overviewHelper;
+
     @Override
     public Long createRetailCustomer(RetailCustomerSaveReqVO createReqVO) {
         // 插入
@@ -121,159 +151,84 @@ public class RetailCustomerServiceImpl implements RetailCustomerService {
 
     @Override
     public RetailCustomerOverviewRespVO getCustomerOverview(Long customerId, String startDate, String endDate) {
-        // TODO: 后续需要查询真实数据，当前返回模拟数据用于前端开发
-
         RetailCustomerOverviewRespVO overview = new RetailCustomerOverviewRespVO();
 
-        // 1. 财务指标 (模拟数据)
-        RetailCustomerOverviewRespVO.FinancialMetricsVO metrics = new RetailCustomerOverviewRespVO.FinancialMetricsVO();
-        metrics.setTotalAssets(java.math.BigDecimal.valueOf(1_200_000));
-        metrics.setTotalLiabilities(java.math.BigDecimal.valueOf(130_000));
-        metrics.setNetAssets(java.math.BigDecimal.valueOf(1_070_000));
-        metrics.setDepositBalance(java.math.BigDecimal.valueOf(800_000));
-        metrics.setLoanBalance(java.math.BigDecimal.valueOf(50_000));
-        metrics.setWealthBalance(java.math.BigDecimal.valueOf(400_000));
-        metrics.setTotalAssetsGrowth(java.math.BigDecimal.valueOf(0.052));
-        metrics.setDepositGrowth(java.math.BigDecimal.valueOf(0.031));
-        metrics.setWealthGrowth(java.math.BigDecimal.valueOf(0.085));
+        // 1. 查询客户各类账户数据
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customeraccountdeposit.CustomerAccountDepositDO> deposits =
+                customerAccountDepositMapper.selectList("customer_id", customerId);
+
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customeraccountwealth.CustomerAccountWealthDO> wealths =
+                customerAccountWealthMapper.selectList("customer_id", customerId);
+
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customeraccountloan.CustomerAccountLoanDO> loans =
+                customerAccountLoanMapper.selectList("customer_id", customerId);
+
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customeraccountfund.CustomerAccountFundDO> funds =
+                customerAccountFundMapper.selectList("customer_id", customerId);
+
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customeraccountinsurance.CustomerAccountInsuranceDO> insurances =
+                customerAccountInsuranceMapper.selectList("customer_id", customerId);
+
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customeraccountcreditcard.CustomerAccountCreditcardDO> creditcards =
+                customerAccountCreditcardMapper.selectList("customer_id", customerId);
+
+        // 2. 计算财务指标
+        RetailCustomerOverviewRespVO.FinancialMetricsVO metrics = overviewHelper.calculateFinancialMetrics(deposits, wealths, loans);
         overview.setFinancialMetrics(metrics);
 
-        // 2. 资产趋势数据 (模拟12个月的数据)
-        List<RetailCustomerOverviewRespVO.AssetTrendVO> trendList = new ArrayList<>();
-        for (int i = 1; i <= 12; i++) {
-            RetailCustomerOverviewRespVO.AssetTrendVO trend = new RetailCustomerOverviewRespVO.AssetTrendVO();
-            trend.setMonth("2024-" + String.format("%02d", i));
-            trend.setTotalAssets(java.math.BigDecimal.valueOf(1_000_000 + i * 10_000));
-            trend.setDeposits(java.math.BigDecimal.valueOf(700_000 + i * 5_000));
-            trend.setWealth(java.math.BigDecimal.valueOf(300_000 + i * 3_000));
-            trend.setLoans(java.math.BigDecimal.valueOf(50_000 - i * 500));
-            trendList.add(trend);
-        }
-        overview.setAssetTrend(trendList);
+        // 3. 资产趋势数据 - 暂时返回空列表 (需要历史数据支持)
+        overview.setAssetTrend(new ArrayList<>());
 
-        // 3. 资产结构
-        RetailCustomerOverviewRespVO.AssetStructureVO structure = new RetailCustomerOverviewRespVO.AssetStructureVO();
-        structure.setDepositAmount(java.math.BigDecimal.valueOf(800_000));
-        structure.setWealthAmount(java.math.BigDecimal.valueOf(350_000));
-        structure.setFundAmount(java.math.BigDecimal.valueOf(180_000));
-        structure.setInsuranceAmount(java.math.BigDecimal.valueOf(50_000));
-        structure.setMetalAmount(java.math.BigDecimal.valueOf(30_000));
-        structure.setTrustAmount(java.math.BigDecimal.valueOf(20_000));
-        structure.setOtherAmount(java.math.BigDecimal.valueOf(10_000));
+        // 4. 计算资产结构
+        RetailCustomerOverviewRespVO.AssetStructureVO structure = overviewHelper.calculateAssetStructure(deposits, wealths, funds, insurances);
         overview.setAssetStructure(structure);
 
-        // 4. 存款类型分布
+        // 5. 存款类型分布 - 暂时返回空对象 (需要按存款类型汇总)
         RetailCustomerOverviewRespVO.DepositTypeDistributionVO depositDist = new RetailCustomerOverviewRespVO.DepositTypeDistributionVO();
-        depositDist.setCurrentDepositAmount(java.math.BigDecimal.valueOf(240_000));
-        depositDist.setTimeDepositAmount(java.math.BigDecimal.valueOf(400_000));
-        depositDist.setNoticeDepositAmount(java.math.BigDecimal.valueOf(100_000));
-        depositDist.setOtherDepositAmount(java.math.BigDecimal.valueOf(60_000));
+        depositDist.setCurrentDepositAmount(java.math.BigDecimal.ZERO);
+        depositDist.setTimeDepositAmount(java.math.BigDecimal.ZERO);
+        depositDist.setNoticeDepositAmount(java.math.BigDecimal.ZERO);
+        depositDist.setOtherDepositAmount(java.math.BigDecimal.ZERO);
         overview.setDepositDistribution(depositDist);
 
-        // 5. 客户评级
-        RetailCustomerOverviewRespVO.CustomerRatingVO rating = new RetailCustomerOverviewRespVO.CustomerRatingVO();
-        rating.setValueLevel("A+");
-        rating.setServiceLevel("金卡");
-        rating.setRiskLevel("低");
-        rating.setRatingScore(95);
+        // 6. 查询客户评级
+        cn.iocoder.yudao.module.aicrm.dal.dataobject.customerrating.CustomerRatingDO ratingDO =
+                customerRatingMapper.selectOne("customer_id", customerId);
+        RetailCustomerOverviewRespVO.CustomerRatingVO rating = overviewHelper.convertCustomerRating(ratingDO);
         overview.setRating(rating);
 
-        // 6. 客户贡献度
-        RetailCustomerOverviewRespVO.CustomerContributionVO contribution = new RetailCustomerOverviewRespVO.CustomerContributionVO();
-        contribution.setOverallLevel("高");
-        contribution.setDepositScore(85);
-        contribution.setLoanScore(30);
-        contribution.setMiddleBusinessScore(60);
+        // 7. 查询客户贡献度
+        cn.iocoder.yudao.module.aicrm.dal.dataobject.customercontribution.CustomerContributionDO contributionDO =
+                customerContributionMapper.selectOne("customer_id", customerId);
+        RetailCustomerOverviewRespVO.CustomerContributionVO contribution = overviewHelper.convertCustomerContribution(contributionDO);
         overview.setContribution(contribution);
 
-        // 7. 产品持有统计
-        RetailCustomerOverviewRespVO.ProductHoldingStatVO productStat = new RetailCustomerOverviewRespVO.ProductHoldingStatVO();
-        productStat.setDepositAccountCount(3);
-        productStat.setWealthProductCount(5);
-        productStat.setFundCount(4);
-        productStat.setCreditcardCount(2);
-        productStat.setTrustCount(0);
-        productStat.setInsuranceCount(1);
+        // 8. 计算产品持有统计
+        RetailCustomerOverviewRespVO.ProductHoldingStatVO productStat = overviewHelper.calculateProductHoldingStat(
+                deposits, wealths, funds, creditcards, insurances);
         overview.setProductStat(productStat);
 
-        // 8. 最近事件
-        List<RetailCustomerOverviewRespVO.CustomerEventVO> events = new ArrayList<>();
-
-        RetailCustomerOverviewRespVO.CustomerEventVO event1 = new RetailCustomerOverviewRespVO.CustomerEventVO();
-        event1.setId(1L);
-        event1.setEventName("定期存款到期提醒");
-        event1.setEventType("到期提醒");
-        event1.setEventDate("2024-10-28");
-        event1.setEventDescription("账号: 6217****8901 | 金额: 50万");
-        events.add(event1);
-
-        RetailCustomerOverviewRespVO.CustomerEventVO event2 = new RetailCustomerOverviewRespVO.CustomerEventVO();
-        event2.setId(2L);
-        event2.setEventName("理财产品赎回");
-        event2.setEventType("产品交易");
-        event2.setEventDate("2024-10-27");
-        event2.setEventDescription("产品: XX稳健型理财 | 金额: 10万");
-        events.add(event2);
-
-        RetailCustomerOverviewRespVO.CustomerEventVO event3 = new RetailCustomerOverviewRespVO.CustomerEventVO();
-        event3.setId(3L);
-        event3.setEventName("参与营销活动");
-        event3.setEventType("营销活动");
-        event3.setEventDate("2024-10-26");
-        event3.setEventDescription("活动: 国庆理财促销活动");
-        events.add(event3);
-
+        // 9. 查询最近重要事件 (最多10条)
+        List<cn.iocoder.yudao.module.aicrm.dal.dataobject.customerimportantevent.CustomerImportantEventDO> eventDOs =
+                customerImportantEventMapper.selectList(
+                        new cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX<cn.iocoder.yudao.module.aicrm.dal.dataobject.customerimportantevent.CustomerImportantEventDO>()
+                                .eq(cn.iocoder.yudao.module.aicrm.dal.dataobject.customerimportantevent.CustomerImportantEventDO::getCustomerId, customerId)
+                                .orderByDesc(cn.iocoder.yudao.module.aicrm.dal.dataobject.customerimportantevent.CustomerImportantEventDO::getEventDate)
+                                .last("LIMIT 10")
+                );
+        List<RetailCustomerOverviewRespVO.CustomerEventVO> events = overviewHelper.convertCustomerEvents(eventDOs);
         overview.setRecentEvents(events);
 
-        // 9. 产品持有趋势
-        List<RetailCustomerOverviewRespVO.ProductHoldingTrendVO> holdingTrend = new ArrayList<>();
-
-        RetailCustomerOverviewRespVO.ProductHoldingTrendVO holding1 = new RetailCustomerOverviewRespVO.ProductHoldingTrendVO();
-        holding1.setProductType("存款账户");
-        holding1.setProductCount(3);
-        holdingTrend.add(holding1);
-
-        RetailCustomerOverviewRespVO.ProductHoldingTrendVO holding2 = new RetailCustomerOverviewRespVO.ProductHoldingTrendVO();
-        holding2.setProductType("理财产品");
-        holding2.setProductCount(5);
-        holdingTrend.add(holding2);
-
-        RetailCustomerOverviewRespVO.ProductHoldingTrendVO holding3 = new RetailCustomerOverviewRespVO.ProductHoldingTrendVO();
-        holding3.setProductType("基金");
-        holding3.setProductCount(4);
-        holdingTrend.add(holding3);
-
-        RetailCustomerOverviewRespVO.ProductHoldingTrendVO holding4 = new RetailCustomerOverviewRespVO.ProductHoldingTrendVO();
-        holding4.setProductType("信用卡");
-        holding4.setProductCount(2);
-        holdingTrend.add(holding4);
-
-        RetailCustomerOverviewRespVO.ProductHoldingTrendVO holding5 = new RetailCustomerOverviewRespVO.ProductHoldingTrendVO();
-        holding5.setProductType("信托");
-        holding5.setProductCount(0);
-        holdingTrend.add(holding5);
-
-        RetailCustomerOverviewRespVO.ProductHoldingTrendVO holding6 = new RetailCustomerOverviewRespVO.ProductHoldingTrendVO();
-        holding6.setProductType("保险");
-        holding6.setProductCount(1);
-        holdingTrend.add(holding6);
-
+        // 10. 产品持有趋势
+        List<RetailCustomerOverviewRespVO.ProductHoldingTrendVO> holdingTrend = overviewHelper.calculateProductHoldingTrend(
+                deposits.size(), wealths.size(), funds.size(), creditcards.size(), 0, insurances.size());
         overview.setProductHoldingTrend(holdingTrend);
 
-        // 10. 月度交易统计 (最近6个月)
-        List<RetailCustomerOverviewRespVO.MonthlyTransactionVO> monthlyTransactions = new ArrayList<>();
-        for (int i = 5; i >= 0; i--) {
-            RetailCustomerOverviewRespVO.MonthlyTransactionVO transaction = new RetailCustomerOverviewRespVO.MonthlyTransactionVO();
-            transaction.setMonth("2024-" + String.format("%02d", 12 - i));
-            transaction.setTransactionCount(15 + i * 3);
-            transaction.setTransactionAmount(java.math.BigDecimal.valueOf(250_000 + i * 30_000));
-            monthlyTransactions.add(transaction);
-        }
-        overview.setMonthlyTransactions(monthlyTransactions);
+        // 11. 月度交易统计 - 暂时返回空列表 (需要交易流水数据支持)
+        overview.setMonthlyTransactions(new ArrayList<>());
 
-        // 11. 客户标签
-        List<String> tags = Arrays.asList("VIP", "高净值", "优质客户", "活跃用户");
-        overview.setTags(tags);
+        // 12. 客户标签 - 暂时返回空列表 (需要标签系统支持)
+        overview.setTags(new ArrayList<>());
 
         return overview;
     }

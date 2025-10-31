@@ -56,23 +56,17 @@ onMounted(() => {
         :metrics="overviewData.financialMetrics"
       />
 
-      <!-- 资产趋势 + 最近事件时间线 (2:1布局) -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <div class="lg:col-span-2">
-          <AssetTrendChart
-            v-if="overviewData.assetTrend?.length"
-            :trend-data="overviewData.assetTrend"
-          />
+      <!-- 资产趋势 + 最近事件时间线 (2:1布局) - 仅当有数据时显示 -->
+      <div v-if="overviewData.assetTrend?.length || overviewData.recentEvents?.length" class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div v-if="overviewData.assetTrend?.length" class="lg:col-span-2">
+          <AssetTrendChart :trend-data="overviewData.assetTrend" />
         </div>
-        <div class="lg:col-span-1">
-          <CustomerEventTimeline
-            v-if="overviewData.recentEvents?.length"
-            :events="overviewData.recentEvents"
-          />
+        <div v-if="overviewData.recentEvents?.length" :class="overviewData.assetTrend?.length ? 'lg:col-span-1' : 'lg:col-span-3'">
+          <CustomerEventTimeline :events="overviewData.recentEvents" />
         </div>
       </div>
 
-      <!-- 资产结构、月度交易、产品持有 (每排3个) -->
+      <!-- 资产结构、月度交易、产品持有 (仅显示有数据的图表) -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <AssetStructureChart
           v-if="overviewData.assetStructure"
