@@ -43,48 +43,84 @@ const router = useRouter();
 const loading = ref(false);
 const customer = ref<CompanyCustomerApi.CompanyCustomer>();
 const activeSection = ref('overview');
+const openKeys = ref<string[]>(['profile']); // 默认展开第一个一级目录
 
-// 对公客户360视图菜单项
+// 对公客户360视图树形菜单项
 const menuItems = [
-  { key: 'overview', label: '客户概览', component: Placeholder },
-  { key: 'tags', label: '标签画像', component: Placeholder },
-  { key: 'graph', label: '知识图谱', component: Placeholder },
-  { key: 'basic', label: '客户基本信息', component: BasicInfo },
-  { key: 'organization', label: '组织架构信息', component: OrganizationInfo },
-  { key: 'address', label: '客户地址信息', component: AddressInfo },
-  { key: 'contact', label: '联系人信息', component: ContactInfo },
-  { key: 'stock', label: '股票发行人信息', component: StockInfo },
-  { key: 'bond', label: '债权发行信息', component: BondInfo },
-  { key: 'finance', label: '客户财务信息', component: Placeholder },
-  { key: 'project', label: '客户项目信息', component: ProjectInfo },
-  { key: 'management', label: '管理信息', component: ManagementInfo },
-  { key: 'otherBank', label: '客户他行信息', component: OtherBankInfo },
-  { key: 'business', label: '客户业务概览', component: BusinessOverview },
-  { key: 'account', label: '账户信息', component: AccountInfo },
-  { key: 'product', label: '产品持有信息', component: ProductHolding },
-  { key: 'credit', label: '授信信息', component: CreditInfo },
-  { key: 'contract', label: '签约信息', component: ContractInfo },
-  { key: 'guarantee', label: '担保信息', component: GuaranteeInfo },
-  { key: 'transaction', label: '交易明细信息', component: TransactionInfo },
-  { key: 'rating', label: '客户评级信息', component: RatingInfo },
-  { key: 'contribution', label: '客户贡献度信息', component: ContributionInfo },
-  { key: 'marketing', label: '客户营销信息', component: MarketingInfo },
-  { key: 'demand', label: '客户需求信息', component: DemandInfo },
-  { key: 'recommend', label: '产品推荐', component: RecommendInfo },
-  { key: 'behavior', label: '线上渠道行为信息', component: ChannelBehaviorInfo },
-  { key: 'contactTrack', label: '客户接触轨迹', component: TimelineInfo },
-  { key: 'important', label: '客户重要事件', component: Placeholder },
+  {
+    key: 'profile',
+    label: '企业画像',
+    children: [
+      { key: 'overview', label: '客户概览', component: Placeholder },
+      { key: 'tags', label: '标签画像', component: Placeholder },
+      { key: 'graph', label: '知识图谱', component: Placeholder },
+      { key: 'basic', label: '客户基本信息', component: BasicInfo },
+      { key: 'organization', label: '组织架构信息', component: OrganizationInfo },
+      { key: 'address', label: '客户地址信息', component: AddressInfo },
+      { key: 'contact', label: '联系人信息', component: ContactInfo },
+      { key: 'stock', label: '股票发行人信息', component: StockInfo },
+      { key: 'bond', label: '债权发行信息', component: BondInfo },
+      { key: 'finance', label: '客户财务信息', component: Placeholder },
+      { key: 'project', label: '客户项目信息', component: ProjectInfo },
+    ],
+  },
+  {
+    key: 'business',
+    label: '业务管理',
+    children: [
+      { key: 'business-overview', label: '客户业务概览', component: BusinessOverview },
+      { key: 'account', label: '账户信息', component: AccountInfo },
+      { key: 'product', label: '产品持有信息', component: ProductHolding },
+      { key: 'credit', label: '授信信息', component: CreditInfo },
+      { key: 'contract', label: '签约信息', component: ContractInfo },
+      { key: 'guarantee', label: '担保信息', component: GuaranteeInfo },
+      { key: 'transaction', label: '交易明细信息', component: TransactionInfo },
+    ],
+  },
+  {
+    key: 'value',
+    label: '客户价值',
+    children: [
+      { key: 'rating', label: '客户评级信息', component: RatingInfo },
+      { key: 'contribution', label: '客户贡献度信息', component: ContributionInfo },
+      { key: 'management', label: '管理信息', component: ManagementInfo },
+      { key: 'otherBank', label: '客户他行信息', component: OtherBankInfo },
+    ],
+  },
+  {
+    key: 'service',
+    label: '客户服务',
+    children: [
+      { key: 'marketing', label: '客户营销信息', component: MarketingInfo },
+      { key: 'demand', label: '客户需求信息', component: DemandInfo },
+      { key: 'recommend', label: '产品推荐', component: RecommendInfo },
+      { key: 'behavior', label: '线上渠道行为信息', component: ChannelBehaviorInfo },
+      { key: 'contactTrack', label: '客户接触轨迹', component: TimelineInfo },
+      { key: 'important', label: '客户重要事件', component: Placeholder },
+    ],
+  },
 ];
+
+// 扁平化菜单项以便查找
+const flatMenuItems = computed(() => {
+  const items: any[] = [];
+  menuItems.forEach((group) => {
+    if (group.children) {
+      items.push(...group.children);
+    }
+  });
+  return items;
+});
 
 // 当前激活的组件
 const currentComponent = computed(() => {
-  const item = menuItems.find((m) => m.key === activeSection.value);
+  const item = flatMenuItems.value.find((m) => m.key === activeSection.value);
   return item?.component || Placeholder;
 });
 
 // 当前页面标题
 const currentTitle = computed(() => {
-  const item = menuItems.find((m) => m.key === activeSection.value);
+  const item = flatMenuItems.value.find((m) => m.key === activeSection.value);
   return item?.label || '';
 });
 
@@ -133,13 +169,19 @@ onMounted(() => {
       <!-- 左侧菜单 -->
       <div class="sidebar-menu">
         <Menu
-          :selectedKeys="[activeSection]"
+          v-model:open-keys="openKeys"
+          :selected-keys="[activeSection]"
           mode="inline"
           @click="handleMenuClick"
         >
-          <Menu.Item v-for="item in menuItems" :key="item.key">
-            {{ item.label }}
-          </Menu.Item>
+          <Menu.SubMenu v-for="group in menuItems" :key="group.key">
+            <template #title>
+              {{ group.label }}
+            </template>
+            <Menu.Item v-for="item in group.children" :key="item.key">
+              {{ item.label }}
+            </Menu.Item>
+          </Menu.SubMenu>
         </Menu>
       </div>
 
