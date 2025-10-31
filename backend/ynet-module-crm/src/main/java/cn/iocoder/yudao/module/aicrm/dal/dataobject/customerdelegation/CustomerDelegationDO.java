@@ -1,16 +1,13 @@
 package cn.iocoder.yudao.module.aicrm.dal.dataobject.customerdelegation;
 
 import lombok.*;
-import java.util.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
- * 客户托管记录 DO
+ * 客户托管记录表 DO
  *
  * @author 芋道源码
  */
@@ -61,6 +58,5 @@ public class CustomerDelegationDO extends BaseDO {
      * 托管状态（0=已结束，1=托管中，2=已取消）
      */
     private Integer delegationStatus;
-
 
 }

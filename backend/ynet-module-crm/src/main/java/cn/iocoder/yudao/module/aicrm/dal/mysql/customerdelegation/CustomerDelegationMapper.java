@@ -1,7 +1,5 @@
 package cn.iocoder.yudao.module.aicrm.dal.mysql.customerdelegation;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
@@ -10,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.aicrm.controller.admin.customerdelegation.vo.*;
 
 /**
- * 客户托管记录 Mapper
+ * 客户托管记录表 Mapper
  *
  * @author 芋道源码
  */
@@ -24,8 +22,6 @@ public interface CustomerDelegationMapper extends BaseMapperX<CustomerDelegation
                 .eqIfPresent(CustomerDelegationDO::getToUserId, reqVO.getToUserId())
                 .betweenIfPresent(CustomerDelegationDO::getStartDate, reqVO.getStartDate())
                 .betweenIfPresent(CustomerDelegationDO::getEndDate, reqVO.getEndDate())
-                .betweenIfPresent(CustomerDelegationDO::getActualEndDate, reqVO.getActualEndDate())
-                .eqIfPresent(CustomerDelegationDO::getDelegationReason, reqVO.getDelegationReason())
                 .eqIfPresent(CustomerDelegationDO::getDelegationStatus, reqVO.getDelegationStatus())
                 .betweenIfPresent(CustomerDelegationDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(CustomerDelegationDO::getId));

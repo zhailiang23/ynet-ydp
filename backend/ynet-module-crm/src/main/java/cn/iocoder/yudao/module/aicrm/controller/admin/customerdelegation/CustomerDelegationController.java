@@ -8,22 +8,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
-import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import cn.iocoder.yudao.framework.security.core.annotations.PreAuthenticated;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 
 import cn.iocoder.yudao.module.aicrm.controller.admin.customerdelegation.vo.*;
 import cn.iocoder.yudao.module.aicrm.dal.dataobject.customerdelegation.CustomerDelegationDO;
@@ -39,66 +29,45 @@ public class CustomerDelegationController {
     private CustomerDelegationService customerDelegationService;
 
     @PostMapping("/create")
-    @Operation(summary = "创建客户托管记录")
+    @Operation(summary = "创建客户托管")
     @PreAuthorize("@ss.hasPermission('aicrm:customer-delegation:create')")
-    public CommonResult<Long> createCustomerDelegation(@Valid @RequestBody CustomerDelegationSaveReqVO createReqVO) {
-        return success(customerDelegationService.createCustomerDelegation(createReqVO));
+    public CommonResult<Long> createDelegation(@Valid @RequestBody CustomerDelegationCreateReqVO createReqVO) {
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        return success(customerDelegationService.createDelegation(userId, createReqVO));
     }
 
-    @PutMapping("/update")
-    @Operation(summary = "更新客户托管记录")
+    @PutMapping("/end")
+    @Operation(summary = "结束客户托管")
     @PreAuthorize("@ss.hasPermission('aicrm:customer-delegation:update')")
-    public CommonResult<Boolean> updateCustomerDelegation(@Valid @RequestBody CustomerDelegationSaveReqVO updateReqVO) {
-        customerDelegationService.updateCustomerDelegation(updateReqVO);
+    public CommonResult<Boolean> endDelegation(@Valid @RequestBody CustomerDelegationEndReqVO endReqVO) {
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        customerDelegationService.endDelegation(userId, endReqVO);
         return success(true);
     }
 
-    @DeleteMapping("/delete")
-    @Operation(summary = "删除客户托管记录")
-    @Parameter(name = "id", description = "编号", required = true)
+    @DeleteMapping("/cancel")
+    @Operation(summary = "取消客户托管")
+    @Parameter(name = "id", description = "托管ID", required = true)
     @PreAuthorize("@ss.hasPermission('aicrm:customer-delegation:delete')")
-    public CommonResult<Boolean> deleteCustomerDelegation(@RequestParam("id") Long id) {
-        customerDelegationService.deleteCustomerDelegation(id);
-        return success(true);
-    }
-
-    @DeleteMapping("/delete-list")
-    @Parameter(name = "ids", description = "编号", required = true)
-    @Operation(summary = "批量删除客户托管记录")
-                @PreAuthorize("@ss.hasPermission('aicrm:customer-delegation:delete')")
-    public CommonResult<Boolean> deleteCustomerDelegationList(@RequestParam("ids") List<Long> ids) {
-        customerDelegationService.deleteCustomerDelegationListByIds(ids);
+    public CommonResult<Boolean> cancelDelegation(@RequestParam("id") Long id) {
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        customerDelegationService.cancelDelegation(userId, id);
         return success(true);
     }
 
     @GetMapping("/get")
     @Operation(summary = "获得客户托管记录")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @Parameter(name = "id", description = "编号", required = true, example = "1")
     @PreAuthorize("@ss.hasPermission('aicrm:customer-delegation:query')")
-    public CommonResult<CustomerDelegationRespVO> getCustomerDelegation(@RequestParam("id") Long id) {
-        CustomerDelegationDO customerDelegation = customerDelegationService.getCustomerDelegation(id);
-        return success(BeanUtils.toBean(customerDelegation, CustomerDelegationRespVO.class));
+    public CommonResult<CustomerDelegationDO> getDelegation(@RequestParam("id") Long id) {
+        return success(customerDelegationService.getDelegation(id));
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得客户托管记录分页")
     @PreAuthorize("@ss.hasPermission('aicrm:customer-delegation:query')")
-    public CommonResult<PageResult<CustomerDelegationRespVO>> getCustomerDelegationPage(@Valid CustomerDelegationPageReqVO pageReqVO) {
-        PageResult<CustomerDelegationDO> pageResult = customerDelegationService.getCustomerDelegationPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, CustomerDelegationRespVO.class));
-    }
-
-    @GetMapping("/export-excel")
-    @Operation(summary = "导出客户托管记录 Excel")
-    @PreAuthorize("@ss.hasPermission('aicrm:customer-delegation:export')")
-    @ApiAccessLog(operateType = EXPORT)
-    public void exportCustomerDelegationExcel(@Valid CustomerDelegationPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<CustomerDelegationDO> list = customerDelegationService.getCustomerDelegationPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "客户托管记录.xls", "数据", CustomerDelegationRespVO.class,
-                        BeanUtils.toBean(list, CustomerDelegationRespVO.class));
+    public CommonResult<PageResult<CustomerDelegationDO>> getDelegationPage(@Valid CustomerDelegationPageReqVO pageReqVO) {
+        return success(customerDelegationService.getDelegationPage(pageReqVO));
     }
 
 }
