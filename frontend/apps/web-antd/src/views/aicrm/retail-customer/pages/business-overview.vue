@@ -61,7 +61,6 @@ const [DepositOverviewGrid, depositOverviewGridApi] = useVbenVxeGrid({
       { field: 'statisticsDate', title: '统计日期', width: 120 },
       { field: 'depositType', title: '存款类型', width: 120 },
       { field: 'currency', title: '币种', width: 80 },
-      { field: 'accountNo', title: '账号', width: 180 },
       {
         field: 'depositBalance',
         title: '存款余额',
@@ -127,7 +126,6 @@ const [LoanOverviewGrid, loanOverviewGridApi] = useVbenVxeGrid({
       { field: 'statisticsDate', title: '统计日期', width: 120 },
       { field: 'loanType', title: '贷款类型', width: 120 },
       { field: 'currency', title: '币种', width: 80 },
-      { field: 'accountNo', title: '账号', width: 180 },
       {
         field: 'loanBalance',
         title: '贷款余额',

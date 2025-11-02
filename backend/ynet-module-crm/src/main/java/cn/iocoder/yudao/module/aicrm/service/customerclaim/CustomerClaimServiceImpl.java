@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.aicrm.enums.ErrorCodeConstants.*;
@@ -81,12 +81,19 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
         variables.put("applicantUserId", userId);
         variables.put("applicantDeptId", deptId);
 
+        // 转换 startUserSelectAssignees 类型: Map<String, Long> -> Map<String, List<Long>>
+        Map<String, List<Long>> startUserSelectAssignees = null;
+        if (createReqVO.getStartUserSelectAssignees() != null) {
+            startUserSelectAssignees = createReqVO.getStartUserSelectAssignees().entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> Collections.singletonList(e.getValue())));
+        }
+
         String processInstanceId = processInstanceApi.createProcessInstance(userId,
                 new BpmProcessInstanceCreateReqDTO()
                         .setProcessDefinitionKey(PROCESS_KEY)
                         .setBusinessKey(String.valueOf(application.getId()))
                         .setVariables(variables)
-                        .setStartUserSelectAssignees(createReqVO.getStartUserSelectAssignees()));
+                        .setStartUserSelectAssignees(startUserSelectAssignees));
 
         // 5. 更新流程实例ID
         claimApplicationMapper.updateById(
@@ -189,16 +196,16 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
         // 3. 记录历史
         CustomerAssignmentHistoryDO history = new CustomerAssignmentHistoryDO();
         history.setCustomerId(application.getCustomerId());
-        history.setOperationType("claim");
-        history.setIsDelegateOperation(false);
-        history.setOldDeptId(null);
-        history.setOldUserId(null);
-        history.setNewDeptId(application.getApplicantDeptId());
-        history.setNewUserId(application.getApplicantUserId());
-        history.setChangeReason(application.getApplyReason());
-        history.setChangeDate(LocalDate.now());
-        history.setOperatorId(application.getApplicantUserId());
-        history.setProcessInstanceId(application.getProcessInstanceId());
+        history.setTransferLevel("branch_internal"); // 支行内调整
+        history.setBeforeDeptId(null);
+        history.setBeforeUserId(null);
+        history.setBeforeAssignmentType(null);
+        history.setAfterDeptId(application.getApplicantDeptId());
+        history.setAfterUserId(application.getApplicantUserId());
+        history.setAfterAssignmentType(1); // 主办
+        history.setTransferReason(application.getApplyReason());
+        history.setTransferDate(LocalDate.now());
+        history.setAssignOperatorId(application.getApplicantUserId());
         customerAssignmentHistoryMapper.insert(history);
     }
 

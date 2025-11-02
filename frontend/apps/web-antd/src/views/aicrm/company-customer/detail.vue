@@ -20,6 +20,7 @@ import ProjectInfo from './pages/project-info.vue';
 import StockInfo from './pages/stock-info.vue';
 import Placeholder from './pages/placeholder.vue';
 // 零售客户和对公客户公用的页面
+import CustomerOverview from '../retail-customer/pages/customer-overview.vue';
 import ManagementInfo from '../retail-customer/pages/management-info.vue';
 import BusinessOverview from '../retail-customer/pages/business-overview.vue';
 import AccountInfo from '../retail-customer/pages/account-info.vue';
@@ -51,7 +52,7 @@ const menuItems = [
     key: 'profile',
     label: '企业画像',
     children: [
-      { key: 'overview', label: '客户概览', component: Placeholder },
+      { key: 'overview', label: '客户概览', component: CustomerOverview },
       { key: 'tags', label: '标签画像', component: Placeholder },
       { key: 'graph', label: '知识图谱', component: Placeholder },
       { key: 'basic', label: '客户基本信息', component: BasicInfo },
@@ -192,6 +193,7 @@ onMounted(() => {
           v-if="customer && customer.customerId"
           :customer="customer"
           :customer-id="customer.customerId"
+          :customer-type="'company'"
           :title="currentTitle"
         />
         <div v-else-if="customer && !customer.customerId" style="padding: 20px; text-align: center; color: #999;">
@@ -249,11 +251,22 @@ onMounted(() => {
   border-right: none;
 }
 
+/* 一级菜单(SubMenu标题) */
+.sidebar-menu :deep(.ant-menu-submenu-title) {
+  height: 42px;
+  line-height: 42px;
+  font-size: 14px;
+  font-weight: 600;
+  padding-left: 16px !important;
+}
+
+/* 二级菜单项 */
 .sidebar-menu :deep(.ant-menu-item) {
-  height: 40px;
-  padding-left: 24px !important;
+  height: 36px;
+  padding-left: 48px !important;
   margin: 0;
-  line-height: 40px;
+  line-height: 36px;
+  font-size: 13px;
 }
 
 .sidebar-menu :deep(.ant-menu-item-selected) {

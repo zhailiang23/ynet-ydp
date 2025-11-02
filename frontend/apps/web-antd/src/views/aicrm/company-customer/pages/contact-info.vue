@@ -86,7 +86,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
         field: 'contactType',
         title: '联系方式类型',
         width: 140,
-        formatter: formatContactTypeWithIcon,
+        formatter: formatField,
         sortable: true,
       },
       {
@@ -129,13 +129,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
         title: '状态',
         width: 100,
         align: 'center',
-        formatter: formatStatus,
+        formatter: formatField,
       },
       {
         field: 'sourceSystem',
         title: '来源系统',
         width: 120,
-        formatter: formatSourceSystem,
+        formatter: formatField,
       },
       {
         field: 'remark',

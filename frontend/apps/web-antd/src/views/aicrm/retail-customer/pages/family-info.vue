@@ -139,19 +139,18 @@ const [Grid, gridApi] = useVbenVxeGrid({
         field: 'relationType',
         title: '家庭关系',
         minWidth: 120,
-        formatter: ({ cellValue }) => {
-          if (!cellValue) return '';
-          return getDictLabel('aicrm_family_relation', cellValue);
+        cellRender: {
+          name: 'CellDict',
+          props: { type: 'aicrm_family_relation' },
         },
       },
       {
         field: 'gender',
         title: '性别',
         minWidth: 80,
-        formatter: ({ cellValue }) => {
-          if (cellValue === 1) return '男';
-          if (cellValue === 2) return '女';
-          return '-';
+        cellRender: {
+          name: 'CellDict',
+          props: { type: 'system_user_sex' },
         },
       },
       {
@@ -168,9 +167,9 @@ const [Grid, gridApi] = useVbenVxeGrid({
         field: 'educationLevel',
         title: '学历',
         minWidth: 120,
-        formatter: ({ cellValue }) => {
-          if (!cellValue) return '-';
-          return getDictLabel('aicrm_education_level', cellValue) || '-';
+        cellRender: {
+          name: 'CellDict',
+          props: { type: 'aicrm_education_level' },
         },
       },
       {

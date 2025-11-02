@@ -12,7 +12,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-import cn.iocoder.yudao.framework.security.core.annotations.PreAuthenticated;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 
 import cn.iocoder.yudao.module.aicrm.controller.admin.customerdelegation.vo.*;

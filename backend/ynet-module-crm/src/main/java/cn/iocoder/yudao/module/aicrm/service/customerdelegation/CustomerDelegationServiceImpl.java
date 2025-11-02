@@ -59,29 +59,23 @@ public class CustomerDelegationServiceImpl implements CustomerDelegationService 
         delegation.setDelegationStatus(1); // 托管中
         customerDelegationMapper.insert(delegation);
 
-        // 4. 更新客户归属关系表的托管状态
+        // 4. 更新客户归属关系表，将客户经理临时改为托管接收人
         CustomerAssignmentDO updateAssignment = new CustomerAssignmentDO();
         updateAssignment.setId(assignment.getId());
-        updateAssignment.setIsDelegated(true);
-        updateAssignment.setDelegateFromUserId(assignment.getUserId());
-        updateAssignment.setDelegateStartDate(createReqVO.getStartDate());
-        updateAssignment.setDelegateEndDate(createReqVO.getEndDate());
-        updateAssignment.setDelegateReason(createReqVO.getDelegationReason());
         updateAssignment.setUserId(createReqVO.getToUserId());
         customerAssignmentMapper.updateById(updateAssignment);
 
         // 5. 记录历史
         CustomerAssignmentHistoryDO history = new CustomerAssignmentHistoryDO();
         history.setCustomerId(createReqVO.getCustomerId());
-        history.setOperationType("delegate");
-        history.setIsDelegateOperation(true);
-        history.setOldDeptId(assignment.getDeptId());
-        history.setOldUserId(assignment.getUserId());
-        history.setNewDeptId(assignment.getDeptId());
-        history.setNewUserId(createReqVO.getToUserId());
-        history.setChangeReason(createReqVO.getDelegationReason());
-        history.setChangeDate(LocalDate.now());
-        history.setOperatorId(userId);
+        history.setTransferLevel("branch_internal"); // 支行内调整
+        history.setBeforeDeptId(assignment.getDeptId());
+        history.setBeforeUserId(assignment.getUserId());
+        history.setAfterDeptId(assignment.getDeptId());
+        history.setAfterUserId(createReqVO.getToUserId());
+        history.setTransferReason(createReqVO.getDelegationReason());
+        history.setTransferDate(LocalDate.now());
+        history.setAssignOperatorId(userId);
         customerAssignmentHistoryMapper.insert(history);
 
         return delegation.getId();
@@ -179,26 +173,20 @@ public class CustomerDelegationServiceImpl implements CustomerDelegationService 
         // 2. 恢复原客户经理
         CustomerAssignmentDO updateAssignment = new CustomerAssignmentDO();
         updateAssignment.setId(assignment.getId());
-        updateAssignment.setIsDelegated(false);
-        updateAssignment.setDelegateFromUserId(null);
-        updateAssignment.setDelegateStartDate(null);
-        updateAssignment.setDelegateEndDate(null);
-        updateAssignment.setDelegateReason(null);
         updateAssignment.setUserId(delegation.getFromUserId());
         customerAssignmentMapper.updateById(updateAssignment);
 
         // 3. 记录历史
         CustomerAssignmentHistoryDO history = new CustomerAssignmentHistoryDO();
         history.setCustomerId(delegation.getCustomerId());
-        history.setOperationType("delegate_end");
-        history.setIsDelegateOperation(true);
-        history.setOldDeptId(assignment.getDeptId());
-        history.setOldUserId(delegation.getToUserId());
-        history.setNewDeptId(assignment.getDeptId());
-        history.setNewUserId(delegation.getFromUserId());
-        history.setChangeReason(reason != null ? reason : "托管结束");
-        history.setChangeDate(LocalDate.now());
-        history.setOperatorId(operatorId);
+        history.setTransferLevel("branch_internal"); // 支行内调整
+        history.setBeforeDeptId(assignment.getDeptId());
+        history.setBeforeUserId(delegation.getToUserId());
+        history.setAfterDeptId(assignment.getDeptId());
+        history.setAfterUserId(delegation.getFromUserId());
+        history.setTransferReason(reason != null ? reason : "托管结束");
+        history.setTransferDate(LocalDate.now());
+        history.setAssignOperatorId(operatorId);
         customerAssignmentHistoryMapper.insert(history);
     }
 
