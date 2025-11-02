@@ -83,28 +83,19 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'channelType',
         title: '渠道类型',
         width: 120,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_channel_type' },
-      },
+        showOverflow: true,
       },
       {
         field: 'operationAction',
         title: '操作行为',
         width: 100,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_operation_action' },
-      },
+        showOverflow: true,
       },
       {
         field: 'operationObject',
         title: '操作对象',
         width: 100,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_operation_object' },
-      },
+        showOverflow: true,
       },
       {
         field: 'currentPageName',
@@ -135,10 +126,7 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'deviceType',
         title: '设备类型',
         width: 100,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_device_type' },
-      },
+        showOverflow: true,
       },
       {
         field: 'deviceModel',
@@ -186,10 +174,7 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'networkType',
         title: '网络类型',
         width: 100,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_network_type' },
-      },
+        showOverflow: true,
       },
       {
         field: 'sessionId',
@@ -237,10 +222,7 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'operationResult',
         title: '操作结果',
         width: 100,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_operation_result' },
-      },
+        showOverflow: true,
       },
       {
         field: 'operationDetail',
@@ -252,10 +234,7 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'businessType',
         title: '业务类型',
         width: 120,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_behavior_business_type' },
-      },
+        showOverflow: true,
       },
       {
         field: 'businessModule',
@@ -279,10 +258,7 @@ const gridOptions: VxeTableGridOptions<AicrmCustomerChannelBehaviorApi.CustomerC
         field: 'conversionType',
         title: '转化类型',
         width: 120,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_conversion_type' },
-      },
+        showOverflow: true,
       },
       {
         field: 'conversionValue',

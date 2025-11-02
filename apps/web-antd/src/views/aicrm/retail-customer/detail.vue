@@ -249,11 +249,22 @@ onMounted(() => {
   border-right: none;
 }
 
+/* 一级菜单(SubMenu标题) */
+.sidebar-menu :deep(.ant-menu-submenu-title) {
+  height: 42px;
+  line-height: 42px;
+  font-size: 14px;
+  font-weight: 600;
+  padding-left: 16px !important;
+}
+
+/* 二级菜单项 */
 .sidebar-menu :deep(.ant-menu-item) {
-  height: 40px;
-  padding-left: 24px !important;
+  height: 36px;
+  padding-left: 48px !important;
   margin: 0;
-  line-height: 40px;
+  line-height: 36px;
+  font-size: 13px;
 }
 
 .sidebar-menu :deep(.ant-menu-item-selected) {

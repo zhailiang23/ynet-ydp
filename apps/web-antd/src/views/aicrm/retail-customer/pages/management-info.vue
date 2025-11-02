@@ -43,21 +43,6 @@ function getDict(dictType: string, value: any) {
   return label || value;
 }
 
-// 格式化归属类型
-function formatAssignmentType(value?: number) {
-  if (value === 1) return '主办';
-  if (value === 2) return '协办';
-  return '-';
-}
-
-// 格式化归属状态
-function formatStatus(value?: number) {
-  if (value === 0) return '已失效';
-  if (value === 1) return '生效中';
-  if (value === 2) return '待生效';
-  return '-';
-}
-
 // 归属关系列表 VxeTable 配置
 const [AssignmentGrid, assignmentGridApi] = useVbenVxeGrid({
   gridOptions: {
@@ -72,7 +57,10 @@ const [AssignmentGrid, assignmentGridApi] = useVbenVxeGrid({
         field: 'assignmentType',
         title: '归属类型',
         minWidth: 100,
-        formatter: ({ cellValue }) => formatAssignmentType(cellValue),
+        cellRender: {
+          name: 'CellDict',
+          props: { type: 'aicrm_assignment_type' },
+        },
       },
       {
         field: 'deptName',
@@ -116,7 +104,10 @@ const [AssignmentGrid, assignmentGridApi] = useVbenVxeGrid({
         field: 'status',
         title: '归属状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => formatStatus(cellValue),
+        cellRender: {
+          name: 'CellDict',
+          props: { type: 'aicrm_assignment_status' },
+        },
       },
       {
         field: 'remark',
@@ -183,7 +174,10 @@ const [HistoryGrid, historyGridApi] = useVbenVxeGrid({
         field: 'beforeAssignmentType',
         title: '调整前归属类型',
         minWidth: 130,
-        formatter: ({ cellValue }) => formatAssignmentType(cellValue),
+        cellRender: {
+          name: 'CellDict',
+          props: { type: 'aicrm_assignment_type' },
+        },
       },
       {
         field: 'beforeDeptName',
@@ -199,7 +193,10 @@ const [HistoryGrid, historyGridApi] = useVbenVxeGrid({
         field: 'afterAssignmentType',
         title: '调整后归属类型',
         minWidth: 130,
-        formatter: ({ cellValue }) => formatAssignmentType(cellValue),
+        cellRender: {
+          name: 'CellDict',
+          props: { type: 'aicrm_assignment_type' },
+        },
       },
       {
         field: 'afterDeptName',
@@ -294,10 +291,9 @@ const [GridAssignmentGrid, gridAssignmentGridApi] = useVbenVxeGrid({
         field: 'status',
         title: '归属状态',
         minWidth: 100,
-        formatter: ({ cellValue }) => {
-          if (cellValue === 0) return '已失效';
-          if (cellValue === 1) return '生效中';
-          return '-';
+        cellRender: {
+          name: 'CellDict',
+          props: { type: 'aicrm_assignment_status' },
         },
       },
       {

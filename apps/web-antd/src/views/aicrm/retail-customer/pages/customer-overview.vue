@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { RetailCustomerApi } from '#/api/aicrm/retail-customer';
+import type { CompanyCustomerApi } from '#/api/aicrm/company-customer';
 
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { Card, Space, Tag } from 'ant-design-vue';
 import { getRetailCustomerOverview, type RetailCustomerOverviewApi } from '#/api/aicrm/retail-customer';
 import FinancialMetricsCards from '../components/FinancialMetricsCards.vue';
@@ -13,30 +14,40 @@ import CustomerProfileCards from '../components/CustomerProfileCards.vue';
 import CustomerEventTimeline from '../components/CustomerEventTimeline.vue';
 
 interface Props {
-  customer: RetailCustomerApi.RetailCustomer;
+  customer: RetailCustomerApi.RetailCustomer | CompanyCustomerApi.CompanyCustomer;
   customerId: number;
+  customerType?: 'retail' | 'company'; // 客户类型：零售或对公
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  customerType: 'retail', // 默认为零售客户
+});
 
 const loading = ref(false);
 const overviewData = ref<RetailCustomerOverviewApi.Overview | null>(null);
 
+// 获取customerId (兼容零售和对公客户)
+const targetCustomerId = computed(() => {
+  return props.customer?.customerId || props.customerId;
+});
+
 // 加载概况数据
 const loadOverviewData = async () => {
-  if (!props.customer?.customerId) {
+  if (!targetCustomerId.value) {
     console.log('缺少 customerId,跳过加载');
     return;
   }
 
   loading.value = true;
   try {
+    // 目前零售和对公都使用相同的概况API
+    // 如果将来对公有独立的API，可以在这里根据 customerType 调用不同的API
     const data = await getRetailCustomerOverview({
-      customerId: props.customer.customerId,
+      customerId: targetCustomerId.value,
     });
     overviewData.value = data;
   } catch (error) {
-    console.error('加载客户概况失败:', error);
+    console.error(`加载${props.customerType === 'company' ? '对公' : '零售'}客户概况失败:`, error);
   } finally {
     loading.value = false;
   }

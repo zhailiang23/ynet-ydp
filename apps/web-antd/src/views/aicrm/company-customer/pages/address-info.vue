@@ -78,7 +78,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
         field: 'addressType',
         title: '地址类型',
         width: 120,
-        formatter: formatAddressType,
+        formatter: formatField,
         sortable: true,
       },
       {
@@ -136,7 +136,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
         field: 'sourceSystem',
         title: '来源系统',
         width: 120,
-        formatter: formatSourceSystem,
+        formatter: formatField,
       },
       {
         field: 'remark',

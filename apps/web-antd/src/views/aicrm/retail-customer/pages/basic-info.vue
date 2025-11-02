@@ -133,7 +133,7 @@ function formatMoney(value?: number) {
           {{ customer.age || '-' }}
         </Descriptions.Item>
         <Descriptions.Item label="年龄段">
-          {{ customer.ageRange || '-' }}
+          <DictTag type="aicrm_age_range" :value="customer.ageRange" />
         </Descriptions.Item>
         <Descriptions.Item label="国籍">
           {{ customer.nationality || '-' }}
@@ -160,7 +160,7 @@ function formatMoney(value?: number) {
           <DictTag type="crm_household_type" :value="customer.householdType" />
         </Descriptions.Item>
         <Descriptions.Item label="婚姻状况">
-          {{ customer.maritalStatus || '-' }}
+          <DictTag type="aicrm_marital_status" :value="customer.maritalStatus" />
         </Descriptions.Item>
         <Descriptions.Item label="健康状况">
           <DictTag type="crm_health_status" :value="customer.healthStatus" />

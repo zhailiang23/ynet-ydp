@@ -164,12 +164,12 @@ const [DepositGrid, depositGridApi] = useVbenVxeGrid({
       { field: 'accountNo', title: '账号', minWidth: 180, fixed: 'left' },
       { field: 'accountName', title: '户名', minWidth: 120 },
       {
-        field: 'accountType',
+        field: 'depositType',
         title: '账户类型',
         minWidth: 120,
         cellRender: {
         name: 'CellDict',
-        props: { type: 'aicrm_deposit_account_type' },
+        props: { type: 'aicrm_deposit_type' },
       },
       },
       {
@@ -792,7 +792,7 @@ watch(
                     </div>
                     <div class="card-field">
                       <span class="field-label">账户类型：</span>
-                      <span class="field-value"><DictTag type="aicrm_deposit_account_type" :value="item.accountType" /></span>
+                      <span class="field-value"><DictTag type="aicrm_deposit_type" :value="item.depositType" /></span>
                     </div>
                     <div class="card-field highlight">
                       <span class="field-label">账户余额：</span>
