@@ -100,4 +100,21 @@ public interface CustomerAssignmentService {
      */
     void claimCustomers(Long userId, Long deptId, @Valid ClaimCustomerReqVO reqVO);
 
+    /**
+     * 获取我的客户分页（包括主办和协办）
+     *
+     * @param userId 当前用户ID
+     * @param pageReqVO 分页查询参数
+     * @return 我的客户分页
+     */
+    PageResult<MyCustomerRespVO> getMyCustomerPage(Long userId, @Valid MyCustomerPageReqVO pageReqVO);
+
+    /**
+     * 托管客户（修改当前归属记录的托管字段）
+     *
+     * @param userId 当前用户ID
+     * @param reqVO 托管信息
+     */
+    void delegateCustomers(Long userId, @Valid DelegateCustomerReqVO reqVO);
+
 }

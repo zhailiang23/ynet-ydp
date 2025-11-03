@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.aicrm.dal.dataobject.customer.CustomerDO;
 import cn.iocoder.yudao.module.aicrm.dal.dataobject.customerassignmenthistory.CustomerAssignmentHistoryDO;
 import cn.iocoder.yudao.module.aicrm.dal.mysql.customer.CustomerMapper;
 import cn.iocoder.yudao.module.aicrm.dal.mysql.customerassignmenthistory.CustomerAssignmentHistoryMapper;
+import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -46,6 +47,9 @@ public class CustomerAssignmentServiceImpl implements CustomerAssignmentService 
 
     @Resource
     private CustomerMapper customerMapper;
+
+    @Resource
+    private AdminUserService adminUserService;
 
     @Override
     public Long createCustomerAssignment(CustomerAssignmentSaveReqVO createReqVO) {
@@ -347,6 +351,62 @@ public class CustomerAssignmentServiceImpl implements CustomerAssignmentService 
             // 4. 记录历史
             recordAssignmentHistory(customerId, "claim", null, null,
                     deptId, userId, "快速认领客户", userId, null);
+        }
+    }
+
+    @Override
+    public PageResult<MyCustomerRespVO> getMyCustomerPage(Long userId, MyCustomerPageReqVO pageReqVO) {
+        // 创建分页对象
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<MyCustomerRespVO> page =
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        // 查询我的客户分页
+        com.baomidou.mybatisplus.core.metadata.IPage<MyCustomerRespVO> resultPage =
+                customerAssignmentMapper.selectMyCustomerPage(page, userId, pageReqVO);
+
+        // 转换为 PageResult
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delegateCustomers(Long userId, DelegateCustomerReqVO reqVO) {
+        // 1. 验证托管日期
+        if (reqVO.getDelegateEndDate().isBefore(reqVO.getDelegateStartDate())) {
+            throw exception(CUSTOMER_DELEGATION_DATE_INVALID);
+        }
+
+        // 2. 验证托管目标用户存在
+        if (adminUserService.getUser(reqVO.getDelegateToUserId()) == null) {
+            throw exception(CUSTOMER_DELEGATION_USER_NOT_EXISTS);
+        }
+
+        // 3. 批量更新归属记录的托管字段
+        for (Long customerId : reqVO.getCustomerIds()) {
+            // 查询当前用户对该客户的主办归属记录
+            CustomerAssignmentDO assignment = customerAssignmentMapper.selectOne(
+                    new LambdaQueryWrapper<CustomerAssignmentDO>()
+                            .eq(CustomerAssignmentDO::getCustomerId, customerId)
+                            .eq(CustomerAssignmentDO::getUserId, userId)
+                            .eq(CustomerAssignmentDO::getAssignmentType, 1) // 只能托管主办客户
+            );
+
+            if (assignment == null) {
+                throw exception(CUSTOMER_DELEGATION_NOT_PRIMARY);
+            }
+
+            // 更新托管字段 - 不改变客户归属(user_id),只标记托管状态
+            CustomerAssignmentDO updateDO = new CustomerAssignmentDO();
+            updateDO.setId(assignment.getId());
+            updateDO.setIsDelegated(true);
+            // delegateFromUserId 存储托管给的目标用户ID
+            updateDO.setDelegateFromUserId(reqVO.getDelegateToUserId());
+            updateDO.setDelegateStartDate(reqVO.getDelegateStartDate());
+            updateDO.setDelegateEndDate(reqVO.getDelegateEndDate());
+            updateDO.setDelegateReason(reqVO.getDelegateReason());
+            // 注意: 不修改 user_id,客户仍然归属当前用户
+
+            customerAssignmentMapper.updateById(updateDO);
         }
     }
 

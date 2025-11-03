@@ -186,6 +186,9 @@ public interface ErrorCodeConstants {
     ErrorCode CUSTOMER_DELEGATION_NOT_EXISTS = new ErrorCode(1_020_100_000, "客户托管记录不存在");
     ErrorCode CUSTOMER_DELEGATION_ALREADY_EXISTS = new ErrorCode(1_020_100_001, "客户已存在进行中的托管记录");
     ErrorCode CUSTOMER_DELEGATION_NOT_ACTIVE = new ErrorCode(1_020_100_002, "客户托管记录不是进行中状态");
+    ErrorCode CUSTOMER_DELEGATION_DATE_INVALID = new ErrorCode(1_020_100_003, "托管结束日期不能早于开始日期");
+    ErrorCode CUSTOMER_DELEGATION_USER_NOT_EXISTS = new ErrorCode(1_020_100_004, "托管目标用户不存在");
+    ErrorCode CUSTOMER_DELEGATION_NOT_PRIMARY = new ErrorCode(1_020_100_005, "只能托管主办客户");
 
     // ========== 客户认领申请 1-020-101-000 ==========
     ErrorCode CUSTOMER_CLAIM_APPLICATION_NOT_EXISTS = new ErrorCode(1_020_101_000, "客户认领申请不存在");

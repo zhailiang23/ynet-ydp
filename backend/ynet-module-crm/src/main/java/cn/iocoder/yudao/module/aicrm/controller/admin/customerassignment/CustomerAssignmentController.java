@@ -158,4 +158,33 @@ public class CustomerAssignmentController {
         return success(true);
     }
 
+    @GetMapping("/my-customer-page")
+    @Operation(summary = "获取我的客户分页")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:query')")
+    public CommonResult<PageResult<MyCustomerRespVO>> getMyCustomerPage(@Valid MyCustomerPageReqVO pageReqVO) {
+        Long userId = cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId();
+        PageResult<MyCustomerRespVO> pageResult = customerAssignmentService.getMyCustomerPage(userId, pageReqVO);
+        return success(pageResult);
+    }
+
+    @PostMapping("/transfer-customers")
+    @Operation(summary = "移交客户")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:update')")
+    @ApiAccessLog(operateType = UPDATE)
+    public CommonResult<Boolean> transferCustomers(@Valid @RequestBody TransferCustomerReqVO reqVO) {
+        Long userId = cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId();
+        customerAssignmentService.transferCustomers(userId, reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/delegate-customers")
+    @Operation(summary = "托管客户")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:update')")
+    @ApiAccessLog(operateType = UPDATE)
+    public CommonResult<Boolean> delegateCustomers(@Valid @RequestBody DelegateCustomerReqVO reqVO) {
+        Long userId = cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId();
+        customerAssignmentService.delegateCustomers(userId, reqVO);
+        return success(true);
+    }
+
 }

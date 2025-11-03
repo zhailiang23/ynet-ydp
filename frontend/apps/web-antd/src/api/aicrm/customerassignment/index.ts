@@ -60,6 +60,42 @@ export namespace AicrmCustomerAssignmentApi {
     customerIds: number[]; // 客户ID列表
     remark?: string; // 备注
   }
+
+  /** 我的客户分页请求 */
+  export interface MyCustomerPageReq extends PageParam {
+    customerNo?: string; // 客户编号
+    customerName?: string; // 客户名称
+    customerType?: number; // 客户类型
+    assignmentType?: number; // 归属类型（1=主办，2=协办）
+    customerStatus?: number; // 客户状态
+  }
+
+  /** 我的客户响应 */
+  export interface MyCustomerResp {
+    assignmentId: number; // 归属关系ID
+    customerId: number; // 客户ID
+    customerNo: string; // 客户编号
+    customerName: string; // 客户名称
+    customerType: number; // 客户类型(1-零售 2-对公)
+    customerStatus: number; // 客户状态
+    assignmentType: number; // 归属类型(1-主办 2-协办)
+    deptId: number; // 归属部门ID
+    deptName?: string; // 归属部门名称
+    assignDate: string | Dayjs; // 分配日期
+    remark?: string; // 分配备注
+    delegateUserName?: string; // 托管用户名称
+    delegateStartDate?: string | Dayjs; // 托管开始日期
+    delegateEndDate?: string | Dayjs; // 托管结束日期
+  }
+
+  /** 托管客户请求 */
+  export interface DelegateCustomerReq {
+    customerIds: number[]; // 客户ID列表
+    delegateToUserId: number; // 托管给的用户ID
+    delegateStartDate: string | Dayjs; // 托管开始日期
+    delegateEndDate: string | Dayjs; // 托管结束日期
+    delegateReason?: string; // 托管原因
+  }
 }
 
 /** 查询客户归属关系表（零售+对公共用，支持主协办模式）分页 */
@@ -129,4 +165,17 @@ export function changeDept(data: AicrmCustomerAssignmentApi.ChangeDeptReq) {
 /** 快速认领客户（未分配客户） */
 export function claimCustomers(data: AicrmCustomerAssignmentApi.ClaimCustomerReq) {
   return requestClient.post<boolean>('/aicrm/customer-assignment/claim-customers', data);
+}
+
+/** 获取我的客户分页 */
+export function getMyCustomerPage(params: AicrmCustomerAssignmentApi.MyCustomerPageReq) {
+  return requestClient.get<PageResult<AicrmCustomerAssignmentApi.MyCustomerResp>>(
+    '/aicrm/customer-assignment/my-customer-page',
+    { params },
+  );
+}
+
+/** 托管客户 */
+export function delegateCustomers(data: AicrmCustomerAssignmentApi.DelegateCustomerReq) {
+  return requestClient.post<boolean>('/aicrm/customer-assignment/delegate-customers', data);
 }
