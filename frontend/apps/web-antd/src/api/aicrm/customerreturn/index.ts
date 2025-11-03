@@ -22,6 +22,7 @@ export namespace AicrmCustomerReturnApi {
   /** 提交客户退回申请请求 */
   export interface CustomerReturnApplicationApplyReq {
     customerId: number; // 客户ID
+    returnToUserId: number; // 退回给主管ID
     returnReason: string; // 退回原因
     startUserSelectAssignees?: Record<string, number>; // BPM 用户选择
   }

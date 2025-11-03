@@ -50,6 +50,14 @@ public class CustomerDO extends BaseDO {
      */
     private Integer customerStatus;
     /**
+     * 分配状态(0=未分配, 1=已分配)
+     */
+    private Integer assignmentStatus;
+    /**
+     * 是否有效客户(0=否, 1=是)
+     */
+    private Boolean isValid;
+    /**
      * 是否优质客户(0=否, 1=是)
      */
     private Boolean isHighQuality;

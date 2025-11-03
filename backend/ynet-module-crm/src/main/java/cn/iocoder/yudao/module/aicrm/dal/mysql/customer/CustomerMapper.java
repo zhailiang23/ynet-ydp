@@ -24,6 +24,8 @@ public interface CustomerMapper extends BaseMapperX<CustomerDO> {
                 .likeIfPresent(CustomerDO::getCustomerName, reqVO.getCustomerName())
                 .eqIfPresent(CustomerDO::getCustomerLevel, reqVO.getCustomerLevel())
                 .eqIfPresent(CustomerDO::getCustomerStatus, reqVO.getCustomerStatus())
+                .eqIfPresent(CustomerDO::getAssignmentStatus, reqVO.getAssignmentStatus())
+                .eqIfPresent(CustomerDO::getIsValid, reqVO.getIsValid())
                 .eqIfPresent(CustomerDO::getDeptId, reqVO.getDeptId())
                 .eqIfPresent(CustomerDO::getIsHighQuality, reqVO.getIsHighQuality())
                 .eqIfPresent(CustomerDO::getIsImportant, reqVO.getIsImportant())

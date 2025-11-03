@@ -59,4 +59,45 @@ public interface CustomerAssignmentService {
      */
     PageResult<CustomerAssignmentDO> getCustomerAssignmentPage(CustomerAssignmentPageReqVO pageReqVO);
 
+    /**
+     * 批量分配客户
+     *
+     * @param userId 操作人ID
+     * @param reqVO 分配信息
+     */
+    void assignCustomers(Long userId, @Valid AssignCustomerReqVO reqVO);
+
+    /**
+     * 批量移交客户
+     *
+     * @param userId 操作人ID
+     * @param reqVO 移交信息
+     */
+    void transferCustomers(Long userId, @Valid TransferCustomerReqVO reqVO);
+
+    /**
+     * 批量回收客户
+     *
+     * @param userId 操作人ID
+     * @param reqVO 回收信息
+     */
+    void reclaimCustomers(Long userId, @Valid ReclaimCustomerReqVO reqVO);
+
+    /**
+     * 批量变更主办部门
+     *
+     * @param userId 操作人ID
+     * @param reqVO 变更信息
+     */
+    void changeDept(Long userId, @Valid ChangeDeptReqVO reqVO);
+
+    /**
+     * 快速认领客户（仅未分配的客户可认领）
+     *
+     * @param userId 当前用户ID
+     * @param deptId 当前用户部门ID
+     * @param reqVO 认领信息
+     */
+    void claimCustomers(Long userId, Long deptId, @Valid ClaimCustomerReqVO reqVO);
+
 }

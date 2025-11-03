@@ -41,6 +41,14 @@ public class CustomerRespVO {
     @DictFormat(CrmDictTypeConstants.CUSTOMER_STATUS)
     private Integer customerStatus;
 
+    @Schema(description = "分配状态(0=未分配, 1=已分配)", example = "1")
+    @ExcelProperty("分配状态")
+    private Integer assignmentStatus;
+
+    @Schema(description = "是否有效客户")
+    @ExcelProperty("是否有效客户")
+    private Boolean isValid;
+
     @Schema(description = "是否优质客户")
     @ExcelProperty("是否优质客户")
     private Boolean isHighQuality;

@@ -18,8 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.aicrm.enums.ErrorCodeConstants.*;
@@ -78,11 +80,13 @@ public class CustomerReturnServiceImpl implements CustomerReturnService {
         variables.put("applicantUserId", userId);
         variables.put("returnToUserId", createReqVO.getReturnToUserId());
 
-        // 转换 startUserSelectAssignees 类型: Map<String, Long> -> Map<String, List<Long>>
+        // 转换审批人选择格式 Map<String, Long> -> Map<String, List<Long>>
         Map<String, List<Long>> startUserSelectAssignees = null;
         if (createReqVO.getStartUserSelectAssignees() != null) {
-            startUserSelectAssignees = createReqVO.getStartUserSelectAssignees().entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> Collections.singletonList(e.getValue())));
+            startUserSelectAssignees = new HashMap<>();
+            for (Map.Entry<String, Long> entry : createReqVO.getStartUserSelectAssignees().entrySet()) {
+                startUserSelectAssignees.put(entry.getKey(), Collections.singletonList(entry.getValue()));
+            }
         }
 
         String processInstanceId = processInstanceApi.createProcessInstance(userId,
@@ -164,7 +168,6 @@ public class CustomerReturnServiceImpl implements CustomerReturnService {
                 new LambdaQueryWrapper<CustomerAssignmentDO>()
                         .eq(CustomerAssignmentDO::getCustomerId, customerId)
                         .eq(CustomerAssignmentDO::getAssignmentType, 1) // 主办
-                        .eq(CustomerAssignmentDO::getStatus, 1) // 生效中
         );
     }
 
@@ -181,12 +184,8 @@ public class CustomerReturnServiceImpl implements CustomerReturnService {
             return;
         }
 
-        // 3. 更新归属关系为失效
-        customerAssignmentMapper.updateById(
-                new CustomerAssignmentDO()
-                        .setId(assignment.getId())
-                        .setStatus(0) // 已失效
-                        .setExpiryDate(LocalDate.now()));
+        // 3. 删除旧的归属关系（物理删除）
+        customerAssignmentMapper.deleteById(assignment.getId());
 
         // 4. 创建新的归属关系(退回给主管)
         CustomerAssignmentDO newAssignment = new CustomerAssignmentDO();
@@ -197,16 +196,15 @@ public class CustomerReturnServiceImpl implements CustomerReturnService {
         newAssignment.setHasViewRight(true);
         newAssignment.setHasMaintainRight(true);
         newAssignment.setAssignDate(LocalDate.now());
-        newAssignment.setEffectiveDate(LocalDate.now());
         newAssignment.setAssignOperatorId(application.getApplicantUserId());
-        newAssignment.setStatus(1); // 生效中
         newAssignment.setRemark("客户退回自动分配");
         customerAssignmentMapper.insert(newAssignment);
 
         // 5. 记录历史
         CustomerAssignmentHistoryDO history = new CustomerAssignmentHistoryDO();
         history.setCustomerId(application.getCustomerId());
-        history.setTransferLevel("branch_internal"); // 支行内调整
+        history.setOperationType("return");
+        history.setIsDelegateOperation(false);
         history.setBeforeDeptId(assignment.getDeptId());
         history.setBeforeUserId(application.getApplicantUserId());
         history.setAfterDeptId(assignment.getDeptId());
@@ -214,6 +212,7 @@ public class CustomerReturnServiceImpl implements CustomerReturnService {
         history.setTransferReason(application.getReturnReason());
         history.setTransferDate(LocalDate.now());
         history.setAssignOperatorId(application.getApplicantUserId());
+        history.setProcessInstanceId(application.getProcessInstanceId());
         customerAssignmentHistoryMapper.insert(history);
     }
 

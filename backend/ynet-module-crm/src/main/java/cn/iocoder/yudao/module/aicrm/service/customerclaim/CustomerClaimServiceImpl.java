@@ -19,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.aicrm.enums.ErrorCodeConstants.*;
@@ -81,11 +83,13 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
         variables.put("applicantUserId", userId);
         variables.put("applicantDeptId", deptId);
 
-        // 转换 startUserSelectAssignees 类型: Map<String, Long> -> Map<String, List<Long>>
+        // 转换审批人选择格式 Map<String, Long> -> Map<String, List<Long>>
         Map<String, List<Long>> startUserSelectAssignees = null;
         if (createReqVO.getStartUserSelectAssignees() != null) {
-            startUserSelectAssignees = createReqVO.getStartUserSelectAssignees().entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> Collections.singletonList(e.getValue())));
+            startUserSelectAssignees = new HashMap<>();
+            for (Map.Entry<String, Long> entry : createReqVO.getStartUserSelectAssignees().entrySet()) {
+                startUserSelectAssignees.put(entry.getKey(), Collections.singletonList(entry.getValue()));
+            }
         }
 
         String processInstanceId = processInstanceApi.createProcessInstance(userId,
@@ -167,7 +171,6 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
                 new LambdaQueryWrapper<CustomerAssignmentDO>()
                         .eq(CustomerAssignmentDO::getCustomerId, customerId)
                         .eq(CustomerAssignmentDO::getAssignmentType, 1) // 主办
-                        .eq(CustomerAssignmentDO::getStatus, 1) // 生效中
         );
     }
 
@@ -187,25 +190,23 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
         assignment.setHasViewRight(true);
         assignment.setHasMaintainRight(true);
         assignment.setAssignDate(LocalDate.now());
-        assignment.setEffectiveDate(LocalDate.now());
         assignment.setAssignOperatorId(application.getApplicantUserId());
-        assignment.setStatus(1); // 生效中
         assignment.setRemark("客户认领自动分配");
         customerAssignmentMapper.insert(assignment);
 
         // 3. 记录历史
         CustomerAssignmentHistoryDO history = new CustomerAssignmentHistoryDO();
         history.setCustomerId(application.getCustomerId());
-        history.setTransferLevel("branch_internal"); // 支行内调整
+        history.setOperationType("claim");
+        history.setIsDelegateOperation(false);
         history.setBeforeDeptId(null);
         history.setBeforeUserId(null);
-        history.setBeforeAssignmentType(null);
         history.setAfterDeptId(application.getApplicantDeptId());
         history.setAfterUserId(application.getApplicantUserId());
-        history.setAfterAssignmentType(1); // 主办
         history.setTransferReason(application.getApplyReason());
         history.setTransferDate(LocalDate.now());
         history.setAssignOperatorId(application.getApplicantUserId());
+        history.setProcessInstanceId(application.getProcessInstanceId());
         customerAssignmentHistoryMapper.insert(history);
     }
 

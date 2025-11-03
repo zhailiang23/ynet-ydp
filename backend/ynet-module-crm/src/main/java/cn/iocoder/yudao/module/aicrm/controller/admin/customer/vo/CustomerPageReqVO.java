@@ -30,6 +30,12 @@ public class CustomerPageReqVO extends PageParam {
     @Schema(description = "客户状态(1=正常, 2=冻结, 3=注销)", example = "2")
     private Integer customerStatus;
 
+    @Schema(description = "分配状态(0=未分配, 1=已分配)", example = "1")
+    private Integer assignmentStatus;
+
+    @Schema(description = "是否有效客户")
+    private Boolean isValid;
+
     @Schema(description = "所属部门ID(数据权限)", example = "27475")
     private Long deptId;
 

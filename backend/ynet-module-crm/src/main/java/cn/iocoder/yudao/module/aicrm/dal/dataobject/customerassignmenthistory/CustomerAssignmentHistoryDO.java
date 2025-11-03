@@ -76,6 +76,18 @@ public class CustomerAssignmentHistoryDO extends BaseDO {
      */
     private LocalDate assignDate;
     /**
+     * 操作类型（字典: aicrm_assignment_operation_type）
+     */
+    private String operationType;
+    /**
+     * 是否托管操作
+     */
+    private Boolean isDelegateOperation;
+    /**
+     * BPM 流程实例ID（关联 bpm_process_instance.id）
+     */
+    private String processInstanceId;
+    /**
      * 备注
      */
     private String remark;

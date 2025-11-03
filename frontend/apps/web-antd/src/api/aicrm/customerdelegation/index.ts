@@ -28,7 +28,7 @@ export namespace AicrmCustomerDelegationApi {
     toUserId: number; // 受托方客户经理ID
     startDate: string | Dayjs; // 托管开始日期
     endDate?: string | Dayjs; // 托管结束日期
-    reason?: string; // 托管原因
+    delegationReason: string; // 托管原因
   }
 
   /** 结束客户托管请求 */

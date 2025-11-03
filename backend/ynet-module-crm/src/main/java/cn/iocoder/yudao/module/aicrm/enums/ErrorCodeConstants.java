@@ -193,4 +193,7 @@ public interface ErrorCodeConstants {
     // ========== 客户退回申请 1-020-102-000 ==========
     ErrorCode CUSTOMER_RETURN_APPLICATION_NOT_EXISTS = new ErrorCode(1_020_102_000, "客户退回申请不存在");
 
+    // ========== 客户移交申请 1-020-103-000 ==========
+    ErrorCode CUSTOMER_TRANSFER_APPLICATION_NOT_EXISTS = new ErrorCode(1_020_103_000, "客户移交申请不存在");
+
 }

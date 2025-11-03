@@ -125,4 +125,37 @@ public class CustomerAssignmentController {
                         BeanUtils.toBean(list, CustomerAssignmentRespVO.class));
     }
 
+    @PostMapping("/assign-customers")
+    @Operation(summary = "分配客户")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:create')")
+    @ApiAccessLog(operateType = CREATE)
+    public CommonResult<Boolean> assignCustomers(@Valid @RequestBody AssignCustomerReqVO reqVO) {
+        customerAssignmentService.assignCustomers(cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId(), reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/reclaim-customers")
+    @Operation(summary = "回收客户")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:delete')")
+    @ApiAccessLog(operateType = DELETE)
+    public CommonResult<Boolean> reclaimCustomers(@Valid @RequestBody ReclaimCustomerReqVO reqVO) {
+        customerAssignmentService.reclaimCustomers(cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId(), reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/claim-customers")
+    @Operation(summary = "快速认领客户（未分配客户）")
+    @PreAuthorize("@ss.hasPermission('aicrm:customer-assignment:create')")
+    @ApiAccessLog(operateType = CREATE)
+    public CommonResult<Boolean> claimCustomers(@Valid @RequestBody ClaimCustomerReqVO reqVO) {
+        Long userId = cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId();
+        // 获取当前用户的部门ID
+        AdminUserDO user = adminUserService.getUser(userId);
+        if (user == null || user.getDeptId() == null) {
+            return CommonResult.error(400, "当前用户未设置部门，无法认领客户");
+        }
+        customerAssignmentService.claimCustomers(userId, user.getDeptId(), reqVO);
+        return success(true);
+    }
+
 }

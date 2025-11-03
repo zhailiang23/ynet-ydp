@@ -56,21 +56,29 @@ public class CustomerAssignmentDO extends BaseDO {
      */
     private LocalDate assignDate;
     /**
-     * 生效日期
-     */
-    private LocalDate effectiveDate;
-    /**
-     * 失效日期（NULL表示长期有效）
-     */
-    private LocalDate expiryDate;
-    /**
      * 分配操作人用户ID（关联 system_users.id）
      */
     private Long assignOperatorId;
     /**
-     * 归属状态（0=已失效，1=生效中，2=待生效）
+     * 是否托管状态
      */
-    private Integer status;
+    private Boolean isDelegated;
+    /**
+     * 托管来源客户经理ID（关联 system_users.id）
+     */
+    private Long delegateFromUserId;
+    /**
+     * 托管开始日期
+     */
+    private LocalDate delegateStartDate;
+    /**
+     * 托管结束日期
+     */
+    private LocalDate delegateEndDate;
+    /**
+     * 托管原因
+     */
+    private String delegateReason;
     /**
      * 备注
      */
