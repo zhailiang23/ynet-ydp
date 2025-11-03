@@ -266,6 +266,11 @@ export function useGridFormSchema(): VbenFormSchema[] {
 export function useGridColumns(): VxeTableGridOptions<AicrmCustomerApi.Customer>['columns'] {
   return [
     {
+      type: 'checkbox',
+      width: 50,
+      fixed: 'left',
+    },
+    {
       field: 'customerNo',
       title: '客户编号',
       minWidth: 140,

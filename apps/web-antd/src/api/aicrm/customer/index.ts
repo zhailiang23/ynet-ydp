@@ -12,6 +12,8 @@ export namespace AicrmCustomerApi {
     customerName?: string; // 客户名称(零售为姓名,对公为企业名称)
     customerLevel?: string; // 客户等级
     customerStatus?: number; // 客户状态(1=正常, 2=冻结, 3=注销)
+    assignmentStatus?: number; // 分配状态(0=未分配, 1=已分配)
+    isValid?: boolean; // 是否有效客户
     isHighQuality?: boolean; // 是否优质客户
     isImportant?: boolean; // 是否重要客户
     creditStatus?: string; // 信用状态
@@ -21,6 +23,9 @@ export namespace AicrmCustomerApi {
     customerTag?: string; // 客户标签(多个标签用逗号分隔)
     remark?: string; // 备注信息
     deptId?: number; // 所属部门ID(数据权限)
+    // 扩展字段(从零售客户表关联查询)
+    idCardType?: string; // 证件类型
+    idCardNo?: string; // 证件号码
     createTime?: string; // 创建时间
     updateTime?: string; // 更新时间
   }
@@ -32,6 +37,8 @@ export namespace AicrmCustomerApi {
     customerName?: string; // 客户名称
     customerLevel?: string; // 客户等级
     customerStatus?: number; // 客户状态
+    assignmentStatus?: number; // 分配状态
+    isValid?: boolean; // 是否有效客户
     isHighQuality?: boolean; // 是否优质客户
     isImportant?: boolean; // 是否重要客户
     creditLevel?: string; // 信用等级

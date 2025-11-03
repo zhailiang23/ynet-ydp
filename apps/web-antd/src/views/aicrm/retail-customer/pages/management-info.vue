@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AicrmCustomerAssignmentApi } from '#/api/aicrm/customerassignment';
 import type { AicrmCustomerAssignmentHistoryApi } from '#/api/aicrm/customerassignmenthistory';
 import type { AicrmCustomerGridAssignmentApi } from '#/api/aicrm/customergridassignment';
 import type { AicrmCustomerGridHistoryApi } from '#/api/aicrm/customergridhistory';
@@ -8,14 +7,12 @@ import type { AicrmCustomerGroupAssignmentApi } from '#/api/aicrm/customergroupa
 
 import { ref } from 'vue';
 
-import { getDictLabel } from '@vben/hooks';
-
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getCustomerAssignmentPage } from '#/api/aicrm/customerassignment';
 import { getCustomerAssignmentHistoryPage } from '#/api/aicrm/customerassignmenthistory';
 import { getCustomerGridAssignmentPage } from '#/api/aicrm/customergridassignment';
 import { getCustomerGridHistoryPage } from '#/api/aicrm/customergridhistory';
 import { getCustomerGroupAssignmentPage } from '#/api/aicrm/customergroupassignment';
+import { createAssignmentGridOptions } from '#/views/aicrm/customerassignment/shared/assignment-grid-config';
 
 defineOptions({
   name: 'RetailCustomerManagementInfo',
@@ -30,113 +27,15 @@ const accountTab = ref('list');
 // 归属网格关系 Tab (列表 vs 历史)
 const gridTab = ref('list');
 
-// 格式化布尔值
+// 格式化布尔值（用于其他表格）
 function formatBoolean(value?: boolean) {
   if (value === null || value === undefined) return '-';
   return value ? '是' : '否';
 }
 
-// 获取字典标签
-function getDict(dictType: string, value: any) {
-  if (value === null || value === undefined) return '-';
-  const label = getDictLabel(dictType, value);
-  return label || value;
-}
-
-// 归属关系列表 VxeTable 配置
+// 归属关系列表 VxeTable 配置 - 使用共享配置
 const [AssignmentGrid, assignmentGridApi] = useVbenVxeGrid({
-  gridOptions: {
-    columns: [
-      {
-        type: 'seq',
-        title: '序号',
-        width: 70,
-        fixed: 'left',
-      },
-      {
-        field: 'assignmentType',
-        title: '归属类型',
-        minWidth: 100,
-        cellRender: {
-          name: 'CellDict',
-          props: { type: 'aicrm_assignment_type' },
-        },
-      },
-      {
-        field: 'deptName',
-        title: '归属部门',
-        minWidth: 150,
-      },
-      {
-        field: 'userName',
-        title: '客户经理',
-        minWidth: 120,
-      },
-      {
-        field: 'hasViewRight',
-        title: '查看权限',
-        minWidth: 100,
-        formatter: ({ cellValue }) => formatBoolean(cellValue),
-      },
-      {
-        field: 'hasMaintainRight',
-        title: '维护权限',
-        minWidth: 100,
-        formatter: ({ cellValue }) => formatBoolean(cellValue),
-      },
-      {
-        field: 'assignDate',
-        title: '分配日期',
-        minWidth: 120,
-      },
-      {
-        field: 'effectiveDate',
-        title: '生效日期',
-        minWidth: 120,
-      },
-      {
-        field: 'expiryDate',
-        title: '失效日期',
-        minWidth: 120,
-        formatter: ({ cellValue }) => cellValue || '长期有效',
-      },
-      {
-        field: 'status',
-        title: '归属状态',
-        minWidth: 100,
-        cellRender: {
-          name: 'CellDict',
-          props: { type: 'aicrm_assignment_status' },
-        },
-      },
-      {
-        field: 'remark',
-        title: '备注',
-        minWidth: 200,
-        showOverflow: 'tooltip',
-      },
-    ],
-    height: 400,
-    keepSource: true,
-    proxyConfig: {
-      ajax: {
-        query: async ({ page }) => {
-          return await getCustomerAssignmentPage({
-            customerId: props.customerId,
-            pageNo: page.currentPage,
-            pageSize: page.pageSize,
-          });
-        },
-      },
-    },
-    rowConfig: {
-      keyField: 'id',
-      isHover: true,
-    },
-    toolbarConfig: {
-      refresh: true,
-    },
-  } as VxeTableGridOptions<AicrmCustomerAssignmentApi.CustomerAssignment>,
+  gridOptions: createAssignmentGridOptions(props.customerId, 400),
 });
 
 // 调整历史列表 VxeTable 配置
