@@ -55,28 +55,10 @@ const [HistoryGrid, historyGridApi] = useVbenVxeGrid({
         fixed: 'left',
       },
       {
-        field: 'transferLevel',
-        title: '调整级别',
-        minWidth: 120,
-        cellRender: {
-        name: 'CellDict',
-        props: { type: 'aicrm_transfer_level' },
-      },
-      },
-      {
         field: 'transferReason',
         title: '调整原因',
         minWidth: 200,
         showOverflow: 'tooltip',
-      },
-      {
-        field: 'beforeAssignmentType',
-        title: '调整前归属类型',
-        minWidth: 130,
-        cellRender: {
-          name: 'CellDict',
-          props: { type: 'aicrm_assignment_type' },
-        },
       },
       {
         field: 'beforeDeptName',
@@ -89,15 +71,6 @@ const [HistoryGrid, historyGridApi] = useVbenVxeGrid({
         minWidth: 130,
       },
       {
-        field: 'afterAssignmentType',
-        title: '调整后归属类型',
-        minWidth: 130,
-        cellRender: {
-          name: 'CellDict',
-          props: { type: 'aicrm_assignment_type' },
-        },
-      },
-      {
         field: 'afterDeptName',
         title: '调整后部门',
         minWidth: 150,
@@ -106,11 +79,6 @@ const [HistoryGrid, historyGridApi] = useVbenVxeGrid({
         field: 'afterUserName',
         title: '调整后客户经理',
         minWidth: 130,
-      },
-      {
-        field: 'assignDate',
-        title: '分配日期',
-        minWidth: 120,
       },
       {
         field: 'remark',

@@ -61,4 +61,14 @@ public interface CustomerClaimService {
      */
     void updateClaimStatus(Long id, Integer status);
 
+    /**
+     * 处理客户认领流程结束事件
+     * <p>
+     * 当流程审批通过时,自动分配客户给申请人
+     * 当流程审批不通过时,不做任何处理
+     *
+     * @param processInstanceId 流程实例ID
+     */
+    void handleClaimProcessEnd(String processInstanceId);
+
 }

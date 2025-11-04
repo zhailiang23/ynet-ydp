@@ -193,6 +193,30 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
         }
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleClaimProcessEnd(String processInstanceId) {
+        // 1. 根据流程实例ID查询申请记录
+        CustomerClaimApplicationDO application = claimApplicationMapper.selectOne(
+                new LambdaQueryWrapper<CustomerClaimApplicationDO>()
+                        .eq(CustomerClaimApplicationDO::getProcessInstanceId, processInstanceId)
+        );
+
+        if (application == null) {
+            throw exception(CUSTOMER_CLAIM_APPLICATION_NOT_EXISTS);
+        }
+
+        // 2. 判断流程审批结果
+        // processStatus: 1-审批中, 2-审批通过, 3-审批拒绝, 4-已取消
+        if (application.getProcessStatus() != 2) {
+            // 如果不是审批通过状态,则不处理
+            return;
+        }
+
+        // 3. 审批通过,自动分配客户
+        autoAssignCustomerAfterClaimApproved(application.getId());
+    }
+
     // ==================== 私有方法 ====================
 
     private CustomerClaimApplicationDO validateClaimApplicationExists(Long id) {
