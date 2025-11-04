@@ -90,3 +90,16 @@ export function deleteCustomerList(ids: number[]) {
 export function exportCustomer(params: any) {
   return requestClient.download('/aicrm/customer/export-excel', { params });
 }
+
+/** 获取未分配的客户列表(用于下拉选择) */
+export function getUnassignedCustomers() {
+  return requestClient.get<PageResult<AicrmCustomerApi.Customer>>(
+    '/aicrm/customer/page',
+    {
+      params: {
+        assignmentStatus: 0,  // 0=未分配
+        pageSize: 100,        // 每页最大100条
+      }
+    },
+  ).then(res => res.list || []);
+}

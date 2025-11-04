@@ -39,7 +39,7 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
     /**
      * 客户认领对应的流程定义 KEY
      */
-    public static final String PROCESS_KEY = "crm_customer_claim";
+    public static final String PROCESS_KEY = "customer_claim";
 
     @Resource
     private CustomerClaimApplicationMapper claimApplicationMapper;
@@ -55,6 +55,9 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.customer.CustomerMapper customerMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -76,9 +79,15 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
         application.setProcessStatus(1); // 审批中
         claimApplicationMapper.insert(application);
 
-        // 4. 发起 BPM 流程
+        // 4. 查询客户名称用于流程标题
+        cn.iocoder.yudao.module.aicrm.dal.dataobject.customer.CustomerDO customer =
+                customerMapper.selectById(createReqVO.getCustomerId());
+        String customerName = customer != null ? customer.getCustomerName() : "未知客户";
+
+        // 5. 发起 BPM 流程
         Map<String, Object> variables = new HashMap<>();
         variables.put("customerId", createReqVO.getCustomerId());
+        variables.put("customerName", customerName); // 用于流程标题模板
         variables.put("applyReason", createReqVO.getApplyReason());
         variables.put("applicantUserId", userId);
         variables.put("applicantDeptId", deptId);
@@ -134,6 +143,34 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
     @Override
     public CustomerClaimApplicationDO getClaimApplication(Long id) {
         return claimApplicationMapper.selectById(id);
+    }
+
+    @Override
+    public CustomerClaimApplicationRespVO getClaimApplicationDetail(Long id) {
+        // 1. 查询申请信息
+        CustomerClaimApplicationDO application = claimApplicationMapper.selectById(id);
+        if (application == null) {
+            throw exception(CUSTOMER_CLAIM_APPLICATION_NOT_EXISTS);
+        }
+
+        // 2. 转换为 RespVO
+        CustomerClaimApplicationRespVO respVO = BeanUtils.toBean(application, CustomerClaimApplicationRespVO.class);
+
+        // 3. 查询客户名称
+        if (application.getCustomerId() != null) {
+            cn.iocoder.yudao.module.aicrm.dal.dataobject.customer.CustomerDO customer =
+                    customerMapper.selectById(application.getCustomerId());
+            if (customer != null) {
+                respVO.setCustomerName(customer.getCustomerName());
+            }
+        }
+
+        // 4. 查询申请人姓名
+        if (application.getApplicantUserId() != null) {
+            respVO.setApplicantUserName(adminUserApi.getUser(application.getApplicantUserId()).getNickname());
+        }
+
+        return respVO;
     }
 
     @Override

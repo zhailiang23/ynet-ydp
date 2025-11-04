@@ -49,8 +49,8 @@ public class CustomerClaimApplicationController {
     @Operation(summary = "获得客户认领申请")
     @Parameter(name = "id", description = "编号", required = true, example = "1")
     @PreAuthorize("@ss.hasPermission('aicrm:customer-claim:query')")
-    public CommonResult<CustomerClaimApplicationDO> getClaimApplication(@RequestParam("id") Long id) {
-        return success(customerClaimService.getClaimApplication(id));
+    public CommonResult<CustomerClaimApplicationRespVO> getClaimApplication(@RequestParam("id") Long id) {
+        return success(customerClaimService.getClaimApplicationDetail(id));
     }
 
     @GetMapping("/page")

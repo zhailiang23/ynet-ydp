@@ -38,6 +38,14 @@ public interface CustomerClaimService {
     CustomerClaimApplicationDO getClaimApplication(Long id);
 
     /**
+     * 获得客户认领申请详情（包含关联信息）
+     *
+     * @param id 编号
+     * @return 客户认领申请详情
+     */
+    CustomerClaimApplicationRespVO getClaimApplicationDetail(Long id);
+
+    /**
      * 获得客户认领申请分页
      *
      * @param pageReqVO 分页查询

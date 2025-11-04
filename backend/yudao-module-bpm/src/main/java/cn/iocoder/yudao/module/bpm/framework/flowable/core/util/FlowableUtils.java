@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.bpm.framework.flowable.core.util;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
@@ -228,8 +229,9 @@ public class FlowableUtils {
     /**
      * 获得流程实例的摘要
      *
-     * 仅有 {@link BpmModelFormTypeEnum#getType()} 表单，才有摘要。
-     * 原因是，只有它才有表单项的配置，从而可以根据配置，展示摘要。
+     * 支持流程表单（NORMAL）和业务表单（CUSTOM）。
+     * - 流程表单：根据表单字段配置展示摘要
+     * - 业务表单：根据 summarySetting 配置从流程变量中提取摘要
      *
      * @param processDefinitionInfo 流程定义
      * @param processVariables      流程实例的 variables
@@ -237,9 +239,34 @@ public class FlowableUtils {
      */
     public static List<KeyValue<String, String>> getSummary(BpmProcessDefinitionInfoDO processDefinitionInfo,
                                                             Map<String, Object> processVariables) {
-        // 只有流程表单才会显示摘要！
-        if (ObjectUtil.isNull(processDefinitionInfo)
-                || !BpmModelFormTypeEnum.NORMAL.getType().equals(processDefinitionInfo.getFormType())) {
+        if (ObjectUtil.isNull(processDefinitionInfo) || MapUtil.isEmpty(processVariables)) {
+            return null;
+        }
+
+        // 情况一:业务表单（CUSTOM）
+        if (BpmModelFormTypeEnum.CUSTOM.getType().equals(processDefinitionInfo.getFormType())) {
+            // 业务表单必须显式配置摘要设置
+            if (ObjectUtil.isNotNull(processDefinitionInfo.getSummarySetting())
+                    && Boolean.TRUE.equals(processDefinitionInfo.getSummarySetting().getEnable())
+                    && CollUtil.isNotEmpty(processDefinitionInfo.getSummarySetting().getSummary())) {
+                // 从流程变量中直接读取,格式为 "变量key:显示标签"
+                return convertList(processDefinitionInfo.getSummarySetting().getSummary(), item -> {
+                    // 支持 "key:label" 格式,例如 "customerName:客户名称"
+                    String[] parts = item.split(":", 2);
+                    String key = parts[0];
+                    String label = parts.length > 1 ? parts[1] : key;
+                    Object value = processVariables.get(key);
+                    if (value != null) {
+                        return new KeyValue<>(label, value.toString());
+                    }
+                    return null;
+                });
+            }
+            return null;
+        }
+
+        // 情况二:流程表单（NORMAL）
+        if (!BpmModelFormTypeEnum.NORMAL.getType().equals(processDefinitionInfo.getFormType())) {
             return null;
         }
 
@@ -252,7 +279,7 @@ public class FlowableUtils {
             }
         });
 
-        // 情况一：当自定义了摘要
+        // 情况二-1：当自定义了摘要
         if (ObjectUtil.isNotNull(processDefinitionInfo.getSummarySetting())
                 && Boolean.TRUE.equals(processDefinitionInfo.getSummarySetting().getEnable())) {
             return convertList(processDefinitionInfo.getSummarySetting().getSummary(), item -> {
@@ -265,7 +292,7 @@ public class FlowableUtils {
             });
         }
 
-        // 情况二：默认摘要展示前三个表单字段
+        // 情况二-2：默认摘要展示前三个表单字段
         return formFieldsMap.entrySet().stream()
                 .limit(3)
                 .map(entry -> new KeyValue<>(entry.getValue().getTitle(),
