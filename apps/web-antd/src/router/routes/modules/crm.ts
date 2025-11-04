@@ -83,6 +83,24 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('#/views/crm/product/detail/index.vue'),
       },
+      {
+        path: 'customerassign/claim/create',
+        name: 'CustomerClaimCreate',
+        meta: {
+          title: '提交客户认领申请',
+          activePath: '/crm/customerassign/claim',
+        },
+        component: () => import('#/views/aicrm/customerclaim/create.vue'),
+      },
+      {
+        path: 'customerassign/claim/detail',
+        name: 'CustomerClaimDetail',
+        meta: {
+          title: '认领申请详情',
+          activePath: '/crm/customerassign/claim',
+        },
+        component: () => import('#/views/aicrm/customerclaim/detail.vue'),
+      },
     ],
   },
 ];

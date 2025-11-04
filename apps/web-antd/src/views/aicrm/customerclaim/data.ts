@@ -1,9 +1,15 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { AicrmCustomerClaimApi } from '#/api/aicrm/customerclaim';
+import type { DescriptionItemSchema } from '#/components/description';
+
+import { h } from 'vue';
 
 import { getDictOptions } from '@vben/hooks';
+import { formatDateTime } from '@vben/utils';
 
+import { DictTag } from '#/components/dict-tag';
+import { getUnassignedCustomers } from '#/api/aicrm/customer';
 import { getRangePickerDefaultProps } from '#/utils';
 
 /** 列表的搜索表单 */
@@ -134,11 +140,37 @@ export function useApplyFormSchema(): VbenFormSchema[] {
   return [
     {
       fieldName: 'customerId',
-      label: '客户ID',
+      label: '选择客户',
       rules: 'required',
-      component: 'Input',
+      component: 'ApiSelect',
       componentProps: {
-        placeholder: '请输入客户ID',
+        api: getUnassignedCustomers,
+        labelField: 'customerName',
+        valueField: 'id',
+        placeholder: '请选择要认领的客户',
+        showSearch: true,
+        filterOption: (input: string, option: any) => {
+          const customerName = option.customerName || '';
+          const customerNo = option.customerNo || '';
+          const idCardNo = option.idCardNo || '';
+          const searchText = input.toLowerCase();
+          return (
+            customerName.toLowerCase().includes(searchText) ||
+            customerNo.toLowerCase().includes(searchText) ||
+            idCardNo.toLowerCase().includes(searchText)
+          );
+        },
+        // 自定义显示格式: 客户名称 - 客户编号 (证件号码)
+        optionLabelRender: (option: any) => {
+          const parts = [option.customerName];
+          if (option.customerNo) {
+            parts.push(option.customerNo);
+          }
+          if (option.idCardNo) {
+            parts.push(`证件:${option.idCardNo}`);
+          }
+          return parts.join(' - ');
+        },
       },
     },
     {
@@ -152,6 +184,20 @@ export function useApplyFormSchema(): VbenFormSchema[] {
         maxlength: 500,
         showCount: true,
       },
+    },
+  ];
+}
+
+/** 详情页 Schema */
+export function useDetailFormSchema(): DescriptionItemSchema[] {
+  return [
+    {
+      label: '客户名称',
+      field: 'customerName',
+    },
+    {
+      label: '申请理由',
+      field: 'applyReason',
     },
   ];
 }

@@ -3,45 +3,35 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { AicrmCustomerClaimApi } from '#/api/aicrm/customerclaim';
 
 import { Page } from '@vben/common-ui';
-import { useVbenModal } from '@vben/common-ui';
 
 import { message, Modal } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  applyForClaim,
   cancelClaimApplication,
   getCustomerClaimApplicationPage,
 } from '#/api/aicrm/customerclaim';
-import { $t } from '#/locales';
+import { router } from '#/router';
 
-import { useApplyFormSchema, useGridColumns, useGridFormSchema } from './data';
+import { useGridColumns, useGridFormSchema } from './data';
 
 /** 刷新表格 */
 function handleRefresh() {
   gridApi.query();
 }
 
-/** 提交申请对话框 */
-const [ApplyModal, applyModalApi] = useVbenModal({
-  onConfirm: async () => {
-    try {
-      const values = await applyModalApi.form?.validate();
-      await applyForClaim(values as AicrmCustomerClaimApi.CustomerClaimApplicationApplyReq);
-      message.success('提交认领申请成功，等待审批');
-      applyModalApi.close();
-      handleRefresh();
-    } catch (error) {
-      console.error('提交认领申请失败:', error);
-    }
-  },
-});
-
-/** 打开提交申请对话框 */
+/** 跳转到创建页面 */
 function handleApply() {
-  applyModalApi.setState({
-    isOpen: true,
-    title: '提交客户认领申请',
+  router.push({
+    name: 'CustomerClaimCreate',
+  });
+}
+
+/** 查看详情 */
+function handleDetail(row: AicrmCustomerClaimApi.CustomerClaimApplication) {
+  router.push({
+    name: 'CustomerClaimDetail',
+    query: { id: row.id },
   });
 }
 
@@ -115,6 +105,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
         <TableAction
           :actions="[
             {
+              label: '查看详情',
+              type: 'link',
+              icon: ACTION_ICON.VIEW,
+              auth: ['aicrm:customer-claim:query'],
+              onClick: handleDetail.bind(null, row),
+            },
+            {
               label: '取消申请',
               type: 'link',
               icon: ACTION_ICON.DELETE,
@@ -127,12 +124,5 @@ const [Grid, gridApi] = useVbenVxeGrid({
         />
       </template>
     </Grid>
-
-    <!-- 提交申请对话框 -->
-    <ApplyModal
-      :form-schema="useApplyFormSchema()"
-      class="!w-[600px]"
-      confirm-button-text="提交申请"
-    />
   </Page>
 </template>
