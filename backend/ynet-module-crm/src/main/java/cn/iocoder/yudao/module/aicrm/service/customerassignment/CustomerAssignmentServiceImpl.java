@@ -377,36 +377,67 @@ public class CustomerAssignmentServiceImpl implements CustomerAssignmentService 
         }
 
         // 2. 验证托管目标用户存在
-        if (adminUserService.getUser(reqVO.getDelegateToUserId()) == null) {
+        cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO targetUser = adminUserService.getUser(reqVO.getDelegateToUserId());
+        if (targetUser == null) {
             throw exception(CUSTOMER_DELEGATION_USER_NOT_EXISTS);
         }
 
-        // 3. 批量更新归属记录的托管字段
+        // 3. 批量创建托管归属记录
         for (Long customerId : reqVO.getCustomerIds()) {
             // 查询当前用户对该客户的主办归属记录
-            CustomerAssignmentDO assignment = customerAssignmentMapper.selectOne(
+            CustomerAssignmentDO primaryAssignment = customerAssignmentMapper.selectOne(
                     new LambdaQueryWrapper<CustomerAssignmentDO>()
                             .eq(CustomerAssignmentDO::getCustomerId, customerId)
                             .eq(CustomerAssignmentDO::getUserId, userId)
                             .eq(CustomerAssignmentDO::getAssignmentType, 1) // 只能托管主办客户
             );
 
-            if (assignment == null) {
+            if (primaryAssignment == null) {
                 throw exception(CUSTOMER_DELEGATION_NOT_PRIMARY);
             }
 
-            // 更新托管字段 - 不改变客户归属(user_id),只标记托管状态
-            CustomerAssignmentDO updateDO = new CustomerAssignmentDO();
-            updateDO.setId(assignment.getId());
-            updateDO.setIsDelegated(true);
-            // delegateFromUserId 存储托管给的目标用户ID
-            updateDO.setDelegateFromUserId(reqVO.getDelegateToUserId());
-            updateDO.setDelegateStartDate(reqVO.getDelegateStartDate());
-            updateDO.setDelegateEndDate(reqVO.getDelegateEndDate());
-            updateDO.setDelegateReason(reqVO.getDelegateReason());
-            // 注意: 不修改 user_id,客户仍然归属当前用户
+            // 检查是否已存在托管记录
+            Long existingCount = customerAssignmentMapper.selectCount(
+                    new LambdaQueryWrapper<CustomerAssignmentDO>()
+                            .eq(CustomerAssignmentDO::getCustomerId, customerId)
+                            .eq(CustomerAssignmentDO::getUserId, reqVO.getDelegateToUserId())
+                            .eq(CustomerAssignmentDO::getAssignmentType, 3) // 托管类型
+            );
+            if (existingCount > 0) {
+                throw exception(CUSTOMER_DELEGATION_ALREADY_EXISTS);
+            }
 
-            customerAssignmentMapper.updateById(updateDO);
+            // 创建新的托管归属记录
+            CustomerAssignmentDO delegationAssignment = new CustomerAssignmentDO();
+            delegationAssignment.setCustomerId(customerId);
+            delegationAssignment.setAssignmentType(3); // 3=托管
+            delegationAssignment.setDeptId(targetUser.getDeptId()); // 使用目标用户的部门
+            delegationAssignment.setUserId(reqVO.getDelegateToUserId()); // 托管目标用户
+            delegationAssignment.setHasViewRight(true);
+            delegationAssignment.setHasMaintainRight(true);
+            delegationAssignment.setAssignDate(LocalDate.now());
+            delegationAssignment.setAssignOperatorId(userId);
+            // 设置托管相关字段用于追踪
+            delegationAssignment.setDelegateFromUserId(userId); // 记录托管来源用户
+            delegationAssignment.setDelegateStartDate(reqVO.getDelegateStartDate());
+            delegationAssignment.setDelegateEndDate(reqVO.getDelegateEndDate());
+            delegationAssignment.setDelegateReason(reqVO.getDelegateReason());
+            delegationAssignment.setRemark("客户托管");
+
+            customerAssignmentMapper.insert(delegationAssignment);
+
+            // 4. 记录历史
+            recordAssignmentHistory(
+                    customerId,
+                    "DELEGATE", // 操作类型：托管
+                    primaryAssignment.getDeptId(), // 原部门
+                    primaryAssignment.getUserId(), // 原用户
+                    targetUser.getDeptId(), // 新部门
+                    reqVO.getDelegateToUserId(), // 新用户
+                    reqVO.getDelegateReason(), // 托管原因
+                    userId, // 操作人
+                    null // 无流程实例
+            );
         }
     }
 

@@ -32,7 +32,7 @@ public class CustomerAssignmentDO extends BaseDO {
      */
     private Long customerId;
     /**
-     * 归属类型（1=主办，2=协办）
+     * 归属类型（1=主办，2=协办，3=托管）
      */
     private Integer assignmentType;
     /**
@@ -60,23 +60,25 @@ public class CustomerAssignmentDO extends BaseDO {
      */
     private Long assignOperatorId;
     /**
-     * 是否托管状态
+     * 是否托管状态（已废弃，改用 assignmentType=3 表示托管，该字段仅用于兼容历史数据）
+     * @deprecated 使用 assignmentType=3 表示托管
      */
+    @Deprecated
     private Boolean isDelegated;
     /**
-     * 托管来源客户经理ID（关联 system_users.id）
+     * 托管来源客户经理ID（当 assignmentType=3 时有效，记录将客户托管给当前用户的原主办用户，关联 system_users.id）
      */
     private Long delegateFromUserId;
     /**
-     * 托管开始日期
+     * 托管开始日期（当 assignmentType=3 时有效）
      */
     private LocalDate delegateStartDate;
     /**
-     * 托管结束日期
+     * 托管结束日期（当 assignmentType=3 时有效）
      */
     private LocalDate delegateEndDate;
     /**
-     * 托管原因
+     * 托管原因（当 assignmentType=3 时有效）
      */
     private String delegateReason;
     /**

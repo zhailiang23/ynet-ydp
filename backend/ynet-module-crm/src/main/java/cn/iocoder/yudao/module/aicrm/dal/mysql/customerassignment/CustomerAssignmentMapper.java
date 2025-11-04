@@ -51,8 +51,8 @@ public interface CustomerAssignmentMapper extends BaseMapperX<CustomerAssignment
     void physicalDeleteById(@Param("id") Long id);
 
     /**
-     * 查询我的客户分页（包括主办和协办）
-     * 同时查询归属于我的客户和托管给我的客户
+     * 查询我的客户分页（包括主办、协办、托管三种归属类型）
+     * 查询所有 user_id = 当前用户的归属记录，包括主办(1)、协办(2)、托管(3)
      */
     @Select("<script>" +
             "SELECT " +
@@ -74,7 +74,7 @@ public interface CustomerAssignmentMapper extends BaseMapperX<CustomerAssignment
             "INNER JOIN crm_customer c ON ca.customer_id = c.id " +
             "LEFT JOIN system_dept d ON ca.dept_id = d.id " +
             "LEFT JOIN system_users du ON ca.delegate_from_user_id = du.id " +
-            "WHERE (ca.user_id = #{userId} OR (ca.delegate_from_user_id = #{userId} AND ca.is_delegated = true)) " +
+            "WHERE ca.user_id = #{userId} " +
             "  AND ca.deleted = 0 " +
             "  AND c.deleted = 0 " +
             "<if test='reqVO.customerNo != null and reqVO.customerNo != \"\"'>" +
