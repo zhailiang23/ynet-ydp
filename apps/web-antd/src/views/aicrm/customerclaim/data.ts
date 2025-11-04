@@ -62,14 +62,14 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerClaimApi.Cust
       fixed: 'left',
     },
     {
-      field: 'customerId',
-      title: '客户ID',
-      minWidth: 100,
+      field: 'customerName',
+      title: '客户名称',
+      minWidth: 120,
     },
     {
-      field: 'applyUserId',
-      title: '申请人ID',
-      minWidth: 100,
+      field: 'applicantUserName',
+      title: '申请人名称',
+      minWidth: 120,
     },
     {
       field: 'applyDate',
@@ -102,21 +102,6 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerClaimApi.Cust
       showOverflow: 'tooltip',
     },
     {
-      field: 'approverComment',
-      title: '审批意见',
-      minWidth: 160,
-      showOverflow: 'tooltip',
-    },
-    {
-      field: 'approveTime',
-      title: '审批时间',
-      minWidth: 160,
-      formatter: ({ cellValue }) => {
-        if (!cellValue) return '';
-        return new Date(cellValue).toLocaleString('zh-CN');
-      },
-    },
-    {
       field: 'createTime',
       title: '创建时间',
       minWidth: 160,
@@ -128,7 +113,7 @@ export function useGridColumns(): VxeTableGridOptions<AicrmCustomerClaimApi.Cust
     {
       field: 'action',
       title: '操作',
-      width: 120,
+      width: 250,
       fixed: 'right',
       slots: { default: 'actions' },
     },
