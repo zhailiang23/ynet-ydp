@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -101,12 +102,18 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
             }
         }
 
+        // 构建流程摘要: "客户名称：xxx 申请理由：xxx"
+        String summary = String.format("客户名称：%s 申请理由：%s",
+                customerName,
+                createReqVO.getApplyReason());
+
         String processInstanceId = processInstanceApi.createProcessInstance(userId,
                 new BpmProcessInstanceCreateReqDTO()
                         .setProcessDefinitionKey(PROCESS_KEY)
                         .setBusinessKey(String.valueOf(application.getId()))
                         .setVariables(variables)
-                        .setStartUserSelectAssignees(startUserSelectAssignees));
+                        .setStartUserSelectAssignees(startUserSelectAssignees)
+                        .setSummary(summary));
 
         // 5. 更新流程实例ID
         claimApplicationMapper.updateById(
@@ -174,8 +181,18 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
     }
 
     @Override
-    public PageResult<CustomerClaimApplicationDO> getClaimApplicationPage(CustomerClaimApplicationPageReqVO pageReqVO) {
-        return claimApplicationMapper.selectPage(pageReqVO);
+    public PageResult<CustomerClaimApplicationRespVO> getClaimApplicationPage(CustomerClaimApplicationPageReqVO pageReqVO) {
+        // 使用联表查询获取客户名称
+        PageResult<CustomerClaimApplicationRespVO> pageResult = claimApplicationMapper.selectPageWithNames(pageReqVO);
+
+        // 填充申请人名称
+        pageResult.getList().forEach(respVO -> {
+            if (respVO.getApplicantUserId() != null) {
+                respVO.setApplicantUserName(adminUserApi.getUser(respVO.getApplicantUserId()).getNickname());
+            }
+        });
+
+        return pageResult;
     }
 
     @Override
@@ -213,8 +230,27 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
             return;
         }
 
-        // 3. 审批通过,自动分配客户
+        // 5. 审批通过,自动分配客户
         autoAssignCustomerAfterClaimApproved(application.getId());
+    }
+
+    /**
+     * 根据流程状态获取默认审批意见
+     */
+    private String getDefaultApprovalComment(Integer processStatus) {
+        if (processStatus == null) {
+            return null;
+        }
+        switch (processStatus) {
+            case 2:
+                return "审批通过";
+            case 3:
+                return "审批拒绝";
+            case 4:
+                return "已取消";
+            default:
+                return null;
+        }
     }
 
     // ==================== 私有方法 ====================
@@ -242,7 +278,14 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
             return;
         }
 
-        // 2. 创建客户归属关系
+        // 2. 更新客户的分配状态为已分配
+        cn.iocoder.yudao.module.aicrm.dal.dataobject.customer.CustomerDO customer =
+                new cn.iocoder.yudao.module.aicrm.dal.dataobject.customer.CustomerDO();
+        customer.setId(application.getCustomerId());
+        customer.setAssignmentStatus(1); // 已分配
+        customerMapper.updateById(customer);
+
+        // 3. 创建客户归属关系
         CustomerAssignmentDO assignment = new CustomerAssignmentDO();
         assignment.setCustomerId(application.getCustomerId());
         assignment.setAssignmentType(1); // 主办
@@ -255,7 +298,7 @@ public class CustomerClaimServiceImpl implements CustomerClaimService {
         assignment.setRemark("客户认领自动分配");
         customerAssignmentMapper.insert(assignment);
 
-        // 3. 记录历史
+        // 4. 记录历史
         CustomerAssignmentHistoryDO history = new CustomerAssignmentHistoryDO();
         history.setCustomerId(application.getCustomerId());
         history.setOperationType("claim");

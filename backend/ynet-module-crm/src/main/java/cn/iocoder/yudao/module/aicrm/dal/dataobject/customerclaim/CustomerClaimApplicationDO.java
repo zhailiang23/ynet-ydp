@@ -54,5 +54,13 @@ public class CustomerClaimApplicationDO extends BaseDO {
      * 流程状态（1=审批中，2=已通过，3=已拒绝，4=已取消）
      */
     private Integer processStatus;
+    /**
+     * 审批意见
+     */
+    private String approvalComment;
+    /**
+     * 审批时间
+     */
+    private LocalDateTime approvalTime;
 
 }

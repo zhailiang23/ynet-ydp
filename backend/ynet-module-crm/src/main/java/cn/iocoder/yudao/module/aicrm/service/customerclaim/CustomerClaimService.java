@@ -51,7 +51,7 @@ public interface CustomerClaimService {
      * @param pageReqVO 分页查询
      * @return 客户认领申请分页
      */
-    PageResult<CustomerClaimApplicationDO> getClaimApplicationPage(CustomerClaimApplicationPageReqVO pageReqVO);
+    PageResult<CustomerClaimApplicationRespVO> getClaimApplicationPage(CustomerClaimApplicationPageReqVO pageReqVO);
 
     /**
      * 更新认领申请状态（由BPM流程回调）

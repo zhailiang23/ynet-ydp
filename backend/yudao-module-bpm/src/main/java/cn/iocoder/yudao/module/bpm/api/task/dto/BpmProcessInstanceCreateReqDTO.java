@@ -41,4 +41,10 @@ public class BpmProcessInstanceCreateReqDTO {
      */
     private Map<String, List<Long>> startUserSelectAssignees;
 
+    /**
+     * 流程实例摘要
+     * 用于在流程列表页面显示业务关键信息
+     */
+    private String summary;
+
 }

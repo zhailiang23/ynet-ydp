@@ -54,6 +54,14 @@ function handleCancel(row: AicrmCustomerClaimApi.CustomerClaimApplication) {
   });
 }
 
+/** 审批进度 */
+function handleProgress(row: AicrmCustomerClaimApi.CustomerClaimApplication) {
+  router.push({
+    path: '/bpm/process-instance/detail',
+    query: { id: row.processInstanceId },
+  });
+}
+
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
     schema: useGridFormSchema(),
@@ -110,6 +118,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
               icon: ACTION_ICON.VIEW,
               auth: ['aicrm:customer-claim:query'],
               onClick: handleDetail.bind(null, row),
+            },
+            {
+              label: '审批进度',
+              type: 'link',
+              icon: ACTION_ICON.VIEW,
+              auth: ['aicrm:customer-claim:query'],
+              onClick: handleProgress.bind(null, row),
             },
             {
               label: '取消申请',

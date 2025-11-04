@@ -762,7 +762,7 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
                 .getProcessDefinition(createReqVO.getProcessDefinitionId());
         // 发起流程
         return createProcessInstance0(userId, definition, createReqVO.getVariables(), null,
-                createReqVO.getStartUserSelectAssignees());
+                createReqVO.getStartUserSelectAssignees(), null);
     }
 
     @Override
@@ -774,13 +774,15 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
             // 发起流程
             return createProcessInstance0(userId, definition, createReqDTO.getVariables(),
                     createReqDTO.getBusinessKey(),
-                    createReqDTO.getStartUserSelectAssignees());
+                    createReqDTO.getStartUserSelectAssignees(),
+                    createReqDTO.getSummary());
         });
     }
 
     private String createProcessInstance0(Long userId, ProcessDefinition definition,
                                           Map<String, Object> variables, String businessKey,
-                                          Map<String, List<Long>> startUserSelectAssignees) {
+                                          Map<String, List<Long>> startUserSelectAssignees,
+                                          String summary) {
         // 1.1 校验流程定义
         if (definition == null) {
             throw exception(PROCESS_DEFINITION_NOT_EXISTS);
@@ -825,8 +827,11 @@ public class BpmProcessInstanceServiceImpl implements BpmProcessInstanceService 
         if (processIdRule != null && Boolean.TRUE.equals(processIdRule.getEnable())) {
             processInstanceBuilder.predefineProcessInstanceId(processIdRedisDAO.generate(processIdRule));
         }
-        // 3.2 流程名称
-        processInstanceBuilder.name(generateProcessInstanceName(userId, definition, processDefinitionInfo, variables));
+        // 3.2 流程名称（摘要）
+        // 如果传入了 summary,使用 summary 作为流程名称,否则使用自动生成逻辑
+        String processInstanceName = StrUtil.isNotBlank(summary) ?
+                summary : generateProcessInstanceName(userId, definition, processDefinitionInfo, variables);
+        processInstanceBuilder.name(processInstanceName);
         // 3.3 发起流程实例
         ProcessInstance instance = processInstanceBuilder.start();
         return instance.getId();

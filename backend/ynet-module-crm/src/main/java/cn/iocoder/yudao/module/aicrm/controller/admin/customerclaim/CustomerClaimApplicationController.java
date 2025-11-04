@@ -56,7 +56,7 @@ public class CustomerClaimApplicationController {
     @GetMapping("/page")
     @Operation(summary = "获得客户认领申请分页")
     @PreAuthorize("@ss.hasPermission('aicrm:customer-claim:query')")
-    public CommonResult<PageResult<CustomerClaimApplicationDO>> getClaimApplicationPage(@Valid CustomerClaimApplicationPageReqVO pageReqVO) {
+    public CommonResult<PageResult<CustomerClaimApplicationRespVO>> getClaimApplicationPage(@Valid CustomerClaimApplicationPageReqVO pageReqVO) {
         return success(customerClaimService.getClaimApplicationPage(pageReqVO));
     }
 
