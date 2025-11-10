@@ -1,0 +1,85 @@
+package cn.iocoder.yudao.module.aicrm.service.practicevirtualcustomer;
+
+import cn.hutool.core.collection.CollUtil;
+import org.springframework.stereotype.Service;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import cn.iocoder.yudao.module.aicrm.controller.admin.practicevirtualcustomer.vo.*;
+import cn.iocoder.yudao.module.aicrm.dal.dataobject.practicevirtualcustomer.PracticeVirtualCustomerDO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
+import cn.iocoder.yudao.module.aicrm.dal.mysql.practicevirtualcustomer.PracticeVirtualCustomerMapper;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
+import static cn.iocoder.yudao.module.aicrm.enums.ErrorCodeConstants.*;
+
+/**
+ * CRM智能陪练-虚拟客户 Service 实现类
+ *
+ * @author 芋道源码
+ */
+@Service
+@Validated
+public class PracticeVirtualCustomerServiceImpl implements PracticeVirtualCustomerService {
+
+    @Resource
+    private PracticeVirtualCustomerMapper practiceVirtualCustomerMapper;
+
+    @Override
+    public Long createPracticeVirtualCustomer(PracticeVirtualCustomerSaveReqVO createReqVO) {
+        // 插入
+        PracticeVirtualCustomerDO practiceVirtualCustomer = BeanUtils.toBean(createReqVO, PracticeVirtualCustomerDO.class);
+        practiceVirtualCustomerMapper.insert(practiceVirtualCustomer);
+
+        // 返回
+        return practiceVirtualCustomer.getId();
+    }
+
+    @Override
+    public void updatePracticeVirtualCustomer(PracticeVirtualCustomerSaveReqVO updateReqVO) {
+        // 校验存在
+        validatePracticeVirtualCustomerExists(updateReqVO.getId());
+        // 更新
+        PracticeVirtualCustomerDO updateObj = BeanUtils.toBean(updateReqVO, PracticeVirtualCustomerDO.class);
+        practiceVirtualCustomerMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void deletePracticeVirtualCustomer(Long id) {
+        // 校验存在
+        validatePracticeVirtualCustomerExists(id);
+        // 删除
+        practiceVirtualCustomerMapper.deleteById(id);
+    }
+
+    @Override
+        public void deletePracticeVirtualCustomerListByIds(List<Long> ids) {
+        // 删除
+        practiceVirtualCustomerMapper.deleteByIds(ids);
+        }
+
+
+    private void validatePracticeVirtualCustomerExists(Long id) {
+        if (practiceVirtualCustomerMapper.selectById(id) == null) {
+            throw exception(PRACTICE_VIRTUAL_CUSTOMER_NOT_EXISTS);
+        }
+    }
+
+    @Override
+    public PracticeVirtualCustomerDO getPracticeVirtualCustomer(Long id) {
+        return practiceVirtualCustomerMapper.selectById(id);
+    }
+
+    @Override
+    public PageResult<PracticeVirtualCustomerDO> getPracticeVirtualCustomerPage(PracticeVirtualCustomerPageReqVO pageReqVO) {
+        return practiceVirtualCustomerMapper.selectPage(pageReqVO);
+    }
+
+}
