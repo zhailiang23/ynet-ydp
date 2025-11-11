@@ -14,6 +14,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.aicrm.dal.mysql.practiceskill.PracticeSkillMapper;
+import cn.iocoder.yudao.module.aicrm.dal.mysql.practicematerial.PracticeMaterialMapper;
+import cn.iocoder.yudao.module.aicrm.dal.dataobject.practicematerial.PracticeMaterialDO;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
@@ -31,6 +33,9 @@ public class PracticeSkillServiceImpl implements PracticeSkillService {
 
     @Resource
     private PracticeSkillMapper practiceSkillMapper;
+
+    @Resource
+    private PracticeMaterialMapper practiceMaterialMapper;
 
     @Override
     public Long createPracticeSkill(PracticeSkillSaveReqVO createReqVO) {
@@ -78,8 +83,44 @@ public class PracticeSkillServiceImpl implements PracticeSkillService {
     }
 
     @Override
-    public PageResult<PracticeSkillDO> getPracticeSkillPage(PracticeSkillPageReqVO pageReqVO) {
-        return practiceSkillMapper.selectPage(pageReqVO);
+    public PageResult<PracticeSkillRespVO> getPracticeSkillPage(PracticeSkillPageReqVO pageReqVO) {
+        // 查询分页数据
+        PageResult<PracticeSkillDO> pageResult = practiceSkillMapper.selectPage(pageReqVO);
+
+        // 转换为 VO
+        PageResult<PracticeSkillRespVO> voPageResult = BeanUtils.toBean(pageResult, PracticeSkillRespVO.class);
+
+        // 收集所有的文件 ID
+        Set<Long> materialIds = new HashSet<>();
+        for (PracticeSkillRespVO vo : voPageResult.getList()) {
+            if (vo.getComplianceRules() != null) {
+                materialIds.add(vo.getComplianceRules());
+            }
+            if (vo.getRelatedProducts() != null) {
+                materialIds.add(vo.getRelatedProducts());
+            }
+        }
+
+        // 批量查询培训文件
+        Map<Long, String> materialNameMap = new HashMap<>();
+        if (!materialIds.isEmpty()) {
+            List<PracticeMaterialDO> materials = practiceMaterialMapper.selectBatchIds(materialIds);
+            for (PracticeMaterialDO material : materials) {
+                materialNameMap.put(material.getId(), material.getName());
+            }
+        }
+
+        // 填充文件名称
+        for (PracticeSkillRespVO vo : voPageResult.getList()) {
+            if (vo.getComplianceRules() != null) {
+                vo.setComplianceRulesName(materialNameMap.get(vo.getComplianceRules()));
+            }
+            if (vo.getRelatedProducts() != null) {
+                vo.setRelatedProductsName(materialNameMap.get(vo.getRelatedProducts()));
+            }
+        }
+
+        return voPageResult;
     }
 
 }

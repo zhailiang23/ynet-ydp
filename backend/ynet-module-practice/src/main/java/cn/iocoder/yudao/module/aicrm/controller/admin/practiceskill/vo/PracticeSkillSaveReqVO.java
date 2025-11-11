@@ -23,10 +23,10 @@ public class PracticeSkillSaveReqVO {
     @Schema(description = "话术模板")
     private String scriptTemplate;
 
-    @Schema(description = "合规规则说明")
-    private String complianceRules;
+    @Schema(description = "合规规则（培训文件ID）", example = "1")
+    private Long complianceRules;
 
-    @Schema(description = "关联产品知识")
-    private String relatedProducts;
+    @Schema(description = "产品知识（培训文件ID）", example = "2")
+    private Long relatedProducts;
 
 }

@@ -9,19 +9,16 @@ import jakarta.validation.constraints.*;
 @Data
 public class PracticeScriptSaveReqVO {
 
-    @Schema(description = "剧本版本ID（主键）", requiredMode = Schema.RequiredMode.REQUIRED, example = "10294")
+    @Schema(description = "剧本版本ID（主键）", example = "10294")
     private Long id;
 
-    @Schema(description = "剧本编号（标识同一个剧本的不同版本）", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "剧本编号（标识同一个剧本的不同版本）不能为空")
+    @Schema(description = "剧本编号（标识同一个剧本的不同版本）")
     private String scriptNo;
 
-    @Schema(description = "版本号（如 v1.0, v1.1, v2.0）", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "版本号（如 v1.0, v1.1, v2.0）不能为空")
+    @Schema(description = "版本号（如 v1.0, v1.1, v2.0）")
     private String version;
 
-    @Schema(description = "是否最新版本", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "是否最新版本不能为空")
+    @Schema(description = "是否最新版本")
     private Boolean isLatest;
 
     @Schema(description = "父版本ID（用于追溯版本历史）", example = "14004")
@@ -30,8 +27,7 @@ public class PracticeScriptSaveReqVO {
     @Schema(description = "版本说明（本次修改的内容）", example = "你说的对")
     private String versionDescription;
 
-    @Schema(description = "版本状态：字典 aicrm_script_status", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @NotEmpty(message = "版本状态：字典 aicrm_script_status不能为空")
+    @Schema(description = "版本状态：字典 aicrm_script_status", example = "1")
     private String status;
 
     @Schema(description = "剧本名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")

@@ -20,6 +20,10 @@ public class PracticeMaterialRespVO {
     @ExcelProperty("文件名称")
     private String name;
 
+    @Schema(description = "文件类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "training_manual")
+    @ExcelProperty("文件类型")
+    private String fileType;
+
     @Schema(description = "文件URL", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://www.iocoder.cn")
     @ExcelProperty("文件URL")
     private String fileUrl;

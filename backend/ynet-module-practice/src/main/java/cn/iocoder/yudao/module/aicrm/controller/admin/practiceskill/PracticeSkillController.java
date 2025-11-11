@@ -84,8 +84,8 @@ public class PracticeSkillController {
     @Operation(summary = "获得CRM智能陪练-销售技巧分页")
     @PreAuthorize("@ss.hasPermission('aicrm:practice-skill:query')")
     public CommonResult<PageResult<PracticeSkillRespVO>> getPracticeSkillPage(@Valid PracticeSkillPageReqVO pageReqVO) {
-        PageResult<PracticeSkillDO> pageResult = practiceSkillService.getPracticeSkillPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, PracticeSkillRespVO.class));
+        PageResult<PracticeSkillRespVO> pageResult = practiceSkillService.getPracticeSkillPage(pageReqVO);
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")
@@ -95,10 +95,9 @@ public class PracticeSkillController {
     public void exportPracticeSkillExcel(@Valid PracticeSkillPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<PracticeSkillDO> list = practiceSkillService.getPracticeSkillPage(pageReqVO).getList();
+        List<PracticeSkillRespVO> list = practiceSkillService.getPracticeSkillPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "CRM智能陪练-销售技巧.xls", "数据", PracticeSkillRespVO.class,
-                        BeanUtils.toBean(list, PracticeSkillRespVO.class));
+        ExcelUtils.write(response, "CRM智能陪练-销售技巧.xls", "数据", PracticeSkillRespVO.class, list);
     }
 
 }

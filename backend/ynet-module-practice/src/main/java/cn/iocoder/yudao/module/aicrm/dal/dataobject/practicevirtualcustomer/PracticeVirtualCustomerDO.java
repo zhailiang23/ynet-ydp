@@ -32,7 +32,9 @@ public class PracticeVirtualCustomerDO extends BaseDO {
      */
     private String name;
     /**
-     * 性别：字典 aicrm_gender
+     * 性别
+     *
+     * 枚举 {@link cn.iocoder.yudao.module.aicrm.enums.CrmDictTypeConstants#GENDER}
      */
     private String gender;
     /**
@@ -41,18 +43,26 @@ public class PracticeVirtualCustomerDO extends BaseDO {
     private Integer age;
     /**
      * 职业
+     *
+     * 枚举 {@link cn.iocoder.yudao.module.aicrm.enums.CrmDictTypeConstants#OCCUPATION}
      */
     private String occupation;
     /**
      * 所属行业
+     *
+     * 枚举 {@link cn.iocoder.yudao.module.aicrm.enums.CrmDictTypeConstants#INDUSTRY}
      */
     private String industry;
     /**
-     * 性格类型：字典 aicrm_personality_type（如理性型/感性型）
+     * 性格类型
+     *
+     * 枚举 {@link cn.iocoder.yudao.module.aicrm.enums.CrmDictTypeConstants#PERSONALITY_TYPE}
      */
     private String personalityType;
     /**
      * 风险偏好
+     *
+     * 枚举 {@link cn.iocoder.yudao.module.aicrm.enums.CrmDictTypeConstants#RISK_PREFERENCE}
      */
     private String riskPreference;
     /**

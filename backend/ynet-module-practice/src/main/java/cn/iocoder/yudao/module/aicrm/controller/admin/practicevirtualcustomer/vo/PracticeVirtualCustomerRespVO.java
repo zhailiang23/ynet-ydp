@@ -20,27 +20,27 @@ public class PracticeVirtualCustomerRespVO {
     @ExcelProperty("客户姓名")
     private String name;
 
-    @Schema(description = "性别：字典 aicrm_gender")
-    @ExcelProperty("性别：字典 aicrm_gender")
+    @Schema(description = "性别", example = "male")
+    @ExcelProperty("性别")
     private String gender;
 
     @Schema(description = "年龄")
     @ExcelProperty("年龄")
     private Integer age;
 
-    @Schema(description = "职业")
+    @Schema(description = "职业", example = "executive")
     @ExcelProperty("职业")
     private String occupation;
 
-    @Schema(description = "所属行业")
+    @Schema(description = "所属行业", example = "finance")
     @ExcelProperty("所属行业")
     private String industry;
 
-    @Schema(description = "性格类型：字典 aicrm_personality_type（如理性型/感性型）", example = "1")
-    @ExcelProperty("性格类型：字典 aicrm_personality_type（如理性型/感性型）")
+    @Schema(description = "性格类型", example = "rational")
+    @ExcelProperty("性格类型")
     private String personalityType;
 
-    @Schema(description = "风险偏好")
+    @Schema(description = "风险偏好", example = "conservative")
     @ExcelProperty("风险偏好")
     private String riskPreference;
 

@@ -21,7 +21,8 @@ public interface PracticeScriptMapper extends BaseMapperX<PracticeScriptDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<PracticeScriptDO>()
                 .eqIfPresent(PracticeScriptDO::getScriptNo, reqVO.getScriptNo())
                 .eqIfPresent(PracticeScriptDO::getVersion, reqVO.getVersion())
-                .eqIfPresent(PracticeScriptDO::getIsLatest, reqVO.getIsLatest())
+                // 默认只查询最新版本,除非明确指定 isLatest=false
+                .eq(reqVO.getIsLatest() == null || reqVO.getIsLatest(), PracticeScriptDO::getIsLatest, true)
                 .eqIfPresent(PracticeScriptDO::getParentVersionId, reqVO.getParentVersionId())
                 .eqIfPresent(PracticeScriptDO::getVersionDescription, reqVO.getVersionDescription())
                 .eqIfPresent(PracticeScriptDO::getStatus, reqVO.getStatus())

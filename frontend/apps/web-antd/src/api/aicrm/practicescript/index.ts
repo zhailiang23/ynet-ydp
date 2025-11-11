@@ -18,9 +18,13 @@ export namespace AicrmPracticeScriptApi {
     difficultyLevel?: string; // 难度等级：字典 aicrm_difficulty_level
     marketingStep?: string; // 营销环节：字典 aicrm_marketing_step
     caseId: number; // 关联销售案例ID
+    caseName?: string; // 关联销售案例名称
     skillId: number; // 关联销售技巧ID
+    skillName?: string; // 关联销售技巧名称
     virtualCustomerId: number; // 关联虚拟客户ID
+    virtualCustomerName?: string; // 关联虚拟客户名称
     materialIds: string; // 关联培训文件ID列表（多个ID逗号分隔）
+    materialNames?: string; // 关联培训文件名称
     content: string; // 剧本内容（AI生成）
     contentEdit: string; // 手工调整内容（用户编辑）
     usageCount: number; // 使用次数（该版本被使用的次数）

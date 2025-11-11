@@ -57,6 +57,6 @@ public interface PracticeCourseService {
      * @param pageReqVO 分页查询
      * @return CRM智能陪练-陪练课程分页
      */
-    PageResult<PracticeCourseDO> getPracticeCoursePage(PracticeCoursePageReqVO pageReqVO);
+    PageResult<PracticeCourseRespVO> getPracticeCoursePage(PracticeCoursePageReqVO pageReqVO);
 
 }

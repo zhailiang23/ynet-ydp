@@ -10,8 +10,10 @@ export namespace AicrmPracticeSkillApi {
     name?: string; // 技巧名称
     category?: string; // 技巧分类：字典 aicrm_skill_category 值： 1.套路. 2.技巧
     scriptTemplate: string; // 话术模板
-    complianceRules: string; // 合规规则说明
-    relatedProducts: string; // 关联产品知识
+    complianceRules: number; // 合规规则（培训文件ID）
+    relatedProducts: number; // 产品知识（培训文件ID）
+    complianceRulesName?: string; // 合规规则文件名称
+    relatedProductsName?: string; // 产品知识文件名称
   }
 }
 

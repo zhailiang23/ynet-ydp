@@ -37,4 +37,34 @@ public interface CrmDictTypeConstants {
      */
     String CUSTOMER_IDENTITY_TYPE = "aicrm_customer_identity_type";
 
+    /**
+     * AICRM 培训文件类型
+     */
+    String PRACTICE_MATERIAL_FILE_TYPE = "aicrm_practice_material_file_type";
+
+    /**
+     * AICRM 性别
+     */
+    String GENDER = "aicrm_gender";
+
+    /**
+     * AICRM 职业类型
+     */
+    String OCCUPATION = "aicrm_occupation";
+
+    /**
+     * AICRM 所属行业
+     */
+    String INDUSTRY = "aicrm_industry";
+
+    /**
+     * AICRM 性格类型
+     */
+    String PERSONALITY_TYPE = "aicrm_personality_type";
+
+    /**
+     * AICRM 风险偏好
+     */
+    String RISK_PREFERENCE = "aicrm_risk_preference";
+
 }

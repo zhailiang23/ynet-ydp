@@ -16,6 +16,9 @@ public class PracticeMaterialPageReqVO extends PageParam {
     @Schema(description = "文件名称", example = "李四")
     private String name;
 
+    @Schema(description = "文件类型", example = "training_manual")
+    private String fileType;
+
     @Schema(description = "文件URL", example = "https://www.iocoder.cn")
     private String fileUrl;
 

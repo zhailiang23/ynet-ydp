@@ -131,7 +131,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['CRM智能陪练-虚拟客户']),
+              label: $t('ui.actionTitle.create', ['虚拟客户']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
               auth: ['aicrm:practice-virtual-customer:create'],

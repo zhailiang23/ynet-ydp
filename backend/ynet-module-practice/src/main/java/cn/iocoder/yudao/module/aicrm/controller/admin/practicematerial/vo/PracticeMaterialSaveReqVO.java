@@ -16,6 +16,10 @@ public class PracticeMaterialSaveReqVO {
     @NotEmpty(message = "文件名称不能为空")
     private String name;
 
+    @Schema(description = "文件类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "training_manual")
+    @NotEmpty(message = "文件类型不能为空")
+    private String fileType;
+
     @Schema(description = "文件URL", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://www.iocoder.cn")
     @NotEmpty(message = "文件URL不能为空")
     private String fileUrl;

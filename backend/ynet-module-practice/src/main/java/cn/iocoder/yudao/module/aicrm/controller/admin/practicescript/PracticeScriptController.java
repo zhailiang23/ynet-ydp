@@ -84,8 +84,8 @@ public class PracticeScriptController {
     @Operation(summary = "获得CRM智能陪练-陪练剧本表（支持版本控制）分页")
     @PreAuthorize("@ss.hasPermission('aicrm:practice-script:query')")
     public CommonResult<PageResult<PracticeScriptRespVO>> getPracticeScriptPage(@Valid PracticeScriptPageReqVO pageReqVO) {
-        PageResult<PracticeScriptDO> pageResult = practiceScriptService.getPracticeScriptPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, PracticeScriptRespVO.class));
+        PageResult<PracticeScriptRespVO> pageResult = practiceScriptService.getPracticeScriptPage(pageReqVO);
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")
@@ -95,10 +95,9 @@ public class PracticeScriptController {
     public void exportPracticeScriptExcel(@Valid PracticeScriptPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<PracticeScriptDO> list = practiceScriptService.getPracticeScriptPage(pageReqVO).getList();
+        List<PracticeScriptRespVO> list = practiceScriptService.getPracticeScriptPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "CRM智能陪练-陪练剧本表（支持版本控制）.xls", "数据", PracticeScriptRespVO.class,
-                        BeanUtils.toBean(list, PracticeScriptRespVO.class));
+        ExcelUtils.write(response, "CRM智能陪练-陪练剧本表（支持版本控制）.xls", "数据", PracticeScriptRespVO.class, list);
     }
 
 }

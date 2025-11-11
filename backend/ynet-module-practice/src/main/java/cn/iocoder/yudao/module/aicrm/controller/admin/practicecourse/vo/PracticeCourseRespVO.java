@@ -28,6 +28,14 @@ public class PracticeCourseRespVO {
     @ExcelProperty("关联陪练剧本ID")
     private Long scriptId;
 
+    @Schema(description = "关联剧本名称", example = "剧本名称")
+    @ExcelProperty("关联剧本名称")
+    private String scriptName;
+
+    @Schema(description = "剧本版本", example = "v1.0")
+    @ExcelProperty("剧本版本")
+    private String scriptVersion;
+
     @Schema(description = "课程类型 1.标准.0.个人")
     @ExcelProperty("课程类型 1.标准.0.个人")
     private Long standard;

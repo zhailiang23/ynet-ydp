@@ -40,13 +40,13 @@ public class PracticeSkillDO extends BaseDO {
      */
     private String scriptTemplate;
     /**
-     * 合规规则说明
+     * 合规规则（培训文件ID）
      */
-    private String complianceRules;
+    private Long complianceRules;
     /**
-     * 关联产品知识
+     * 产品知识（培训文件ID）
      */
-    private String relatedProducts;
+    private Long relatedProducts;
 
 
 }

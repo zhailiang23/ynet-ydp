@@ -32,6 +32,9 @@ public class PracticeCourseServiceImpl implements PracticeCourseService {
     @Resource
     private PracticeCourseMapper practiceCourseMapper;
 
+    @Resource
+    private cn.iocoder.yudao.module.aicrm.dal.mysql.practicescript.PracticeScriptMapper practiceScriptMapper;
+
     @Override
     public Long createPracticeCourse(PracticeCourseSaveReqVO createReqVO) {
         // 插入
@@ -78,8 +81,43 @@ public class PracticeCourseServiceImpl implements PracticeCourseService {
     }
 
     @Override
-    public PageResult<PracticeCourseDO> getPracticeCoursePage(PracticeCoursePageReqVO pageReqVO) {
-        return practiceCourseMapper.selectPage(pageReqVO);
+    public PageResult<PracticeCourseRespVO> getPracticeCoursePage(PracticeCoursePageReqVO pageReqVO) {
+        // 查询分页数据
+        PageResult<PracticeCourseDO> pageResult = practiceCourseMapper.selectPage(pageReqVO);
+
+        // 转换为 VO
+        PageResult<PracticeCourseRespVO> voPageResult = BeanUtils.toBean(pageResult, PracticeCourseRespVO.class);
+
+        // 收集所有的剧本 ID
+        Set<Long> scriptIds = new HashSet<>();
+        for (PracticeCourseRespVO vo : voPageResult.getList()) {
+            if (vo.getScriptId() != null) {
+                scriptIds.add(vo.getScriptId());
+            }
+        }
+
+        // 批量查询剧本信息
+        Map<Long, cn.iocoder.yudao.module.aicrm.dal.dataobject.practicescript.PracticeScriptDO> scriptMap = new HashMap<>();
+        if (!scriptIds.isEmpty()) {
+            List<cn.iocoder.yudao.module.aicrm.dal.dataobject.practicescript.PracticeScriptDO> scripts =
+                practiceScriptMapper.selectBatchIds(scriptIds);
+            for (cn.iocoder.yudao.module.aicrm.dal.dataobject.practicescript.PracticeScriptDO script : scripts) {
+                scriptMap.put(script.getId(), script);
+            }
+        }
+
+        // 填充剧本名称和版本
+        for (PracticeCourseRespVO vo : voPageResult.getList()) {
+            if (vo.getScriptId() != null) {
+                cn.iocoder.yudao.module.aicrm.dal.dataobject.practicescript.PracticeScriptDO script = scriptMap.get(vo.getScriptId());
+                if (script != null) {
+                    vo.setScriptName(script.getName());
+                    vo.setScriptVersion(script.getVersion());
+                }
+            }
+        }
+
+        return voPageResult;
     }
 
 }

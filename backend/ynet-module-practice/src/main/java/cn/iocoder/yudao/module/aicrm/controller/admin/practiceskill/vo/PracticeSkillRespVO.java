@@ -28,13 +28,21 @@ public class PracticeSkillRespVO {
     @ExcelProperty("话术模板")
     private String scriptTemplate;
 
-    @Schema(description = "合规规则说明")
-    @ExcelProperty("合规规则说明")
-    private String complianceRules;
+    @Schema(description = "合规规则（培训文件ID）", example = "1")
+    @ExcelProperty("合规规则（培训文件ID）")
+    private Long complianceRules;
 
-    @Schema(description = "关联产品知识")
-    @ExcelProperty("关联产品知识")
-    private String relatedProducts;
+    @Schema(description = "产品知识（培训文件ID）", example = "2")
+    @ExcelProperty("产品知识（培训文件ID）")
+    private Long relatedProducts;
+
+    @Schema(description = "合规规则文件名称", example = "银行业务操作规范")
+    @ExcelProperty("合规规则文件名称")
+    private String complianceRulesName;
+
+    @Schema(description = "产品知识文件名称", example = "个人储蓄产品介绍")
+    @ExcelProperty("产品知识文件名称")
+    private String relatedProductsName;
 
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("创建时间")

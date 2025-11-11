@@ -8,10 +8,12 @@ export namespace AicrmPracticeMaterialApi {
   export interface PracticeMaterial {
     id: number; // 文件ID
     name?: string; // 文件名称
+    fileType?: string; // 文件类型
     fileUrl?: string; // 文件URL
     fileSize: number; // 文件大小（字节）
     content: string; // 文件内容(纯文本)
     contentRich: string; // 文件内容(富文本)
+    createTime?: string; // 创建时间
   }
 }
 

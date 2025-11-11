@@ -60,17 +60,33 @@ public class PracticeScriptRespVO {
     @ExcelProperty("关联销售案例ID")
     private Long caseId;
 
+    @Schema(description = "关联销售案例名称", example = "案例名称")
+    @ExcelProperty("关联销售案例名称")
+    private String caseName;
+
     @Schema(description = "关联销售技巧ID", example = "16776")
     @ExcelProperty("关联销售技巧ID")
     private Long skillId;
+
+    @Schema(description = "关联销售技巧名称", example = "技巧名称")
+    @ExcelProperty("关联销售技巧名称")
+    private String skillName;
 
     @Schema(description = "关联虚拟客户ID", example = "24282")
     @ExcelProperty("关联虚拟客户ID")
     private Long virtualCustomerId;
 
+    @Schema(description = "关联虚拟客户名称", example = "客户名称")
+    @ExcelProperty("关联虚拟客户名称")
+    private String virtualCustomerName;
+
     @Schema(description = "关联培训文件ID列表（多个ID逗号分隔）")
     @ExcelProperty("关联培训文件ID列表（多个ID逗号分隔）")
     private String materialIds;
+
+    @Schema(description = "关联培训文件名称", example = "文件名称")
+    @ExcelProperty("关联培训文件名称")
+    private String materialNames;
 
     @Schema(description = "剧本内容（AI生成）")
     @ExcelProperty("剧本内容（AI生成）")

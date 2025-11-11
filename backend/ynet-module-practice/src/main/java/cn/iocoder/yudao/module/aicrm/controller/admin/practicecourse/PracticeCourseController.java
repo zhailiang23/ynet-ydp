@@ -84,8 +84,8 @@ public class PracticeCourseController {
     @Operation(summary = "获得CRM智能陪练-陪练课程分页")
     @PreAuthorize("@ss.hasPermission('aicrm:practice-course:query')")
     public CommonResult<PageResult<PracticeCourseRespVO>> getPracticeCoursePage(@Valid PracticeCoursePageReqVO pageReqVO) {
-        PageResult<PracticeCourseDO> pageResult = practiceCourseService.getPracticeCoursePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, PracticeCourseRespVO.class));
+        PageResult<PracticeCourseRespVO> pageResult = practiceCourseService.getPracticeCoursePage(pageReqVO);
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")
@@ -95,10 +95,9 @@ public class PracticeCourseController {
     public void exportPracticeCourseExcel(@Valid PracticeCoursePageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<PracticeCourseDO> list = practiceCourseService.getPracticeCoursePage(pageReqVO).getList();
+        List<PracticeCourseRespVO> list = practiceCourseService.getPracticeCoursePage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "CRM智能陪练-陪练课程.xls", "数据", PracticeCourseRespVO.class,
-                        BeanUtils.toBean(list, PracticeCourseRespVO.class));
+        ExcelUtils.write(response, "CRM智能陪练-陪练课程.xls", "数据", PracticeCourseRespVO.class, list);
     }
 
 }

@@ -57,6 +57,6 @@ public interface PracticeScriptService {
      * @param pageReqVO 分页查询
      * @return CRM智能陪练-陪练剧本表（支持版本控制）分页
      */
-    PageResult<PracticeScriptDO> getPracticeScriptPage(PracticeScriptPageReqVO pageReqVO);
+    PageResult<PracticeScriptRespVO> getPracticeScriptPage(PracticeScriptPageReqVO pageReqVO);
 
 }

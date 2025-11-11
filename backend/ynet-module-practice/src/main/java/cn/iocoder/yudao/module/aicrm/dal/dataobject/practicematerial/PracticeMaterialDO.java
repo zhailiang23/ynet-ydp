@@ -32,6 +32,12 @@ public class PracticeMaterialDO extends BaseDO {
      */
     private String name;
     /**
+     * 文件类型
+     *
+     * 枚举 {@link cn.iocoder.yudao.module.aicrm.enums.CrmDictTypeConstants#PRACTICE_MATERIAL_FILE_TYPE}
+     */
+    private String fileType;
+    /**
      * 文件URL
      */
     private String fileUrl;

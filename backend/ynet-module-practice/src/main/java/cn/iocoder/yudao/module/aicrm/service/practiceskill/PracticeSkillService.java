@@ -57,6 +57,6 @@ public interface PracticeSkillService {
      * @param pageReqVO 分页查询
      * @return CRM智能陪练-销售技巧分页
      */
-    PageResult<PracticeSkillDO> getPracticeSkillPage(PracticeSkillPageReqVO pageReqVO);
+    PageResult<PracticeSkillRespVO> getPracticeSkillPage(PracticeSkillPageReqVO pageReqVO);
 
 }

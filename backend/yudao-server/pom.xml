@@ -36,6 +36,11 @@
             <artifactId>ynet-module-crm</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>ynet-module-practice</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <!-- 工作流。-->
         <dependency>
             <groupId>cn.iocoder.boot</groupId>

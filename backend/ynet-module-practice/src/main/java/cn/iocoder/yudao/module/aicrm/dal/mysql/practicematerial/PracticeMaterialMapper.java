@@ -20,6 +20,7 @@ public interface PracticeMaterialMapper extends BaseMapperX<PracticeMaterialDO> 
     default PageResult<PracticeMaterialDO> selectPage(PracticeMaterialPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<PracticeMaterialDO>()
                 .likeIfPresent(PracticeMaterialDO::getName, reqVO.getName())
+                .eqIfPresent(PracticeMaterialDO::getFileType, reqVO.getFileType())
                 .eqIfPresent(PracticeMaterialDO::getFileUrl, reqVO.getFileUrl())
                 .eqIfPresent(PracticeMaterialDO::getFileSize, reqVO.getFileSize())
                 .eqIfPresent(PracticeMaterialDO::getContent, reqVO.getContent())
