@@ -4,6 +4,7 @@ import type { AicrmPracticeCourseApi } from '#/api/aicrm/practicecourse';
 
 import { getDictOptions } from '@vben/hooks';
 
+import { getPracticeScriptPage } from '#/api/aicrm/practicescript';
 import { getRangePickerDefaultProps } from '#/utils';
 
 /** 新增/修改的表单 */
@@ -27,44 +28,68 @@ export function useFormSchema(): VbenFormSchema[] {
       },
     },
     {
-      fieldName: 'description',
-      label: '课程描述',
-      component: 'RichTextarea',
-    },
-    {
       fieldName: 'scriptId',
-      label: '关联陪练剧本ID',
+      label: '关联剧本',
       rules: 'required',
-      component: 'Input',
+      component: 'ApiSelect',
       componentProps: {
-        placeholder: '请输入关联陪练剧本ID',
+        placeholder: '请选择关联剧本',
+        allowClear: true,
+        api: async () => {
+          const result = await getPracticeScriptPage({
+            pageNo: 1,
+            pageSize: 100,
+          });
+          return result.list.map((item: any) => ({
+            label: item.name,
+            value: item.id,
+          }));
+        },
       },
     },
     {
       fieldName: 'standard',
-      label: '课程类型 1.标准.0.个人',
-      component: 'Input',
+      label: '课程类型',
+      rules: 'required',
+      component: 'Select',
       componentProps: {
-        placeholder: '请输入课程类型 1.标准.0.个人',
+        placeholder: '请选择课程类型',
+        options: [
+          { label: '标准课程', value: 1 },
+          { label: '个性化课程', value: 0 },
+        ],
       },
     },
     {
       fieldName: 'hard',
-      label: '课程复杂度 1.复杂.0.简单',
-      component: 'Input',
+      label: '课程复杂度',
+      rules: 'required',
+      component: 'Select',
       componentProps: {
-        placeholder: '请输入课程复杂度 1.复杂.0.简单',
+        placeholder: '请选择课程复杂度',
+        options: [
+          { label: '复杂', value: 1 },
+          { label: '简单', value: 0 },
+        ],
       },
     },
     {
       fieldName: 'status',
-      label: '课程状态：字典 aicrm_course_status',
+      label: '课程状态',
       rules: 'required',
-      component: 'RadioGroup',
+      component: 'Select',
       componentProps: {
-        options: [],
-        buttonStyle: 'solid',
-        optionType: 'button',
+        placeholder: '请选择课程状态',
+        options: getDictOptions('aicrm_course_status'),
+      },
+    },
+    {
+      fieldName: 'description',
+      label: '课程描述',
+      component: 'Textarea',
+      componentProps: {
+        placeholder: '请输入课程描述',
+        rows: 5,
       },
     },
   ];
@@ -82,112 +107,53 @@ export function useGridFormSchema(): VbenFormSchema[] {
         placeholder: '请输入课程名称',
       },
     },
-    {
-      fieldName: 'description',
-      label: '课程描述',
-      component: 'Input',
-      componentProps: {
-        allowClear: true,
-        placeholder: '请输入课程描述',
-      },
-    },
-    {
-      fieldName: 'scriptId',
-      label: '关联陪练剧本ID',
-      component: 'Input',
-      componentProps: {
-        allowClear: true,
-        placeholder: '请输入关联陪练剧本ID',
-      },
-    },
-    {
-      fieldName: 'standard',
-      label: '课程类型 1.标准.0.个人',
-      component: 'Input',
-      componentProps: {
-        allowClear: true,
-        placeholder: '请输入课程类型 1.标准.0.个人',
-      },
-    },
-    {
-      fieldName: 'hard',
-      label: '课程复杂度 1.复杂.0.简单',
-      component: 'Input',
-      componentProps: {
-        allowClear: true,
-        placeholder: '请输入课程复杂度 1.复杂.0.简单',
-      },
-    },
-    {
-      fieldName: 'status',
-      label: '课程状态：字典 aicrm_course_status',
-      component: 'Select',
-      componentProps: {
-        allowClear: true,
-        options: [],
-        placeholder: '请选择课程状态：字典 aicrm_course_status',
-      },
-    },
-    {
-      fieldName: 'createTime',
-      label: '创建时间',
-      component: 'RangePicker',
-      componentProps: {
-        ...getRangePickerDefaultProps(),
-        allowClear: true,
-      },
-    },
   ];
 }
 
 /** 列表的字段 */
 export function useGridColumns(): VxeTableGridOptions<AicrmPracticeCourseApi.PracticeCourse>['columns'] {
   return [
-  { type: 'checkbox', width: 40 },
-    {
-      field: 'id',
-      title: '课程ID',
-      minWidth: 120,
-    },
+    { type: 'checkbox', width: 40 },
     {
       field: 'name',
       title: '课程名称',
-      minWidth: 120,
-    },
-    {
-      field: 'description',
-      title: '课程描述',
-      minWidth: 120,
-    },
-    {
-      field: 'scriptId',
-      title: '关联陪练剧本ID',
-      minWidth: 120,
+      minWidth: 200,
     },
     {
       field: 'standard',
-      title: '课程类型 1.标准.0.个人',
+      title: '课程类型',
       minWidth: 120,
+      formatter: ({ cellValue }) => {
+        return cellValue === 1 ? '标准课程' : cellValue === 0 ? '个性化课程' : '';
+      },
     },
     {
       field: 'hard',
-      title: '课程复杂度 1.复杂.0.简单',
+      title: '课程复杂度',
       minWidth: 120,
+      formatter: ({ cellValue }) => {
+        return cellValue === 1 ? '复杂' : cellValue === 0 ? '简单' : '';
+      },
     },
     {
       field: 'status',
-      title: '课程状态：字典 aicrm_course_status',
+      title: '课程状态',
       minWidth: 120,
+      cellRender: { name: 'CellDict', props: { type: 'aicrm_course_status' } },
     },
     {
-      field: 'createTime',
-      title: '创建时间',
+      field: 'scriptName',
+      title: '关联剧本',
+      minWidth: 180,
+    },
+    {
+      field: 'scriptVersion',
+      title: '剧本版本',
       minWidth: 120,
-      formatter: 'formatDateTime',
     },
     {
       title: '操作',
-      width: 200,
+      width: 150,
       fixed: 'right',
       slots: { default: 'actions' },
     },

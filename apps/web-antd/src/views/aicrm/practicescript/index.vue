@@ -126,12 +126,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal @success="handleRefresh" />
-    <Grid table-title="CRM智能陪练-陪练剧本表（支持版本控制）列表">
+    <Grid table-title="CRM智能陪练-陪练剧本列表">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['CRM智能陪练-陪练剧本表（支持版本控制）']),
+              label: $t('ui.actionTitle.create', ['陪练剧本']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
               auth: ['aicrm:practice-script:create'],

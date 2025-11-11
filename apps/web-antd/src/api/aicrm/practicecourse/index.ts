@@ -10,6 +10,8 @@ export namespace AicrmPracticeCourseApi {
     name?: string; // 课程名称
     description: string; // 课程描述
     scriptId?: number; // 关联陪练剧本ID
+    scriptName?: string; // 关联剧本名称
+    scriptVersion?: string; // 剧本版本
     standard: number; // 课程类型 1.标准.0.个人
     hard: number; // 课程复杂度 1.复杂.0.简单
     status?: string; // 课程状态：字典 aicrm_course_status
