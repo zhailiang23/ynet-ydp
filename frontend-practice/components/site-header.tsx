@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Home, Award, Book, Users, FileText, Globe, HelpCircle, LogIn, Settings } from "lucide-react" // Change Library to Award icon
+import { Home, Award, Book, Users, FileText, Globe, HelpCircle, LogIn } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function SiteHeader() {
@@ -15,8 +15,8 @@ export function SiteHeader() {
             href="/training-results"
             className="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white"
           >
-            <Award className="h-4 w-4" /> {/* Changed icon to Award */}
-            培训结果 {/* Changed text to 培训结果 */}
+            <Award className="h-4 w-4" />
+            培训结果
           </Link>
           <Link href="/course" className="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white">
             <Book className="h-4 w-4" />
@@ -24,7 +24,7 @@ export function SiteHeader() {
           </Link>
           <Link href="/coach" className="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white">
             <Users className="h-4 w-4" />
-            虚拟客户 {/* Changed text to 虚拟客户 */}
+            虚拟客户
           </Link>
           <Link
             href="/training-files"
@@ -43,10 +43,6 @@ export function SiteHeader() {
             <HelpCircle className="h-4 w-4" />
             帮助
           </Button>
-          <Link href="/management" className="flex items-center gap-2 text-sm text-gray-300 hover:text-white">
-            <Settings className="h-4 w-4" />
-            管理
-          </Link>
           <Button variant="ghost" className="flex items-center gap-2 text-sm text-gray-300 hover:text-white">
             <LogIn className="h-4 w-4" />
             登录
