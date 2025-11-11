@@ -662,6 +662,187 @@ VITE_GLOB_API_URL=https://api.yourdomain.com/admin-api
 
 ---
 
+# AI Agent 服务
+
+## 技术栈
+
+- **框架**: DeepAgents (基于 LangGraph)
+- **LLM**: 支持 Anthropic Claude 和 DeepSeek
+- **服务**: FastAPI (HTTP 服务)
+- **Python**: >= 3.10
+- **包管理**: uv
+
+## 本地开发环境准备
+
+### 1. 安装依赖
+
+```bash
+cd ai
+
+# 使用 uv 创建虚拟环境
+uv venv
+
+# 激活虚拟环境
+source .venv/bin/activate  # Linux/Mac
+# 或 .venv\Scripts\activate  # Windows
+
+# 安装依赖
+uv pip install -r requirements.txt
+```
+
+### 2. 配置环境变量
+
+```bash
+# 复制配置文件模板
+cp .env.example .env
+
+# 编辑 .env 文件，配置以下内容：
+# - MODEL_PROVIDER: 模型提供商 (anthropic 或 deepseek)
+# - MODEL_NAME: 模型名称
+# - ANTHROPIC_API_KEY: Anthropic API Key (使用 Claude 时)
+# - DEEPSEEK_API_KEY: DeepSeek API Key (使用 DeepSeek 时)
+# - DEEPSEEK_API_BASE: DeepSeek API Base URL (默认: https://api.siliconflow.cn/v1)
+```
+
+**当前配置 (DeepSeek-V3.1-Terminus via 硅基流动)**:
+```bash
+MODEL_PROVIDER=deepseek
+MODEL_NAME=deepseek-ai/DeepSeek-V3.1-Terminus
+DEEPSEEK_API_KEY=your-api-key-here
+DEEPSEEK_API_BASE=https://api.siliconflow.cn/v1
+```
+
+### 3. 启动 AI Agent 服务
+
+```bash
+cd ai
+source .venv/bin/activate
+python http_qa_agent.py
+```
+
+服务将在 `http://localhost:8000` 启动。
+
+### 4. 访问地址
+
+- AI Agent 服务: http://localhost:8000
+- 健康检查: http://localhost:8000/health
+- API 文档: http://localhost:8000/docs
+
+## AI Agent 架构
+
+### 服务模式
+
+项目包含两种 Agent 模式:
+
+1. **命令行模式** (`simple_qa_agent.py`) - 交互式问答
+2. **HTTP 服务模式** (`http_qa_agent.py`) - RESTful API 服务
+
+### HTTP API 端点
+
+```bash
+# 健康检查
+GET /health
+
+# 对话接口 (非流式)
+POST /chat
+Content-Type: application/json
+{
+  "message": "用户消息",
+  "stream": false,
+  "virtual_customer_name": "客户名称",
+  "virtual_customer_profile": "客户画像"
+}
+
+# 对话接口 (流式)
+POST /chat
+Content-Type: application/json
+{
+  "message": "用户消息",
+  "stream": true,
+  "virtual_customer_name": "客户名称",
+  "virtual_customer_profile": "客户画像"
+}
+```
+
+### 模型切换
+
+AI Agent 支持两种模型提供商:
+
+**Anthropic Claude**:
+```bash
+MODEL_PROVIDER=anthropic
+MODEL_NAME=claude-sonnet-4-5-20250929
+ANTHROPIC_API_KEY=your-api-key
+```
+
+**DeepSeek (通过硅基流动)**:
+```bash
+MODEL_PROVIDER=deepseek
+MODEL_NAME=deepseek-ai/DeepSeek-V3.1-Terminus
+DEEPSEEK_API_KEY=your-api-key
+DEEPSEEK_API_BASE=https://api.siliconflow.cn/v1
+```
+
+### 动态提示词
+
+AI Agent 支持基于剧本、案例、技巧、虚拟客户等数据动态生成系统提示词，实现智能陪练功能。
+
+## 测试 AI Agent
+
+```bash
+# 使用测试客户端
+cd ai
+source .venv/bin/activate
+python test_http_client.py
+
+# 或使用 curl 测试
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "你好",
+    "stream": false,
+    "virtual_customer_name": "张先生"
+  }'
+```
+
+---
+
+## 项目特定规范
+
+### 后端开发
+
+- **模块隔离**:
+  - 业务代码写在 `ynet-module-practice` 模块
+  - `yudao-module-crm` 是框架自带模块，可读取但不要修改
+  - 修改模块代码后必须执行 `mvn clean install -pl <module> -am` 才能生效
+
+- **字典管理**:
+  - 使用 `yudao-module-system` 的字典管理能力，不要硬编码枚举值
+  - 字典名称必须以 `AICRM` 开头
+  - 字典类型必须以 `aicrm_` 开头
+  - 通过 SQL 脚本插入字典数据 (位于 `backend/sql/mysql/`)
+
+- **数据库连接**:
+  - 本地开发: `jdbc:mysql://127.0.0.1:3306/ruoyi-vue-pro`
+  - 老版本 CRM: `jdbc:mysql://192.168.201.44:3306/dev_palmbank`
+
+### 前端开发
+
+- **组件参考**:
+  - 列表页面: 参考 `frontend/apps/web-antd/src/views/aicrm/customer/index.vue` (使用 VxeTable)
+  - 详情表单: 参考 `frontend/apps/web-antd/src/views/aicrm/retail-customer/pages/basic-info.vue`
+
+- **样式兼容**:
+  - 确保所有样式在 light 和 dark 模式下都能正确显示
+
+### OpenSpec 规范
+
+- 使用中文编写 OpenSpec 文件
+- 需求描述必须使用 SHALL 或 MUST 等强制性关键字
+- 重要变更需创建 proposal 并审核通过后实施
+
+---
+
 ## 文档和资源
 
 - 官方文档: https://doc.iocoder.cn
@@ -669,6 +850,7 @@ VITE_GLOB_API_URL=https://api.yourdomain.com/admin-api
 - 视频教程: https://doc.iocoder.cn/video/
 - 后端 API 文档: http://localhost:48080/doc.html (启动后访问)
 - 前端 Vben 文档: https://doc.vben.pro
+- DeepAgents 文档: https://docs.langchain.com/oss/python/deepagents/overview
 
 ## 获取帮助
 
@@ -677,13 +859,4 @@ VITE_GLOB_API_URL=https://api.yourdomain.com/admin-api
 2. 查看启动文档: https://doc.iocoder.cn/quick-start/
 3. 查看视频教程: https://doc.iocoder.cn/video/
 4. 检查浏览器控制台和后端日志
-- 枚举数据转换应该依靠backend/yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/dict 模块提供的字典管理能力和相关服务实现,而不是硬编码枚举值.如果字典表里没有需要的字典及字典项,则通过 sql 脚本插入数据.生成字典数据时，字典名称必须以 AICRM 开头，字典类型必须以 aicrm_开头。
-- 后端代码应该写在 ynet-module-practice 模块里。yudao-module-crm是框架自带的 crm 模块，可以读取yudao-module-crm里面的内容，但是不要修改。
-- 老版本 CRM的数据库连接信息是 url: jdbc:mysql://192.168.201.44:3306/dev_palmbank?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8 username: dev_ibbp_equity password: '1j#ey@jr'
-- 不需要为每个任务创建详细的总结文档，只在任务完成后简单的总结即可。
-- 在写 openspec 的相关文件时，使用中文。
-- 生成 openspec 的 spec 文件时，需求描述必须使用 SHALL 或 MUST 等强制性关键字，不要用中文替换这些关键字。
-- 编写前端列表时，总是参考frontend/apps/web-antd/src/views/aicrm/customer/index.vue中的列表写法，使用VxeTable。
-- 编写详情信息表单时，总是参考frontend/apps/web-antd/src/views/aicrm/retail-customer/pages/basic-info.vue的代码开信息表单
-- 确保所有的前端样式在 light模式和 dark 模式都可以正确显示。
-- 后端是分模块的,需要 install 更改才会生效
+5. 查看 AI Agent 服务日志 (位于 `/tmp/ai_agent_new.log`)
