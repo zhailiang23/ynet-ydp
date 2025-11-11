@@ -198,6 +198,11 @@ export function useGridColumns(): VxeTableGridOptions<AicrmPracticeScriptApi.Pra
       minWidth: 200,
     },
     {
+      field: 'version',
+      title: '版本号',
+      minWidth: 100,
+    },
+    {
       field: 'marketingStep',
       title: '营销环节',
       minWidth: 120,

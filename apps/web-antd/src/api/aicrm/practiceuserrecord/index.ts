@@ -8,8 +8,11 @@ export namespace AicrmPracticeUserRecordApi {
   export interface PracticeUserRecord {
     id: number; // 记录ID
     courseId?: number; // 关联陪练课程ID
+    courseName?: string; // 陪练课程名称
     userId?: number; // 参与用户ID
+    userName?: string; // 参与用户名称
     vcustomerId?: number; // 虚拟用户ID
+    vcustomerName?: string; // 虚拟用户名称
     recordNo?: string; // 记录编号（唯一）
     status?: string; // 记录状态：字典 aicrm_record_status
     startTime?: string | Dayjs; // 开始时间

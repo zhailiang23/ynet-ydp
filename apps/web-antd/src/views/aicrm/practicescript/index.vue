@@ -20,9 +20,15 @@ import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
+import VersionHistory from './modules/version-history.vue';
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
+  destroyOnClose: true,
+});
+
+const [VersionHistoryModal, versionHistoryModalApi] = useVbenModal({
+  connectedComponent: VersionHistory,
   destroyOnClose: true,
 });
 
@@ -39,6 +45,11 @@ function handleCreate() {
 /** 编辑CRM智能陪练-陪练剧本表（支持版本控制） */
 function handleEdit(row: AicrmPracticeScriptApi.PracticeScript) {
   formModalApi.setData(row).open();
+}
+
+/** 查看版本历史 */
+function handleVersionHistory(row: AicrmPracticeScriptApi.PracticeScript) {
+  versionHistoryModalApi.setData({ scriptNo: row.scriptNo }).open();
 }
 
 /** 删除CRM智能陪练-陪练剧本表（支持版本控制） */
@@ -126,6 +137,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal @success="handleRefresh" />
+    <VersionHistoryModal />
     <Grid table-title="CRM智能陪练-陪练剧本列表">
       <template #toolbar-tools>
         <TableAction
@@ -165,6 +177,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
               icon: ACTION_ICON.EDIT,
               auth: ['aicrm:practice-script:update'],
               onClick: handleEdit.bind(null, row),
+            },
+            {
+              label: '版本记录',
+              type: 'link',
+              icon: ACTION_ICON.VIEW,
+              auth: ['aicrm:practice-script:query'],
+              onClick: handleVersionHistory.bind(null, row),
             },
             {
               label: $t('common.delete'),

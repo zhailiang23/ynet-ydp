@@ -20,9 +20,15 @@ import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
+import PracticeChat from './modules/practice-chat.vue';
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
+  destroyOnClose: true,
+});
+
+const [ChatModal, chatModalApi] = useVbenModal({
+  connectedComponent: PracticeChat,
   destroyOnClose: true,
 });
 
@@ -39,6 +45,11 @@ function handleCreate() {
 /** 编辑CRM智能陪练-用户陪练记录 */
 function handleEdit(row: AicrmPracticeUserRecordApi.PracticeUserRecord) {
   formModalApi.setData(row).open();
+}
+
+/** 进入对话 */
+function handleConversation(row: AicrmPracticeUserRecordApi.PracticeUserRecord) {
+  chatModalApi.setData({ recordId: row.id }).open();
 }
 
 /** 删除CRM智能陪练-用户陪练记录 */
@@ -126,12 +137,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal @success="handleRefresh" />
+    <ChatModal />
     <Grid table-title="CRM智能陪练-用户陪练记录列表">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['CRM智能陪练-用户陪练记录']),
+              label: $t('ui.actionTitle.create', ['用户陪练记录']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
               auth: ['aicrm:practice-user-record:create'],
@@ -159,6 +171,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
       <template #actions="{ row }">
         <TableAction
           :actions="[
+            {
+              label: '对话',
+              type: 'link',
+              icon: 'ant-design:message-outlined',
+              auth: ['aicrm:practice-user-record:query'],
+              onClick: handleConversation.bind(null, row),
+            },
             {
               label: $t('common.edit'),
               type: 'link',
