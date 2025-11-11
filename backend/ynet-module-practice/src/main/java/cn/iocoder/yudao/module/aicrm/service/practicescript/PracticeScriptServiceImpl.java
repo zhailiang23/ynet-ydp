@@ -8,11 +8,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import cn.iocoder.yudao.module.aicrm.controller.admin.practicescript.vo.*;
 import cn.iocoder.yudao.module.aicrm.dal.dataobject.practicescript.PracticeScriptDO;
+import cn.iocoder.yudao.module.aicrm.dal.dataobject.practicecase.PracticeCaseDO;
+import cn.iocoder.yudao.module.aicrm.dal.dataobject.practiceskill.PracticeSkillDO;
+import cn.iocoder.yudao.module.aicrm.dal.dataobject.practicevirtualcustomer.PracticeVirtualCustomerDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 
 import cn.iocoder.yudao.module.aicrm.dal.mysql.practicescript.PracticeScriptMapper;
 
@@ -246,6 +251,76 @@ public class PracticeScriptServiceImpl implements PracticeScriptService {
         }
 
         return voPageResult;
+    }
+
+    @Override
+    public List<PracticeScriptRespVO> getVersionHistory(String scriptNo) {
+        // 查询该剧本编号的所有版本,按版本号倒序排列
+        List<PracticeScriptDO> scriptList = practiceScriptMapper.selectList(
+            new LambdaQueryWrapperX<PracticeScriptDO>()
+                .eq(PracticeScriptDO::getScriptNo, scriptNo)
+                .orderByDesc(PracticeScriptDO::getCreateTime)
+        );
+
+        // 转换为 VO 并填充关联信息
+        List<PracticeScriptRespVO> result = BeanUtils.toBean(scriptList, PracticeScriptRespVO.class);
+
+        // 填充关联的案例、技巧、虚拟客户名称
+        Set<Long> caseIds = new HashSet<>();
+        Set<Long> skillIds = new HashSet<>();
+        Set<Long> vcustomerIds = new HashSet<>();
+
+        for (PracticeScriptDO script : scriptList) {
+            if (script.getCaseId() != null) {
+                caseIds.add(script.getCaseId());
+            }
+            if (script.getSkillId() != null) {
+                skillIds.add(script.getSkillId());
+            }
+            if (script.getVirtualCustomerId() != null) {
+                vcustomerIds.add(script.getVirtualCustomerId());
+            }
+        }
+
+        // 批量查询关联数据
+        Map<Long, String> caseNameMap = new HashMap<>();
+        if (!caseIds.isEmpty()) {
+            List<PracticeCaseDO> caseList = practiceCaseMapper.selectBatchIds(caseIds);
+            caseNameMap = caseList.stream()
+                .collect(Collectors.toMap(PracticeCaseDO::getId, PracticeCaseDO::getTitle));
+        }
+
+        Map<Long, String> skillNameMap = new HashMap<>();
+        if (!skillIds.isEmpty()) {
+            List<PracticeSkillDO> skillList = practiceSkillMapper.selectBatchIds(skillIds);
+            skillNameMap = skillList.stream()
+                .collect(Collectors.toMap(PracticeSkillDO::getId, PracticeSkillDO::getName));
+        }
+
+        Map<Long, String> vcustomerNameMap = new HashMap<>();
+        if (!vcustomerIds.isEmpty()) {
+            List<PracticeVirtualCustomerDO> vcustomerList = practiceVirtualCustomerMapper.selectBatchIds(vcustomerIds);
+            vcustomerNameMap = vcustomerList.stream()
+                .collect(Collectors.toMap(PracticeVirtualCustomerDO::getId, PracticeVirtualCustomerDO::getName));
+        }
+
+        // 设置关联名称
+        for (int i = 0; i < result.size(); i++) {
+            PracticeScriptRespVO vo = result.get(i);
+            PracticeScriptDO script = scriptList.get(i);
+
+            if (script.getCaseId() != null) {
+                vo.setCaseName(caseNameMap.get(script.getCaseId()));
+            }
+            if (script.getSkillId() != null) {
+                vo.setSkillName(skillNameMap.get(script.getSkillId()));
+            }
+            if (script.getVirtualCustomerId() != null) {
+                vo.setVirtualCustomerName(vcustomerNameMap.get(script.getVirtualCustomerId()));
+            }
+        }
+
+        return result;
     }
 
 }

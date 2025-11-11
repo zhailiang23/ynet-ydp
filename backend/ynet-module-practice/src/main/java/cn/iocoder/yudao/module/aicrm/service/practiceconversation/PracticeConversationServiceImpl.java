@@ -82,4 +82,9 @@ public class PracticeConversationServiceImpl implements PracticeConversationServ
         return practiceConversationMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<PracticeConversationDO> getConversationListByRecordId(Long recordId) {
+        return practiceConversationMapper.selectListByRecordId(recordId);
+    }
+
 }

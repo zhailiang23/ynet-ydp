@@ -1,17 +1,20 @@
 package cn.iocoder.yudao.module.aicrm.service.practiceuserrecord;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.IdUtil;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.aicrm.controller.admin.practiceuserrecord.vo.*;
 import cn.iocoder.yudao.module.aicrm.dal.dataobject.practiceuserrecord.PracticeUserRecordDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 
 import cn.iocoder.yudao.module.aicrm.dal.mysql.practiceuserrecord.PracticeUserRecordMapper;
 
@@ -34,8 +37,16 @@ public class PracticeUserRecordServiceImpl implements PracticeUserRecordService 
 
     @Override
     public Long createPracticeUserRecord(PracticeUserRecordSaveReqVO createReqVO) {
-        // 插入
+        // 转换实体
         PracticeUserRecordDO practiceUserRecord = BeanUtils.toBean(createReqVO, PracticeUserRecordDO.class);
+
+        // 自动设置其他字段
+        practiceUserRecord.setUserId(SecurityFrameworkUtils.getLoginUserId()); // 参与用户默认为当前登录用户
+        practiceUserRecord.setStartTime(LocalDateTime.now()); // 开始时间为当前时间
+        practiceUserRecord.setRecordNo(IdUtil.fastSimpleUUID()); // 随机生成记录编号
+        practiceUserRecord.setStatus("in_progress"); // 创建时状态为进行中
+
+        // 插入
         practiceUserRecordMapper.insert(practiceUserRecord);
 
         // 返回

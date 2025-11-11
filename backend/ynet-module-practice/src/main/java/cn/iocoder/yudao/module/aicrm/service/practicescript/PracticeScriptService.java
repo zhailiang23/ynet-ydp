@@ -59,4 +59,12 @@ public interface PracticeScriptService {
      */
     PageResult<PracticeScriptRespVO> getPracticeScriptPage(PracticeScriptPageReqVO pageReqVO);
 
+    /**
+     * 获取剧本的版本历史
+     *
+     * @param scriptNo 剧本编号
+     * @return 版本历史列表
+     */
+    List<PracticeScriptRespVO> getVersionHistory(String scriptNo);
+
 }

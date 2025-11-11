@@ -36,4 +36,13 @@ public interface PracticeConversationMapper extends BaseMapperX<PracticeConversa
                 .orderByDesc(PracticeConversationDO::getId));
     }
 
+    /**
+     * 根据陪练记录ID查询对话列表,按序号升序排序
+     */
+    default List<PracticeConversationDO> selectListByRecordId(Long recordId) {
+        return selectList(new LambdaQueryWrapperX<PracticeConversationDO>()
+                .eq(PracticeConversationDO::getRecordId, recordId)
+                .orderByAsc(PracticeConversationDO::getSequenceNo));
+    }
+
 }

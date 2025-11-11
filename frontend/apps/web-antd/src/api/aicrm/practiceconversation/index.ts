@@ -64,3 +64,10 @@ export function deletePracticeConversationList(ids: number[]) {
 export function exportPracticeConversation(params: any) {
   return requestClient.download('/aicrm/practice-conversation/export-excel', { params });
 }
+
+/** 根据陪练记录ID获取对话列表 */
+export function getConversationListByRecordId(recordId: number) {
+  return requestClient.get<AicrmPracticeConversationApi.PracticeConversation[]>(
+    `/aicrm/practice-conversation/list-by-record?recordId=${recordId}`,
+  );
+}

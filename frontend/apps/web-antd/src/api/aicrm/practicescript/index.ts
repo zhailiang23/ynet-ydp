@@ -1,5 +1,4 @@
 import type { PageParam, PageResult } from '@vben/request';
-import type { Dayjs } from 'dayjs';
 
 import { requestClient } from '#/api/request';
 
@@ -71,4 +70,11 @@ export function deletePracticeScriptList(ids: number[]) {
 /** 导出CRM智能陪练-陪练剧本表（支持版本控制） */
 export function exportPracticeScript(params: any) {
   return requestClient.download('/aicrm/practice-script/export-excel', { params });
+}
+
+/** 获取剧本的版本历史 */
+export function getVersionHistory(scriptNo: string) {
+  return requestClient.get<AicrmPracticeScriptApi.PracticeScript[]>(
+    `/aicrm/practice-script/version-history?scriptNo=${scriptNo}`,
+  );
 }

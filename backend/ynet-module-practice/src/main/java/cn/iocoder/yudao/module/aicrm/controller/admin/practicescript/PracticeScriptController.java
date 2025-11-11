@@ -100,4 +100,13 @@ public class PracticeScriptController {
         ExcelUtils.write(response, "CRM智能陪练-陪练剧本表（支持版本控制）.xls", "数据", PracticeScriptRespVO.class, list);
     }
 
+    @GetMapping("/version-history")
+    @Operation(summary = "获取剧本的版本历史")
+    @Parameter(name = "scriptNo", description = "剧本编号", required = true)
+    @PreAuthorize("@ss.hasPermission('aicrm:practice-script:query')")
+    public CommonResult<List<PracticeScriptRespVO>> getVersionHistory(@RequestParam("scriptNo") String scriptNo) {
+        List<PracticeScriptRespVO> versionHistory = practiceScriptService.getVersionHistory(scriptNo);
+        return success(versionHistory);
+    }
+
 }

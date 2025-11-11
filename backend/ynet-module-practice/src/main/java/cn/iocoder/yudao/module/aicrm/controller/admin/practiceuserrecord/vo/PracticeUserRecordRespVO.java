@@ -18,16 +18,25 @@ public class PracticeUserRecordRespVO {
     private Long id;
 
     @Schema(description = "关联陪练课程ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "12485")
-    @ExcelProperty("关联陪练课程ID")
     private Long courseId;
 
+    @Schema(description = "陪练课程名称", example = "理财产品销售陪练")
+    @ExcelProperty("陪练课程")
+    private String courseName;
+
     @Schema(description = "参与用户ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "19776")
-    @ExcelProperty("参与用户ID")
     private Long userId;
 
+    @Schema(description = "参与用户名称", example = "张三")
+    @ExcelProperty("参与用户")
+    private String userName;
+
     @Schema(description = "虚拟用户ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "6026")
-    @ExcelProperty("虚拟用户ID")
     private Long vcustomerId;
+
+    @Schema(description = "虚拟用户名称", example = "李四")
+    @ExcelProperty("虚拟用户")
+    private String vcustomerName;
 
     @Schema(description = "记录编号（唯一）", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("记录编号（唯一）")

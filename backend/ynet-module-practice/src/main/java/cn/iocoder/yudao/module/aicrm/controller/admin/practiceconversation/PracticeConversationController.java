@@ -101,4 +101,13 @@ public class PracticeConversationController {
                         BeanUtils.toBean(list, PracticeConversationRespVO.class));
     }
 
+    @GetMapping("/list-by-record")
+    @Operation(summary = "根据陪练记录ID获取对话列表")
+    @Parameter(name = "recordId", description = "陪练记录ID", required = true)
+    @PreAuthorize("@ss.hasPermission('aicrm:practice-conversation:query')")
+    public CommonResult<List<PracticeConversationRespVO>> getConversationListByRecordId(@RequestParam("recordId") Long recordId) {
+        List<PracticeConversationDO> list = practiceConversationService.getConversationListByRecordId(recordId);
+        return success(BeanUtils.toBean(list, PracticeConversationRespVO.class));
+    }
+
 }

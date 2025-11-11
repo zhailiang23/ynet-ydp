@@ -59,4 +59,12 @@ public interface PracticeConversationService {
      */
     PageResult<PracticeConversationDO> getPracticeConversationPage(PracticeConversationPageReqVO pageReqVO);
 
+    /**
+     * 根据陪练记录ID获取对话列表
+     *
+     * @param recordId 陪练记录ID
+     * @return 对话列表(按序号排序)
+     */
+    List<PracticeConversationDO> getConversationListByRecordId(Long recordId);
+
 }
