@@ -93,4 +93,9 @@ public class PracticeUserRecordServiceImpl implements PracticeUserRecordService 
         return practiceUserRecordMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public PracticeUserRecordDO findUnfinishedRecord(Long courseId, Long vcustomerId, Long userId) {
+        return practiceUserRecordMapper.findUnfinishedRecord(courseId, vcustomerId, userId);
+    }
+
 }

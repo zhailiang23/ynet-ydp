@@ -59,4 +59,14 @@ public interface PracticeUserRecordService {
      */
     PageResult<PracticeUserRecordDO> getPracticeUserRecordPage(PracticeUserRecordPageReqVO pageReqVO);
 
+    /**
+     * 查询用户未完成的练习记录
+     *
+     * @param courseId 课程ID
+     * @param vcustomerId 虚拟客户ID
+     * @param userId 用户ID
+     * @return 未完成的练习记录，如果不存在返回 null
+     */
+    PracticeUserRecordDO findUnfinishedRecord(Long courseId, Long vcustomerId, Long userId);
+
 }

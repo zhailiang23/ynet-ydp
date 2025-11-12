@@ -301,7 +301,7 @@ async def chat(request: ChatRequest):
 async def stream_agent_response(agent, messages: list) -> AsyncGenerator[str, None]:
     """
     流式生成 Agent 响应
-    使用 Server-Sent Events (SSE) 格式
+    使用 Server-Sent Events (SSE) 格式,支持逐 token 输出
 
     Args:
         agent: DeepAgent 实例
@@ -311,25 +311,28 @@ async def stream_agent_response(agent, messages: list) -> AsyncGenerator[str, No
         # 发送开始事件
         yield f"data: {json.dumps({'type': 'start', 'message': '开始处理...'}, ensure_ascii=False)}\n\n"
 
-        # 使用 agent.stream() 进行流式处理
-        accumulated_text = ""
-
-        for chunk in agent.stream(
+        # 使用 stream_mode="messages" 获取 token 级别的流式输出
+        async for event in agent.astream_events(
             {"messages": messages},
-            stream_mode="updates"
+            version="v2"
         ):
-            # 提取文本内容
-            text = extract_chunk_text(chunk)
-            if text:
-                accumulated_text += text
-                # 发送数据事件
-                yield f"data: {json.dumps({'type': 'data', 'content': text}, ensure_ascii=False)}\n\n"
+            # 处理 LLM token 流
+            if event["event"] == "on_chat_model_stream":
+                chunk = event.get("data", {}).get("chunk")
+                if chunk and hasattr(chunk, "content"):
+                    token = chunk.content
+                    if token:
+                        # 发送单个 token
+                        yield f"data: {json.dumps({'type': 'data', 'content': token}, ensure_ascii=False)}\n\n"
 
         # 发送完成事件
         yield f"data: {json.dumps({'type': 'done', 'message': '完成'}, ensure_ascii=False)}\n\n"
 
     except Exception as e:
         # 发送错误事件
+        import traceback
+        error_detail = f"{str(e)}\n{traceback.format_exc()}"
+        print(f"流式响应错误: {error_detail}")
         yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"
 
 

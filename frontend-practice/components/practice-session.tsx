@@ -3,6 +3,14 @@
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
+import { getCourseById } from "@/lib/api/course"
+import { getVirtualCustomerById } from "@/lib/api/virtual-customer"
+import { convertVirtualCustomerDict, type VirtualCustomerWithLabels } from "@/lib/utils/dict-converter"
+import type { Course } from "@/lib/types/course"
+import { getPracticeScriptById } from "@/lib/api/practice-script"
+import type { PracticeScript } from "@/lib/api/practice-script"
+import { createPracticeConversation, getConversationListByRecordId } from "@/lib/api/practice-conversation"
+import { createPracticeUserRecord, findUnfinishedRecord, completePracticeUserRecord } from "@/lib/api/practice-user-record"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -42,53 +50,9 @@ interface EvaluationResult {
   improvementSuggestions: ImprovementSuggestion[] // Added
 }
 
-// 模拟剧本数据 (简化版，仅用于演示对话逻辑)
-const mockScripts = {
-  "course-001": {
-    name: "销售电话模拟",
-    initialMessage: "您好！我是您的AI陪练教练。我们今天将进行销售电话模拟，请您开始您的开场白。",
-    responses: [
-      "好的，请继续您的产品介绍。",
-      "嗯，听起来不错，但价格方面有什么优势吗？",
-      "我考虑一下，谢谢您的介绍。",
-      "好的，请问您能提供更多资料吗？",
-    ],
-  },
-  "course-002": {
-    name: "高净值客户资产配置",
-    initialMessage: "您好！我是您的AI陪练教练。我们今天将模拟高净值客户资产配置，请您开始。",
-    responses: [
-      "我对风险比较敏感，这个方案风险高吗？",
-      "收益率怎么样？能达到我的预期吗？",
-      "我需要和家人商量一下。",
-      "好的，我准备好了，请问下一步怎么操作？",
-    ],
-  },
-  "course-006": {
-    name: "客户投诉处理",
-    initialMessage: "您好！我是您的AI陪练教练。我们今天将模拟客户投诉处理，请您开始。",
-    responses: [
-      "我很生气！你们的服务太差了！",
-      "我要求退款！",
-      "你们打算怎么解决这个问题？",
-      "好吧，我接受这个方案，希望你们能改进。",
-    ],
-  },
-  personalized: {
-    name: "个性化课程",
-    initialMessage: "您好！我是您的AI陪练教练。我们今天将进行个性化课程陪练，请您开始。",
-    responses: ["好的，请继续。", "嗯，我明白了。", "我需要更多信息。", "请问您还有其他问题吗？"],
-  },
-}
-
-// 模拟客户数据 (简化版)
-const mockCustomers = {
-  "customer-001": "张先生 (企业高管)",
-  "customer-002": "李女士 (自由职业者)",
-  custom: "自定义客户",
-}
-
-// 特定场景的固定对话内容
+// ============ 演示场景:特定对话样例 (course-001 + customer-002) ============
+// 以下固定对话内容仅用于演示特定场景,实际对话由 AI Agent 动态生成
+// TODO: 未来可以考虑移除或改为从后端加载演示数据
 const fixedDialogue_course001_customer002_initial: Message[] = [
   { id: "1", sender: "ai", text: "您好！我是您的AI陪练教练。我们今天将进行销售电话模拟，请您开始您的开场白。" },
   { id: "2", sender: "user", text: "李女士，根据大数据分析，您应该购买我们的明星理财组合 （× 未建立信任直接推销）" },
@@ -254,24 +218,22 @@ export function PracticeSession() {
   const customerId = searchParams.get("customerId")
   const courseType = searchParams.get("courseType")
 
-  const scriptKey = courseType === "personalized" ? "personalized" : courseId || "default"
-  const currentScript = mockScripts[scriptKey as keyof typeof mockScripts] || mockScripts["personalized"]
-  const customerName = mockCustomers[customerId as keyof typeof mockCustomers] || mockCustomers["custom"]
+  // 常量配置
+  const AI_AGENT_URL = "http://localhost:8000/chat"
 
+  // 状态管理
+  const [course, setCourse] = useState<Course | null>(null)
+  const [customer, setCustomer] = useState<VirtualCustomerWithLabels | null>(null)
+  const [script, setScript] = useState<PracticeScript | null>(null)
+  const [recordId, setRecordId] = useState<number | null>(null)
+  const [sending, setSending] = useState(false)
+
+  // 对话消息状态
   const isSpecificScenario = courseId === "course-001" && customerId === "customer-002"
-
   const [messages, setMessages] = useState<Message[]>(
     isSpecificScenario
       ? fixedDialogue_course001_customer002_initial
-      : [
-          {
-            id: "1",
-            sender: "ai",
-            text: currentScript.initialMessage
-              .replace("未知课程", currentScript.name)
-              .replace("未知客户", customerName),
-          },
-        ],
+      : [],
   )
   const [input, setInput] = useState("")
   const [isTrainingCompleted, setIsTrainingCompleted] = useState(false)
@@ -284,46 +246,311 @@ export function PracticeSession() {
 
   useEffect(scrollToBottom, [messages])
 
-  const handleSendMessage = () => {
+  // 加载课程、虚拟客户、剧本数据,并检查/创建练习记录
+  useEffect(() => {
+    async function loadData() {
+      // 如果是演示场景,跳过数据加载
+      if (isSpecificScenario) {
+        console.log("演示场景,使用固定对话数据")
+        return
+      }
+
+      try {
+        let courseData: Course | null = null
+        let customerWithLabels: VirtualCustomerWithLabels | null = null
+        const currentUserId = 1 // TODO: 从登录信息获取真实用户ID
+
+        // 1. 加载课程数据
+        if (courseId) {
+          courseData = await getCourseById(Number(courseId))
+          setCourse(courseData)
+
+          // 2. 如果课程有关联剧本,加载剧本内容
+          if (courseData.scriptId) {
+            try {
+              const scriptData = await getPracticeScriptById(courseData.scriptId)
+              setScript(scriptData)
+              console.log("✓ 剧本加载成功:", scriptData.name)
+            } catch (error) {
+              console.error("✗ 加载剧本失败:", error)
+            }
+          }
+        }
+
+        // 3. 加载虚拟客户数据
+        if (customerId) {
+          const customerData = await getVirtualCustomerById(Number(customerId))
+          customerWithLabels = await convertVirtualCustomerDict(customerData)
+          setCustomer(customerWithLabels)
+          console.log("✓ 虚拟客户加载成功:", customerWithLabels.name)
+        }
+
+        // 4. 检查是否存在未完成的练习记录
+        if (courseId && customerId) {
+          try {
+            // 4.1 查询未完成的记录
+            const existingRecord = await findUnfinishedRecord(
+              Number(courseId),
+              Number(customerId),
+              currentUserId,
+            )
+
+            if (existingRecord) {
+              // 4.2 存在未完成记录,加载历史会话
+              console.log("✓ 找到未完成的练习记录, ID:", existingRecord.id)
+              setRecordId(existingRecord.id!)
+
+              // 加载历史对话
+              const conversations = await getConversationListByRecordId(existingRecord.id!)
+              console.log("✓ 加载历史对话,共", conversations.length, "条")
+
+              // 转换为前端消息格式
+              const historyMessages: Message[] = conversations.map((conv) => ({
+                id: conv.id?.toString() || `msg-${conv.sequenceNo}`,
+                sender: conv.role === "student" ? "user" : "ai",
+                text: conv.messageContent,
+              }))
+
+              setMessages(historyMessages)
+              console.log("✓ 历史会话已恢复")
+            } else {
+              // 4.3 不存在未完成记录,创建新记录
+              console.log("未找到未完成记录,创建新的练习记录")
+              const newRecordId = await createPracticeUserRecord({
+                courseId: Number(courseId),
+                vcustomerId: Number(customerId),
+                userId: currentUserId,
+                startTime: new Date().toISOString(),
+                status: "in_progress",
+              })
+              setRecordId(newRecordId)
+              console.log("✓ 创建练习记录成功, ID:", newRecordId)
+
+              // 添加初始欢迎消息
+              const welcomeMessage: Message = {
+                id: "welcome",
+                sender: "ai",
+                text: `您好!我是 ${customerWithLabels?.name || "虚拟客户"}。我们现在开始 ${courseData?.name || "陪练课程"}。请开始您的话术练习吧!`,
+              }
+              setMessages([welcomeMessage])
+            }
+          } catch (error) {
+            console.error("✗ 处理练习记录失败:", error)
+          }
+        }
+      } catch (error) {
+        console.error("✗ 加载数据失败:", error)
+      }
+    }
+    loadData()
+  }, [courseId, customerId, isSpecificScenario])
+
+  const handleSendMessage = async () => {
     if (isSpecificScenario) {
       console.log("This is a fixed scenario, input is disabled.")
       return
     }
-    if (input.trim()) {
-      const newUserMessage: Message = { id: Date.now().toString(), sender: "user", text: input.trim() }
-      setMessages((prevMessages) => [...prevMessages, newUserMessage])
-      setInput("")
+    if (!input.trim() || !recordId) {
+      console.log("输入为空或无记录ID,跳过发送")
+      return
+    }
 
-      setTimeout(() => {
-        const randomIndex = Math.floor(Math.random() * currentScript.responses.length)
-        const aiResponseText = currentScript.responses[randomIndex]
-        const aiResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          sender: "ai",
-          text: aiResponseText,
+    const userMessage = input.trim()
+    const newUserMessage: Message = { id: Date.now().toString(), sender: "user", text: userMessage }
+    setMessages((prevMessages) => [...prevMessages, newUserMessage])
+    setInput("")
+    setSending(true)
+
+    // 创建一个临时的 AI 消息用于流式更新
+    const aiMessageId = (Date.now() + 1).toString()
+    const aiMessage: Message = {
+      id: aiMessageId,
+      sender: "ai",
+      text: "",
+    }
+    setMessages((prevMessages) => [...prevMessages, aiMessage])
+
+    try {
+      // 1. 保存用户消息到数据库
+      const nextSequenceNo = messages.length + 1
+      await createPracticeConversation({
+        recordId,
+        sequenceNo: nextSequenceNo,
+        role: "student",
+        messageContent: userMessage,
+        messageTime: new Date().toISOString(),
+      })
+
+      // 2. 构建历史对话 (转换为 AI 需要的格式)
+      const history = messages.map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text,
+      }))
+
+      // 3. 构建虚拟客户画像
+      const profile: string[] = []
+      if (customer) {
+        if (customer.age) profile.push(`${customer.age}岁`)
+        if (customer.occupationLabel || customer.occupation)
+          profile.push(customer.occupationLabel || customer.occupation || "")
+        if (customer.industryLabel || customer.industry)
+          profile.push(`${customer.industryLabel || customer.industry}行业`)
+        if (customer.personalityTypeLabel || customer.personalityType)
+          profile.push(`性格:${customer.personalityTypeLabel || customer.personalityType}`)
+        if (customer.riskPreferenceLabel || customer.riskPreference)
+          profile.push(`风险偏好:${customer.riskPreferenceLabel || customer.riskPreference}`)
+      }
+
+      // 4. 调用 AI Agent (流式输出)
+      const response = await fetch(AI_AGENT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          stream: true, // 启用流式输出
+          // 动态提示词参数
+          course_script: script?.contentEdit || script?.content || "",
+          virtual_customer_name: customer?.name || "客户",
+          virtual_customer_profile: profile.join(", "),
+          // 历史对话
+          history: history,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`AI 响应失败: ${response.statusText}`)
+      }
+
+      // 5. 处理流式响应
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let aiResponseText = ""
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value, { stream: true })
+          const lines = chunk.split("\n")
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6).trim()
+              if (!data) continue // 跳过空数据
+
+              try {
+                const parsed = JSON.parse(data)
+
+                // 根据后端返回的事件类型处理
+                if (parsed.type === "data" && parsed.content) {
+                  // 接收到文本片段
+                  aiResponseText += parsed.content
+                  // 实时更新 AI 消息
+                  setMessages((prevMessages) =>
+                    prevMessages.map((msg) =>
+                      msg.id === aiMessageId ? { ...msg, text: aiResponseText } : msg,
+                    ),
+                  )
+                } else if (parsed.type === "done") {
+                  // 流式传输完成
+                  console.log("流式响应完成")
+                  break
+                } else if (parsed.type === "error") {
+                  // 发生错误
+                  console.error("AI 响应错误:", parsed.message)
+                  aiResponseText = `错误: ${parsed.message}`
+                  setMessages((prevMessages) =>
+                    prevMessages.map((msg) =>
+                      msg.id === aiMessageId ? { ...msg, text: aiResponseText } : msg,
+                    ),
+                  )
+                  break
+                }
+              } catch (e) {
+                // 忽略解析错误
+                console.warn("解析 SSE 数据失败:", line, e)
+              }
+            }
+          }
         }
-        setMessages((prevMessages) => [...prevMessages, aiResponse])
-      }, 1000)
+      }
+
+      if (!aiResponseText) {
+        aiResponseText = "抱歉,我无法回答"
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) => (msg.id === aiMessageId ? { ...msg, text: aiResponseText } : msg)),
+        )
+      }
+
+      // 6. 保存 AI 响应到数据库
+      await createPracticeConversation({
+        recordId,
+        sequenceNo: nextSequenceNo + 1,
+        role: "virtual_customer",
+        messageContent: aiResponseText,
+        messageTime: new Date().toISOString(),
+      })
+
+      console.log("消息发送成功")
+    } catch (error) {
+      console.error("发送消息失败:", error)
+      alert("发送消息失败,请检查 AI 服务是否启动")
+      // 移除失败的 AI 消息
+      setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== aiMessageId))
+    } finally {
+      setSending(false)
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !isSpecificScenario) {
       handleSendMessage()
     }
   }
 
-  const handleCompleteTraining = () => {
-    const results = simulateEvaluation(scriptKey, customerId || "")
-    setEvaluationResults(results)
-    setIsTrainingCompleted(true)
+  const handleCompleteTraining = async () => {
+    if (!recordId || !courseId || !customerId) {
+      console.error("无法完成培训: 缺少必要参数", { recordId, courseId, customerId })
+      return
+    }
+
+    try {
+      const currentUserId = 1 // TODO: 从登录信息获取真实用户ID
+
+      // 1. 调用后端 API 更新练习记录状态为已完成
+      console.log("正在完成练习记录, ID:", recordId)
+      await completePracticeUserRecord(
+        recordId,
+        Number(courseId),
+        Number(customerId),
+        currentUserId
+      )
+      console.log("✓ 练习记录已标记为完成")
+
+      // 2. 使用模拟评估显示结果 (TODO: 未来可接入真实的 AI 评估服务)
+      const results = simulateEvaluation(courseId || "", customerId || "")
+      setEvaluationResults(results)
+      setIsTrainingCompleted(true)
+    } catch (error) {
+      console.error("✗ 完成培训失败:", error)
+      alert("完成培训失败,请稍后重试")
+    }
   }
 
   return (
     <Card className="w-full max-w-3xl border border-gray-700 bg-[#2a2a2a] text-white shadow-lg">
       <CardHeader className="border-b border-gray-700">
-        <CardTitle className="text-xl text-gray-200">陪练会话: {currentScript.name}</CardTitle>
-        <p className="text-sm text-gray-400">当前虚拟客户: {customerName}</p>
+        <CardTitle className="text-xl text-gray-200">
+          陪练会话: {course?.name || "课程加载中..."}
+        </CardTitle>
+        <p className="text-sm text-gray-400">
+          当前虚拟客户: {customer
+            ? `${customer.name} | ${customer.occupationLabel || customer.occupation || '未知职业'} | ${customer.age || '未知'}岁 | ${customer.genderLabel || ''} ${customer.riskPreferenceLabel || customer.riskPreference || '未知'}`
+            : "客户加载中..."}
+        </p>
       </CardHeader>
       <CardContent className="p-4">
         {!isTrainingCompleted ? (
@@ -541,14 +768,14 @@ export function PracticeSession() {
               className="flex-1 rounded-full border border-gray-600 bg-[#1a1a1a] px-4 py-2 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={isSpecificScenario}
+              onKeyDown={handleKeyDown}
+              disabled={isSpecificScenario || sending}
             />
             <Button
               onClick={handleSendMessage}
               className="rounded-full bg-blue-600 text-white hover:bg-blue-700"
               size="icon"
-              disabled={isSpecificScenario}
+              disabled={isSpecificScenario || sending}
             >
               <Send className="h-5 w-5" />
             </Button>

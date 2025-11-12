@@ -96,6 +96,20 @@ public class PracticeUserRecordController {
         return success(BeanUtils.toBean(practiceUserRecord, PracticeUserRecordRespVO.class));
     }
 
+    @GetMapping("/find-unfinished")
+    @Operation(summary = "查询用户未完成的练习记录")
+    @PreAuthorize("@ss.hasPermission('aicrm:practice-user-record:query')")
+    public CommonResult<PracticeUserRecordRespVO> findUnfinishedRecord(
+            @RequestParam("courseId") Long courseId,
+            @RequestParam("vcustomerId") Long vcustomerId,
+            @RequestParam("userId") Long userId) {
+        PracticeUserRecordDO record = practiceUserRecordService.findUnfinishedRecord(courseId, vcustomerId, userId);
+        if (record == null) {
+            return success(null);
+        }
+        return success(BeanUtils.toBean(record, PracticeUserRecordRespVO.class));
+    }
+
     @GetMapping("/page")
     @Operation(summary = "获得CRM智能陪练-用户陪练记录分页")
     @PreAuthorize("@ss.hasPermission('aicrm:practice-user-record:query')")
