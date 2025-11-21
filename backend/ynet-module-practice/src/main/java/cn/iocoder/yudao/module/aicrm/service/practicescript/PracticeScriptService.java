@@ -67,4 +67,38 @@ public interface PracticeScriptService {
      */
     List<PracticeScriptRespVO> getVersionHistory(String scriptNo);
 
+    /**
+     * 创建个性化剧本
+     *
+     * @param name 剧本名称
+     * @param description 剧本描述
+     * @param difficultyLevel 难度等级
+     * @param marketingStep 营销环节
+     * @param virtualCustomerId 虚拟客户ID
+     * @param materialIds 培训材料ID列表
+     * @param caseId 关联案例ID
+     * @param skillId 关联技巧ID
+     * @param content 剧本内容
+     * @return 创建的剧本记录
+     */
+    PracticeScriptDO createPersonalizedScript(String name, String description, String difficultyLevel,
+                                               String marketingStep, Long virtualCustomerId,
+                                               String materialIds, Long caseId, Long skillId,
+                                               String content);
+
+    /**
+     * 同步生成剧本内容
+     *
+     * @param scriptId 剧本ID
+     * @param caseId 关联案例ID
+     * @param materialIds 培训材料ID列表
+     * @param skillId 关联技巧ID
+     * @param marketingStep 营销环节
+     * @param difficultyLevel 难度等级
+     * @param scriptDescription 剧本描述
+     */
+    void generateScriptContentSync(Long scriptId, Long caseId, String materialIds,
+                                   Long skillId, String marketingStep,
+                                   String difficultyLevel, String scriptDescription);
+
 }

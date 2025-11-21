@@ -92,9 +92,38 @@ public class PracticeScriptDO extends BaseDO {
      */
     private String contentEdit;
     /**
+     * 剧本来源
+     */
+    private String contentSource;
+    /**
+     * 生成状态: pending-待生成, generating-生成中, completed-已完成, failed-失败
+     */
+    private String generationStatus;
+    /**
      * 使用次数（该版本被使用的次数）
      */
     private Integer usageCount;
 
+    /**
+     * 培训人数
+     */
+    private Integer trainingCount;
+
+    // 标准getter/setter方法（为了确保编译通过）
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
 }

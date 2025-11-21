@@ -1,51 +1,71 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { CourseCard } from "@/components/course-card"
 import { CreatePersonalizedCourseCard } from "@/components/create-personalized-course-card"
 import { CourseCarousel } from "@/components/course-carousel"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { getStandardCourses, getPersonalizedCourses } from "@/lib/api/course"
+import type { Course } from "@/lib/types/course"
+
+// 将后端课程数据转换为前端需要的格式
+function transformCourse(course: Course, type: "standard" | "personalized" = "standard") {
+  return {
+    id: course.id.toString(),
+    name: course.name,
+    type,
+    description: course.description || "",
+  }
+}
 
 export function CourseContent() {
-  // Mock data for courses
-  const courses = [
-    {
-      id: "course-001",
-      name: "高价值理财产品推荐",
-      type: "standard",
-      description: "学习如何向客户推荐高价值理财产品，掌握产品特点和销售技巧。",
-    },
-    {
-      id: "course-002",
-      name: "客户需求深度挖掘",
-      type: "standard",
-      description: "通过案例分析和模拟演练，提升客户需求识别和挖掘能力。",
-    },
-    {
-      id: "course-003",
-      name: "异议处理与促成技巧",
-      type: "standard",
-      description: "掌握常见的客户异议处理方法，提升促成交易的成功率。",
-    },
-    {
-      id: "course-004",
-      name: "合规销售与风险提示",
-      type: "standard",
-      description: "了解金融产品销售的合规要求，有效进行风险提示。",
-    },
-    {
-      id: "course-005",
-      name: "财富管理规划实战",
-      type: "standard",
-      description: "结合客户实际情况，制定个性化财富管理方案。",
-    },
-    {
-      id: "course-006",
-      name: "保险产品销售策略",
-      type: "standard",
-      description: "深入了解各类保险产品，掌握其销售策略和话术。",
-    },
-  ]
+  const [standardCourses, setStandardCourses] = useState<any[]>([])
+  const [personalizedCourses, setPersonalizedCourses] = useState<any[]>([])
+  const [standardLoading, setStandardLoading] = useState(true)
+  const [personalizedLoading, setPersonalizedLoading] = useState(true)
+  const [standardError, setStandardError] = useState<string | null>(null)
+  const [personalizedError, setPersonalizedError] = useState<string | null>(null)
+
+  // 加载标准课程数据
+  useEffect(() => {
+    const loadStandardCourses = async () => {
+      try {
+        setStandardLoading(true)
+        setStandardError(null)
+        const data = await getStandardCourses()
+        const transformedCourses = data.map((course) => transformCourse(course, "standard"))
+        setStandardCourses(transformedCourses)
+      } catch (err) {
+        console.error("Failed to load standard courses:", err)
+        setStandardError("加载标准课程失败,请稍后重试")
+      } finally {
+        setStandardLoading(false)
+      }
+    }
+
+    loadStandardCourses()
+  }, [])
+
+  // 加载个性化课程数据
+  useEffect(() => {
+    const loadPersonalizedCourses = async () => {
+      try {
+        setPersonalizedLoading(true)
+        setPersonalizedError(null)
+        const data = await getPersonalizedCourses()
+        const transformedCourses = data.map((course) => transformCourse(course, "personalized"))
+        setPersonalizedCourses(transformedCourses)
+      } catch (err) {
+        console.error("Failed to load personalized courses:", err)
+        setPersonalizedError("加载个性化课程失败,请稍后重试")
+      } finally {
+        setPersonalizedLoading(false)
+      }
+    }
+
+    loadPersonalizedCourses()
+  }, [])
 
   return (
     <div className="space-y-8">
@@ -65,31 +85,61 @@ export function CourseContent() {
         </TabsList>
 
         <TabsContent value="standard" className="mt-6">
-          <h2 className="mb-4 text-2xl font-semibold text-white">热门标准课程</h2>
-          <CourseCarousel courses={courses} />
-          <h2 className="mb-4 mt-8 text-2xl font-semibold text-white">所有标准课程</h2>
-          <ScrollArea className="w-full whitespace-nowrap rounded-md border border-gray-700 p-4">
-            <div className="flex w-max space-x-4 p-4">
-              {courses.map((course) => (
-                <CourseCard key={course.id} {...course} />
-              ))}
+          {standardLoading && (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-white text-lg">加载中...</div>
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          )}
+
+          {standardError && (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-red-500 text-lg">{standardError}</div>
+            </div>
+          )}
+
+          {!standardLoading && !standardError && (
+            <>
+              <h2 className="mb-4 text-2xl font-semibold text-white">热门标准课程</h2>
+              <CourseCarousel courses={standardCourses} />
+              <h2 className="mb-4 mt-8 text-2xl font-semibold text-white">所有标准课程</h2>
+              <ScrollArea className="w-full whitespace-nowrap rounded-md border border-gray-700 p-4">
+                <div className="flex w-max space-x-4 p-4">
+                  {standardCourses.map((course) => (
+                    <CourseCard key={course.id} {...course} />
+                  ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </>
+          )}
         </TabsContent>
 
         <TabsContent value="personalized" className="mt-6">
           <h2 className="mb-4 text-2xl font-semibold text-white">我的个性化课程</h2>
-          <ScrollArea className="w-full whitespace-nowrap rounded-md border border-gray-700 p-4">
-            <div className="flex w-max space-x-4 p-4">
-              <CreatePersonalizedCourseCard />
-              {/* Placeholder for personalized courses */}
-              {courses.slice(0, 2).map((course) => (
-                <CourseCard key={course.id} {...course} type="personalized" />
-              ))}
+
+          {personalizedLoading && (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-white text-lg">加载中...</div>
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          )}
+
+          {personalizedError && (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-red-500 text-lg">{personalizedError}</div>
+            </div>
+          )}
+
+          {!personalizedLoading && !personalizedError && (
+            <ScrollArea className="w-full whitespace-nowrap rounded-md border border-gray-700 p-4">
+              <div className="flex w-max space-x-4 p-4">
+                <CreatePersonalizedCourseCard />
+                {personalizedCourses.map((course) => (
+                  <CourseCard key={course.id} {...course} />
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          )}
         </TabsContent>
       </Tabs>
     </div>

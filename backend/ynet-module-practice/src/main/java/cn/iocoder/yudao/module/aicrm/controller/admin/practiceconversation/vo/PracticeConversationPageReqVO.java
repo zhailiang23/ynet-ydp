@@ -58,4 +58,116 @@ public class PracticeConversationPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    // 手动添加getter方法（为了确保编译通过）
+    public Long getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(Long recordId) {
+        this.recordId = recordId;
+    }
+
+    public Integer getSequenceNo() {
+        return sequenceNo;
+    }
+
+    public void setSequenceNo(Integer sequenceNo) {
+        this.sequenceNo = sequenceNo;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getMessageContent() {
+        return messageContent;
+    }
+
+    public void setMessageContent(String messageContent) {
+        this.messageContent = messageContent;
+    }
+
+    public LocalDateTime[] getMessageTime() {
+        return messageTime;
+    }
+
+    public void setMessageTime(LocalDateTime[] messageTime) {
+        this.messageTime = messageTime;
+    }
+
+    public BigDecimal getInstantScore() {
+        return instantScore;
+    }
+
+    public void setInstantScore(BigDecimal instantScore) {
+        this.instantScore = instantScore;
+    }
+
+    public String getSpeechAnalysis() {
+        return speechAnalysis;
+    }
+
+    public void setSpeechAnalysis(String speechAnalysis) {
+        this.speechAnalysis = speechAnalysis;
+    }
+
+    public String getSkillEvaluation() {
+        return skillEvaluation;
+    }
+
+    public void setSkillEvaluation(String skillEvaluation) {
+        this.skillEvaluation = skillEvaluation;
+    }
+
+    public String getEmotionTag() {
+        return emotionTag;
+    }
+
+    public void setEmotionTag(String emotionTag) {
+        this.emotionTag = emotionTag;
+    }
+
+    public String getSalesIntent() {
+        return salesIntent;
+    }
+
+    public void setSalesIntent(String salesIntent) {
+        this.salesIntent = salesIntent;
+    }
+
+    public String getCustomerReaction() {
+        return customerReaction;
+    }
+
+    public void setCustomerReaction(String customerReaction) {
+        this.customerReaction = customerReaction;
+    }
+
+    public String getImprovementSuggestions() {
+        return improvementSuggestions;
+    }
+
+    public void setImprovementSuggestions(String improvementSuggestions) {
+        this.improvementSuggestions = improvementSuggestions;
+    }
+
+    public String getRecommendedScripts() {
+        return recommendedScripts;
+    }
+
+    public void setRecommendedScripts(String recommendedScripts) {
+        this.recommendedScripts = recommendedScripts;
+    }
+
+    public LocalDateTime[] getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime[] createTime) {
+        this.createTime = createTime;
+    }
 }

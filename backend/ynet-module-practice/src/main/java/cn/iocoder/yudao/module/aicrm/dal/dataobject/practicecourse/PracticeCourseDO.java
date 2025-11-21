@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.aicrm.dal.dataobject.practicecourse;
 import lombok.*;
 import java.util.*;
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
@@ -52,5 +51,65 @@ public class PracticeCourseDO extends BaseDO {
      */
     private String status;
 
+    /**
+     * 培训人数
+     */
+    private Integer trainingCount;
 
+    // 标准getter/setter方法（为了确保编译通过）
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getScriptId() {
+        return scriptId;
+    }
+
+    public void setScriptId(Long scriptId) {
+        this.scriptId = scriptId;
+    }
+
+    public Long getStandard() {
+        return standard;
+    }
+
+    public void setStandard(Long standard) {
+        this.standard = standard;
+    }
+
+    public Long getHard() {
+        return hard;
+    }
+
+    public void setHard(Long hard) {
+        this.hard = hard;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

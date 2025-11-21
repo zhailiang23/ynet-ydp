@@ -35,6 +35,15 @@ server:
       enabled: true
       charset: UTF-8 # 必须设置 UTF-8，避免 WebFlux 流式返回（AI 场景）会乱码问题
       force: true
+  # Tomcat 配置
+  tomcat:
+    connection-timeout: 900000 # 连接超时时间 15分钟 (AI生成剧本需要较长时间)
+    threads:
+      max: 200 # 最大工作线程数
+  # MVC 异步请求超时配置
+  mvc:
+    async:
+      request-timeout: 900000 # 异步请求超时时间 15分钟 (毫秒)
 
 --- #################### 接口文档配置 ####################
 
@@ -347,5 +356,8 @@ yudao:
   iot:
     message-bus:
       type: redis # 消息总线的类型
+  practice:
+    training-count:
+      allow-duplicate: true # 是否允许同一用户多次培训累加培训人数，默认为 true
 
 debug: false

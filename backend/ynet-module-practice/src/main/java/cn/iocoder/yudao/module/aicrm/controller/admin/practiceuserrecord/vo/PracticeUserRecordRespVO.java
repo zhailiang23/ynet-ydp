@@ -24,6 +24,10 @@ public class PracticeUserRecordRespVO {
     @ExcelProperty("陪练课程")
     private String courseName;
 
+    @Schema(description = "课程类型：1标准课程 0个性化课程", example = "1")
+    @ExcelProperty("课程类型")
+    private Long courseType;
+
     @Schema(description = "参与用户ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "19776")
     private Long userId;
 

@@ -52,4 +52,29 @@ public class PracticeCourseRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    // 标准getter/setter方法（为了确保编译通过）
+    public Long getScriptId() {
+        return scriptId;
+    }
+
+    public void setScriptId(Long scriptId) {
+        this.scriptId = scriptId;
+    }
+
+    public String getScriptName() {
+        return scriptName;
+    }
+
+    public void setScriptName(String scriptName) {
+        this.scriptName = scriptName;
+    }
+
+    public String getScriptVersion() {
+        return scriptVersion;
+    }
+
+    public void setScriptVersion(String scriptVersion) {
+        this.scriptVersion = scriptVersion;
+    }
+
 }

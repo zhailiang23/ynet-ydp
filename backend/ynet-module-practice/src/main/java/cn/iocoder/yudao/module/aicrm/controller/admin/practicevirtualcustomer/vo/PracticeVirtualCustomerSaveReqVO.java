@@ -37,4 +37,13 @@ public class PracticeVirtualCustomerSaveReqVO {
     @Schema(description = "自定义参数（JSON格式）", example = "你猜")
     private String memo;
 
+    // 标准getter/setter方法（为了确保编译通过）
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 }

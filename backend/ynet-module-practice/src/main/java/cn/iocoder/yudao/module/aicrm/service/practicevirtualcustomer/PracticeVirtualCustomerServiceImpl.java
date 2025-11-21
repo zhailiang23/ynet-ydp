@@ -36,6 +36,8 @@ public class PracticeVirtualCustomerServiceImpl implements PracticeVirtualCustom
     public Long createPracticeVirtualCustomer(PracticeVirtualCustomerSaveReqVO createReqVO) {
         // 插入
         PracticeVirtualCustomerDO practiceVirtualCustomer = BeanUtils.toBean(createReqVO, PracticeVirtualCustomerDO.class);
+        // 管理端创建的虚拟客户设置为公开
+        practiceVirtualCustomer.setIsPublic(true);
         practiceVirtualCustomerMapper.insert(practiceVirtualCustomer);
 
         // 返回
@@ -80,6 +82,30 @@ public class PracticeVirtualCustomerServiceImpl implements PracticeVirtualCustom
     @Override
     public PageResult<PracticeVirtualCustomerDO> getPracticeVirtualCustomerPage(PracticeVirtualCustomerPageReqVO pageReqVO) {
         return practiceVirtualCustomerMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public PracticeVirtualCustomerDO quickCreateVirtualCustomer(String name, String gender, Integer age,
+                                                                  String occupation, String industry,
+                                                                  String personalityType, String riskPreference,
+                                                                  String memo) {
+        // 创建虚拟客户记录
+        PracticeVirtualCustomerDO customer = new PracticeVirtualCustomerDO();
+        customer.setName(name);
+        customer.setGender(gender);
+        customer.setAge(age);
+        customer.setOccupation(occupation);
+        customer.setIndustry(industry);
+        customer.setPersonalityType(personalityType);
+        customer.setRiskPreference(riskPreference);
+        customer.setMemo(memo);
+        // 用户创建的虚拟客户(用于个性化课程)设置为不公开
+        customer.setIsPublic(false);
+
+        // 插入数据库
+        practiceVirtualCustomerMapper.insert(customer);
+
+        return customer;
     }
 
 }

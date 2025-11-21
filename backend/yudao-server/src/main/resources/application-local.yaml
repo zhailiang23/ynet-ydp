@@ -268,3 +268,14 @@ justauth:
     type: REDIS
     prefix: 'social_auth_state:' # 缓存前缀，目前只对 Redis 缓存生效，默认 JUSTAUTH::STATE::
     timeout: 24h # 超时时长，目前只对 Redis 缓存生效，默认 3 分钟
+# AI 评估服务配置
+ai:
+  evaluation:
+    service:
+      url: http://localhost:8000/evaluate
+
+
+# 剧本生成服务配置
+script:
+  generator:
+    url: http://localhost:8001

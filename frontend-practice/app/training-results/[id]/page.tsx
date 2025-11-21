@@ -2,8 +2,8 @@ import { SiteHeader } from "@/components/site-header"
 import { TrainingDetail } from "@/components/training-detail" // Import the new detail component
 import { Suspense } from "react" // Import Suspense for useSearchParams
 
-export default function TrainingDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params // Get the training ID from the URL
+export default async function TrainingDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params // Get the training ID from the URL
 
   return (
     <div

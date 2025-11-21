@@ -35,4 +35,60 @@ public class PracticeCoursePageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    // 手动添加getter方法（为了确保编译通过）
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getScriptId() {
+        return scriptId;
+    }
+
+    public void setScriptId(Long scriptId) {
+        this.scriptId = scriptId;
+    }
+
+    public Long getStandard() {
+        return standard;
+    }
+
+    public void setStandard(Long standard) {
+        this.standard = standard;
+    }
+
+    public Long getHard() {
+        return hard;
+    }
+
+    public void setHard(Long hard) {
+        this.hard = hard;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime[] getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime[] createTime) {
+        this.createTime = createTime;
+    }
 }

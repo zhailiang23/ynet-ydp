@@ -54,5 +54,15 @@ public class PracticeMaterialDO extends BaseDO {
      */
     private String contentRich;
 
+    /**
+     * 关联课程名称(非数据库字段,仅用于返回)
+     */
+    @TableField(exist = false)
+    private String courseName;
+
+    /**
+     * 培训人数
+     */
+    private Integer trainingCount;
 
 }

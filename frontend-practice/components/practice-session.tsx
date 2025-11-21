@@ -11,16 +11,18 @@ import { getPracticeScriptById } from "@/lib/api/practice-script"
 import type { PracticeScript } from "@/lib/api/practice-script"
 import { createPracticeConversation, getConversationListByRecordId } from "@/lib/api/practice-conversation"
 import { createPracticeUserRecord, findUnfinishedRecord, completePracticeUserRecord } from "@/lib/api/practice-user-record"
+import { evaluatePractice } from "@/lib/api/practice-evaluation"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Mic, Send, Volume2, CheckCircle, XCircle, ExternalLink } from "lucide-react" // Added ExternalLink
+import { Mic, Send, Volume2, CheckCircle, XCircle, ExternalLink, Loader2 } from "lucide-react" // Added ExternalLink, Loader2
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Progress } from "@/components/ui/progress"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table" // Added Table components
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface Message {
   id: string
@@ -227,6 +229,7 @@ export function PracticeSession() {
   const [script, setScript] = useState<PracticeScript | null>(null)
   const [recordId, setRecordId] = useState<number | null>(null)
   const [sending, setSending] = useState(false)
+  const dataLoadedRef = useRef(false) // 跟踪数据是否已加载,防止重复调用
 
   // 对话消息状态
   const isSpecificScenario = courseId === "course-001" && customerId === "customer-002"
@@ -238,6 +241,7 @@ export function PracticeSession() {
   const [input, setInput] = useState("")
   const [isTrainingCompleted, setIsTrainingCompleted] = useState(false)
   const [evaluationResults, setEvaluationResults] = useState<EvaluationResult | null>(null)
+  const [isEvaluating, setIsEvaluating] = useState(false) // 新增: 评估中状态
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -248,12 +252,22 @@ export function PracticeSession() {
 
   // 加载课程、虚拟客户、剧本数据,并检查/创建练习记录
   useEffect(() => {
+    // 如果数据已经加载过,跳过(防止React Strict Mode重复调用)
+    if (dataLoadedRef.current) {
+      return
+    }
+
+    let cancelled = false // 添加取消标志,防止重复调用
+
     async function loadData() {
       // 如果是演示场景,跳过数据加载
-      if (isSpecificScenario) {
-        console.log("演示场景,使用固定对话数据")
+      if (isSpecificScenario || cancelled) {
+        console.log("演示场景或已取消,跳过数据加载")
         return
       }
+
+      // 标记数据已开始加载
+      dataLoadedRef.current = true
 
       try {
         let courseData: Course | null = null
@@ -342,7 +356,13 @@ export function PracticeSession() {
         console.error("✗ 加载数据失败:", error)
       }
     }
+
     loadData()
+
+    // Cleanup函数: 当组件卸载或依赖项变化时,设置取消标志
+    return () => {
+      cancelled = true
+    }
   }, [courseId, customerId, isSpecificScenario])
 
   const handleSendMessage = async () => {
@@ -514,11 +534,15 @@ export function PracticeSession() {
   const handleCompleteTraining = async () => {
     if (!recordId || !courseId || !customerId) {
       console.error("无法完成培训: 缺少必要参数", { recordId, courseId, customerId })
+      alert("无法完成培训: 缺少练习记录ID")
       return
     }
 
     try {
       const currentUserId = 1 // TODO: 从登录信息获取真实用户ID
+
+      // 设置评估中状态
+      setIsEvaluating(true)
 
       // 1. 调用后端 API 更新练习记录状态为已完成
       console.log("正在完成练习记录, ID:", recordId)
@@ -530,18 +554,48 @@ export function PracticeSession() {
       )
       console.log("✓ 练习记录已标记为完成")
 
-      // 2. 使用模拟评估显示结果 (TODO: 未来可接入真实的 AI 评估服务)
-      const results = simulateEvaluation(courseId || "", customerId || "")
+      // 2. 调用评估 API 获取评估结果
+      console.log("正在调用评估服务, recordId:", recordId, "类型:", typeof recordId)
+      // 确保 recordId 是有效的数字
+      if (typeof recordId !== 'number' || recordId <= 0) {
+        throw new Error(`无效的练习记录ID: ${recordId}`)
+      }
+      const results = await evaluatePractice(recordId)
+      console.log("✓ 评估结果:", results)
+
       setEvaluationResults(results)
       setIsTrainingCompleted(true)
     } catch (error) {
       console.error("✗ 完成培训失败:", error)
       alert("完成培训失败,请稍后重试")
+    } finally {
+      // 关闭评估弹窗
+      setIsEvaluating(false)
     }
   }
 
   return (
-    <Card className="w-full max-w-3xl border border-gray-700 bg-[#2a2a2a] text-white shadow-lg">
+    <>
+      {/* 评估中的弹窗 */}
+      <Dialog open={isEvaluating} onOpenChange={() => {}}>
+        <DialogContent className="bg-[#2a2a2a] text-white border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin text-purple-500" />
+              正在生成评估结果
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              AI 正在分析您的练习对话，生成详细的评估报告，这可能需要几分钟时间，请耐心等待...
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center py-8 space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
+            <p className="text-sm text-gray-400">评估进行中，请勿关闭页面</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Card className="w-full max-w-3xl border border-gray-700 bg-[#2a2a2a] text-white shadow-lg">
       <CardHeader className="border-b border-gray-700">
         <CardTitle className="text-xl text-gray-200">
           陪练会话: {course?.name || "课程加载中..."}
@@ -782,8 +836,9 @@ export function PracticeSession() {
             <Button
               onClick={handleCompleteTraining}
               className="ml-4 rounded-full bg-purple-600 text-white hover:bg-purple-700"
+              disabled={isEvaluating}
             >
-              完成培训
+              {isEvaluating ? "评估中..." : "完成培训"}
             </Button>
           </>
         ) : (
@@ -793,5 +848,6 @@ export function PracticeSession() {
         )}
       </CardFooter>
     </Card>
+    </>
   )
 }

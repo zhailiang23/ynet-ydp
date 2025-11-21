@@ -860,3 +860,4 @@ curl -X POST http://localhost:8000/chat \
 3. 查看视频教程: https://doc.iocoder.cn/video/
 4. 检查浏览器控制台和后端日志
 5. 查看 AI Agent 服务日志 (位于 `/tmp/ai_agent_new.log`)
+- 项目是个多模块项目,修改后端代码后需要 install 才会生效

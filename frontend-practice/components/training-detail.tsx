@@ -8,205 +8,57 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table" // Import Table components
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useEffect, useState } from "react"
+import { getPracticeUserRecordById, type PracticeUserRecord } from "@/lib/api/practice-user-record"
+import { getConversationListByRecordId, type PracticeConversation } from "@/lib/api/practice-conversation"
 
 interface TrainingDetailProps {
   trainingId: string
 }
 
 export function TrainingDetail({ trainingId }: TrainingDetailProps) {
-  // 模拟培训详情数据
-  // 在实际应用中，这里会根据 trainingId 从后端获取数据
-  const mockTrainingData = {
-    "training-001": {
-      courseInfo: {
-        name: "销售电话模拟",
-        type: "预设课程",
-        date: "2023-10-01",
-        duration: "15分钟",
-        virtualCustomer: "张先生 (企业高管)",
-        scriptVersion: "V1.2",
-      },
-      dialogueContent: [
-        { id: "d1", sender: "ai", text: "您好！我是您的AI陪练教练。我们今天将进行销售电话模拟，请您开始您的开场白。" },
-        { id: "d2", sender: "user", text: "张先生您好，我是小王，请问您现在方便接听电话吗？" },
-        { id: "d3", sender: "ai", text: "嗯，方便。请说。" },
-        {
-          id: "d4",
-          sender: "user",
-          text: "我了解到贵公司在AI领域取得了显著成就，我们公司专注于提供AI驱动的销售工具，旨在帮助企业提升销售效率。",
-        },
-        { id: "d5", sender: "ai", text: "听起来不错，但价格方面有什么优势吗？" },
-        {
-          id: "d6",
-          sender: "user",
-          text: "我们的产品虽然初期投入较高，但长期来看能为您节省大量人力成本，并带来更高的转化率，投资回报率非常可观。",
-        },
-        { id: "d7", sender: "ai", text: "我考虑一下，谢谢您的介绍。" },
-        {
-          id: "d8",
-          sender: "user",
-          text: "好的，张先生，为了更好地了解贵公司需求，我希望能邀请您参加一个15分钟的线上演示，您看本周三下午2点或者周四上午10点，哪个时间更方便您？",
-        },
-        { id: "d9", sender: "ai", text: "周四上午10点吧。" },
-        { id: "d10", sender: "user", text: "好的，我稍后会把会议链接发到您的邮箱。期待与您进一步交流！" },
-      ],
-      evaluationResult: {
-        communicationScore: 85,
-        professionalismScore: 90,
-        complianceScore: 78,
-        managerFeedback:
-          "学员在开场白和产品介绍方面表现良好，但在处理价格异议时略显生硬，使用了“投资回报率非常可观”这种略带承诺的表述，需加强话术灵活性和合规性。",
-        complianceIssues: [
-          { type: "敏感词触发", description: "在提及收益时使用了“非常可观”等敏感词。", status: "需校准" },
-          { type: "合规通过", description: "本次演练合规表现良好。", status: "通过" },
-        ],
-      },
-      improvementSuggestions: [
-        { text: "异议处理话术需补充风险缓释逻辑，避免直接承诺收益。", resource: { label: "风险缓释课程", url: "#" } },
-        { text: "在需求挖掘阶段，尝试使用开放式问题引导客户深入表达。", resource: { label: "需求挖掘模板", url: "#" } },
-        {
-          text: "提升产品知识应用能力，确保在客户提问时能迅速给出准确信息。",
-          resource: { label: "产品知识库", url: "#" },
-        },
-      ],
-      quantifiedMetrics: [], // Not applicable for this training
-    },
-    "training-002": {
-      courseInfo: {
-        name: "自定义：应对客户投诉",
-        type: "个性化课程",
-        date: "2023-10-15",
-        duration: "20分钟",
-        virtualCustomer: "李女士 (自由职业者)",
-        scriptVersion: "V1.0",
-      },
-      dialogueContent: [
-        { id: "d1", sender: "ai", text: "我很生气！你们的服务太差了！" },
-        {
-          id: "d2",
-          sender: "user",
-          text: "李女士您好，非常抱歉让您有不愉快的体验。请您详细告诉我发生了什么，我在这里认真倾听。",
-        },
-        { id: "d3", sender: "ai", text: "我上周购买的那个理财产品，说好的收益，现在根本没达到！" },
-        {
-          id: "d4",
-          sender: "user",
-          text: "我完全理解您的感受，这确实让人很沮丧。请问您能告诉我您购买的产品名称和购买日期吗？",
-        },
-        { id: "d5", sender: "ai", text: "是XX基金，上个月10号买的！我要求退款！" },
-        {
-          id: "d6",
-          sender: "user",
-          text: "李女士，我查到您的产品是浮动收益型基金，其收益会受市场波动影响。我们合同中也明确说明了这一点。不过，我理解您对收益的期望，我们可以为您提供一份详细的市场分析报告，并重新评估您的资产配置方案。",
-        },
-        { id: "d7", sender: "ai", text: "那你们打算怎么解决这个问题？" },
-        {
-          id: "d8",
-          sender: "user",
-          text: "我们建议您先查看这份报告，了解市场情况。同时，如果您愿意，我们可以安排一次专业的理财规划师与您进行一对一沟通，根据您最新的风险承受能力和目标，调整您的投资组合。",
-        },
-        { id: "d9", sender: "ai", text: "好吧，我接受这个方案，希望你们能改进。" },
-      ],
-      evaluationResult: {
-        communicationScore: 92,
-        professionalismScore: 85,
-        complianceScore: 90,
-        managerFeedback:
-          "学员在安抚客户情绪和解释产品特性方面表现出色，能够有效引用合规条款。但在提供解决方案时，可以更积极地引导客户接受现有方案的价值。",
-        complianceIssues: [{ type: "合规通过", description: "本次演练合规表现良好。", status: "通过" }],
-      },
-      improvementSuggestions: [
-        {
-          text: "在解释浮动收益产品时，可以更强调长期投资的价值和市场周期性。",
-          resource: { label: "基金知识进阶", url: "#" },
-        },
-        { text: "尝试在解决方案中加入更多个性化服务，提升客户满意度。", resource: { label: "客户关系管理", url: "#" } },
-      ],
-      quantifiedMetrics: [], // Not applicable for this training
-    },
-    "training-005": {
-      courseInfo: {
-        name: "高价值理财产品推荐",
-        type: "个性化课程",
-        date: "2023-12-01",
-        duration: "30分钟",
-        virtualCustomer: "李女士 (自由职业者)",
-        scriptVersion: "V1.0",
-      },
-      dialogueContent: [
-        { id: "d1", sender: "user", text: "李女士，根据大数据分析，您应该购买我们的明星理财组合" },
-        { id: "d2", sender: "ai", text: "你们和暴雷的那家机构有什么区别？" },
-        { id: "d3", sender: "user", text: "我们是正规银行，他们是不合规平台" },
-        { id: "d4", sender: "ai", text: "能保证资金安全吗？" },
-        { id: "d5", sender: "user", text: "我们的产品从没让客户亏过钱" },
-        { id: "d6", sender: "ai", text: "收益率是怎么计算的？" },
-        { id: "d7", sender: "user", text: "年化4.5%，比存款高很多" },
-        { id: "d8", sender: "ai", text: "需要投资多久？" },
-        { id: "d9", sender: "user", text: "最少1年起，时间越长收益越高" },
-        { id: "d10", sender: "ai", text: "..." }, // Placeholder for intermediate dialogue
-        { id: "d11", sender: "user", text: "..." }, // Placeholder for intermediate dialogue
-        { id: "d12", sender: "ai", text: "这个风险等级R2是什么意思？" },
-        { id: "d13", sender: "user", text: "就是中等风险，适合大部分人" },
-        { id: "d14", sender: "ai", text: "如果急用钱怎么办？" },
-        { id: "d15", sender: "user", text: "可以质押贷款，实时到账" },
-        { id: "d16", sender: "ai", text: "我需要再考虑下..." },
-        { id: "d17", sender: "user", text: "明天活动截止，错过就没有了" },
-        { id: "d18", sender: "ai", text: "那先买1万试试吧" },
-      ],
-      evaluationResult: {
-        communicationScore: 40, // Based on "连续3次打断客户提问", "命令式措辞"
-        professionalismScore: 35, // Based on "未提供官方证明材料", "未说明浮动收益特性", "未解释具体波动范围", "未提示提前赎回费用"
-        complianceScore: 25, // Based on "保本暗示", "虚假宣传", "风险隐瞒", "制造虚假紧迫感"
-        managerFeedback:
-          "本次培训存在多处合规漏洞和沟通技巧缺陷。话术违规、风险提示缺失、需求诊断错误。学员连续3次打断客户提问，使用了“您必须”、“应该要”等命令式措辞，且未回应客户提到的子女教育资金需求。",
-        complianceIssues: [
-          {
-            type: "保本暗示",
-            description: "多次使用“从没让客户亏过钱”、“历史100%兑付”等暗示保本的表述。",
-            status: "需校准",
-          },
-          { type: "虚假宣传", description: "使用“同类收益最高”等夸大宣传。", status: "需校准" },
-          { type: "风险隐瞒", description: "未说明产品底层资产、未解释风险等级具体波动范围。", status: "需校准" },
-          { type: "制造虚假紧迫感", description: "使用“明天活动截止，错过就没有了”等虚假营销手段。", status: "需校准" },
-        ],
-      },
-      improvementSuggestions: [
-        {
-          text: "话术优化：将“保证收益”改为“历史平均收益”，消除保本暗示。",
-          resource: { label: "合规话术指南", url: "#" },
-        },
-        {
-          text: "话术优化：将“最后一天”改为“本季度优惠”，避免虚假营销。",
-          resource: { label: "营销合规培训", url: "#" },
-        },
-        {
-          text: "加强合规话术学习，避免保本暗示、虚假宣传和风险隐瞒。",
-          resource: { label: "合规培训课程", url: "#" },
-        },
-        {
-          text: "在销售初期充分进行需求诊断，完成财务诊断问卷，提升需求匹配度。",
-          resource: { label: "需求挖掘技巧", url: "#" },
-        },
-        {
-          text: "在客户充分理解和接受产品价值后再进行促成，避免过早进入促成阶段。",
-          resource: { label: "销售流程优化", url: "#" },
-        },
-      ],
-      quantifiedMetrics: [
-        { dimension: "话术合规率", target: "≥98%", actual: "83%", deviation: "7次违规表述" },
-        { dimension: "需求匹配度", target: "≥85%", actual: "62%", deviation: "未完成财务诊断问卷" },
-        { dimension: "促成转化率", target: "≥40%", actual: "22%", deviation: "过早进入促成阶段" },
-      ],
-    },
-  }
+  const [loading, setLoading] = useState(true)
+  const [record, setRecord] = useState<PracticeUserRecord | null>(null)
+  const [conversations, setConversations] = useState<PracticeConversation[]>([])
+  const [error, setError] = useState<string | null>(null)
 
-  const trainingData = mockTrainingData[trainingId as keyof typeof mockTrainingData]
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
 
-  if (!trainingData) {
+        // 获取培训记录详情
+        const recordData = await getPracticeUserRecordById(Number(trainingId))
+        setRecord(recordData)
+
+        // 获取对话记录
+        const conversationsData = await getConversationListByRecordId(Number(trainingId))
+        setConversations(conversationsData)
+      } catch (err) {
+        console.error("加载培训详情失败:", err)
+        setError("加载培训详情失败，请稍后重试")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [trainingId])
+
+  if (loading) {
     return (
       <div className="text-center py-20 text-gray-400">
-        <p>培训详情 {trainingId} 未找到。</p>
+        <p>加载中...</p>
+      </div>
+    )
+  }
+
+  if (error || !record) {
+    return (
+      <div className="text-center py-20 text-gray-400">
+        <p>{error || `培训详情 ${trainingId} 未找到。`}</p>
         <Link href="/training-results">
           <Button variant="link" className="mt-4 text-blue-400 hover:text-blue-300">
             返回培训结果列表
@@ -214,6 +66,80 @@ export function TrainingDetail({ trainingId }: TrainingDetailProps) {
         </Link>
       </div>
     )
+  }
+
+  // 将对话记录转换为显示格式(兼容新旧数据格式)
+  const dialogueContent = conversations.map((conv) => {
+    // 判断发送方:学员相关的role映射为user,其他映射为ai
+    const isUser = conv.role === "student" || conv.role === "销售"
+    return {
+      id: conv.id?.toString() || "",
+      sender: isUser ? ("user" as const) : ("ai" as const),
+      text: conv.messageContent,
+    }
+  })
+
+  // 解析 AI 总结 JSON
+  const parseAiSummary = (aiSummaryStr?: string) => {
+    if (!aiSummaryStr) return null
+    try {
+      return JSON.parse(aiSummaryStr)
+    } catch {
+      return null
+    }
+  }
+
+  const aiSummaryData = parseAiSummary(record.aiSummary)
+
+  // 解析维度分数 - 优先使用 aiSummary 中的分数,否则使用 dimensionScores 字段
+  const parseDimensionScores = (scoresStr?: string) => {
+    if (!scoresStr) return { communicationScore: 0, professionalismScore: 0, complianceScore: 0 }
+    try {
+      return JSON.parse(scoresStr)
+    } catch {
+      return { communicationScore: 0, professionalismScore: 0, complianceScore: 0 }
+    }
+  }
+
+  const dimensionScores = aiSummaryData || parseDimensionScores(record.dimensionScores)
+
+  // 格式化时间
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "-"
+    return new Date(dateStr).toLocaleString("zh-CN")
+  }
+
+  // 计算并格式化培训时长
+  const formatDuration = () => {
+    // 如果没有开始时间,返回 -
+    if (!record.startTime) return "-"
+
+    // 如果培训未结束(状态不是 completed 或没有结束时间),返回 -
+    if (record.status !== "completed" || !record.endTime) return "-"
+
+    // 计算时长(毫秒差值)
+    const startMs = new Date(record.startTime).getTime()
+    const endMs = new Date(record.endTime).getTime()
+    const durationMs = endMs - startMs
+
+    // 转换为秒
+    const totalSeconds = Math.floor(durationMs / 1000)
+
+    // 格式化为分钟和秒
+    const minutes = Math.floor(totalSeconds / 60)
+    const remainingSeconds = totalSeconds % 60
+
+    return `${minutes}分${remainingSeconds}秒`
+  }
+
+  // 获取状态文本
+  const getStatusText = (status?: string) => {
+    const statusMap: Record<string, string> = {
+      in_progress: "进行中",
+      completed: "已完成",
+      cancelled: "已取消",
+    }
+    return statusMap[status || ""] || status || "-"
   }
 
   return (
@@ -225,7 +151,7 @@ export function TrainingDetail({ trainingId }: TrainingDetailProps) {
             返回培训结果列表
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold text-gray-200">培训详情：{trainingData.courseInfo.name}</h1>
+        <h1 className="text-3xl font-bold text-gray-200">培训详情：{record.courseName || "未知课程"}</h1>
         <div></div> {/* Spacer for alignment */}
       </div>
 
@@ -237,33 +163,45 @@ export function TrainingDetail({ trainingId }: TrainingDetailProps) {
         <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <p className="text-sm text-gray-400">课程名称</p>
-            <p className="text-lg font-medium text-gray-200">{trainingData.courseInfo.name}</p>
+            <p className="text-lg font-medium text-gray-200">{record.courseName || "-"}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-400">课程类型</p>
+            <p className="text-sm text-gray-400">培训状态</p>
             <Badge
               className={
-                trainingData.courseInfo.type === "预设课程" ? "bg-blue-600 text-white" : "bg-purple-600 text-white"
+                record.status === "completed"
+                  ? "bg-green-600 text-white"
+                  : record.status === "in_progress"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-600 text-white"
               }
             >
-              {trainingData.courseInfo.type}
+              {getStatusText(record.status)}
             </Badge>
           </div>
           <div>
-            <p className="text-sm text-gray-400">培训日期</p>
-            <p className="text-lg font-medium text-gray-200">{trainingData.courseInfo.date}</p>
+            <p className="text-sm text-gray-400">开始时间</p>
+            <p className="text-lg font-medium text-gray-200">{formatDate(record.startTime)}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-400">结束时间</p>
+            <p className="text-lg font-medium text-gray-200">{formatDate(record.endTime)}</p>
           </div>
           <div>
             <p className="text-sm text-gray-400">培训时长</p>
-            <p className="text-lg font-medium text-gray-200">{trainingData.courseInfo.duration}</p>
+            <p className="text-lg font-medium text-gray-200">{formatDuration()}</p>
           </div>
           <div>
             <p className="text-sm text-gray-400">虚拟客户</p>
-            <p className="text-lg font-medium text-gray-200">{trainingData.courseInfo.virtualCustomer}</p>
+            <p className="text-lg font-medium text-gray-200">{record.vcustomerName || "-"}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-400">剧本版本</p>
-            <p className="text-lg font-medium text-gray-200">{trainingData.courseInfo.scriptVersion}</p>
+            <p className="text-sm text-gray-400">培训编号</p>
+            <p className="text-lg font-medium text-gray-200">{record.recordNo || "-"}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-400">完成率</p>
+            <p className="text-lg font-medium text-gray-200">{record.completionRate || 0}%</p>
           </div>
         </CardContent>
       </Card>
@@ -276,7 +214,8 @@ export function TrainingDetail({ trainingId }: TrainingDetailProps) {
         <CardContent className="p-4">
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-4">
-              {trainingData.dialogueContent.map((message) => (
+              {dialogueContent.length > 0 ? (
+                dialogueContent.map((message) => (
                 <div
                   key={message.id}
                   className={`flex items-start gap-3 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
@@ -301,7 +240,12 @@ export function TrainingDetail({ trainingId }: TrainingDetailProps) {
                     </Avatar>
                   )}
                 </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <p>暂无对话记录</p>
+                </div>
+              )}
             </div>
           </ScrollArea>
         </CardContent>
@@ -313,121 +257,153 @@ export function TrainingDetail({ trainingId }: TrainingDetailProps) {
           <CardTitle className="text-xl text-gray-200">培训结果评估</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* 核心得分 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* 总分 */}
+          {record.totalScore !== undefined && record.totalScore !== null && (
             <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
-              <h3 className="text-sm text-gray-400">沟通逻辑得分</h3>
-              <div className="text-2xl font-bold text-blue-400">
-                {trainingData.evaluationResult.communicationScore}%
-              </div>
-              <Progress
-                value={trainingData.evaluationResult.communicationScore}
-                className="h-2 bg-gray-700 [&>*]:bg-blue-500"
-              />
+              <h3 className="text-sm text-gray-400">总得分</h3>
+              <div className="text-3xl font-bold text-yellow-400">{record.totalScore}分</div>
+              <Progress value={record.totalScore} className="h-2 bg-gray-700 [&>*]:bg-yellow-500" />
             </Card>
-            <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
-              <h3 className="text-sm text-gray-400">专业能力得分</h3>
-              <div className="text-2xl font-bold text-purple-400">
-                {trainingData.evaluationResult.professionalismScore}%
-              </div>
-              <Progress
-                value={trainingData.evaluationResult.professionalismScore}
-                className="h-2 bg-gray-700 [&>*]:bg-purple-500"
-              />
-            </Card>
-            <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
-              <h3 className="text-sm text-gray-400">合规表现得分</h3>
-              <div className="text-2xl font-bold text-green-400">{trainingData.evaluationResult.complianceScore}%</div>
-              <Progress
-                value={trainingData.evaluationResult.complianceScore}
-                className="h-2 bg-gray-700 [&>*]:bg-green-500"
-              />
-            </Card>
-          </div>
+          )}
 
-          {/* 客户经理评估 */}
-          <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
-            <h3 className="text-lg font-semibold text-gray-200 mb-2">客户经理评估</h3>
-            <p className="text-gray-300 text-sm">{trainingData.evaluationResult.managerFeedback}</p>
-          </Card>
+          {/* 核心得分 */}
+          {record.dimensionScores && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+                <h3 className="text-sm text-gray-400">沟通逻辑得分</h3>
+                <div className="text-2xl font-bold text-blue-400">{dimensionScores.communicationScore || 0}%</div>
+                <Progress
+                  value={dimensionScores.communicationScore || 0}
+                  className="h-2 bg-gray-700 [&>*]:bg-blue-500"
+                />
+              </Card>
+              <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+                <h3 className="text-sm text-gray-400">专业能力得分</h3>
+                <div className="text-2xl font-bold text-purple-400">{dimensionScores.professionalismScore || 0}%</div>
+                <Progress
+                  value={dimensionScores.professionalismScore || 0}
+                  className="h-2 bg-gray-700 [&>*]:bg-purple-500"
+                />
+              </Card>
+              <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+                <h3 className="text-sm text-gray-400">合规表现得分</h3>
+                <div className="text-2xl font-bold text-green-400">{dimensionScores.complianceScore || 0}%</div>
+                <Progress
+                  value={dimensionScores.complianceScore || 0}
+                  className="h-2 bg-gray-700 [&>*]:bg-green-500"
+                />
+              </Card>
+            </div>
+          )}
+
+          {/* AI 总结 */}
+          {aiSummaryData?.managerFeedback && (
+            <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+              <h3 className="text-lg font-semibold text-gray-200 mb-2">AI 评估总结</h3>
+              <p className="text-gray-300 text-sm whitespace-pre-wrap">{aiSummaryData.managerFeedback}</p>
+            </Card>
+          )}
+
+          {/* 优势 */}
+          {record.strengths && (
+            <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+              <h3 className="text-lg font-semibold text-gray-200 mb-2 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                表现优势
+              </h3>
+              <p className="text-gray-300 text-sm whitespace-pre-wrap">{record.strengths}</p>
+            </Card>
+          )}
+
+          {/* 待改进点 */}
+          {record.weaknesses && (
+            <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+              <h3 className="text-lg font-semibold text-gray-200 mb-2 flex items-center gap-2">
+                <XCircle className="h-5 w-5 text-red-500" />
+                待改进点
+              </h3>
+              <p className="text-gray-300 text-sm whitespace-pre-wrap">{record.weaknesses}</p>
+            </Card>
+          )}
+
+          {/* 后续提升建议 */}
+          {(aiSummaryData?.improvementSuggestions || record.recommendations) && (
+            <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+              <h3 className="text-lg font-semibold text-gray-200 mb-2">后续提升建议</h3>
+              {aiSummaryData?.improvementSuggestions ? (
+                <ul className="space-y-2 text-gray-300 text-sm">
+                  {aiSummaryData.improvementSuggestions.map((suggestion: any, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-blue-400 mt-1">•</span>
+                      <div className="flex-1">
+                        <p className="font-medium">{suggestion.text || suggestion.suggestion || (typeof suggestion === 'string' ? suggestion : '')}</p>
+                        {suggestion.resource && (
+                          <a
+                            href={suggestion.resource.url || '#'}
+                            className="text-blue-400 hover:text-blue-300 text-xs mt-1 inline-block"
+                            target={suggestion.resource.url !== '#' ? '_blank' : undefined}
+                            rel={suggestion.resource.url !== '#' ? 'noopener noreferrer' : undefined}
+                          >
+                            📚 {suggestion.resource.label}
+                          </a>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-300 text-sm whitespace-pre-wrap">{record.recommendations}</p>
+              )}
+            </Card>
+          )}
 
           {/* 合规问题 */}
-          <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
-            <h3 className="text-lg font-semibold text-gray-200 mb-2">合规校验结果</h3>
-            <div className="space-y-3">
-              {trainingData.evaluationResult.complianceIssues.map((issue, index) => (
-                <div
-                  key={index}
-                  className={`flex items-start gap-3 rounded-md p-2 ${
-                    issue.status === "通过" ? "bg-green-900/20" : "bg-red-900/20"
-                  }`}
-                >
-                  {issue.status === "通过" ? (
-                    <CheckCircle className="h-5 w-5 flex-shrink-0 text-green-500" />
-                  ) : (
-                    <XCircle className="h-5 w-5 flex-shrink-0 text-red-500" />
-                  )}
-                  <div>
-                    <h4 className="font-semibold text-gray-200">{issue.type}</h4>
-                    <p className="text-sm text-gray-300">{issue.description}</p>
+          {aiSummaryData?.complianceIssues && aiSummaryData.complianceIssues.length > 0 && (
+            <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+              <h3 className="text-lg font-semibold text-gray-200 mb-2">合规检查</h3>
+              <div className="space-y-3">
+                {aiSummaryData.complianceIssues.map((issue: any, index: number) => (
+                  <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-gray-800">
+                    <div className={`mt-0.5 ${issue.status === "通过" ? "text-green-400" : "text-yellow-400"}`}>
+                      {issue.status === "通过" ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-200">{issue.type}</p>
+                      <p className="text-gray-400 text-sm mt-1">{issue.description}</p>
+                      {issue.status && (
+                        <Badge className={`mt-2 ${issue.status === "通过" ? "bg-green-600" : "bg-yellow-600"} text-white`}>
+                          {issue.status}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </CardContent>
-      </Card>
-
-      {/* 培训效果评估量化指标 (新增部分) */}
-      {trainingData.quantifiedMetrics && trainingData.quantifiedMetrics.length > 0 && (
-        <Card className="border border-gray-700 bg-[#2a2a2a] text-white">
-          <CardHeader>
-            <CardTitle className="text-xl text-gray-200">培训效果评估量化指标</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table className="border border-gray-700">
-              <TableHeader>
-                <TableRow className="border-gray-700 bg-[#1a1a1a]">
-                  <TableHead className="text-gray-300">评估维度</TableHead>
-                  <TableHead className="text-gray-300">达标值</TableHead>
-                  <TableHead className="text-gray-300">实测值</TableHead>
-                  <TableHead className="text-gray-300">偏差分析</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {trainingData.quantifiedMetrics.map((metric, index) => (
-                  <TableRow key={index} className="border-gray-700">
-                    <TableCell className="font-medium">{metric.dimension}</TableCell>
-                    <TableCell>{metric.target}</TableCell>
-                    <TableCell>{metric.actual}</TableCell>
-                    <TableCell>{metric.deviation}</TableCell>
-                  </TableRow>
                 ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+              </div>
+            </Card>
+          )}
 
-      {/* 后续提升建议 */}
-      <Card className="border border-gray-700 bg-[#2a2a2a] text-white">
-        <CardHeader>
-          <CardTitle className="text-xl text-gray-200">后续提升建议</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {trainingData.improvementSuggestions.map((suggestion, index) => (
-            <div key={index} className="rounded-md border border-gray-600 p-4">
-              <p className="text-gray-300">{suggestion.text}</p>
-              {suggestion.resource && (
-                <Button variant="link" className="mt-2 p-0 text-blue-400 hover:text-blue-300">
-                  <ExternalLink className="mr-1 h-4 w-4" />
-                  <a href={suggestion.resource.url} target="_blank" rel="noopener noreferrer">
-                    {suggestion.resource.label}
-                  </a>
-                </Button>
-              )}
-            </div>
-          ))}
+          {/* 量化指标 */}
+          {aiSummaryData?.quantifiedMetrics && aiSummaryData.quantifiedMetrics.length > 0 && (
+            <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
+              <h3 className="text-lg font-semibold text-gray-200 mb-2">量化指标</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {aiSummaryData.quantifiedMetrics.map((metric: any, index: number) => (
+                  <div key={index} className="p-3 rounded-lg bg-gray-800">
+                    <p className="text-sm text-gray-400">{metric.dimension || metric.metric}</p>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <p className="text-2xl font-bold text-blue-400">{metric.actual || metric.value}</p>
+                      {(metric.deviation || metric.unit) && (
+                        <p className="text-sm text-gray-400">{metric.deviation || metric.unit}</p>
+                      )}
+                    </div>
+                    {(metric.target || metric.benchmark) && (
+                      <p className="text-xs text-gray-500 mt-1">目标: {metric.target || metric.benchmark}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
         </CardContent>
       </Card>
     </div>

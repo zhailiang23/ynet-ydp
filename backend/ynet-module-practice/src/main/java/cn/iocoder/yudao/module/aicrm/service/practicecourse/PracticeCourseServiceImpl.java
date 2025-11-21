@@ -120,4 +120,18 @@ public class PracticeCourseServiceImpl implements PracticeCourseService {
         return voPageResult;
     }
 
+    @Override
+    public PracticeCourseDO createPersonalizedCourse(String name, String description, Long scriptId) {
+        // 创建课程记录
+        PracticeCourseDO course = new PracticeCourseDO();
+        course.setName(name);
+        course.setDescription(description);
+        course.setScriptId(scriptId);
+
+        // 插入数据库
+        practiceCourseMapper.insert(course);
+
+        return course;
+    }
+
 }

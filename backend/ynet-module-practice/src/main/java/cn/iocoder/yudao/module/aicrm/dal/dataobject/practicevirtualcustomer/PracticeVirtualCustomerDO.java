@@ -69,6 +69,89 @@ public class PracticeVirtualCustomerDO extends BaseDO {
      * 自定义参数（JSON格式）
      */
     private String memo;
+    /**
+     * 是否公开（0否 1是）
+     */
+    private Boolean isPublic;
 
+    // 标准getter/setter方法（为了确保编译通过）
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getOccupation() {
+        return occupation;
+    }
+
+    public void setOccupation(String occupation) {
+        this.occupation = occupation;
+    }
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(String industry) {
+        this.industry = industry;
+    }
+
+    public String getPersonalityType() {
+        return personalityType;
+    }
+
+    public void setPersonalityType(String personalityType) {
+        this.personalityType = personalityType;
+    }
+
+    public String getRiskPreference() {
+        return riskPreference;
+    }
+
+    public void setRiskPreference(String riskPreference) {
+        this.riskPreference = riskPreference;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 }

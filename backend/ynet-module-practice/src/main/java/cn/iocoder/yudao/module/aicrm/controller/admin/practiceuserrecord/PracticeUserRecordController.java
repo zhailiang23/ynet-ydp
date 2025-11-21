@@ -33,6 +33,7 @@ import cn.iocoder.yudao.module.aicrm.dal.dataobject.practicevirtualcustomer.Prac
 import cn.iocoder.yudao.module.aicrm.service.practiceuserrecord.PracticeUserRecordService;
 import cn.iocoder.yudao.module.aicrm.service.practicecourse.PracticeCourseService;
 import cn.iocoder.yudao.module.aicrm.service.practicevirtualcustomer.PracticeVirtualCustomerService;
+import cn.iocoder.yudao.module.aicrm.service.practiceevaluation.PracticeEvaluationService;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 
@@ -53,6 +54,9 @@ public class PracticeUserRecordController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private PracticeEvaluationService practiceEvaluationService;
 
     @PostMapping("/create")
     @Operation(summary = "创建CRM智能陪练-用户陪练记录")
@@ -93,7 +97,16 @@ public class PracticeUserRecordController {
     @PreAuthorize("@ss.hasPermission('aicrm:practice-user-record:query')")
     public CommonResult<PracticeUserRecordRespVO> getPracticeUserRecord(@RequestParam("id") Long id) {
         PracticeUserRecordDO practiceUserRecord = practiceUserRecordService.getPracticeUserRecord(id);
-        return success(BeanUtils.toBean(practiceUserRecord, PracticeUserRecordRespVO.class));
+        if (practiceUserRecord == null) {
+            return success(null);
+        }
+
+        PracticeUserRecordRespVO respVO = BeanUtils.toBean(practiceUserRecord, PracticeUserRecordRespVO.class);
+
+        // 填充关联数据的名称
+        enrichRecordNames(Collections.singletonList(respVO));
+
+        return success(respVO);
     }
 
     @GetMapping("/find-unfinished")
@@ -138,10 +151,12 @@ public class PracticeUserRecordController {
 
         // 批量查询课程
         Map<Long, String> courseNameMap = new HashMap<>();
+        Map<Long, Long> courseTypeMap = new HashMap<>();
         for (Long courseId : courseIds) {
             PracticeCourseDO course = practiceCourseService.getPracticeCourse(courseId);
             if (course != null) {
                 courseNameMap.put(courseId, course.getName());
+                courseTypeMap.put(courseId, course.getStandard());
             }
         }
 
@@ -160,6 +175,7 @@ public class PracticeUserRecordController {
         // 填充名称
         for (PracticeUserRecordRespVO record : records) {
             record.setCourseName(courseNameMap.get(record.getCourseId()));
+            record.setCourseType(courseTypeMap.get(record.getCourseId()));
             record.setVcustomerName(vcustomerNameMap.get(record.getVcustomerId()));
             AdminUserRespDTO user = userMap.get(record.getUserId());
             if (user != null) {
@@ -183,6 +199,15 @@ public class PracticeUserRecordController {
 
         // 导出 Excel
         ExcelUtils.write(response, "CRM智能陪练-用户陪练记录.xls", "数据", PracticeUserRecordRespVO.class, voList);
+    }
+
+    @GetMapping("/evaluate")
+    @Operation(summary = "评估练习结果")
+    @Parameter(name = "recordId", description = "练习记录ID", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('aicrm:practice-user-record:query')")
+    public CommonResult<PracticeEvaluationRespVO> evaluatePractice(@RequestParam("recordId") Long recordId) {
+        PracticeEvaluationRespVO evaluation = practiceEvaluationService.evaluatePractice(recordId);
+        return success(evaluation);
     }
 
 }

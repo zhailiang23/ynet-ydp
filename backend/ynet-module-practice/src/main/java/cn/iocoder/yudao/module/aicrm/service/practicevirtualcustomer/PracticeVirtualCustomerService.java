@@ -59,4 +59,22 @@ public interface PracticeVirtualCustomerService {
      */
     PageResult<PracticeVirtualCustomerDO> getPracticeVirtualCustomerPage(PracticeVirtualCustomerPageReqVO pageReqVO);
 
+    /**
+     * 快速创建虚拟客户（用于个性化课程创建）
+     *
+     * @param name 客户姓名
+     * @param gender 性别
+     * @param age 年龄
+     * @param occupation 职业
+     * @param industry 所属行业
+     * @param personalityType 性格类型
+     * @param riskPreference 风险偏好
+     * @param memo 自定义参数
+     * @return 创建的虚拟客户记录
+     */
+    PracticeVirtualCustomerDO quickCreateVirtualCustomer(String name, String gender, Integer age,
+                                                          String occupation, String industry,
+                                                          String personalityType, String riskPreference,
+                                                          String memo);
+
 }

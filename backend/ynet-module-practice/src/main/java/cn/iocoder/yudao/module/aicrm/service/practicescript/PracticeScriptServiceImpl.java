@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.aicrm.service.practicescript;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +35,7 @@ import static cn.iocoder.yudao.module.aicrm.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
+@Slf4j
 public class PracticeScriptServiceImpl implements PracticeScriptService {
 
     @Resource
@@ -49,6 +52,9 @@ public class PracticeScriptServiceImpl implements PracticeScriptService {
 
     @Resource
     private cn.iocoder.yudao.module.aicrm.dal.mysql.practicematerial.PracticeMaterialMapper practiceMaterialMapper;
+
+    @Resource
+    private ScriptGeneratorClient scriptGeneratorClient;
 
     @Override
     public Long createPracticeScript(PracticeScriptSaveReqVO createReqVO) {
@@ -72,12 +78,76 @@ public class PracticeScriptServiceImpl implements PracticeScriptService {
         if (practiceScript.getStatus() == null) {
             practiceScript.setStatus("draft");
         }
+        // 设置生成状态为待生成
+        if (practiceScript.getGenerationStatus() == null) {
+            practiceScript.setGenerationStatus("pending");
+        }
 
-        // 插入
+        // 插入数据库记录
         practiceScriptMapper.insert(practiceScript);
+
+        // 同步调用 AI 服务生成剧本内容
+        // 如果有材料ID和营销环节,难度等级,则触发生成
+        if (practiceScript.getMaterialIds() != null && !practiceScript.getMaterialIds().isEmpty()
+                && practiceScript.getMarketingStep() != null && !practiceScript.getMarketingStep().isEmpty()
+                && practiceScript.getDifficultyLevel() != null && !practiceScript.getDifficultyLevel().isEmpty()) {
+
+            log.info("同步生成剧本内容, 剧本ID: {}", practiceScript.getId());
+            generateScriptContentSync(practiceScript.getId(), practiceScript.getCaseId(),
+                    practiceScript.getMaterialIds(), practiceScript.getSkillId(),
+                    practiceScript.getMarketingStep(), practiceScript.getDifficultyLevel(),
+                    practiceScript.getDescription());
+        }
 
         // 返回
         return practiceScript.getId();
+    }
+
+    /**
+     * 同步生成剧本内容
+     *
+     * @param scriptId 剧本ID
+     * @param caseId 案例ID (暂未使用,仅为向后兼容保留)
+     * @param materialIds 材料IDs（逗号分隔,暂未使用)
+     * @param skillId 技能ID (暂未使用,仅为向后兼容保留)
+     * @param marketingStep 营销环节 (暂未使用,仅为向后兼容保留)
+     * @param difficultyLevel 难度等级 (暂未使用,仅为向后兼容保留)
+     * @param scriptDescription 剧本描述 (暂未使用,仅为向后兼容保留)
+     */
+    public void generateScriptContentSync(Long scriptId, Long caseId, String materialIds,
+                                           Long skillId, String marketingStep,
+                                           String difficultyLevel, String scriptDescription) {
+        try {
+            // 更新状态为生成中
+            PracticeScriptDO updateScript = new PracticeScriptDO();
+            updateScript.setId(scriptId);
+            updateScript.setGenerationStatus("generating");
+            practiceScriptMapper.updateById(updateScript);
+
+            log.info("开始生成剧本内容, 剧本ID: {}", scriptId);
+
+            // 调用 AI 服务生成剧本(只传剧本ID,AI服务会自己查询所有信息)
+            String scriptContent = scriptGeneratorClient.generateScript(scriptId);
+
+            // 更新剧本内容和状态
+            updateScript = new PracticeScriptDO();
+            updateScript.setId(scriptId);
+            updateScript.setContent(scriptContent);
+            updateScript.setGenerationStatus("completed");
+            updateScript.setContentSource("ai_generated");
+            practiceScriptMapper.updateById(updateScript);
+
+            log.info("剧本内容生成成功, 剧本ID: {}, 内容长度: {}", scriptId, scriptContent.length());
+
+        } catch (Exception e) {
+            log.error("生成剧本内容失败, 剧本ID: {}", scriptId, e);
+
+            // 更新状态为失败
+            PracticeScriptDO updateScript = new PracticeScriptDO();
+            updateScript.setId(scriptId);
+            updateScript.setGenerationStatus("failed");
+            practiceScriptMapper.updateById(updateScript);
+        }
     }
 
     @Override
@@ -321,6 +391,55 @@ public class PracticeScriptServiceImpl implements PracticeScriptService {
         }
 
         return result;
+    }
+
+    @Override
+    public PracticeScriptDO createPersonalizedScript(String name, String description, String difficultyLevel,
+                                                       String marketingStep, Long virtualCustomerId,
+                                                       String materialIds, Long caseId, Long skillId,
+                                                       String content) {
+        // 创建剧本记录
+        PracticeScriptDO script = new PracticeScriptDO();
+        script.setName(name);
+        script.setDescription(description);
+        script.setDifficultyLevel(difficultyLevel);
+        script.setMarketingStep(marketingStep);
+        script.setVirtualCustomerId(virtualCustomerId);
+        script.setMaterialIds(materialIds);
+        script.setCaseId(caseId);
+        script.setSkillId(skillId);
+
+        // 如果提供了 content 则直接使用(向后兼容)
+        // 否则将通过异步生成
+        if (content != null && !content.isEmpty()) {
+            script.setContent(content);
+            script.setGenerationStatus("completed");
+            script.setContentSource("manual");
+        } else {
+            script.setGenerationStatus("pending");
+        }
+
+        // 自动填充版本信息
+        script.setScriptNo(String.valueOf(System.currentTimeMillis()));
+        script.setVersion("1");
+        script.setIsLatest(true);
+        script.setStatus("draft");  // 改为 draft 状态,与 createPracticeScript 保持一致
+
+        // 插入数据库
+        practiceScriptMapper.insert(script);
+
+        // 如果没有提供内容且满足生成条件,则同步生成剧本内容
+        if ((content == null || content.isEmpty())
+                && materialIds != null && !materialIds.isEmpty()
+                && marketingStep != null && !marketingStep.isEmpty()
+                && difficultyLevel != null && !difficultyLevel.isEmpty()) {
+
+            log.info("个性化剧本同步生成, 剧本ID: {}", script.getId());
+            generateScriptContentSync(script.getId(), caseId, materialIds, skillId,
+                    marketingStep, difficultyLevel, description);
+        }
+
+        return script;
     }
 
 }

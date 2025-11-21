@@ -210,6 +210,7 @@ public interface ErrorCodeConstants {
 
     // ========== 练习材料 1-020-203-000 ==========
     ErrorCode PRACTICE_MATERIAL_NOT_EXISTS = new ErrorCode(1_020_203_000, "练习材料不存在");
+    ErrorCode PRACTICE_MATERIAL_UPLOAD_FAILED = new ErrorCode(1_020_203_001, "培训材料上传失败");
 
     // ========== 练习话术 1-020-204-000 ==========
     ErrorCode PRACTICE_SCRIPT_NOT_EXISTS = new ErrorCode(1_020_204_000, "练习话术不存在");

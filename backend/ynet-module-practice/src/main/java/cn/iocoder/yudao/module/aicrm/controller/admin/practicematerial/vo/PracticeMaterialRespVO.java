@@ -44,4 +44,12 @@ public class PracticeMaterialRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "关联课程名称", example = "理财产品销售陪练")
+    @ExcelProperty("关联课程名称")
+    private String courseName;
+
+    @Schema(description = "培训人数", example = "10")
+    @ExcelProperty("培训人数")
+    private Integer trainingCount;
+
 }

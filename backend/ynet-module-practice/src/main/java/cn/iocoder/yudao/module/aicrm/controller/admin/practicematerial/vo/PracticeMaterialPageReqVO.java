@@ -35,4 +35,7 @@ public class PracticeMaterialPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @Schema(description = "创建者", example = "1")
+    private String creator;
+
 }

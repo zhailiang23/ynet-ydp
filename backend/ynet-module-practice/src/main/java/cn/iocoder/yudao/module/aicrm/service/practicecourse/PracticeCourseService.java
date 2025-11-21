@@ -59,4 +59,14 @@ public interface PracticeCourseService {
      */
     PageResult<PracticeCourseRespVO> getPracticeCoursePage(PracticeCoursePageReqVO pageReqVO);
 
+    /**
+     * 创建个性化课程
+     *
+     * @param name 课程名称
+     * @param description 课程描述
+     * @param scriptId 关联剧本ID
+     * @return 创建的课程记录
+     */
+    PracticeCourseDO createPersonalizedCourse(String name, String description, Long scriptId);
+
 }

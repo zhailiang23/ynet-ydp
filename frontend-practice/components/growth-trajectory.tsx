@@ -2,8 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Line, LineChart, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Line, LineChart, XAxis, YAxis, CartesianGrid, Legend, Tooltip } from "recharts"
 
 export function GrowthTrajectory() {
   // 模拟数据，包含客户经理的核心项沟通逻辑得分、专业能力得分、合规表现得分
@@ -45,54 +44,39 @@ export function GrowthTrajectory() {
             </SelectContent>
           </Select>
         </div>
-        <ChartContainer
-          config={{
-            communication: {
-              label: "沟通逻辑得分",
-              color: "hsl(var(--chart-1))", // Example color from shadcn/ui chart palette
-            },
-            professional: {
-              label: "专业能力得分",
-              color: "hsl(var(--chart-2))", // Example color from shadcn/ui chart palette
-            },
-            compliance: {
-              label: "合规表现得分",
-              color: "hsl(var(--chart-3))", // Example color from shadcn/ui chart palette
-            },
-          }}
-          className="h-[400px] w-full"
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={growthData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" strokeOpacity={0.2} />
-              <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} />
-              <YAxis stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="communication"
-                stroke="var(--color-communication)"
-                name="核心项沟通逻辑得分"
-                activeDot={{ r: 8 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="professional"
-                stroke="var(--color-professional)"
-                name="专业能力得分"
-                activeDot={{ r: 8 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="compliance"
-                stroke="var(--color-compliance)"
-                name="合规表现得分"
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+        <div className="w-full bg-[#1a1a1a] rounded-lg p-4">
+        <LineChart width={800} height={350} data={growthData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#666" strokeOpacity={0.3} />
+          <XAxis dataKey="month" stroke="#999" tick={{ fill: "#999" }} tickLine={false} axisLine={false} />
+          <YAxis stroke="#999" tick={{ fill: "#999" }} tickLine={false} axisLine={false} />
+          <Tooltip contentStyle={{ backgroundColor: "#333", border: "1px solid #666", color: "#ccc" }} />
+          <Legend wrapperStyle={{ color: "#ccc" }} />
+          <Line
+            type="monotone"
+            dataKey="communication"
+            stroke="#8884d8"
+            name="核心项沟通逻辑得分"
+            activeDot={{ r: 8 }}
+            strokeWidth={2}
+          />
+          <Line
+            type="monotone"
+            dataKey="professional"
+            stroke="#82ca9d"
+            name="专业能力得分"
+            activeDot={{ r: 8 }}
+            strokeWidth={2}
+          />
+          <Line
+            type="monotone"
+            dataKey="compliance"
+            stroke="#ffc658"
+            name="合规表现得分"
+            activeDot={{ r: 8 }}
+            strokeWidth={2}
+          />
+        </LineChart>
+        </div>
         <div className="space-y-2 text-gray-300">
           <p>最近一次对练得分：85分</p>
           <p>高频问题类型：客户异议（价格、风险）</p>

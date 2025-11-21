@@ -26,6 +26,7 @@ public interface PracticeMaterialMapper extends BaseMapperX<PracticeMaterialDO> 
                 .eqIfPresent(PracticeMaterialDO::getContent, reqVO.getContent())
                 .eqIfPresent(PracticeMaterialDO::getContentRich, reqVO.getContentRich())
                 .betweenIfPresent(PracticeMaterialDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(PracticeMaterialDO::getCreator, reqVO.getCreator()) // 过滤创建者
                 .orderByDesc(PracticeMaterialDO::getId));
     }
 

@@ -48,6 +48,10 @@ public class PracticeVirtualCustomerRespVO {
     @ExcelProperty("自定义参数（JSON格式）")
     private String memo;
 
+    @Schema(description = "是否公开", example = "true")
+    @ExcelProperty("是否公开")
+    private Boolean isPublic;
+
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
