@@ -229,6 +229,8 @@ yudao:
     mock-enable: true
     permit-all-urls:
       - /app-api/aicrm/practice-course/** # 允许匿名访问课程 API (学生端)
+      - /admin-api/aicrm/dify-test/** # 允许匿名访问 Dify 测试 API
+      - /admin-api/aicrm/dify-chat-test/** # 允许匿名访问 Dify Chat 测试 API
   pay:
     order-notify-url: https://yutou.mynatapp.cc/admin-api/pay/notify/order # 支付渠道的【支付】回调地址
     refund-notify-url: https://yutou.mynatapp.cc/admin-api/pay/notify/refund # 支付渠道的【退款】回调地址
@@ -275,7 +277,17 @@ ai:
       url: http://localhost:8000/evaluate
 
 
-# 剧本生成服务配置
+# 剧本生成服务配置(旧的 Python AI 服务,已废弃)
 script:
   generator:
     url: http://localhost:8001
+
+# Dify 服务配置
+dify:
+  enabled: true # 是否启用 Dify
+  api-url: http://192.168.152.47:181/v1 # Dify API 地址
+  api-key: app-heWY9luKOhh2jKjCZYV2ZUA4 # Dify 剧本生成应用 API 密钥 (workflow)
+  chat-api-key: app-BpOSZNjIowvZbfZEPj1zkAMs # Dify 对话应用 API 密钥 (chatflow)
+  evaluation-api-key: app-y9JmU788xSTyHkXoiQnNcsYs # Dify 评估应用 API 密钥 (workflow)
+  timeout: 600000 # 超时时间(毫秒),默认10分钟
+  user: backend-system # 用户标识

@@ -221,7 +221,7 @@ export function PracticeSession() {
   const courseType = searchParams.get("courseType")
 
   // 常量配置
-  const AI_AGENT_URL = "http://localhost:8000/chat"
+  const AI_AGENT_URL = "http://localhost:48080/admin-api/aicrm/dify-chat-test/stream"
 
   // 状态管理
   const [course, setCourse] = useState<Course | null>(null)
@@ -422,20 +422,22 @@ export function PracticeSession() {
       }
 
       // 4. 调用 AI Agent (流式输出)
+      const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID || "1"
+      const TOKEN_KEY = "access_token"
+      const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null
+
       const response = await fetch(AI_AGENT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "tenant-id": TENANT_ID,
+          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
           message: userMessage,
-          stream: true, // 启用流式输出
-          // 动态提示词参数
-          course_script: script?.contentEdit || script?.content || "",
-          virtual_customer_name: customer?.name || "客户",
-          virtual_customer_profile: profile.join(", "),
-          // 历史对话
-          history: history,
+          roleId: customer?.id || null,
+          scriptId: script?.id || null,
+          conversationId: null, // 后续可以从之前的响应中获取
         }),
       })
 
@@ -457,42 +459,47 @@ export function PracticeSession() {
           const lines = chunk.split("\n")
 
           for (const line of lines) {
+            // 处理两种格式: "data: " (有空格) 或 "data:" (无空格)
+            let data: string | null = null
             if (line.startsWith("data: ")) {
-              const data = line.slice(6).trim()
-              if (!data) continue // 跳过空数据
+              data = line.slice(6).trim()
+            } else if (line.startsWith("data:")) {
+              data = line.slice(5).trim()
+            }
 
-              try {
-                const parsed = JSON.parse(data)
+            if (!data) continue // 跳过空数据
 
-                // 根据后端返回的事件类型处理
-                if (parsed.type === "data" && parsed.content) {
-                  // 接收到文本片段
-                  aiResponseText += parsed.content
-                  // 实时更新 AI 消息
-                  setMessages((prevMessages) =>
-                    prevMessages.map((msg) =>
-                      msg.id === aiMessageId ? { ...msg, text: aiResponseText } : msg,
-                    ),
-                  )
-                } else if (parsed.type === "done") {
-                  // 流式传输完成
-                  console.log("流式响应完成")
-                  break
-                } else if (parsed.type === "error") {
-                  // 发生错误
-                  console.error("AI 响应错误:", parsed.message)
-                  aiResponseText = `错误: ${parsed.message}`
-                  setMessages((prevMessages) =>
-                    prevMessages.map((msg) =>
-                      msg.id === aiMessageId ? { ...msg, text: aiResponseText } : msg,
-                    ),
-                  )
-                  break
-                }
-              } catch (e) {
-                // 忽略解析错误
-                console.warn("解析 SSE 数据失败:", line, e)
+            try {
+              const parsed = JSON.parse(data)
+
+              // 根据后端返回的事件类型处理
+              if (parsed.type === "data" && parsed.content) {
+                // 接收到文本片段
+                aiResponseText += parsed.content
+                // 实时更新 AI 消息
+                setMessages((prevMessages) =>
+                  prevMessages.map((msg) =>
+                    msg.id === aiMessageId ? { ...msg, text: aiResponseText } : msg,
+                  ),
+                )
+              } else if (parsed.type === "done") {
+                // 流式传输完成
+                console.log("流式响应完成")
+                break
+              } else if (parsed.type === "error") {
+                // 发生错误
+                console.error("AI 响应错误:", parsed.message)
+                aiResponseText = `错误: ${parsed.message}`
+                setMessages((prevMessages) =>
+                  prevMessages.map((msg) =>
+                    msg.id === aiMessageId ? { ...msg, text: aiResponseText } : msg,
+                  ),
+                )
+                break
               }
+            } catch (e) {
+              // 忽略解析错误
+              console.warn("解析 SSE 数据失败:", line, e)
             }
           }
         }
@@ -718,24 +725,28 @@ export function PracticeSession() {
                 <Card className="border border-gray-700 bg-[#1a1a1a] p-4">
                   <h3 className="text-lg font-semibold text-gray-200 mb-2">合规校验结果</h3>
                   <div className="space-y-3">
-                    {evaluationResults.complianceIssues.map((issue, index) => (
-                      <div
-                        key={index}
-                        className={`flex items-start gap-3 rounded-md p-2 ${
-                          issue.status === "通过" ? "bg-green-900/20" : "bg-red-900/20"
-                        }`}
-                      >
-                        {issue.status === "通过" ? (
-                          <CheckCircle className="h-5 w-5 flex-shrink-0 text-green-500" />
-                        ) : (
-                          <XCircle className="h-5 w-5 flex-shrink-0 text-red-500" />
-                        )}
-                        <div>
-                          <h4 className="font-semibold text-gray-200">{issue.type}</h4>
-                          <p className="text-sm text-gray-300">{issue.description}</p>
+                    {evaluationResults.complianceIssues && evaluationResults.complianceIssues.length > 0 ? (
+                      evaluationResults.complianceIssues.map((issue, index) => (
+                        <div
+                          key={index}
+                          className={`flex items-start gap-3 rounded-md p-2 ${
+                            issue.status === "通过" ? "bg-green-900/20" : "bg-red-900/20"
+                          }`}
+                        >
+                          {issue.status === "通过" ? (
+                            <CheckCircle className="h-5 w-5 flex-shrink-0 text-green-500" />
+                          ) : (
+                            <XCircle className="h-5 w-5 flex-shrink-0 text-red-500" />
+                          )}
+                          <div>
+                            <h4 className="font-semibold text-gray-200">{issue.type}</h4>
+                            <p className="text-sm text-gray-300">{issue.description}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-gray-400 text-sm">暂无合规问题记录</p>
+                    )}
                   </div>
                 </Card>
 

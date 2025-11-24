@@ -54,7 +54,7 @@ public class PracticeScriptServiceImpl implements PracticeScriptService {
     private cn.iocoder.yudao.module.aicrm.dal.mysql.practicematerial.PracticeMaterialMapper practiceMaterialMapper;
 
     @Resource
-    private ScriptGeneratorClient scriptGeneratorClient;
+    private DifyScriptGeneratorClient difyScriptGeneratorClient;
 
     @Override
     public Long createPracticeScript(PracticeScriptSaveReqVO createReqVO) {
@@ -126,8 +126,8 @@ public class PracticeScriptServiceImpl implements PracticeScriptService {
 
             log.info("开始生成剧本内容, 剧本ID: {}", scriptId);
 
-            // 调用 AI 服务生成剧本(只传剧本ID,AI服务会自己查询所有信息)
-            String scriptContent = scriptGeneratorClient.generateScript(scriptId);
+            // 调用 Dify 服务生成剧本(只传剧本ID,Dify服务会自己查询所有信息)
+            String scriptContent = difyScriptGeneratorClient.generateScript(scriptId);
 
             // 更新剧本内容和状态
             updateScript = new PracticeScriptDO();
