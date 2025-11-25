@@ -1,0 +1,1 @@
+package com.ynet.iplatform.module.iot.controller.admin.rule.vo.data;

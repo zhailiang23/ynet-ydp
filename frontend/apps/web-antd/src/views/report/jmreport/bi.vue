@@ -17,7 +17,7 @@ const src = ref(
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert title="大屏设计器" url="https://doc.iocoder.cn/screen/" />
+      <!-- <DocAlert title="大屏设计器" url="https://doc.iocoder.cn/screen/" /> -->
     </template>
 
     <IFrame :src="src" />

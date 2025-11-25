@@ -9,7 +9,7 @@ const env = Taro.getEnv()
 const Index: React.FC<{
   classname?: string
 }> = (props) => {
-  let avatar = <Image src={DefaultAvatar} className={classNames(props.classname, "w-8 h-8")}  />
+  let avatar = <Image src={DefaultAvatar} className={classNames(props.classname, "rounded")} style={{width: '36px', height: '36px'}}  />
   switch (env) {
     case Taro.ENV_TYPE.WEAPP:
       avatar = <View className={"self-start"}>

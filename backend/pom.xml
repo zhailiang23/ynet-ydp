@@ -3,30 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>cn.iocoder.boot</groupId>
-    <artifactId>yudao</artifactId>
+    <groupId>com.ynet.iplatform</groupId>
+    <artifactId>iplatform</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
     <modules>
-        <module>yudao-dependencies</module>
-        <module>yudao-framework</module>
+        <module>iplatform-dependencies</module>
+        <module>iplatform-framework</module>
         <!-- Server 主项目 -->
-        <module>yudao-server</module>
+        <module>iplatform-server</module>
         <!-- 各种 module 拓展 -->
-        <module>yudao-module-system</module>
-        <module>yudao-module-infra</module>
+        <module>iplatform-module-system</module>
+        <module>iplatform-module-infra</module>
         <module>ynet-module-crm</module>
         <module>ynet-module-practice</module>
-<!--        <module>yudao-module-member</module>-->
-       <module>yudao-module-bpm</module>
-<!--        <module>yudao-module-report</module>-->
-<!--        <module>yudao-module-mp</module>-->
-<!--        <module>yudao-module-pay</module>-->
-<!--        <module>yudao-module-mall</module>-->
-<!--        <module>yudao-module-crm</module>-->
-<!--        <module>yudao-module-erp</module>-->
-<!--        <module>yudao-module-ai</module>-->
-<!--        <module>yudao-module-iot</module>-->
+<!--        <module>iplatform-module-member</module>-->
+       <module>iplatform-module-bpm</module>
+<!--        <module>iplatform-module-report</module>-->
+<!--        <module>iplatform-module-mp</module>-->
+<!--        <module>iplatform-module-pay</module>-->
+<!--        <module>iplatform-module-mall</module>-->
+<!--        <module>iplatform-module-crm</module>-->
+<!--        <module>iplatform-module-erp</module>-->
+<!--        <module>iplatform-module-ai</module>-->
+<!--        <module>iplatform-module-iot</module>-->
     </modules>
 
     <name>${project.artifactId}</name>
@@ -52,8 +52,8 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>cn.iocoder.boot</groupId>
-                <artifactId>yudao-dependencies</artifactId>
+                <groupId>com.ynet.iplatform</groupId>
+                <artifactId>iplatform-dependencies</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>

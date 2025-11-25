@@ -1,0 +1,2 @@
+com.ynet.iplatform.framework.redis.config.IplatformRedisAutoConfiguration
+com.ynet.iplatform.framework.redis.config.IplatformCacheAutoConfiguration

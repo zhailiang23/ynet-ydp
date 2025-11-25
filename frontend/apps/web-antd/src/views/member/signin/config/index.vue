@@ -81,10 +81,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="会员等级、积分、签到"
         url="https://doc.iocoder.cn/member/level/"
-      />
+      /> -->
     </template>
 
     <FormModal @success="handleRefresh" />

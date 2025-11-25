@@ -21,10 +21,10 @@ const purchaseChartRef = ref();
 <template>
   <Page>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="ERP 手册（功能开启）"
         url="https://doc.iocoder.cn/erp/build/"
-      />
+      /> -->
     </template>
 
     <Spin :spinning="loading">

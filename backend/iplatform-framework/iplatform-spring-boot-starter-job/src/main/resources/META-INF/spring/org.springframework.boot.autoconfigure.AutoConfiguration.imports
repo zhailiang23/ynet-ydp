@@ -1,0 +1,2 @@
+com.ynet.iplatform.framework.quartz.config.IplatformQuartzAutoConfiguration
+com.ynet.iplatform.framework.quartz.config.IplatformAsyncAutoConfiguration

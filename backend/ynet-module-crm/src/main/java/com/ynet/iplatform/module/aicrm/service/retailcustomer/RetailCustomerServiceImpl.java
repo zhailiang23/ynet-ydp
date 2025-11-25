@@ -1,0 +1,288 @@
+package com.ynet.iplatform.module.aicrm.service.retailcustomer;
+
+import cn.hutool.core.collection.CollUtil;
+import org.springframework.stereotype.Service;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import com.ynet.iplatform.module.aicrm.controller.admin.retailcustomer.vo.*;
+import com.ynet.iplatform.module.aicrm.dal.dataobject.retailcustomer.RetailCustomerDO;
+import com.ynet.iplatform.framework.common.pojo.PageResult;
+import com.ynet.iplatform.framework.common.pojo.PageParam;
+import com.ynet.iplatform.framework.common.util.object.BeanUtils;
+
+import com.ynet.iplatform.module.aicrm.dal.mysql.retailcustomer.RetailCustomerMapper;
+import com.ynet.iplatform.module.aicrm.dal.mysql.customer.CustomerMapper;
+import com.ynet.iplatform.module.aicrm.dal.dataobject.customer.CustomerDO;
+
+import static com.ynet.iplatform.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static com.ynet.iplatform.framework.common.util.collection.CollectionUtils.convertList;
+import static com.ynet.iplatform.framework.common.util.collection.CollectionUtils.diffList;
+import static com.ynet.iplatform.module.aicrm.enums.ErrorCodeConstants.*;
+
+/**
+ * CRM零售客户扩展表(零售客户特有基本信息) Service 实现类
+ *
+ * @author 芋道源码
+ */
+@Service
+@Validated
+public class RetailCustomerServiceImpl implements RetailCustomerService {
+
+    @Resource
+    private RetailCustomerMapper retailCustomerMapper;
+
+    @Resource
+    private CustomerMapper customerMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customeraccountdeposit.CustomerAccountDepositMapper customerAccountDepositMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customeraccountwealth.CustomerAccountWealthMapper customerAccountWealthMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customeraccountloan.CustomerAccountLoanMapper customerAccountLoanMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customeraccountfund.CustomerAccountFundMapper customerAccountFundMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customeraccountinsurance.CustomerAccountInsuranceMapper customerAccountInsuranceMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customeraccountcreditcard.CustomerAccountCreditcardMapper customerAccountCreditcardMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customerrating.CustomerRatingMapper customerRatingMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customercontribution.CustomerContributionMapper customerContributionMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customerimportantevent.CustomerImportantEventMapper customerImportantEventMapper;
+
+    @Resource
+    private RetailCustomerOverviewHelper overviewHelper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customerassetsnapshot.CustomerAssetSnapshotMapper customerAssetSnapshotMapper;
+
+    @Resource
+    private com.ynet.iplatform.module.aicrm.dal.mysql.customertransactionmock.CustomerTransactionMockMapper customerTransactionMockMapper;
+
+    @Override
+    public Long createRetailCustomer(RetailCustomerSaveReqVO createReqVO) {
+        // 插入
+        RetailCustomerDO retailCustomer = BeanUtils.toBean(createReqVO, RetailCustomerDO.class);
+        retailCustomerMapper.insert(retailCustomer);
+
+        // 返回
+        return retailCustomer.getId();
+    }
+
+    @Override
+    public void updateRetailCustomer(RetailCustomerSaveReqVO updateReqVO) {
+        // 校验存在
+        validateRetailCustomerExists(updateReqVO.getId());
+        // 更新
+        RetailCustomerDO updateObj = BeanUtils.toBean(updateReqVO, RetailCustomerDO.class);
+        retailCustomerMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void deleteRetailCustomer(Long id) {
+        // 校验存在
+        validateRetailCustomerExists(id);
+        // 删除
+        retailCustomerMapper.deleteById(id);
+    }
+
+    @Override
+        public void deleteRetailCustomerListByIds(List<Long> ids) {
+        // 删除
+        retailCustomerMapper.deleteByIds(ids);
+        }
+
+
+    private void validateRetailCustomerExists(Long id) {
+        if (retailCustomerMapper.selectById(id) == null) {
+            throw exception(RETAIL_CUSTOMER_NOT_EXISTS);
+        }
+    }
+
+    @Override
+    public RetailCustomerRespVO getRetailCustomer(Long id) {
+        // 1. 查询零售客户扩展信息
+        RetailCustomerDO retailCustomerDO = retailCustomerMapper.selectById(id);
+        if (retailCustomerDO == null) {
+            return null;
+        }
+
+        // 2. 转换为 VO
+        RetailCustomerRespVO respVO = BeanUtils.toBean(retailCustomerDO, RetailCustomerRespVO.class);
+
+        // 3. 查询客户共有信息
+        Long customerId = retailCustomerDO.getCustomerId();
+        if (customerId != null) {
+            CustomerDO customerDO = customerMapper.selectById(customerId);
+            if (customerDO != null) {
+                // 4. 手动组装共有字段到 VO
+                respVO.setCustomerNo(customerDO.getCustomerNo());
+                respVO.setCustomerType(customerDO.getCustomerType());
+                respVO.setCustomerName(customerDO.getCustomerName());
+                respVO.setCustomerLevel(customerDO.getCustomerLevel());
+                respVO.setCustomerStatus(customerDO.getCustomerStatus());
+                respVO.setIsHighQuality(customerDO.getIsHighQuality());
+                respVO.setIsImportant(customerDO.getIsImportant());
+                respVO.setCreditStatus(customerDO.getCreditStatus());
+                respVO.setCreditLevel(customerDO.getCreditLevel());
+                respVO.setCreditScore(customerDO.getCreditScore());
+                respVO.setCustomerSource(customerDO.getCustomerSource());
+                respVO.setCustomerTag(customerDO.getCustomerTag());
+                respVO.setRemark(customerDO.getRemark());
+                respVO.setDeptId(customerDO.getDeptId());
+            }
+        }
+
+        return respVO;
+    }
+
+    @Override
+    public PageResult<RetailCustomerDO> getRetailCustomerPage(RetailCustomerPageReqVO pageReqVO) {
+        return retailCustomerMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public RetailCustomerOverviewRespVO getCustomerOverview(Long customerId, String startDate, String endDate) {
+        RetailCustomerOverviewRespVO overview = new RetailCustomerOverviewRespVO();
+
+        // 1. 查询资产快照数据（最近12个月）
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customerassetsnapshot.CustomerAssetSnapshotDO> snapshots =
+                customerAssetSnapshotMapper.selectRecentMonths(customerId, 12);
+        // 反转列表，使其按时间正序排列
+        java.util.Collections.reverse(snapshots);
+        List<RetailCustomerOverviewRespVO.AssetTrendVO> assetTrend = overviewHelper.convertAssetSnapshots(snapshots);
+        overview.setAssetTrend(assetTrend);
+
+        // 2. 从最新的资产快照获取财务指标
+        RetailCustomerOverviewRespVO.FinancialMetricsVO metrics = new RetailCustomerOverviewRespVO.FinancialMetricsVO();
+        if (!snapshots.isEmpty()) {
+            // 获取最新的快照（已经是时间正序，所以取最后一个）
+            com.ynet.iplatform.module.aicrm.dal.dataobject.customerassetsnapshot.CustomerAssetSnapshotDO latestSnapshot = snapshots.get(snapshots.size() - 1);
+            metrics.setTotalAssets(latestSnapshot.getTotalAssets());
+            metrics.setTotalLiabilities(latestSnapshot.getTotalLiabilities());
+            metrics.setNetAssets(latestSnapshot.getNetAssets());
+            metrics.setDepositBalance(latestSnapshot.getDepositBalance());
+            metrics.setLoanBalance(latestSnapshot.getLoanBalance());
+            metrics.setWealthBalance(latestSnapshot.getWealthBalance());
+            metrics.setTotalAssetsGrowth(latestSnapshot.getTotalAssetsGrowth());
+            metrics.setDepositGrowth(latestSnapshot.getDepositGrowth());
+            metrics.setWealthGrowth(latestSnapshot.getWealthGrowth());
+            // TODO: availableBalance和creditLimit需要从其他表获取
+            metrics.setAvailableBalance(null);
+            metrics.setCreditLimit(null);
+        }
+        overview.setFinancialMetrics(metrics);
+
+        // 3. 查询客户各类账户数据（用于产品持有统计和资产结构）
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customeraccountdeposit.CustomerAccountDepositDO> deposits =
+                customerAccountDepositMapper.selectList("customer_id", customerId);
+
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customeraccountwealth.CustomerAccountWealthDO> wealths =
+                customerAccountWealthMapper.selectList("customer_id", customerId);
+
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customeraccountloan.CustomerAccountLoanDO> loans =
+                customerAccountLoanMapper.selectList("customer_id", customerId);
+
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customeraccountfund.CustomerAccountFundDO> funds =
+                customerAccountFundMapper.selectList("customer_id", customerId);
+
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customeraccountinsurance.CustomerAccountInsuranceDO> insurances =
+                customerAccountInsuranceMapper.selectList("customer_id", customerId);
+
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customeraccountcreditcard.CustomerAccountCreditcardDO> creditcards =
+                customerAccountCreditcardMapper.selectList("customer_id", customerId);
+
+        // 4. 从最新资产快照获取资产结构
+        RetailCustomerOverviewRespVO.AssetStructureVO structure = new RetailCustomerOverviewRespVO.AssetStructureVO();
+        if (!snapshots.isEmpty()) {
+            com.ynet.iplatform.module.aicrm.dal.dataobject.customerassetsnapshot.CustomerAssetSnapshotDO latestSnapshot = snapshots.get(snapshots.size() - 1);
+            structure.setDepositAmount(latestSnapshot.getDepositBalance());
+            structure.setWealthAmount(latestSnapshot.getWealthBalance());
+            structure.setFundAmount(latestSnapshot.getFundBalance());
+            structure.setInsuranceAmount(latestSnapshot.getInsuranceBalance());
+            structure.setMetalAmount(latestSnapshot.getMetalBalance());
+            structure.setTrustAmount(latestSnapshot.getTrustBalance());
+            structure.setOtherAmount(latestSnapshot.getOtherBalance());
+        }
+        overview.setAssetStructure(structure);
+
+        // 5. 存款类型分布 - 暂时返回空对象 (需要按存款类型汇总)
+        RetailCustomerOverviewRespVO.DepositTypeDistributionVO depositDist = new RetailCustomerOverviewRespVO.DepositTypeDistributionVO();
+        depositDist.setCurrentDepositAmount(java.math.BigDecimal.ZERO);
+        depositDist.setTimeDepositAmount(java.math.BigDecimal.ZERO);
+        depositDist.setNoticeDepositAmount(java.math.BigDecimal.ZERO);
+        depositDist.setOtherDepositAmount(java.math.BigDecimal.ZERO);
+        overview.setDepositDistribution(depositDist);
+
+        // 6. 查询客户评级
+        com.ynet.iplatform.module.aicrm.dal.dataobject.customerrating.CustomerRatingDO ratingDO =
+                customerRatingMapper.selectOne("customer_id", customerId);
+        RetailCustomerOverviewRespVO.CustomerRatingVO rating = overviewHelper.convertCustomerRating(ratingDO);
+        overview.setRating(rating);
+
+        // 7. 查询客户贡献度
+        com.ynet.iplatform.module.aicrm.dal.dataobject.customercontribution.CustomerContributionDO contributionDO =
+                customerContributionMapper.selectOne("customer_id", customerId);
+        RetailCustomerOverviewRespVO.CustomerContributionVO contribution = overviewHelper.convertCustomerContribution(contributionDO);
+        overview.setContribution(contribution);
+
+        // 8. 计算产品持有统计
+        RetailCustomerOverviewRespVO.ProductHoldingStatVO productStat = overviewHelper.calculateProductHoldingStat(
+                deposits, wealths, funds, creditcards, insurances);
+        overview.setProductStat(productStat);
+
+        // 9. 查询最近重要事件 (最多10条)
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customerimportantevent.CustomerImportantEventDO> eventDOs =
+                customerImportantEventMapper.selectList(
+                        new com.ynet.iplatform.framework.mybatis.core.query.LambdaQueryWrapperX<com.ynet.iplatform.module.aicrm.dal.dataobject.customerimportantevent.CustomerImportantEventDO>()
+                                .eq(com.ynet.iplatform.module.aicrm.dal.dataobject.customerimportantevent.CustomerImportantEventDO::getCustomerId, customerId)
+                                .orderByDesc(com.ynet.iplatform.module.aicrm.dal.dataobject.customerimportantevent.CustomerImportantEventDO::getEventDate)
+                                .last("LIMIT 10")
+                );
+        List<RetailCustomerOverviewRespVO.CustomerEventVO> events = overviewHelper.convertCustomerEvents(eventDOs);
+        overview.setRecentEvents(events);
+
+        // 10. 产品持有趋势
+        List<RetailCustomerOverviewRespVO.ProductHoldingTrendVO> holdingTrend = overviewHelper.calculateProductHoldingTrend(
+                deposits.size(), wealths.size(), funds.size(), creditcards.size(), 0, insurances.size());
+        overview.setProductHoldingTrend(holdingTrend);
+
+        // 11. 查询交易流水并统计月度交易
+        List<com.ynet.iplatform.module.aicrm.dal.dataobject.customertransactionmock.CustomerTransactionMockDO> transactions =
+                customerTransactionMockMapper.selectList("customer_id", customerId);
+        List<RetailCustomerOverviewRespVO.MonthlyTransactionVO> monthlyTransactions = overviewHelper.calculateMonthlyTransactions(transactions);
+        overview.setMonthlyTransactions(monthlyTransactions);
+
+        // 12. 客户标签 - 从 customer 表的 customer_tag 字段解析
+        CustomerDO customerDO = customerMapper.selectById(customerId);
+        List<String> tags = new ArrayList<>();
+        if (customerDO != null && customerDO.getCustomerTag() != null && !customerDO.getCustomerTag().isEmpty()) {
+            // 按逗号分割标签字符串
+            String[] tagArray = customerDO.getCustomerTag().split(",");
+            for (String tag : tagArray) {
+                String trimmedTag = tag.trim();
+                if (!trimmedTag.isEmpty()) {
+                    tags.add(trimmedTag);
+                }
+            }
+        }
+        overview.setTags(tags);
+
+        return overview;
+    }
+
+}

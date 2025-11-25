@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **技术栈**: JDK 17 + Spring Boot 3.5.5 + MyBatis Plus + Redis + MySQL
 - **架构类型**: 单体应用（多模块 Maven 项目）
 - **当前分支**: master-jdk17（JDK 17/21 版本）
-- **启动类**: `yudao-server/src/main/java/cn/iocoder/yudao/server/YudaoServerApplication.java`
+- **启动类**: `iplatform-server/src/main/java/com.ynet.iplatform/server/IplatformServerApplication.java`
 
 ## 构建和运行
 
@@ -54,11 +54,11 @@ mvn clean package -DskipTests
 **本地开发模式**:
 ```bash
 # 方式1: 使用 Maven 运行
-cd yudao-server
+cd iplatform-server
 mvn spring-boot:run -Dspring-boot.run.profiles=local
 
 # 方式2: 直接运行主类
-# 运行 YudaoServerApplication.java，使用 VM options: -Dspring.profiles.active=local
+# 运行 IplatformServerApplication.java，使用 VM options: -Dspring.profiles.active=local
 ```
 
 **访问地址**:
@@ -72,7 +72,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 项目支持多环境配置，通过 `spring.profiles.active` 切换:
 - `local`: 本地开发环境 (默认端口 48080)
 - `dev`: 开发环境
-- 配置文件位置: `yudao-server/src/main/resources/application-{profile}.yaml`
+- 配置文件位置: `iplatform-server/src/main/resources/application-{profile}.yaml`
 
 本地开发配置 (`application-local.yaml`):
 - 数据库: jdbc:mysql://127.0.0.1:3306/ruoyi-vue-pro
@@ -97,32 +97,32 @@ DataObject (数据库实体: DO)
 
 **关键模块**:
 
-1. **yudao-dependencies**: Maven BOM 依赖版本管理
+1. **iplatform-dependencies**: Maven BOM 依赖版本管理
    - 统一管理所有第三方依赖版本
    - 使用 `${revision}` 变量管理项目版本 (2025.10-SNAPSHOT)
 
-2. **yudao-framework**: 技术框架层（18个子模块）
-   - `yudao-common`: 基础 POJO、枚举、工具类
-   - `yudao-spring-boot-starter-mybatis`: MyBatis + 多数据源
-   - `yudao-spring-boot-starter-redis`: Redis + Redisson
-   - `yudao-spring-boot-starter-security`: Spring Security 认证
-   - `yudao-spring-boot-starter-web`: Web MVC 增强
-   - `yudao-spring-boot-starter-test`: 单元测试基础类
+2. **iplatform-framework**: 技术框架层（18个子模块）
+   - `iplatform-common`: 基础 POJO、枚举、工具类
+   - `iplatform-spring-boot-starter-mybatis`: MyBatis + 多数据源
+   - `iplatform-spring-boot-starter-redis`: Redis + Redisson
+   - `iplatform-spring-boot-starter-security`: Spring Security 认证
+   - `iplatform-spring-boot-starter-web`: Web MVC 增强
+   - `iplatform-spring-boot-starter-test`: 单元测试基础类
 
-3. **yudao-server**: 服务聚合模块（主启动模块）
+3. **iplatform-server**: 服务聚合模块（主启动模块）
 
-4. **业务模块** (yudao-module-*):
-   - `yudao-module-system`: 系统功能（用户、角色、权限、租户等）
-   - `yudao-module-infra`: 基础设施（文件、日志、配置、代码生成）
+4. **业务模块** (iplatform-module-*):
+   - `iplatform-module-system`: 系统功能（用户、角色、权限、租户等）
+   - `iplatform-module-infra`: 基础设施（文件、日志、配置、代码生成）
    - 其他业务模块默认注释掉，按需启用:
-     - `yudao-module-member`: 会员中心
-     - `yudao-module-bpm`: 工作流 (Flowable)
-     - `yudao-module-pay`: 支付系统
-     - `yudao-module-mall`: 商城系统
-     - `yudao-module-crm`: CRM 系统
-     - `yudao-module-erp`: ERP 系统
-     - `yudao-module-ai`: AI 大模型
-     - `yudao-module-iot`: 物联网
+     - `iplatform-module-member`: 会员中心
+     - `iplatform-module-bpm`: 工作流 (Flowable)
+     - `iplatform-module-pay`: 支付系统
+     - `iplatform-module-mall`: 商城系统
+     - `iplatform-module-crm`: CRM 系统
+     - `iplatform-module-erp`: ERP 系统
+     - `iplatform-module-ai`: AI 大模型
+     - `iplatform-module-iot`: 物联网
 
 ### 启用/禁用模块
 
@@ -133,7 +133,7 @@ DataObject (数据库实体: DO)
 项目内置代码生成器，可快速生成 CRUD 代码:
 - 访问: 系统管理 -> 代码生成
 - 生成内容: Controller、Service、Mapper、DO、VO、SQL、单元测试
-- 配置: `yudao.codegen` 配置项
+- 配置: `iplatform.codegen` 配置项
 
 ## 测试
 
@@ -147,7 +147,7 @@ DataObject (数据库实体: DO)
 mvn clean test
 
 # 运行特定模块的测试
-cd yudao-module-system
+cd iplatform-module-system
 mvn test
 
 # 运行单个测试类
@@ -165,7 +165,7 @@ mvn test -Dtest=UserServiceImplTest#testCreateUser
 
 ### 多租户 SaaS
 
-- 默认启用多租户功能 (`yudao.tenant.enable: true`)
+- 默认启用多租户功能 (`iplatform.tenant.enable: true`)
 - 透明化多租户封装，自动处理租户隔离
 - 每个租户可自定义权限（租户套餐）
 
@@ -188,13 +188,13 @@ mvn test -Dtest=UserServiceImplTest#testCreateUser
 
 ### WebSocket
 
-- 启用配置: `yudao.websocket.enable: true`
+- 启用配置: `iplatform.websocket.enable: true`
 - 访问路径: `/infra/ws`
 - 支持集群模式，消息发送类型可选: local、redis、rocketmq、kafka、rabbitmq
 
 ### API 加密
 
-- 配置: `yudao.api-encrypt.enable: true`
+- 配置: `iplatform.api-encrypt.enable: true`
 - 支持 AES、RSA 加密算法
 
 ### 缓存

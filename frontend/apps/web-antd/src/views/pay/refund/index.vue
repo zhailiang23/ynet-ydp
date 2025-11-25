@@ -71,10 +71,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="支付宝、微信退款接入"
         url="https://doc.iocoder.cn/pay/refund-demo/"
-      />
+      /> -->
     </template>
     <DetailModal @success="handleRefresh" />
     <Grid table-title="支付退款列表">

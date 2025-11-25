@@ -26,8 +26,9 @@ const Index = () => {
       return
     }
     handleLogin(form).then(res => {
-
       setToken(res.data.token)
+      // 保存用户名到 localStorage
+      Taro.setStorageSync('ws-username', form.username)
       Taro.navigateTo({
         url: '/pages/index/index'
       })

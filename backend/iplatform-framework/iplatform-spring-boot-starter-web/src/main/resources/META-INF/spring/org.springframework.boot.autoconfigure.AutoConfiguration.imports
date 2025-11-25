@@ -1,0 +1,7 @@
+com.ynet.iplatform.framework.apilog.config.IplatformApiLogAutoConfiguration
+com.ynet.iplatform.framework.jackson.config.IplatformJacksonAutoConfiguration
+com.ynet.iplatform.framework.swagger.config.IplatformSwaggerAutoConfiguration
+com.ynet.iplatform.framework.web.config.IplatformWebAutoConfiguration
+com.ynet.iplatform.framework.xss.config.IplatformXssAutoConfiguration
+com.ynet.iplatform.framework.banner.config.IplatformBannerAutoConfiguration
+com.ynet.iplatform.framework.encrypt.config.IplatformApiEncryptAutoConfiguration

@@ -93,10 +93,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="【销售】销售订单、出库、退货"
         url="https://doc.iocoder.cn/erp/sale/"
-      />
+      /> -->
     </template>
     <FormModal @success="handleRefresh" />
     <Grid table-title="客户列表">

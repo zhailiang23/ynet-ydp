@@ -43,10 +43,10 @@ const [Grid] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="会员等级、积分、签到"
         url="https://doc.iocoder.cn/member/level/"
-      />
+      /> -->
     </template>
     <Grid table-title="签到记录列表" />
   </Page>

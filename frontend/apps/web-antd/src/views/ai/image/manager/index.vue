@@ -92,7 +92,7 @@ onMounted(async () => {
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert title="AI 绘图创作" url="https://doc.iocoder.cn/ai/image/" />
+      <!-- <DocAlert title="AI 绘图创作" url="https://doc.iocoder.cn/ai/image/" /> -->
     </template>
     <Grid table-title="绘画管理列表">
       <template #toolbar-tools>

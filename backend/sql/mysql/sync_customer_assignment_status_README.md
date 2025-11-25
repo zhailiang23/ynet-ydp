@@ -161,8 +161,8 @@ assignment_status	status_name	customer_count
 ## 相关文件
 
 - SQL脚本：`backend/sql/mysql/sync_customer_assignment_status.sql`
-- 业务逻辑：`backend/ynet-module-crm/src/main/java/cn/iocoder/yudao/module/aicrm/service/customerassignment/CustomerAssignmentServiceImpl.java`
-- 数据模型：`backend/ynet-module-crm/src/main/java/cn/iocoder/yudao/module/aicrm/dal/dataobject/customer/CustomerDO.java`
+- 业务逻辑：`backend/ynet-module-crm/src/main/java/com.ynet.iplatform/module/aicrm/service/customerassignment/CustomerAssignmentServiceImpl.java`
+- 数据模型：`backend/ynet-module-crm/src/main/java/com.ynet.iplatform/module/aicrm/dal/dataobject/customer/CustomerDO.java`
 
 ## 更新日志
 

@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ProjectReactor",
+            "request": "launch",
+            "mainClass": "cn.iocoder.yudao.ProjectReactor",
+            "projectName": "yudao-server"
+        },
+        {
+            "type": "java",
             "name": "启动后端服务 (Local)",
             "request": "launch",
             "mainClass": "cn.iocoder.yudao.server.YudaoServerApplication",

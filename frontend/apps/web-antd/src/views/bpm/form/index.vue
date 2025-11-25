@@ -131,10 +131,10 @@ watch(
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="审批接入（流程表单）"
         url="https://doc.iocoder.cn/bpm/use-bpm-form/"
-      />
+      /> -->
     </template>
 
     <DetailModal />

@@ -1,4 +1,5 @@
 import '@umijs/max';
+import './tailwind-compiled.css'; // 手动导入编译后的 tailwind CSS
 import { Button, message, notification } from 'antd';
 import defaultSettings from '../config/defaultSettings';
 const { pwa } = defaultSettings;

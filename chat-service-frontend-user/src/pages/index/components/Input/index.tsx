@@ -53,10 +53,11 @@ const Index = () => {
     <View className={classNames(`border-t border-solid flex flex-shrink-0 items-center bg-[#F5F6F7]`, {
       "pb-9": isIphonex
     })}>
-      <View className={"w-[83%] p-2 text-xl"}>
+      <View className={"w-[83%] p-2"} style={{fontSize: '14px'}}>
         <Input cursorSpacing={20}
           value={value}
                className={"bg-white p-1 rounded"}
+               style={{fontSize: '14px'}}
           onInput={e => setValue(e.detail.value)}
           confirmHold
           onConfirm={e => {
@@ -71,7 +72,7 @@ const Index = () => {
         />
       </View>
       <View className={"flex justify-between"}>
-        <Image src={PictureImg} className={"w-8 h-auto flex"} mode='widthFix' onClick={selectImg} />
+        <Image src={PictureImg} className={"h-auto flex"} mode='widthFix' style={{width: '28px'}} onClick={selectImg} />
       </View>
     </View>
   )

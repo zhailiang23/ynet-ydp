@@ -1,0 +1,3 @@
+com.ynet.iplatform.framework.security.config.IplatformSecurityAutoConfiguration
+com.ynet.iplatform.framework.security.config.IplatformWebSecurityConfigurerAdapter
+com.ynet.iplatform.framework.operatelog.config.IplatformOperateLogConfiguration

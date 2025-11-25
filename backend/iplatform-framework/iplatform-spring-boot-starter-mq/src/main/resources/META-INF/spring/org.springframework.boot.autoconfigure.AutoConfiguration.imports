@@ -1,0 +1,3 @@
+com.ynet.iplatform.framework.mq.redis.config.IplatformRedisMQProducerAutoConfiguration
+com.ynet.iplatform.framework.mq.redis.config.IplatformRedisMQConsumerAutoConfiguration
+com.ynet.iplatform.framework.mq.rabbitmq.config.IplatformRabbitMQAutoConfiguration

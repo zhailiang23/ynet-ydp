@@ -17,13 +17,13 @@ const Index: React.FC<{
 }> = ({showRead, message}) => {
   let item : React.ReactNode = <></>
   const CusAvatar = message.source !== 0 && message.avatar ?
-    <Image src={message.avatar} className={"w-8  h-8 rounded self-start"} />
+    <Image src={message.avatar} className={"rounded self-start"} style={{width: '36px', height: '36px'}} />
     : <Avatar />
 
 
   const direction = message.source === 0 ? "right" : "left";
 
-  const name =  direction === "left" ? <View className={"text-xs text-gray-500"}>{message.admin_name}</View> : <></>
+  const name =  direction === "left" ? <View className={"text-gray-500 mb-0.5"} style={{fontSize: '11px'}}>{message.admin_name}</View> : <></>
 
   switch (message.type) {
     case "notice":
@@ -48,23 +48,23 @@ const Index: React.FC<{
       break
     default:
   }
-  return <View className={classNames("flex items-start mt-2", {
+  return <View className={classNames("flex items-start mt-3", {
     "flex-row-reverse": direction === "right",
   })}>
-    <View className={"px-1 flex-shrink-0 self-start"}>
+    <View className={"px-1.5 flex-shrink-0 self-start"}>
       {CusAvatar}
     </View>
     <View className={classNames("flex max-w-[60%] overflow-hidden flex-col", {
       "items-end": direction === "right",
       "items-start": direction === "left"
-    })}>
+    })} style={direction === "left" ? {marginTop: '-11px'} : {marginTop: '10.5px'}}>
       {name}
       {item}
       {
-        showRead && direction === "right" && <View className={classNames("text-xs ", {
+        showRead && direction === "right" && <View className={classNames({
           "text-gray-600": message.is_read === true,
           "text-red-600" : message.is_read === false || message.is_read === undefined
-        })}>
+        })} style={{fontSize: '11px'}}>
           {
             message.is_read ? "已读": "未读"
           }

@@ -1,8 +1,8 @@
 import React from 'react'
 import Taro from '@tarojs/taro'
-import {View} from '@tarojs/components'
+import {View, Button} from '@tarojs/components'
 import {getMessages, getSetting, handleRead} from "@/api";
-import {getToken} from "@/util/auth";
+import {getToken, removeToken} from "@/util/auth";
 import {isH5, isWeapp} from "@/util/env";
 
 import SendContext from './context'
@@ -27,10 +27,21 @@ const Index = () => {
 
   const [setting, setSetting] = React.useState<APP.ChatSetting>()
 
+  const [username, setUsername] = React.useState<string>('')
+
   React.useEffect(() => {
     getSetting().then(r => {
       setSetting(r.data)
     })
+    // 从 localStorage 获取用户名
+    try {
+      const storedUsername = Taro.getStorageSync('ws-username')
+      if (storedUsername) {
+        setUsername(storedUsername)
+      }
+    } catch (e) {
+      console.log('获取用户名失败', e)
+    }
   }, [])
 
   // 控制滚动条滚动到底部
@@ -241,13 +252,145 @@ const Index = () => {
     return {}
   }, [])
 
+  // 退出登录
+  const handleLogout = React.useCallback(() => {
+    Taro.showModal({
+      title: '提示',
+      content: '确定要退出登录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          close()
+          removeToken()
+          Taro.reLaunch({
+            url: '/pages/login/index'
+          })
+        }
+      }
+    })
+  }, [close])
+
+  // H5环境下显示手机框，小程序环境直接显示聊天界面
+  if (isH5()) {
+    return (
+      <SendContext.Provider value={{
+        send,
+        ...setting
+      }}>
+        <div style={{
+          width: '100%',
+          height: '100vh',
+          backgroundColor: '#f9fafb',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '40px',
+          padding: '32px',
+          boxSizing: 'border-box'
+        }}>
+          {/* 左侧：手机框 */}
+          <div style={{
+            position: 'relative',
+            backgroundColor: '#ffffff',
+            border: '3px solid #d1d5db',
+            borderRadius: '8px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            width: '375px',
+            height: 'calc(100vh - 80px)',
+            maxHeight: '720px',
+            overflow: 'hidden'
+          }}>
+            {/* 聊天内容区域 */}
+            <View className="w-full h-full bg-[#f5f5f5]">
+              {
+                setting?.is_show_queue && waitingCount > 0 &&
+                <View className={"px-1 h-6 flex items-center w-full bg-[#fcf6ed] text-[#de8c17]"} style={{fontSize: '12px'}}>
+                  前面还有{waitingCount}人在等待
+                </View>
+              }
+              <View className={classNames("flex flex-col justify-between w-full h-full bg-[#f5f5f5] overflow-hidden box-border", {
+                "pt-6": setting?.is_show_queue && waitingCount > 0
+              })}>
+                <View className={"overflow-hidden flex w-full flex-1"}>
+                  <MessageContainer messages={messages} top={toTop} onScrollTop={getMoreMessage}>
+                    {
+                      loading &&
+                      <View className={"p-1 text-center"} style={{fontSize: '12px'}}>
+                        loading...
+                      </View>
+                    }
+                    {
+                      !loading && noMore && <View className={"text-center py-3 text-gray-600"} style={{fontSize: '12px'}}>
+                        没有更多了
+                      </View>
+                    }
+                  </MessageContainer>
+                </View>
+                <Input />
+              </View>
+            </View>
+          </div>
+
+          {/* 右侧：信息区域 */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '24px',
+            width: '280px'
+          }}>
+            {/* 退出按钮 */}
+            <button
+              style={{
+                height: '44px',
+                fontSize: '16px',
+                width: '280px',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+              }}
+              onClick={handleLogout}
+            >
+              退出登录
+            </button>
+
+            {/* 客户信息卡片 */}
+            <div style={{
+              background: 'linear-gradient(to bottom right, #3b82f6, #2563eb)',
+              color: 'white',
+              borderRadius: '6px',
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+              padding: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '180px',
+              width: '280px',
+              boxSizing: 'border-box'
+            }}>
+              <div style={{fontSize: '14px', color: '#bfdbfe', marginBottom: '12px'}}>当前登录客户</div>
+              <div style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '8px'}}>{username || '未知用户'}</div>
+              <div style={{width: '100%', height: '1px', backgroundColor: '#60a5fa', margin: '12px 0'}}></div>
+              <div style={{fontSize: '14px', color: '#bfdbfe'}}>客户端在线</div>
+            </div>
+          </div>
+        </div>
+      </SendContext.Provider>
+    )
+  }
+
+  // 小程序环境：原有布局
   return (
     <SendContext.Provider value={{
       send,
       ...setting
     }}>
       {
-        setting?.is_show_queue  && waitingCount > 0 && <View className={"fixed px-1 h-6 flex items-center w-full text-xs bg-[#fcf6ed] text-[#de8c17]"}>
+        setting?.is_show_queue  && waitingCount > 0 && <View className={"fixed px-1 h-6 flex items-center w-full bg-[#fcf6ed] text-[#de8c17]"} style={{fontSize: '12px'}}>
           前面还有{waitingCount}人在等待
         </View>
       }
@@ -258,12 +401,12 @@ const Index = () => {
           <MessageContainer messages={messages} top={toTop} onScrollTop={getMoreMessage}>
             {
               loading &&
-              <View className={"p-1 text-base text-center"}>
+              <View className={"p-1 text-center"} style={{fontSize: '12px'}}>
                 loading...
               </View>
             }
             {
-              !loading && noMore && <View className={"text-center py-3 text-xs text-gray-600"}>
+              !loading && noMore && <View className={"text-center py-3 text-gray-600"} style={{fontSize: '12px'}}>
                 没有更多了
               </View>
             }

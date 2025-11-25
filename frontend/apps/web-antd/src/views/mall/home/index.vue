@@ -159,10 +159,10 @@ function navTo(nav: WorkbenchProjectItem | WorkbenchQuickNavItem) {
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="商城手册（功能开启）"
         url="https://doc.iocoder.cn/mall/build/"
-      />
+      /> -->
     </template>
     <AnalysisOverview :items="overviewItems" />
     <div class="mt-5 w-full lg:w-2/5">

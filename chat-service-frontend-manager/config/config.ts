@@ -171,6 +171,9 @@ export default defineConfig({
   mako: {},
   esbuildMinifyIIFE: true,
   requestRecord: {},
-  tailwindcss: {},
+  // tailwindcss: {
+  //   // 禁用自动生成,使用手动生成的 CSS
+  //   disableCssGenerate: false,
+  // },
   valtio: {},
 });

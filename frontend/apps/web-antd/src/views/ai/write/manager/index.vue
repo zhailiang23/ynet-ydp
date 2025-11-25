@@ -75,7 +75,7 @@ onMounted(async () => {
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert title="AI 写作助手" url="https://doc.iocoder.cn/ai/write/" />
+      <!-- <DocAlert title="AI 写作助手" url="https://doc.iocoder.cn/ai/write/" /> -->
     </template>
     <Grid table-title="写作管理列表">
       <template #toolbar-tools>

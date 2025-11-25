@@ -1,7 +1,12 @@
 module.exports = {
-  content: ['./src/pages/**/*.tsx', './src/components/**/*.tsx', './src/layouts/**/*.tsx'],
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    './public/index.html',
+  ],
+  theme: {
+    extend: {},
+  },
   plugins: [
-    // ...
     require('tailwind-scrollbar')({ nocompatible: true }),
   ],
 };

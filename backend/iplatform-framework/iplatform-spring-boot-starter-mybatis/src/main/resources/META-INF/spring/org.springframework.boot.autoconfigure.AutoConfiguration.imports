@@ -1,0 +1,3 @@
+com.ynet.iplatform.framework.datasource.config.IplatformDataSourceAutoConfiguration
+com.ynet.iplatform.framework.mybatis.config.IplatformMybatisAutoConfiguration
+com.ynet.iplatform.framework.translate.config.IplatformTranslateAutoConfiguration

@@ -94,14 +94,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="【交易】交易订单"
         url="https://doc.iocoder.cn/mall/trade-order/"
-      />
-      <DocAlert
+      /> -->
+      <!-- <DocAlert
         title="【交易】购物车"
         url="https://doc.iocoder.cn/mall/trade-cart/"
-      />
+      /> -->
     </template>
 
     <DeliveryFormModal @success="handleRefresh" />

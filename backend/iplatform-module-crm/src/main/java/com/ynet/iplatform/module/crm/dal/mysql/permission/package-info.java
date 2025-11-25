@@ -1,0 +1,1 @@
+package com.ynet.iplatform.module.crm.dal.mysql.permission;

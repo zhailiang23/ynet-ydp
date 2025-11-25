@@ -1,0 +1,4 @@
+com.ynet.iplatform.framework.idempotent.config.IplatformIdempotentConfiguration
+com.ynet.iplatform.framework.lock4j.config.IplatformLock4jConfiguration
+com.ynet.iplatform.framework.ratelimiter.config.IplatformRateLimiterConfiguration
+com.ynet.iplatform.framework.signature.config.IplatformApiSignatureAutoConfiguration
