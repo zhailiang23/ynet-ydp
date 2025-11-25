@@ -6,10 +6,10 @@ import { Button } from 'ant-design-vue';
 
 <template>
   <Page>
-    <DocAlert
+    <!-- <DocAlert
       title="【统计】会员、商品、交易统计"
       url="https://doc.iocoder.cn/mall/statistics/"
-    />
+    /> -->
     <Button
       danger
       type="link"

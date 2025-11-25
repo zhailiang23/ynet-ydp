@@ -6,7 +6,7 @@ import { Button } from 'ant-design-vue';
 
 <template>
   <Page>
-    <DocAlert title="公众号菜单" url="https://doc.iocoder.cn/mp/menu/" />
+    <!-- <DocAlert title="公众号菜单" url="https://doc.iocoder.cn/mp/menu/" /> -->
     <Button
       danger
       type="link"

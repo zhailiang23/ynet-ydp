@@ -6,7 +6,7 @@ import { Button } from 'ant-design-vue';
 
 <template>
   <Page>
-    <DocAlert title="自动回复" url="https://doc.iocoder.cn/mp/auto-reply/" />
+    <!-- <DocAlert title="自动回复" url="https://doc.iocoder.cn/mp/auto-reply/" /> -->
     <Button
       danger
       type="link"

@@ -120,14 +120,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="【客户】客户管理、公海客户"
         url="https://doc.iocoder.cn/crm/customer/"
-      />
-      <DocAlert
+      /> -->
+      <!-- <DocAlert
         title="【通用】数据权限"
         url="https://doc.iocoder.cn/crm/permission/"
-      />
+      /> -->
     </template>
 
     <FormModal @success="handleRefresh" />

@@ -106,10 +106,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="【营销】优惠劵"
         url="https://doc.iocoder.cn/mall/promotion-coupon/"
-      />
+      /> -->
     </template>
 
     <Grid>

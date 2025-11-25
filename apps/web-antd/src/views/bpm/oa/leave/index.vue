@@ -112,10 +112,10 @@ function handleRefresh() {
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="审批接入（业务表单）"
         url="https://doc.iocoder.cn/bpm/use-business-form/"
-      />
+      /> -->
     </template>
 
     <Grid table-title="请假列表">

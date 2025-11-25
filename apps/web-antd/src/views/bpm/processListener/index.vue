@@ -86,10 +86,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="执行监听器、任务监听器"
         url="https://doc.iocoder.cn/bpm/listener/"
-      />
+      /> -->
     </template>
 
     <FormModal @success="handleRefresh" />

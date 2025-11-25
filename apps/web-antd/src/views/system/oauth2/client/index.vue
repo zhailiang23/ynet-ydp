@@ -119,10 +119,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="OAuth 2.0（SSO 单点登录）"
         url="https://doc.iocoder.cn/oauth2/"
-      />
+      /> -->
     </template>
 
     <FormModal @success="handleRefresh" />

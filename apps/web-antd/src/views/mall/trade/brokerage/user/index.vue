@@ -147,10 +147,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="【交易】分销返佣"
         url="https://doc.iocoder.cn/mall/trade-brokerage/"
-      />
+      /> -->
     </template>
 
     <!-- 创建分销员 -->

@@ -16,10 +16,10 @@ function handlePropertyIdSelect(propertyId: number) {
 <template>
   <Page auto-content-height>
     <template #doc>
-      <DocAlert
+      <!-- <DocAlert
         title="【商品】商品属性"
         url="https://doc.iocoder.cn/mall/product-property/"
-      />
+      /> -->
     </template>
     <div class="flex h-full">
       <!-- 左侧属性列表 -->
