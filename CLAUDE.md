@@ -43,19 +43,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 ynet-ydp/
-├── backend/              # 后端项目 (Spring Boot)
-│   ├── yudao-server/    # 主启动模块
-│   ├── yudao-framework/ # 框架层 (18个子模块)
-│   ├── yudao-module-*   # 业务模块
-│   ├── sql/             # 数据库脚本
-│   └── script/          # 部署脚本
-└── frontend/            # 前端项目 (Vue 3 Monorepo)
-    ├── apps/            # 应用层
-    │   ├── web-antd/   # Ant Design Vue 版本 (主应用)
-    │   ├── web-ele/    # Element Plus 版本
-    │   └── web-naive/  # Naive UI 版本
-    ├── packages/        # 共享包
-    └── internal/        # 内部工具
+├── backend/                          # 后端项目 (Spring Boot)
+│   ├── yudao-server/                # 主启动模块
+│   ├── yudao-framework/             # 框架层 (18个子模块)
+│   ├── yudao-module-*               # 业务模块
+│   ├── sql/                         # 数据库脚本
+│   └── script/                      # 部署脚本
+├── frontend/                        # 前端项目 (Vue 3 Monorepo)
+│   ├── apps/                        # 应用层
+│   │   ├── web-antd/               # Ant Design Vue 版本 (主应用)
+│   │   ├── web-ele/                # Element Plus 版本
+│   │   └── web-naive/              # Naive UI 版本
+│   ├── packages/                    # 共享包
+│   └── internal/                    # 内部工具
+├── frontend-practice/               # 智能陪练前端 (Next.js)
+│   ├── app/                        # Next.js App Router 页面
+│   ├── components/                 # React 组件
+│   ├── lib/                        # API 和工具库
+│   └── public/                     # 静态资源
+├── chat-service-backend/           # IM 即时通讯后端 (Go + WebSocket)
+│   ├── api/                        # API 定义
+│   ├── internal/                   # 内部实现 (controller/service/dao)
+│   ├── manifest/                   # 配置和部署文件
+│   └── database.sql                # 数据库初始化脚本
+├── chat-service-frontend-manager/  # IM 客服管理端 (React + Ant Design Pro)
+│   ├── src/                        # 源代码
+│   │   ├── pages/                 # 页面 (登录/聊天/管理)
+│   │   ├── services/              # API 服务层
+│   │   └── components/            # 业务组件
+│   └── config/                     # Umi 配置
+└── chat-service-frontend-user/     # IM 用户端 (Taro + React)
+    ├── src/                        # 源代码
+    │   ├── pages/                 # 页面 (登录/聊天)
+    │   ├── api/                   # API 接口
+    │   └── store/                 # MobX 状态管理
+    └── config/                     # 环境配置
 ```
 
 ---
@@ -807,6 +829,741 @@ curl -X POST http://localhost:8000/chat \
 
 ---
 
+# 智能陪练前端 (frontend-practice)
+
+## 技术栈
+
+- **框架**: Next.js 15.2.4 (React 19, TypeScript 5)
+- **UI 库**: Radix UI + Shadcn/ui
+- **样式**: Tailwind CSS 3.4.17
+- **表单**: React Hook Form + Zod
+- **图表**: Recharts
+- **主题**: next-themes (支持暗色模式)
+- **包管理**: npm
+
+## 本地开发环境准备
+
+### 1. 环境要求
+
+- Node.js >= 20.10.0
+- npm (使用 npm，非 pnpm)
+
+### 2. 安装依赖
+
+```bash
+cd frontend-practice
+npm install
+```
+
+### 3. 环境配置
+
+创建 `.env.local` 文件:
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:48080/admin-api
+NEXT_PUBLIC_TENANT_ID=1
+```
+
+### 4. 启动开发服务器
+
+```bash
+npm run dev
+```
+
+访问地址: http://localhost:5666
+
+**认证说明**:
+- 自动登录: 如果 token 过期或不存在，自动使用 `admin/admin123` 登录
+- 便于演示和测试，无需手动登录
+
+## 主要功能
+
+### 核心页面
+
+| 路由 | 功能 | 说明 |
+|------|------|------|
+| `/` | 首页 | 课程轮播、个性化课程创建、场景选择 |
+| `/practice` | 陪练会话 | 实时 AI 对话模拟、评估反馈 |
+| `/course` | 课程列表 | 标准课程 + 个性化课程展示 |
+| `/course/[id]` | 课程详情 | 课程信息、虚拟客户选择 |
+| `/training-results` | 成绩列表 | 练习评分、改进建议、数据分析 |
+| `/training-results/[id]` | 成绩详情 | 详细评估结果展示 |
+| `/training-files` | 培训资料 | 资料库管理 |
+| `/create-personalized-course` | 创建课程 | 创建个性化陪练课程 |
+
+### 核心特性
+
+- **AI 驱动对话**: 集成 Dify API 生成虚拟客户回复
+- **合规评估**: 检测销售话术中的合规问题
+- **个性化学习路径**: 支持创建针对特定客户的陪练课程
+- **文件上传**: 支持上传培训资料，AI 分析内容生成脚本
+- **实时反馈**: 练习结束后立即生成评估 (沟通力、专业性、合规性)
+- **暗色模式**: 完整的 Dark Mode 支持
+- **响应式设计**: 移动端友好的 UI
+
+## 项目结构
+
+```
+frontend-practice/
+├── app/                    # Next.js App Router 页面
+│   ├── page.tsx           # 首页
+│   ├── practice/          # 陪练会话页
+│   ├── course/            # 课程相关页面
+│   ├── training-results/  # 成绩页面
+│   ├── training-files/    # 资料库
+│   └── layout.tsx         # 全局布局
+├── components/            # React 组件
+│   ├── ui/               # UI 组件库 (80+ Radix UI 包装)
+│   └── *.tsx             # 业务组件 (27个)
+├── lib/                   # 库和工具
+│   ├── api/              # API 层 (13个 API 文件)
+│   ├── types/            # TypeScript 接口
+│   └── utils/            # 工具函数
+└── public/               # 静态资源
+```
+
+## API 对接
+
+### 关键 API 端点
+
+```typescript
+POST   /admin-api/system/auth/login                              // 登录
+GET    /admin-api/aicrm/practice-course/page                     // 课程列表
+POST   /admin-api/aicrm/practice-course/create-personalized     // 创建个性化课程
+POST   /admin-api/aicrm/practice-user-record/create             // 创建练习记录
+POST   /admin-api/aicrm/practice-conversation/create            // 记录对话
+GET    /admin-api/aicrm/practice-user-record/evaluate?recordId= // 评估练习
+```
+
+### 认证机制
+
+- **自动登录**: Token 过期时自动使用 `admin/admin123` 登录
+- **Token 存储**: localStorage 中的 `access_token`
+- **请求头**:
+  - `Authorization: Bearer {token}`
+  - `tenant-id: {TENANT_ID}`
+
+## 与 frontend 目录的区别
+
+| 维度 | frontend-practice | frontend |
+|------|-------------------|----------|
+| **框架** | Next.js 15 (SSR/SSG) | Vue 3 + Vite (SPA) |
+| **UI 库** | Radix UI + Shadcn | Ant Design Vue / Element Plus |
+| **架构** | 单应用 (App Router) | Monorepo (多应用) |
+| **包管理器** | npm | pnpm + Turbo |
+| **用途** | **仅限学员陪练功能** | **完整 ERP 系统** |
+| **登录方式** | 自动登录 | 手动登录 |
+
+---
+
+# IM 即时通讯后端 (chat-service-backend)
+
+## 技术栈
+
+- **语言**: Go 1.23
+- **框架**: GoFrame v2.8.3
+- **实时通信**: WebSocket (gorilla/websocket)
+- **数据库**: MySQL 8.0+
+- **缓存**: Redis 6.0+
+- **RPC**: gRPC + Protocol Buffers
+- **服务发现**: etcd
+- **AI**: LangChain Go (支持 Ollama)
+
+## 本地开发环境准备
+
+### 1. 依赖服务
+
+- MySQL 8.0+
+  - 数据库名: `chat`
+  - 需要运行 `database.sql` 初始化
+- Redis 6.0+
+  - 默认数据库: 6 号库
+- etcd (仅集群部署时需要)
+- Ollama (可选，用于本地 AI)
+
+### 2. 配置文件
+
+```bash
+# 复制配置文件
+cp manifest/config/config.example.yaml manifest/config/config.yaml
+
+# 编辑配置文件，主要配置项:
+# - storage.default: 文件存储方式 (local 或 qiniu)
+# - app.jwtSecret: JWT 密钥
+# - database.link: MySQL 连接串
+# - redis.address: Redis 地址
+# - grpc.open: 是否启用 gRPC
+# - langchain.open: 是否启用 AI 回复
+```
+
+**关键配置示例**:
+```yaml
+storage:
+  default: 'local'              # 文件存储: local 或 qiniu
+
+app:
+  jwtSecret: ""                 # JWT 密钥
+  host: "http://127.0.0.1:8080"
+
+server:
+  address: ":8080"              # HTTP 监听地址
+
+database:
+  default:
+    link: "root:123456@tcp(127.0.0.1:3306)/chat"
+
+redis:
+  default:
+    address: 127.0.0.1:6379
+    db: 6
+
+grpc:
+  open: true                    # 启用 gRPC
+
+langchain:
+  open: true                    # 启用 AI 回复
+  model: "qwen:0.5b"           # Ollama 模型
+```
+
+### 3. 启动步骤
+
+```bash
+# 1. 数据库迁移
+go run main.go migrate
+
+# 2. 初始化测试数据
+go run main.go fake
+
+# 3. 启动服务
+go run main.go http
+```
+
+**启动命令说明**:
+- `migrate`: 执行 database.sql，创建所有表结构
+- `fake`: 生成测试数据 (用户、客服、消息等)
+- `init <customerId>`: 初始化特定客户的基本数据
+- `http`: 启动 HTTP 和 gRPC 服务
+
+### 4. 访问地址
+
+- HTTP API: http://localhost:8080
+- 健康检查: http://localhost:8080/ (返回 "hello word")
+
+## 主要功能
+
+### 核心模块
+
+1. **用户管理**
+   - 用户认证 (JWT Token)
+   - 用户在线状态管理
+   - 用户端 WebSocket 接入
+
+2. **客服功能**
+   - 客服登录和会话管理
+   - 客服端 WebSocket 接入
+   - 转接人工 (支持排队)
+   - 客服设置 (欢迎词、离线词)
+
+3. **消息处理**
+   - 文字、表情、图片、音频、视频、PDF
+   - 消息已读/未读状态
+   - 消息存储和查询
+
+4. **自动化**
+   - 自动回复消息库
+   - 自动规则配置 (关键词匹配)
+   - 规则场景管理
+
+5. **AI 功能**
+   - LangChain Go 集成
+   - 支持 Ollama 本地模型
+   - 智能回复生成
+
+6. **文件管理**
+   - 本地存储
+   - 七牛云 OSS 支持
+
+## 项目结构
+
+```
+chat-service-backend/
+├── api/                  # API 定义
+│   ├── backend/v1/      # 客服系统 API
+│   ├── frontend/v1/     # 用户系统 API
+│   ├── chat/v1/         # gRPC API
+│   └── common.go        # 通用响应结构
+├── internal/
+│   ├── cmd/            # 命令入口
+│   ├── controller/     # HTTP 控制器
+│   ├── service/        # 服务层接口
+│   ├── logic/          # 业务逻辑实现
+│   ├── dao/            # 数据访问层
+│   ├── model/          # 数据模型
+│   ├── cache/          # 缓存实现
+│   ├── grpc/           # gRPC 服务
+│   └── util/           # 工具函数
+├── manifest/
+│   ├── config/         # 配置文件
+│   ├── deploy/         # K8s 部署配置
+│   └── protobuf/       # Protocol Buffer 定义
+├── database.sql         # 数据库初始化脚本
+└── main.go             # 程序入口
+```
+
+## API 设计
+
+### 响应格式
+
+```go
+type NormalRes[T any] struct {
+    Code    int  `json:"code"`     // 0=成功，其他=失败
+    Data    T    `json:"data"`     // 响应数据
+    Success bool `json:"success"`  // 成功标志
+}
+
+type ListRes[T any] struct {
+    NormalRes[[]T]
+    Total int `json:"total"`       // 总数
+}
+```
+
+### API 路由
+
+```
+/api/
+├── /user                    # 用户接口
+│   ├── /login              # 登录
+│   └── /chat (需认证)      # 聊天相关
+│       ├── /ws            # WebSocket 连接
+│       └── /chat          # 聊天操作
+└── /backend                # 客服接口
+    ├── /login             # 客服登录
+    └── /... (需认证)      # 其他管理接口
+```
+
+### 认证机制
+
+- **JWT Token**: 使用 `Authorization: Bearer {token}` 头
+- **中间件**:
+  - `middleware.UserAuth` - 用户认证
+  - `middleware.AdminAuth` - 客服认证
+  - `middleware.Cors` - CORS 支持
+
+## 消息处理流程
+
+```
+用户发送消息
+    ↓
+已人工接入? ─[是]→ 转发给对应客服
+    ↓[否]
+触发自定义规则 → 规则匹配处理
+    ↓
+是否等待人工接入? ─[是]→ 加入等待列表
+    ↓[否]
+自动转人工? ─[是]→ 加入等待列表
+    ↓[否]
+开启AI回复? ─[是]→ AI 根据消息回复
+    ↓[否]
+流程结束
+```
+
+## 集群部署
+
+### gRPC 服务
+
+- 多个 chat-service-backend 实例通过 etcd 服务注册和发现
+- 实例间通过 gRPC 进行消息转发
+- WebSocket 连接在本地实例处理，但消息可跨实例传递
+
+### Docker 部署
+
+```bash
+# 构建镜像
+make image
+
+# 推送镜像
+make image.push
+
+# 部署到 K8s
+make deploy TAG=develop
+
+# 端口转发
+make port
+```
+
+## 与 yudao 后端的关系
+
+- **独立微服务**: chat-service-backend 是完全独立的微服务
+- **数据库独立**: 使用单独的 MySQL 数据库 (`chat`)
+- **集成方式**: 通过 HTTP API 或 gRPC 进行通信
+- **可选集成**: 可作为独立的客服系统运行
+
+---
+
+# IM 客服管理端 (chat-service-frontend-manager)
+
+## 技术栈
+
+- **UI 框架**: Ant Design Pro v6 (React 18)
+- **框架引擎**: Umi Max v4.4.2
+- **语言**: TypeScript 5.6.3
+- **样式**: Tailwind CSS 3.4.17 + Less + Antd-style
+- **状态管理**: Valtio (proxy-based)
+- **国际化**: 内置 i18n (支持 8 种语言)
+- **HTTP**: Axios + Ahooks (useRequest)
+- **包管理**: npm
+
+## 本地开发环境准备
+
+### 1. 环境要求
+
+- Node.js >= 20.10.0
+- npm
+
+### 2. 安装依赖
+
+```bash
+cd chat-service-frontend-manager
+npm install
+```
+
+### 3. 环境配置
+
+后端 API 地址配置在 `config/config.ts`:
+```typescript
+BASE_URL: 'http://127.0.0.1:8080/api/backend'
+WS_URL: 'http://127.0.0.1:8080/api/backend/ws'
+```
+
+### 4. 启动开发服务器
+
+```bash
+npm start              # 启动开发服务器
+npm run start:dev      # 开发环境 (禁用 Mock)
+npm run start:no-mock  # 禁用所有 Mock
+```
+
+访问地址: http://localhost:8000
+
+**演示账号**:
+- 账号: admin0 - admin19
+- 密码: admin0 - admin19
+- 演示地址: http://120.77.242.145/server
+
+## 主要功能
+
+### 核心页面
+
+| 路由 | 功能 | 说明 |
+|------|------|------|
+| `/login` | 登录页 | 客服认证入口 |
+| `/dashboard` | 仪表板 | 首页统计面板 |
+| `/chat` | 客服面板 | **核心实时聊天界面** (WebSocket) |
+| `/admin` | 客服管理 | 管理客服账户 |
+| `/auto/message` | 快捷回复 | 快捷回复消息库 |
+| `/auto/rule` | 自定义规则 | 自动化规则配置 |
+| `/auto/system-rule` | 系统规则 | 系统级自动回复规则 |
+| `/setting` | 系统设置 | 全局配置 |
+| `/transfer` | 转接记录 | 客服转接历史 |
+| `/session` | 会话记录 | 聊天会话详情 |
+| `/chat-files` | 聊天文件 | 文件管理和下载 |
+
+### 聊天面板核心组件
+
+- **Users**: 客户列表面板
+- **Messages**: 消息列表展示
+- **InputArea**: 消息输入框
+- **Header**: 聊天标题栏
+- **LeftMenu**: 左侧快捷菜单
+- **CurrentUser**: 当前聊天用户信息
+- **可拖拽窗口**: 1080px × 700px
+
+### 状态管理 (Valtio)
+
+```
+store/
+├── websocket.ts      # WebSocket 连接和消息处理
+├── users.ts          # 客户列表状态
+├── currentUser.ts    # 当前聊天用户
+├── admin.ts          # 在线客服列表
+├── adminSetting.ts   # 客服个人设置
+├── transfer.ts       # 转接请求状态
+├── waitingUsers.ts   # 等待客服的客户列表
+└── historySession.ts # 历史会话记录
+```
+
+## API 对接
+
+### 主要 API 端点
+
+**认证**:
+- `POST /login` - 客服登录
+- `GET /current-admin/info` - 获取客服信息
+- `GET /current-admin/settings` - 获取客服设置
+
+**实时聊天 (WebSocket)**:
+- `POST /ws/chat-user` - 接受客户
+- `GET /ws/chat-users` - 获取客户列表
+- `DELETE /ws/chat-user/{uid}` - 移除客户
+- `POST /ws/read` - 标记已读
+- `GET /ws/messages?uid={uid}` - 获取消息
+
+**转接功能**:
+- `POST /ws/transfer` - 创建转接
+- `POST /ws/transfer/{id}/cancel` - 取消转接
+- `GET /transfers` - 转接记录
+
+**会话管理**:
+- `GET /chat-sessions` - 会话列表
+- `GET /chat-sessions/{id}` - 会话详情
+- `POST /chat-sessions/{id}/cancel` - 关闭会话
+
+**文件管理**:
+- `GET /chat-files` - 文件列表
+- `DELETE /chat-files/{id}` - 删除文件
+
+### WebSocket 消息协议
+
+**消息类型**:
+```typescript
+type ActionType =
+  | 'send-message'         // 发送消息
+  | 'user-offline'         // 用户离线
+  | 'user-online'          // 用户上线
+  | 'receipt'              // 消息回执
+  | 'waiting-users'        // 等待列表更新
+  | 'admins'               // 客服列表更新
+  | 'receive-message'      // 接收新消息
+  | 'other-login'          // 异地登录
+  | 'user-transfer'        // 用户转接
+  | 'read'                 // 消息已读
+```
+
+**消息格式**:
+```typescript
+type Message = {
+  type: 'text' | 'navigator' | 'image' | 'audio' | 'video' | 'pdf';
+  user_id: number;
+  admin_id?: number;
+  content: string;
+  source: 0 | 1 | 2;      // 0=用户 1=客服 2=系统
+  req_id: string;          // 请求唯一 ID
+  received_at: string;
+  avatar: string;
+  is_read: boolean;
+}
+```
+
+## 管理端特有功能
+
+1. **客服账户管理** - 新增/编辑客服
+2. **快捷回复管理** - 创建多种类型的快捷回复
+3. **自定义规则** - 配置自动回复规则
+4. **会话管理** - 查看所有会话和详情
+5. **转接管理** - 处理客服转接请求
+6. **文件管理** - 管理聊天文件
+7. **系统设置** - 客服头像、背景等配置
+8. **实时聊天** - 可拖拽窗口、自动接客
+9. **多语言支持** - 8 种语言切换
+
+## 构建和部署
+
+```bash
+# 生产构建
+npm run build
+
+# 预览构建
+npm run preview
+
+# 分析构建大小
+npm run build:analyze
+
+# 代码检查
+npm run lint
+npm run prettier
+```
+
+---
+
+# IM 用户端 (chat-service-frontend-user)
+
+## 技术栈
+
+- **框架**: Taro 4.0.7 (跨平台)
+- **UI**: React 18.3.1
+- **语言**: TypeScript 5.6.3
+- **样式**: Tailwind CSS 3.4.15
+- **状态管理**: MobX 6.13.5
+- **构建**: Webpack 5.96.1
+- **小程序**: weapp-tailwindcss 3.7.0
+- **包管理**: npm
+
+## 本地开发环境准备
+
+### 1. 环境要求
+
+- Node.js >= 20.10.0
+- npm
+
+### 2. 安装依赖
+
+```bash
+cd chat-service-frontend-user
+npm install
+```
+
+### 3. 环境配置
+
+**开发环境** (`config/dev.ts`):
+```typescript
+BASE_URL: "http://localhost:8080/api/user"
+WS_URL: "ws://localhost:8080/api/user/chat/ws"
+```
+
+**生产环境** (`config/prod.ts`):
+```typescript
+BASE_URL: "http://120.77.242.145:8080/api/user"
+WS_URL: "ws://120.77.242.145:8080/api/user/chat/ws"
+```
+
+### 4. 启动开发服务器
+
+```bash
+# 微信小程序
+npm run dev:weapp
+
+# H5
+npm run dev:h5
+
+# 支付宝小程序
+npm run dev:alipay
+
+# 字节小程序
+npm run dev:tt
+```
+
+**演示地址**: http://120.77.242.145/mobile
+
+**演示账号**:
+- 账号: user1 - user20
+- 密码: user1 - user20
+
+## 主要功能
+
+### 核心页面
+
+| 路由 | 功能 | 说明 |
+|------|------|------|
+| `/pages/login/index` | 登录页 | 用户认证 |
+| `/pages/index/index` | 聊天页 | **核心实时聊天界面** |
+
+### 聊天页面组件
+
+- **MessageContainer** - 消息容器 (无限滚动)
+- **MessageItem** - 消息项 (支持多种类型)
+  - Text - 文本消息
+  - Image - 图片消息
+  - Video - 视频消息
+  - Audio - 音频消息
+  - PDF - PDF 文件
+  - Navigator - 链接卡片
+  - Notice - 系统通知
+- **Input** - 消息输入框
+- **UserAvatar** - 用户头像
+
+## API 对接
+
+### 主要 API 端点
+
+| 接口 | 方法 | 功能 |
+|------|------|------|
+| `/login` | POST | 用户登录 |
+| `/chat/req-id` | GET | 获取消息 ID |
+| `/chat/messages` | GET | 获取历史消息 |
+| `/chat/setting` | GET | 获取聊天设置 |
+| `/chat/read` | POST | 标记已读 |
+| `/chat/messages/:id/rate` | POST | 消息评分 |
+| `/chat/files` | POST | 上传文件 |
+| `/chat/ws` | WebSocket | WebSocket 连接 |
+
+### WebSocket 消息格式
+
+**发送消息**:
+```typescript
+{
+  action: "send-message",
+  data: {
+    content: string,
+    type: "text" | "image" | "video" | "audio" | "pdf" | "navigator",
+    req_id: string,
+    source: 0,  // 用户端
+    admin_id: 0
+  },
+  time: number
+}
+```
+
+**接收消息**:
+- `receive-message` - 接收新消息
+- `receipt` - 消息投递确认
+- `read` - 消息已读通知
+- `waiting-user-count` - 等待队列人数
+
+## 用户端特有功能
+
+| 功能 | 说明 |
+|------|------|
+| **跨平台支持** | 支持微信、支付宝、字节小程序和 H5 |
+| **实时通信** | WebSocket 实时消息推送 |
+| **消息类型丰富** | 文本、图片、视频、音频、PDF、链接 |
+| **历史消息** | 无限滚动加载历史消息 |
+| **等待队列** | 显示客服等待队列长度 |
+| **已读状态** | 显示消息已读/未读 |
+| **文件上传** | 图片选择和上传 |
+| **自适应布局** | 针对不同设备优化 |
+| **离线重连** | 断线重连提示 |
+| **响应式设计** | Tailwind CSS 实现 |
+
+## 构建和部署
+
+```bash
+# 构建微信小程序
+npm run build:weapp
+
+# 构建 H5
+npm run build:h5
+
+# 构建支付宝小程序
+npm run build:alipay
+```
+
+## 完整客服系统架构
+
+三个目录组成完整的客服系统:
+
+```
+客服系统 = chat-service-backend (后端)
+        + chat-service-frontend-manager (客服端)
+        + chat-service-frontend-user (用户端)
+```
+
+**数据流**:
+```
+用户端 (Taro)
+    ↕ WebSocket
+chat-service-backend (Go)
+    ↕ WebSocket
+客服端 (React)
+```
+
+**特点**:
+- 独立部署,不依赖 yudao 后端
+- 使用独立的 MySQL 数据库 (`chat`)
+- 支持集群部署 (gRPC + etcd)
+- 完整的 WebSocket 实时通信
+- 跨平台支持 (小程序 + H5 + Web)
+
+---
+
 ## 项目特定规范
 
 ### 后端开发
@@ -845,12 +1602,27 @@ curl -X POST http://localhost:8000/chat \
 
 ## 文档和资源
 
-- 官方文档: https://doc.iocoder.cn
+### 官方文档
+- 芋道官方文档: https://doc.iocoder.cn
 - 启动文档: https://doc.iocoder.cn/quick-start/
 - 视频教程: https://doc.iocoder.cn/video/
 - 后端 API 文档: http://localhost:48080/doc.html (启动后访问)
-- 前端 Vben 文档: https://doc.vben.pro
+
+### 前端框架文档
+- Vben 文档: https://doc.vben.pro
+- Next.js 文档: https://nextjs.org/docs
+- Radix UI 文档: https://www.radix-ui.com/primitives/docs
+- Shadcn/ui 文档: https://ui.shadcn.com
+
+### AI & IM 服务文档
 - DeepAgents 文档: https://docs.langchain.com/oss/python/deepagents/overview
+- GoFrame 文档: https://goframe.org/
+- LangChain Go 文档: https://github.com/tmc/langchaingo
+- Ant Design Pro 文档: https://pro.ant.design/
+- Umi Max 文档: https://umijs.org/
+- Taro 文档: https://taro-docs.jd.com/
+- MobX 文档: https://mobx.js.org/
+- Valtio 文档: https://valtio.pmnd.rs/
 
 ## 获取帮助
 
@@ -859,5 +1631,57 @@ curl -X POST http://localhost:8000/chat \
 2. 查看启动文档: https://doc.iocoder.cn/quick-start/
 3. 查看视频教程: https://doc.iocoder.cn/video/
 4. 检查浏览器控制台和后端日志
-5. 查看 AI Agent 服务日志 (位于 `/tmp/ai_agent_new.log`)
-- 项目是个多模块项目,修改后端代码后需要 install 才会生效
+5. 查看各服务的日志文件:
+   - AI Agent 服务日志: `/tmp/ai_agent_new.log`
+   - chat-service-backend 日志: `./storage/sql/` (WebSocket 日志)
+   - chat-service-backend gRPC 日志: `./storage/grpc/`
+
+## 重要提醒
+
+- 项目是多模块项目,修改后端代码后需要执行 `mvn clean install -pl <module> -am` 才会生效
+- frontend-practice 是独立的智能陪练应用,连接到 yudao 后端 API (48080 端口)
+- 客服系统由 3 个独立服务组成:
+  - `chat-service-backend` (Go 后端, 8080 端口)
+  - `chat-service-frontend-manager` (客服端, React)
+  - `chat-service-frontend-user` (用户端, Taro)
+- chat-service-backend 使用独立的 MySQL 数据库 (`chat`),需要单独初始化 (`database.sql`)
+- 客服系统完全独立部署,不依赖 yudao 后端
+
+## 完整系统启动顺序
+
+### 主应用 (ERP 系统)
+```bash
+# 1. 启动 MySQL + Redis
+cd backend/script/docker && docker-compose up -d mysql redis
+
+# 2. 启动 yudao 后端 (端口 48080)
+cd backend/yudao-server && mvn spring-boot:run -Dspring-boot.run.profiles=local
+
+# 3. 启动管理前端 (端口 5666)
+cd frontend && pnpm dev:antd
+```
+
+### 智能陪练系统
+```bash
+# 1. 启动 yudao 后端 (同上, 端口 48080)
+
+# 2. 启动陪练前端 (端口 5666)
+cd frontend-practice && npm run dev
+```
+
+### 客服系统
+```bash
+# 1. 初始化 chat 数据库
+cd chat-service-backend
+go run main.go migrate
+go run main.go fake
+
+# 2. 启动 chat-service-backend (端口 8080)
+go run main.go http
+
+# 3. 启动客服管理端 (端口 8000)
+cd chat-service-frontend-manager && npm start
+
+# 4. 启动用户端 (小程序或 H5)
+cd chat-service-frontend-user && npm run dev:h5
+```

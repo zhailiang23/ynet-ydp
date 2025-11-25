@@ -1,0 +1,18 @@
+# CLI tool, only in development environment.
+# https://goframe.org/pages/viewpage.action?pageId=3673173
+gfcli:
+  gen:
+    dao:
+    - link:     "mysql:root:zjw8837533@tcp(120.77.242.145:3306)/chat?loc=Local&parseTime=true"
+      jsonCase: "SnakeScreaming"
+    pb:
+      c : "internal/grpc"
+  run:
+    path:  "./bin"
+    extra: ""
+    args:  "http"
+    watchPaths:
+      - api/*.go
+      - internal/*.go
+
+

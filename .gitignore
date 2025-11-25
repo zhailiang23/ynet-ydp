@@ -202,3 +202,36 @@ coverage/
 **/application-prod.yaml
 **/application-dev.yaml
 **/.env.production.local
+
+######################################################################
+# IM 客服系统 (Go + React)
+######################################################################
+
+# Go chat-service-backend
+chat-service-backend/storage/
+chat-service-backend/go.work
+chat-service-backend/go.work.sum
+chat-service-backend/vendor/
+chat-service-backend/*.exe
+chat-service-backend/*.exe~
+chat-service-backend/*.dll
+chat-service-backend/*.so
+chat-service-backend/*.dylib
+chat-service-backend/*.test
+chat-service-backend/*.out
+
+# React 前端 (manager + user)
+chat-service-frontend-manager/.umi/
+chat-service-frontend-manager/.umi-production/
+chat-service-frontend-manager/.umi-test/
+chat-service-frontend-manager/dist/
+chat-service-frontend-user/dist/
+chat-service-frontend-user/.taro_cache/
+chat-service-frontend-user/build/
+
+# AI 服务
+ai/.venv/
+ai/__pycache__/
+ai/*.pyc
+ai/.pytest_cache/
+ai/.coverage
