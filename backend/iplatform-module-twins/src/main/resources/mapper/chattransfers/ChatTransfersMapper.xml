@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.customer.dal.mysql.chattransfers.ChatTransfersMapper">
+
+    <!-- 转接记录列表（包含用户名和客服名）-->
+    <select id="selectPageWithNames" resultType="com.ynet.iplatform.module.customer.controller.admin.chattransfers.vo.ChatTransfersRespVO">
+        SELECT
+            t.id,
+            t.user_id AS userId,
+            t.from_session_id AS fromSessionId,
+            t.to_session_id AS toSessionId,
+            t.from_admin_id AS fromAdminId,
+            t.to_admin_id AS toAdminId,
+            t.customer_id AS customerId,
+            t.remark,
+            t.accepted_at AS acceptedAt,
+            t.canceled_at AS canceledAt,
+            t.created_at AS createdAt,
+            t.updated_at AS updatedAt,
+            t.create_time AS createTime,
+            u.username AS userName,
+            fa.username AS fromAdminName,
+            ta.username AS toAdminName
+        FROM customer_chat_transfers t
+        LEFT JOIN users u ON t.user_id = u.id
+        LEFT JOIN customer_admins fa ON t.from_admin_id = fa.id
+        LEFT JOIN customer_admins ta ON t.to_admin_id = ta.id
+        <where>
+            <if test="userName != null and userName != ''">
+                AND u.username LIKE CONCAT('%', #{userName}, '%')
+            </if>
+            <if test="fromAdminName != null and fromAdminName != ''">
+                AND fa.username LIKE CONCAT('%', #{fromAdminName}, '%')
+            </if>
+            <if test="toAdminName != null and toAdminName != ''">
+                AND ta.username LIKE CONCAT('%', #{toAdminName}, '%')
+            </if>
+            <if test="remark != null and remark != ''">
+                AND t.remark LIKE CONCAT('%', #{remark}, '%')
+            </if>
+        </where>
+        ORDER BY t.id DESC
+    </select>
+
+    <!-- 统计转接记录数量 -->
+    <select id="selectCountWithNames" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM customer_chat_transfers t
+        LEFT JOIN users u ON t.user_id = u.id
+        LEFT JOIN customer_admins fa ON t.from_admin_id = fa.id
+        LEFT JOIN customer_admins ta ON t.to_admin_id = ta.id
+        <where>
+            <if test="userName != null and userName != ''">
+                AND u.username LIKE CONCAT('%', #{userName}, '%')
+            </if>
+            <if test="fromAdminName != null and fromAdminName != ''">
+                AND fa.username LIKE CONCAT('%', #{fromAdminName}, '%')
+            </if>
+            <if test="toAdminName != null and toAdminName != ''">
+                AND ta.username LIKE CONCAT('%', #{toAdminName}, '%')
+            </if>
+            <if test="remark != null and remark != ''">
+                AND t.remark LIKE CONCAT('%', #{remark}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

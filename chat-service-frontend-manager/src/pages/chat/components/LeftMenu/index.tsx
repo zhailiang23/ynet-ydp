@@ -3,6 +3,7 @@ import Admins from './components/Admins';
 import WaitingUsers from './components/WaitingUsers';
 import Setting from './components/Setting';
 import TransferUsers from './components/TransferUsers';
+import CollectInfos from './components/CollectInfos';
 import { Avatar } from 'antd';
 import { useModel, useSnapshot } from '@umijs/max';
 import adminSetting from '@/pages/chat/store/adminSetting';
@@ -19,6 +20,7 @@ const Index = () => {
       <WaitingUsers />
       <TransferUsers />
       <Admins />
+      <CollectInfos />
       <Setting />
     </div>
   );

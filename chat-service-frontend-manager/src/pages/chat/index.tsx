@@ -6,7 +6,6 @@ import Header from './components/Header';
 import LeftMenu from '@/pages/chat/components/LeftMenu/index';
 import { useSnapshot } from '@umijs/max';
 import BackgroundImg from '@/assets/images/background.png';
-import Draggable from 'react-draggable';
 import useAutoAccept from '@/pages/chat/hooks/useAutoAccept';
 import { PageContainer } from '@ant-design/pro-components';
 import CurrentUser from './components/CurrentUser';
@@ -59,11 +58,14 @@ const Index: React.FC = () => {
         }
         style={{ backgroundImage: `url(${setting?.background?.url || BackgroundImg})` }}
       >
-        <Draggable handle={'#header'}>
-          <div
-            className={'flex rounded relative'}
-            style={{ width: `${chatWidth}px`, height: `${chatHeight}px` }}
-          >
+        <div
+          className={'flex rounded relative'}
+          style={{
+            width: `${chatWidth}px`,
+            height: `${chatHeight}px`,
+            transform: 'translate(-105px, 5px)'
+          }}
+        >
             <LeftMenu />
             <CusDiv className={'w-[280px] h-full flex-shrink-0 border-r bg-[#f7f7f7]'}>
               <Users />
@@ -79,7 +81,6 @@ const Index: React.FC = () => {
             </div>
             <CurrentUser />
           </div>
-        </Draggable>
       </div>
     </PageContainer>
   );

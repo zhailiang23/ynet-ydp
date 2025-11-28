@@ -46,3 +46,16 @@ type ChatMessageReq struct {
 	Id       uint `p:"id"`
 	PageSize int  `d:"20"`
 }
+
+// 留资信息提交请求
+type CollectInfoSubmitReq struct {
+	g.Meta     `path:"/collect-info" tags:"C端客服系统" method:"post" summary:"提交留资信息"`
+	Content    string `json:"content" v:"required" dc:"留资内容，JSON格式"`
+	TemplateId uint   `json:"template_id" dc:"快捷消息模板ID"`
+	AdminId    uint   `json:"admin_id" dc:"发送消息的客服ID"`
+}
+
+// 留资信息提交响应
+type CollectInfoSubmitRes struct {
+	Id uint `json:"id"`
+}

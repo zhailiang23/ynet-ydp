@@ -172,3 +172,34 @@ export async function deleteChatFile(id: React.Key) {
     method: 'DELETE',
   });
 }
+
+export async function updateUserAiEnabled(uid: number, aiEnabled: boolean) {
+  return request<API.Response<{ ai_enabled: boolean }>>(`/ws/chat-user/${uid}/ai`, {
+    method: 'PUT',
+    data: {
+      ai_enabled: aiEnabled,
+    },
+  });
+}
+
+// 留资信息相关 API
+export async function getCollectInfos(status?: number) {
+  const params: Record<string, any> = {};
+  if (status !== undefined) {
+    params.status = status;
+  }
+  return request<API.Response<API.CollectInfo[]>>('/collect-infos', {
+    params,
+  });
+}
+
+export async function getCollectInfoDetail(id: number) {
+  return request<API.Response<API.CollectInfo>>(`/collect-infos/${id}`);
+}
+
+export async function updateCollectInfo(id: number, data: { status: number; remark?: string }) {
+  return request<API.Response>(`/collect-infos/${id}`, {
+    method: 'PUT',
+    data,
+  });
+}

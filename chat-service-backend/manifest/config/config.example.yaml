@@ -48,5 +48,9 @@ websocket:
     level: "all"
     stdout: false
 langchain:
-  open: true
-  model: "qwen:0.5b"
+  open: true                    # 是否开启 AI 回复功能
+  provider: "openai"            # 模型提供商: openai (兼容硅基流动/DeepSeek等) 或 ollama (本地)
+  model: "Qwen/Qwen2.5-7B-Instruct"  # 模型名称
+  apiKey: ""                    # API Key (provider=openai 时必填)
+  baseURL: "https://api.siliconflow.cn/v1"  # API 地址 (硅基流动)
+  systemPrompt: "你是一个专业的客服助手，请友好、专业地回答用户的问题。"

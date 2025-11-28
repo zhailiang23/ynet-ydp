@@ -9,6 +9,7 @@ import { useBoolean } from 'ahooks';
 import { FormInstance } from 'antd/es';
 import Wrapper from './Wrapper';
 import adminSetting from '@/pages/chat/store/adminSetting';
+import userStore from '@/pages/chat/store/users';
 
 const Setting = () => {
   const [open, openAction] = useBoolean(false);
@@ -34,7 +35,7 @@ const Setting = () => {
           zIndex: 99,
         }}
         labelCol={{
-          span: 4,
+          span: 5,
         }}
         open={open}
         title={'基本设置'}
@@ -43,6 +44,8 @@ const Setting = () => {
           await updateChatSetting(data);
           message.success('设置成功');
           adminSetting.fetchSetting();
+          // 同步更新所有用户卡片的 AI 接管状态
+          userStore.updateAllUsersAiEnabled(data.is_ai_enabled);
           return true;
         }}
         layout="horizontal"
@@ -54,28 +57,17 @@ const Setting = () => {
           label={'是否自动接入'}
           tooltip={'开启后当用户咨询时会自动接入'}
         />
+        <ProFormSwitch
+          name={'is_ai_enabled'}
+          label={'是否全局AI托管'}
+          tooltip={'开启后所有新接入的用户会话将自动使用AI回复'}
+        />
         <ProFormTextArea
           fieldProps={{ autoSize: true }}
           rules={[{ max: 512 }]}
           name={'welcome_content'}
           label={'欢迎语'}
           tooltip={'接入用户后自动发送的欢迎语'}
-        />
-        <ProFormTextArea
-          fieldProps={{ autoSize: true }}
-          rules={[{ max: 512 }]}
-          name={'offline_content'}
-          label={'离线时的回复'}
-          tooltip={'不在线时用户发送消息的自动回复'}
-        />
-        <ProFormFileSelect
-          fieldProps={{
-            width: 200,
-            height: 200,
-          }}
-          name={'background'}
-          label={'背景图片'}
-          tooltip={'此界面的背景图片'}
         />
       </ModalForm>
     </>

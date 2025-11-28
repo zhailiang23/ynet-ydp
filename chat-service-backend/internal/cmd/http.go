@@ -7,6 +7,7 @@ import (
 	"gf-chat/internal/controller/middleware"
 	_ "gf-chat/internal/controller/rule"
 	"gf-chat/internal/cron"
+	_ "gf-chat/internal/logic/collectinfo"
 	"gf-chat/internal/service"
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"

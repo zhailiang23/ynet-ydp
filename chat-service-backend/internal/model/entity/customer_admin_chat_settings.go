@@ -14,6 +14,7 @@ type CustomerAdminChatSettings struct {
 	AdminId        uint        `json:"ADMIN_ID"        orm:"admin_id"        ` //
 	Background     uint        `json:"BACKGROUND"      orm:"background"      ` //
 	IsAutoAccept   uint        `json:"IS_AUTO_ACCEPT"  orm:"is_auto_accept"  ` //
+	IsAiEnabled    uint        `json:"IS_AI_ENABLED"   orm:"is_ai_enabled"   ` // 是否全局AI托管
 	WelcomeContent string      `json:"WELCOME_CONTENT" orm:"welcome_content" ` //
 	OfflineContent string      `json:"OFFLINE_CONTENT" orm:"offline_content" ` //
 	Name           string      `json:"NAME"            orm:"name"            ` //

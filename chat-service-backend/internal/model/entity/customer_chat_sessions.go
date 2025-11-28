@@ -20,4 +20,5 @@ type CustomerChatSessions struct {
 	AdminId    uint        `json:"ADMIN_ID"    orm:"admin_id"    ` //
 	Type       uint        `json:"TYPE"        orm:"type"        ` //
 	Rate       uint        `json:"RATE"        orm:"rate"        ` //
+	AiEnabled  bool        `json:"AI_ENABLED"  orm:"ai_enabled"  ` // AI接管开关
 }

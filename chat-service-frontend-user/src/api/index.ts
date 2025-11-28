@@ -43,3 +43,16 @@ export const handleRead = (msgId: number) => {
     }
   })
 }
+
+// 留资信息提交
+export const submitCollectInfo = (data: Record<string, string>, templateId?: number, adminId?: number) => {
+  return request<{ id: number }>({
+    url: '/chat/collect-info',
+    method: 'POST',
+    data: {
+      content: JSON.stringify(data),
+      template_id: templateId,
+      admin_id: adminId
+    }
+  })
+}

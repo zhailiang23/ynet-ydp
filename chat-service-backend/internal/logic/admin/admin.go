@@ -62,6 +62,26 @@ func (s *sAdmin) Login(ctx context.Context, request *ghttp.Request) (admin *mode
 	return
 }
 
+// LoginById authenticates an admin user by ID directly, returning the admin model and JWT token if successful.
+// This is used for internal calls where password verification is not required.
+func (s *sAdmin) LoginById(ctx context.Context, adminId uint) (admin *model.CustomerAdmin, token string, err error) {
+	admin, err = s.Find(ctx, int(adminId))
+	if err != nil {
+		err = gerror.NewCode(gcode.CodeBusinessValidationFailed, "客服不存在")
+		return
+	}
+	canAccess := s.CanAccess(admin)
+	if !canAccess {
+		err = gerror.NewCode(gcode.CodeBusinessValidationFailed, "账号已禁用")
+		return
+	}
+	token, err = service.Jwt().CreateToken(gconv.String(admin.Id))
+	if err != nil {
+		return
+	}
+	return
+}
+
 // Auth authenticates a user based on their JWT token, returning the admin model and error if authentication fails.
 // Returns error if token is missing or invalid.
 func (s *sAdmin) Auth(ctx g.Ctx, req *ghttp.Request) (admin *model.CustomerAdmin, err error) {
@@ -150,8 +170,8 @@ func (s *sAdmin) UpdateSetting(ctx context.Context, admin *model.CustomerAdmin, 
 	updateData := do.CustomerAdminChatSettings{
 		Name:           form.Name,
 		IsAutoAccept:   gconv.Int(form.IsAutoAccept),
+		IsAiEnabled:    gconv.Int(form.IsAiEnabled),
 		WelcomeContent: form.WelcomeContent,
-		OfflineContent: form.OfflineContent,
 	}
 	exists := false
 	if form.Avatar == nil {
@@ -170,23 +190,17 @@ func (s *sAdmin) UpdateSetting(ctx context.Context, admin *model.CustomerAdmin, 
 		}
 		updateData.Avatar = form.Avatar.Id
 	}
-	if form.Background == nil {
-		updateData.Background = 0
-	} else {
-		exists, err = service.File().Exists(ctx, do.CustomerChatFiles{
-			Id:         form.Background.Id,
-			CustomerId: service.AdminCtx().GetCustomerId(ctx),
-			Type:       consts.FileTypeImage,
-		})
-		if err != nil {
-			return
-		}
-		if !exists {
-			return gerror.NewCode(gcode.CodeValidationFailed, "无效的图片文件")
-		}
-		updateData.Background = form.Background.Id
-	}
 	_, err = dao.CustomerAdminChatSettings.Ctx(ctx).Data(updateData).Where("admin_id", admin.Id).Update()
+	if err != nil {
+		return
+	}
+	// 同步更新所有活跃会话的 AI 开关状态
+	_, err = dao.CustomerChatSessions.Ctx(ctx).Data(do.CustomerChatSessions{
+		AiEnabled: gconv.Int(form.IsAiEnabled),
+	}).Where(g.Map{
+		"admin_id":          admin.Id,
+		"broken_at is null": nil,
+	}).Update()
 	if err != nil {
 		return
 	}
@@ -225,19 +239,13 @@ func (s *sAdmin) GetApiSetting(ctx context.Context, admin *model.CustomerAdmin) 
 	}
 	apiSetting := &api.CurrentAdminSetting{
 		CurrentAdminSettingForm: api.CurrentAdminSettingForm{
-			Background:     nil,
 			IsAutoAccept:   setting.IsAutoAccept > 0,
+			IsAiEnabled:    setting.IsAiEnabled > 0,
 			WelcomeContent: setting.WelcomeContent,
-			OfflineContent: setting.OfflineContent,
 			Name:           setting.Name,
 			Avatar:         nil,
 		},
 		AdminId: admin.Id,
-	}
-	if setting.BackgroundFile != nil {
-		apiSetting.Background = service.File().ToApi(setting.BackgroundFile)
-	} else if setting.Background > 0 {
-		apiSetting.Background, _ = service.File().FindAnd2Api(ctx, setting.Background)
 	}
 	if setting.AvatarFile != nil {
 		apiSetting.Avatar = service.File().ToApi(setting.AvatarFile)

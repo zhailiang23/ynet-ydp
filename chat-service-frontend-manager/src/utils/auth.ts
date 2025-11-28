@@ -1,14 +1,13 @@
-import Cookies from 'js-cookie';
+const TOKEN_KEY = 'chat_token';
 
-const name = 'token';
 export function getToken(): string {
-  return Cookies.get(name) ?? '';
+  return localStorage.getItem(TOKEN_KEY) ?? '';
 }
 
 export function setToken(token: string) {
-  Cookies.set(name, token);
+  localStorage.setItem(TOKEN_KEY, token);
 }
 
 export function removeToken() {
-  Cookies.remove(name);
+  localStorage.removeItem(TOKEN_KEY);
 }

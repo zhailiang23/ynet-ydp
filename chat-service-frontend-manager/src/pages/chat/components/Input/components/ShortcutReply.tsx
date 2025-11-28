@@ -1,16 +1,26 @@
 import React from 'react';
 import { UnorderedListOutlined } from '@ant-design/icons/lib';
 import { App, List, Popover, Typography } from 'antd';
-import { useRequest, useSnapshot } from '@umijs/max';
+import { useModel, useRequest, useSnapshot } from '@umijs/max';
 import { getAutoMessage } from '@/services/auto';
 import websocket from '../../../store/websocket';
 
 const ShortcutReply = () => {
   const { data } = useRequest(() => getAutoMessage({ current: 1, pageSize: 100 }));
+  const { initialState } = useModel('@@initialState');
 
   const { send } = useSnapshot(websocket);
 
   const { message } = App.useApp();
+
+  // 为 URL 追加参数的辅助函数
+  const appendUrlParams = (url: string, params: Record<string, string | number>) => {
+    const separator = url.includes('?') ? '&' : '?';
+    const paramString = Object.entries(params)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&');
+    return `${url}${separator}${paramString}`;
+  };
 
   const getContent = React.useCallback((msg: API.AutoMessage) => {
     switch (msg.type) {
@@ -18,9 +28,18 @@ const ShortcutReply = () => {
         return msg.content;
       case 'navigator': {
         if (msg.navigator) {
+          // 为卡片类型的 URL 追加 templateId 和 adminId 参数
+          const adminId = initialState?.currentUser?.id;
+          let url = msg.navigator.url;
+          if (adminId) {
+            url = appendUrlParams(url, {
+              templateId: msg.id,
+              adminId: adminId,
+            });
+          }
           return JSON.stringify({
             title: msg.navigator.title,
-            url: msg.navigator.url,
+            url: url,
             image: msg.navigator.image?.url,
           });
         }
@@ -38,7 +57,7 @@ const ShortcutReply = () => {
         return '';
       }
     }
-  }, []);
+  }, [initialState?.currentUser?.id]);
 
   return (
     <Popover

@@ -18,6 +18,7 @@ type (
 		GetChatName(ctx context.Context, model *model.CustomerAdmin) (string, error)
 		Auth(ctx context.Context, req *ghttp.Request) (admin *model.CustomerAdmin, err error)
 		Login(ctx context.Context, request *ghttp.Request) (admin *model.CustomerAdmin, token string, err error)
+		LoginById(ctx context.Context, adminId uint) (admin *model.CustomerAdmin, token string, err error)
 		UpdateSetting(ctx context.Context, admin *model.CustomerAdmin, form api.CurrentAdminSettingForm) (err error)
 		FindSetting(ctx context.Context, adminId uint, withFile bool) (*model.CustomerAdminChatSetting, error)
 		GetApiSetting(ctx context.Context, admin *model.CustomerAdmin) (*api.CurrentAdminSetting, error)

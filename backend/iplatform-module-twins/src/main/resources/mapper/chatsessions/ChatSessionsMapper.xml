@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.customer.dal.mysql.chatsessions.ChatSessionsMapper">
+
+    <!-- 会话列表（包含用户名和客服名）-->
+    <select id="selectPageWithNames" resultType="com.ynet.iplatform.module.customer.controller.admin.chatsessions.vo.ChatSessionsRespVO">
+        SELECT
+            t.id,
+            t.user_id AS userId,
+            t.admin_id AS adminId,
+            t.queried_at AS queriedAt,
+            t.accepted_at AS acceptedAt,
+            t.canceled_at AS canceledAt,
+            t.broken_at AS brokenAt,
+            t.type,
+            t.rate,
+            u.username AS userName,
+            a.username AS adminName
+        FROM customer_chat_sessions t
+        LEFT JOIN users u ON t.user_id = u.id
+        LEFT JOIN customer_admins a ON t.admin_id = a.id
+        <where>
+            <if test="userName != null and userName != ''">
+                AND u.username LIKE CONCAT('%', #{userName}, '%')
+            </if>
+            <if test="adminName != null and adminName != ''">
+                AND a.username LIKE CONCAT('%', #{adminName}, '%')
+            </if>
+            <if test="type != null">
+                AND t.type = #{type}
+            </if>
+        </where>
+        ORDER BY t.id DESC
+    </select>
+
+    <!-- 统计会话数量 -->
+    <select id="selectCountWithNames" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM customer_chat_sessions t
+        LEFT JOIN users u ON t.user_id = u.id
+        LEFT JOIN customer_admins a ON t.admin_id = a.id
+        <where>
+            <if test="userName != null and userName != ''">
+                AND u.username LIKE CONCAT('%', #{userName}, '%')
+            </if>
+            <if test="adminName != null and adminName != ''">
+                AND a.username LIKE CONCAT('%', #{adminName}, '%')
+            </if>
+            <if test="type != null">
+                AND t.type = #{type}
+            </if>
+        </where>
+    </select>
+
+</mapper>

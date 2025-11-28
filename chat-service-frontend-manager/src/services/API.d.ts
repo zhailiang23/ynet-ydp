@@ -143,6 +143,7 @@ declare namespace API {
     unread: number;
     disabled: boolean;
     platform: Platform;
+    ai_enabled: boolean;
   };
 
   type Setting = {
@@ -238,11 +239,31 @@ declare namespace API {
     accepted_count: number;
   };
 
+  type CollectInfo = {
+    id: number;
+    content: string;
+    status: number;
+    status_text: string;
+    customer_id: number;
+    user_id: number;
+    username: string;
+    admin_id: number;
+    admin_name: string;
+    template_id: number;
+    template_name: string;
+    template_description: string;
+    remark: string;
+    create_time: string;
+    accept_time: string;
+    finish_time: string;
+    update_time: string;
+    source: string;
+  };
+
   type AdminChatSetting = {
-    background: API.File | null;
     is_auto_accept: boolean;
+    is_ai_enabled: boolean;
     welcome_content: string;
-    offline_content: string;
     name: string;
     avatar: API.File | null;
   };

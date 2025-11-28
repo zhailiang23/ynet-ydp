@@ -21,6 +21,16 @@ const store = proxy({
       ...data,
     });
   },
+  updateAllUsersAiEnabled(aiEnabled: boolean) {
+    store.users.forEach((user, id) => {
+      if (!user.disabled) {
+        store.users.set(id, {
+          ...user,
+          ai_enabled: aiEnabled,
+        });
+      }
+    });
+  },
   removeUser(u: API.User) {
     store.users.delete(u.id);
   },

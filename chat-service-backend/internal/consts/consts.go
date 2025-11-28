@@ -113,6 +113,7 @@ const (
 	ChatSettingShowQueue      = "show-queue"
 	ChatSettingShowRead       = "show-read"
 	ChatSettingAiOpen         = "ai-open"
+	ChatSettingAiPrompt       = "ai-promt"
 )
 
 const (

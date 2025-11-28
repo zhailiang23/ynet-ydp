@@ -193,6 +193,13 @@ func (s *userManager) deliveryToAdmin(ctx context.Context, conn iWsConn, msg *mo
 	if err != nil {
 		return err
 	}
+
+	// 检查是否启用了 AI 接管
+	if session.AiEnabled {
+		// 异步调用 AI 生成回复
+		go s.triggerAiResponseForSession(ctx, msg, session, conn)
+	}
+
 	adminOnline, _, err := adminM.getConnInfo(ctx, msg.CustomerId, msg.AdminId)
 	if err != nil {
 		return err
@@ -573,4 +580,76 @@ func (s *userManager) triggerMessageEvent(ctx context.Context, scene string, mes
 		}
 	}
 	return nil
+}
+
+// triggerAiResponseForSession 当会话启用 AI 接管时，调用 AI 生成回复
+func (s *userManager) triggerAiResponseForSession(ctx context.Context, msg *model.CustomerChatMessage, session *model.CustomerChatSession, conn iWsConn) {
+	// 只处理文本消息
+	if msg.Type != consts.MessageTypeText {
+		return
+	}
+
+	// 获取 AI 提示词模板
+	promptTemplate, err := service.ChatSetting().GetAiPrompt(ctx, msg.CustomerId)
+	if err != nil {
+		log.Errorf(ctx, "获取 AI 提示词模板失败: %+v", err)
+		return
+	}
+
+	// 如果没有配置提示词模板，使用默认提示词
+	if promptTemplate == "" {
+		promptTemplate = "你是一个专业的客服助手。用户消息: {{message}}，历史对话: {{history}}"
+	}
+
+	// 获取最近的对话历史（用于上下文），排除当前消息
+	historyMessages, err := service.ChatMessage().All(ctx, do.CustomerChatMessages{
+		SessionId: session.Id,
+	}, nil, "id asc", 10)
+	if err != nil {
+		log.Errorf(ctx, "获取对话历史失败: %+v", err)
+		return
+	}
+
+	// 调用 AI 生成回复（使用自定义提示词模板）
+	aiReply, err := service.Langchain().AskWithCustomPrompt(ctx, promptTemplate, msg.Content, historyMessages)
+	if err != nil {
+		log.Errorf(ctx, "AI 生成回复失败: %+v", err)
+		return
+	}
+
+	// 如果 AI 没有返回回复（可能是禁用了），则跳过
+	if aiReply == "" {
+		return
+	}
+
+	// 创建 AI 回复消息
+	aiMessage := &model.CustomerChatMessage{}
+	aiMessage.Type = consts.MessageTypeText
+	aiMessage.Content = aiReply
+	aiMessage.Source = consts.MessageSourceAi
+	aiMessage.UserId = msg.UserId
+	aiMessage.AdminId = msg.AdminId
+	aiMessage.SessionId = session.Id
+	aiMessage.CustomerId = msg.CustomerId
+	aiMessage.ReceivedAt = gtime.Now()
+
+	// 保存 AI 回复
+	aiMessage, err = service.ChatMessage().Insert(ctx, aiMessage)
+	if err != nil {
+		log.Errorf(ctx, "保存 AI 回复失败: %+v", err)
+		return
+	}
+
+	// 发送给用户
+	err = s.deliveryMessage(ctx, aiMessage)
+	if err != nil {
+		log.Errorf(ctx, "发送 AI 回复给用户失败: %+v", err)
+		return
+	}
+
+	// 同时发送给客服（让客服看到 AI 的回复）
+	err = adminM.deliveryMessage(ctx, aiMessage)
+	if err != nil {
+		log.Errorf(ctx, "发送 AI 回复给客服失败: %+v", err)
+	}
 }

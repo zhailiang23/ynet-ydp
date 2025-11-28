@@ -48,7 +48,9 @@ const Index: React.FC<{
   }, [props.message.req_id, removeMessage, send]);
 
   const direction: MessageDirection = React.useMemo(() => {
-    return message.source === 1 ? 'right' : 'left';
+    // source: 0=用户, 1=客服, 2=系统, 3=AI
+    // 客服消息和AI消息都显示在右侧
+    return message.source === 1 || message.source === 3 ? 'right' : 'left';
   }, [message.source]);
 
   return (

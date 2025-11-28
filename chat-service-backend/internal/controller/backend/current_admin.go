@@ -54,3 +54,13 @@ func (c *cCurrentAdmin) Login(ctx context.Context, _ *api.LoginReq) (res *baseAp
 		Token: token,
 	}), nil
 }
+
+func (c *cCurrentAdmin) LoginById(ctx context.Context, req *api.LoginByIdReq) (res *baseApi.NormalRes[api.LoginRes], err error) {
+	_, token, err := service.Admin().LoginById(ctx, req.Id)
+	if err != nil {
+		return
+	}
+	return baseApi.NewResp(api.LoginRes{
+		Token: token,
+	}), nil
+}

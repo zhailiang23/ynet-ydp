@@ -139,9 +139,16 @@ func (s sChat) Accept(ctx context.Context, admin model.CustomerAdmin, sessionId 
 	}
 	session.AcceptedAt = gtime.Now()
 	session.AdminId = admin.Id
+	// 获取客服的全局 AI 开关设置
+	adminSetting, _ := service.Admin().FindSetting(ctx, admin.Id, false)
+	aiEnabled := 0
+	if adminSetting != nil && adminSetting.IsAiEnabled > 0 {
+		aiEnabled = 1
+	}
 	_, err = service.ChatSession().UpdatePri(ctx, session.Id, do.CustomerChatSessions{
 		AcceptedAt: session.AcceptedAt,
 		AdminId:    session.AdminId,
+		AiEnabled:  aiEnabled,
 	})
 	if err != nil {
 		return
@@ -230,6 +237,7 @@ func (s sChat) Accept(ctx context.Context, admin model.CustomerAdmin, sessionId 
 		Unread:       uint(unRead),
 		Avatar:       "",
 		Platform:     platform,
+		AiEnabled:    aiEnabled > 0,
 	}
 	return user, nil
 

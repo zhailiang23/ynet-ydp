@@ -27,6 +27,7 @@ func RegisterRouter(s *ghttp.Server) {
 			group.Group("/backend", func(group *ghttp.RouterGroup) {
 				group.Bind(
 					backend.CCurrentAdmin.Login,
+					backend.CCurrentAdmin.LoginById,
 				)
 				group.Middleware(middleware.AdminAuth).Group("/", func(group *ghttp.RouterGroup) {
 					group.Bind(
@@ -46,6 +47,7 @@ func RegisterRouter(s *ghttp.Server) {
 						backend.CWs,
 						backend.CChat,
 						backend.CChatFile,
+						backend.CCollectInfo,
 					)
 				})
 			})

@@ -23,7 +23,8 @@ const (
 )
 
 var (
-	DefaultSessionTime int64 = 24 * 60 * 60
+	// 100年 = 100 * 365 * 24 * 60 * 60 = 3153600000 秒
+	DefaultSessionTime int64 = 100 * 365 * 24 * 60 * 60
 	relation                 = sChatRelation{}
 )
 

@@ -189,3 +189,16 @@ func (c cChat) Rate(ctx context.Context, req *api.ChatRateReq) (res *baseApi.Nil
 func (c cChat) ReqId(_ context.Context, _ *api.ChatReqIdReq) (res *baseApi.NormalRes[api.ChatReqId], err error) {
 	return baseApi.NewResp(api.ChatReqId{ReqId: service.ChatMessage().GenReqId()}), nil
 }
+
+// CollectInfo 提交留资信息
+func (c cChat) CollectInfo(ctx context.Context, req *api.CollectInfoSubmitReq) (res *baseApi.NormalRes[*api.CollectInfoSubmitRes], err error) {
+	user := service.UserCtx().GetUser(ctx)
+	customerId := service.UserCtx().GetCustomerId(ctx)
+
+	id, err := service.CollectInfo().Submit(ctx, user.Id, customerId, req.Content, req.TemplateId, req.AdminId)
+	if err != nil {
+		return nil, err
+	}
+
+	return baseApi.NewResp(&api.CollectInfoSubmitRes{Id: id}), nil
+}

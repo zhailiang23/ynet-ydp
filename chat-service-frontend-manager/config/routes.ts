@@ -111,6 +111,19 @@
     name: '聊天文件',
   },
   {
+    path: '/collect-info',
+    name: '留资信息',
+    hideChildrenInMenu: true,
+    hideInMenu: true,
+    routes: [
+      {
+        path: '/collect-info/:id',
+        name: '留资详情',
+        component: './collect-info/show/index',
+      },
+    ],
+  },
+  {
     path: '/chat',
     component: './chat/index',
     name: '客服面板',

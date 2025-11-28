@@ -188,6 +188,11 @@ func (c cChat) User(ctx context.Context, _ *v1.UserListReq) (res *baseApi.Normal
 				Online:      online,
 				Platform:    platform,
 			}
+			// 获取当前会话的 AI 开关状态
+			session, sessionErr := service.ChatSession().FirstActive(ctx, user.Id, admin.Id, nil)
+			if sessionErr == nil && session != nil {
+				cu.AiEnabled = session.AiEnabled
+			}
 			lastMsg, exist := slice.FindBy(lastMessages, func(index int, item *model.CustomerChatMessage) bool {
 				return item.UserId == user.Id
 			})
@@ -242,7 +247,7 @@ func (c cChat) TransferMessage(ctx context.Context, _ *v1.TransferMessageReq) (r
 	}
 	messages, err := service.ChatMessage().All(ctx, do.CustomerChatMessages{
 		SessionId: transfer.FromSessionId,
-		Source:    g.Slice{consts.MessageSourceUser, consts.MessageSourceAdmin},
+		Source:    g.Slice{consts.MessageSourceUser, consts.MessageSourceAdmin, consts.MessageSourceAi},
 	}, g.Slice{
 		model.CustomerChatMessage{}.User,
 		model.CustomerChatMessage{}.Admin,
@@ -268,7 +273,7 @@ func (c cChat) Message(ctx context.Context, req *v1.GetMessageReq) (res *baseApi
 	w := g.Map{
 		"user_id":  req.Uid,
 		"admin_id": admin.Id,
-		"source":   []uint{consts.MessageSourceUser, consts.MessageSourceAdmin},
+		"source":   []uint{consts.MessageSourceUser, consts.MessageSourceAdmin, consts.MessageSourceAi},
 	}
 	if req.Mid > 0 {
 		w["id < ?"] = req.Mid
@@ -325,4 +330,25 @@ func (c cChat) Sessions(ctx context.Context, _ *v1.GetUserSessionReq) (res *base
 		return service.ChatSession().ToApi(item)
 	})
 	return baseApi.NewResp(apiSessions), nil
+}
+
+func (c cChat) UpdateUserAiEnabled(ctx context.Context, req *v1.UpdateUserAiEnabledReq) (res *baseApi.NormalRes[v1.UpdateUserAiEnabledRes], err error) {
+	admin := service.AdminCtx().GetUser(ctx)
+	userId := ghttp.RequestFromCtx(ctx).GetRouter("id").Uint()
+
+	// 查找当前活跃的会话
+	session, err := service.ChatSession().FirstActive(ctx, userId, admin.Id, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// 更新 AI 开关状态
+	_, err = service.ChatSession().UpdatePri(ctx, session.Id, do.CustomerChatSessions{
+		AiEnabled: req.AiEnabled,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return baseApi.NewResp(v1.UpdateUserAiEnabledRes{AiEnabled: req.AiEnabled}), nil
 }

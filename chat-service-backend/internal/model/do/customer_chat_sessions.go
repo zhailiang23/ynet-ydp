@@ -22,4 +22,5 @@ type CustomerChatSessions struct {
 	AdminId    interface{} //
 	Type       interface{} //
 	Rate       interface{} //
+	AiEnabled  interface{} // AI接管开关
 }

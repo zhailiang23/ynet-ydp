@@ -16,6 +16,7 @@ type CustomerAdminChatSettings struct {
 	AdminId        interface{} //
 	Background     interface{} //
 	IsAutoAccept   interface{} //
+	IsAiEnabled    interface{} // 是否全局AI托管
 	WelcomeContent interface{} //
 	OfflineContent interface{} //
 	Name           interface{} //

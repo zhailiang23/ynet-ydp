@@ -138,7 +138,7 @@ func (c cSession) Show(ctx context.Context, _ *api.SessionDetailReq) (res *baseA
 	}
 	relations, err := service.ChatMessage().All(ctx, do.CustomerChatMessages{
 		SessionId: session.Id,
-		Source:    []int{consts.MessageSourceAdmin, consts.MessageSourceUser},
+		Source:    []int{consts.MessageSourceAdmin, consts.MessageSourceUser, consts.MessageSourceAi},
 	}, nil, "id")
 	if err != nil {
 		return

@@ -10,6 +10,7 @@ import { errorConfig } from './requestErrorConfig';
 import { queryCurrentUser } from '@/services';
 import FileFinder from '@/components/FileFinder';
 import { App } from 'antd';
+import { setToken, getToken } from '@/utils/auth';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/login';
@@ -23,6 +24,18 @@ export async function getInitialState(): Promise<{
   loading?: boolean;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
+  // 检查 URL 参数中是否有 token（用于免登录跳转）
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenFromUrl = urlParams.get('token');
+  if (tokenFromUrl) {
+    setToken(tokenFromUrl);
+    // 移除 URL 中的 token 参数，保持 URL 干净
+    urlParams.delete('token');
+    const newSearch = urlParams.toString();
+    const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+    window.history.replaceState({}, '', newUrl);
+  }
+
   const fetchUserInfo = async () => {
     try {
       const msg = await queryCurrentUser();
@@ -108,7 +121,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         <>
           {children}
           <FileFinder />
-          {isDev && (
+          {/* {isDev && (
             <SettingDrawer
               disableUrlParams
               enableDarkTheme
@@ -120,7 +133,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
                 }));
               }}
             />
-          )}
+          )} */}
         </>
       );
     },

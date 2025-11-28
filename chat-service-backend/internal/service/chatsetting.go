@@ -17,6 +17,8 @@ type (
 		GetIsUserShowQueue(ctx context.Context, customerId uint) (isShow bool, err error)
 		GetIsUserShowRead(ctx context.Context, customerId uint) (isShow bool, err error)
 		GetAiOpen(ctx context.Context, customerId uint) (b bool, err error)
+		// GetAiPrompt 获取 AI 提示词模板
+		GetAiPrompt(ctx context.Context, customerId uint) (prompt string, err error)
 	}
 )
 

@@ -5,9 +5,11 @@ import {getMessages, getSetting, handleRead} from "@/api";
 import {getToken, removeToken} from "@/util/auth";
 import {isH5, isWeapp} from "@/util/env";
 
-import SendContext from './context'
+import SendContext, { CollectFormParams } from './context'
 import Input from './components/Input'
 import MessageContainer from './components/MessageContainer/index'
+import CollectForm from './components/CollectForm'
+import CollectFormB from './components/CollectFormB'
 import classNames from "classnames";
 
 
@@ -16,6 +18,16 @@ const pageSize = 30
 const Index = () => {
 
   const [messages, setMessages] = React.useState<APP.Message[]>([])
+
+  // 控制是否显示留资表单 (card-a)
+  const [showForm, setShowForm] = React.useState(false)
+  // 留资表单参数（templateId 和 adminId）
+  const [formParams, setFormParams] = React.useState<CollectFormParams>({})
+
+  // 控制是否显示预约咨询表单 (card-b)
+  const [showFormB, setShowFormB] = React.useState(false)
+  // 预约咨询表单参数
+  const [formParamsB, setFormParamsB] = React.useState<CollectFormParams>({})
 
   const [loading, setLoading] = React.useState(false)
 
@@ -269,12 +281,36 @@ const Index = () => {
     })
   }, [close])
 
+  // 显示留资表单的方法 (card-a)
+  const showCollectForm = React.useCallback((params?: CollectFormParams) => {
+    setFormParams(params || {})
+    setShowForm(true)
+  }, [])
+
+  // 关闭留资表单的方法 (card-a)
+  const hideCollectForm = React.useCallback(() => {
+    setShowForm(false)
+  }, [])
+
+  // 显示预约咨询表单的方法 (card-b)
+  const showCollectFormB = React.useCallback((params?: CollectFormParams) => {
+    setFormParamsB(params || {})
+    setShowFormB(true)
+  }, [])
+
+  // 关闭预约咨询表单的方法 (card-b)
+  const hideCollectFormB = React.useCallback(() => {
+    setShowFormB(false)
+  }, [])
+
   // H5环境下显示手机框，小程序环境直接显示聊天界面
   if (isH5()) {
     return (
       <SendContext.Provider value={{
         send,
-        ...setting
+        ...setting,
+        showCollectForm,
+        showCollectFormB
       }}>
         <div style={{
           width: '100%',
@@ -300,6 +336,16 @@ const Index = () => {
             maxHeight: '720px',
             overflow: 'hidden'
           }}>
+            {/* 留资表单覆盖层 (card-a) */}
+            {showForm && (
+              <CollectForm onClose={hideCollectForm} templateId={formParams.templateId} adminId={formParams.adminId} />
+            )}
+
+            {/* 预约咨询表单覆盖层 (card-b) */}
+            {showFormB && (
+              <CollectFormB onClose={hideCollectFormB} templateId={formParamsB.templateId} adminId={formParamsB.adminId} />
+            )}
+
             {/* 聊天内容区域 */}
             <View className="w-full h-full bg-[#f5f5f5]">
               {
@@ -387,33 +433,49 @@ const Index = () => {
   return (
     <SendContext.Provider value={{
       send,
-      ...setting
+      ...setting,
+      showCollectForm,
+      showCollectFormB
     }}>
-      {
-        setting?.is_show_queue  && waitingCount > 0 && <View className={"fixed px-1 h-6 flex items-center w-full bg-[#fcf6ed] text-[#de8c17]"} style={{fontSize: '12px'}}>
-          前面还有{waitingCount}人在等待
-        </View>
-      }
-      <View className={classNames("flex flex-col justify-between w-full bg-[#f5f5f5] overflow-hidden box-border", {
-        "pt-6": setting?.is_show_queue  && waitingCount > 0
-      })} style={cusStyles}>
-        <View className={"overflow-hidden flex w-full self-end"}>
-          <MessageContainer messages={messages} top={toTop} onScrollTop={getMoreMessage}>
-            {
-              loading &&
-              <View className={"p-1 text-center"} style={{fontSize: '12px'}}>
-                loading...
-              </View>
-            }
-            {
-              !loading && noMore && <View className={"text-center py-3 text-gray-600"} style={{fontSize: '12px'}}>
-                没有更多了
-              </View>
-            }
-          </MessageContainer>
-        </View>
-        <Input />
-      </View>
+      {/* 留资表单覆盖层 - 小程序环境 (card-a) */}
+      {showForm && (
+        <CollectForm onClose={hideCollectForm} templateId={formParams.templateId} adminId={formParams.adminId} />
+      )}
+
+      {/* 预约咨询表单覆盖层 - 小程序环境 (card-b) */}
+      {showFormB && (
+        <CollectFormB onClose={hideCollectFormB} templateId={formParamsB.templateId} adminId={formParamsB.adminId} />
+      )}
+
+      {!showForm && !showFormB && (
+        <>
+          {
+            setting?.is_show_queue  && waitingCount > 0 && <View className={"fixed px-1 h-6 flex items-center w-full bg-[#fcf6ed] text-[#de8c17]"} style={{fontSize: '12px'}}>
+              前面还有{waitingCount}人在等待
+            </View>
+          }
+          <View className={classNames("flex flex-col justify-between w-full bg-[#f5f5f5] overflow-hidden box-border", {
+            "pt-6": setting?.is_show_queue  && waitingCount > 0
+          })} style={cusStyles}>
+            <View className={"overflow-hidden flex w-full self-end"}>
+              <MessageContainer messages={messages} top={toTop} onScrollTop={getMoreMessage}>
+                {
+                  loading &&
+                  <View className={"p-1 text-center"} style={{fontSize: '12px'}}>
+                    loading...
+                  </View>
+                }
+                {
+                  !loading && noMore && <View className={"text-center py-3 text-gray-600"} style={{fontSize: '12px'}}>
+                    没有更多了
+                  </View>
+                }
+              </MessageContainer>
+            </View>
+            <Input />
+          </View>
+        </>
+      )}
     </SendContext.Provider>
   )
 }

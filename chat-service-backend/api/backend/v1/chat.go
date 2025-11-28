@@ -124,6 +124,7 @@ type ChatUser struct {
 	Unread       uint             `json:"unread"`
 	Avatar       string           `json:"avatar"`
 	Platform     string           `json:"platform"`
+	AiEnabled    bool             `json:"ai_enabled"`
 }
 
 type ChatSimpleUser struct {
@@ -140,4 +141,13 @@ type UserInfoItem struct {
 type ChatConnectReq struct {
 	g.Meta `path:"/ws" tags:"后台websocket链接" method:"get" summary:"连接websocket服务"`
 	Token  string `v:"required" dc:"认证token"`
+}
+
+type UpdateUserAiEnabledReq struct {
+	g.Meta    `path:"/ws/chat-user/:id/ai" tags:"后台客服面板" method:"put" summary:"更新用户AI接管状态"`
+	AiEnabled bool `json:"ai_enabled"`
+}
+
+type UpdateUserAiEnabledRes struct {
+	AiEnabled bool `json:"ai_enabled"`
 }

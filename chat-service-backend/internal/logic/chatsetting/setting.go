@@ -26,13 +26,14 @@ func init() {
 }
 
 const (
-	nameCacheKey     = "customer:%d:setting:name"
-	avatarCacheKey   = "customer:%d:setting:avatar"
-	transferCacheKey = "customer:%d:setting:transfer"
-	readCacheKey     = "customer:%d:setting:read"
-	queueCacheKey    = "customer:%d:setting:queue"
-	aiCacheKey       = "customer:%d:setting:ai"
-	cacheTime        = 10
+	nameCacheKey      = "customer:%d:setting:name"
+	avatarCacheKey    = "customer:%d:setting:avatar"
+	transferCacheKey  = "customer:%d:setting:transfer"
+	readCacheKey      = "customer:%d:setting:read"
+	queueCacheKey     = "customer:%d:setting:queue"
+	aiCacheKey        = "customer:%d:setting:ai"
+	aiPromptCacheKey  = "customer:%d:setting:ai-prompt"
+	cacheTime         = 10
 )
 
 type sChatSetting struct {
@@ -173,4 +174,25 @@ func (s *sChatSetting) GetAiOpen(ctx context.Context, customerId uint) (b bool, 
 		return
 	}
 	return v.Bool(), nil
+}
+
+// GetAiPrompt 获取 AI 提示词模板
+func (s *sChatSetting) GetAiPrompt(ctx context.Context, customerId uint) (prompt string, err error) {
+	v, err := cache.Def.GetOrSetFunc(ctx, fmt.Sprintf(aiPromptCacheKey, customerId), func(ctx context.Context) (r any, err error) {
+		setting, err := s.First(ctx, do.CustomerChatSettings{
+			CustomerId: customerId,
+			Name:       consts.ChatSettingAiPrompt,
+		})
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return "", nil
+			}
+			return
+		}
+		return setting.Value, nil
+	}, time.Minute*cacheTime)
+	if err != nil {
+		return
+	}
+	return v.String(), nil
 }
