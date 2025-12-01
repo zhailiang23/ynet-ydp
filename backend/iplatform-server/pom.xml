@@ -38,6 +38,11 @@
         </dependency>
         <dependency>
             <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-module-knowledge</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
             <artifactId>ynet-module-crm</artifactId>
             <version>${revision}</version>
         </dependency>

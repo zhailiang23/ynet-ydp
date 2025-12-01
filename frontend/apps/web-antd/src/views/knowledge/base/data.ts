@@ -1,29 +1,31 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { KnowledgeBaseApi } from '#/api/knowledge/base';
 
-import { AiModelTypeEnum, CommonStatusEnum, DICT_TYPE } from '@vben/constants';
+import { DICT_TYPE } from '@vben/constants';
 import { getDictOptions } from '@vben/hooks';
 
-import { z } from '#/adapter/form';
-import { getModelSimpleList } from '#/api/ai/model/model';
 import { getRangePickerDefaultProps } from '#/utils';
 
 /** 新增/修改的表单 */
 export function useFormSchema(): VbenFormSchema[] {
   return [
     {
-      component: 'Input',
       fieldName: 'id',
+      component: 'Input',
       dependencies: {
         triggerFields: [''],
         show: () => false,
       },
     },
     {
-      component: 'Input',
       fieldName: 'name',
       label: '知识库名称',
       rules: 'required',
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入知识库名称',
+      },
     },
     {
       fieldName: 'description',
@@ -35,53 +37,25 @@ export function useFormSchema(): VbenFormSchema[] {
       },
     },
     {
-      component: 'ApiSelect',
-      fieldName: 'embeddingModelId',
-      label: '向量模型',
-      componentProps: {
-        api: () => getModelSimpleList(AiModelTypeEnum.EMBEDDING),
-        labelField: 'name',
-        valueField: 'id',
-        allowClear: true,
-        placeholder: '请选择向量模型',
+      fieldName: 'isPublic',
+      component: 'Input',
+      defaultValue: true,
+      dependencies: {
+        triggerFields: [''],
+        show: () => false,
       },
-      rules: 'required',
-    },
-    {
-      fieldName: 'topK',
-      label: '检索 topK',
-      component: 'InputNumber',
-      componentProps: {
-        placeholder: '请输入检索 topK',
-        class: 'w-full',
-        min: 0,
-        max: 10,
-      },
-      rules: 'required',
-    },
-    {
-      fieldName: 'similarityThreshold',
-      label: '检索相似度阈值',
-      component: 'InputNumber',
-      componentProps: {
-        placeholder: '请输入检索相似度阈值',
-        class: 'w-full',
-        min: 0,
-        max: 1,
-        step: 0.01,
-        precision: 2,
-      },
-      rules: 'required',
     },
     {
       fieldName: 'status',
       label: '是否启用',
+      rules: 'required',
       component: 'Switch',
       componentProps: {
-        checkedValue: CommonStatusEnum.ENABLE,
-        unCheckedValue: CommonStatusEnum.DISABLE,
+        checkedValue: 0,
+        unCheckedValue: 1,
+        class: 'w-12',
       },
-      rules: z.number().default(CommonStatusEnum.ENABLE),
+      defaultValue: 0,
     },
   ];
 }
@@ -93,14 +67,19 @@ export function useGridFormSchema(): VbenFormSchema[] {
       fieldName: 'name',
       label: '知识库名称',
       component: 'Input',
+      componentProps: {
+        allowClear: true,
+        placeholder: '请输入知识库名称',
+      },
     },
     {
       fieldName: 'status',
-      label: '是否启用',
+      label: '状态',
       component: 'Select',
       componentProps: {
         allowClear: true,
         options: getDictOptions(DICT_TYPE.COMMON_STATUS, 'number'),
+        placeholder: '请选择状态',
       },
     },
     {
@@ -116,27 +95,23 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns(): VxeTableGridOptions['columns'] {
+export function useGridColumns(): VxeTableGridOptions<KnowledgeBaseApi.Base>['columns'] {
   return [
-    {
-      field: 'id',
-      title: '编号',
-    },
+    { type: 'checkbox', width: 40 },
     {
       field: 'name',
       title: '知识库名称',
+      minWidth: 120,
     },
     {
       field: 'description',
       title: '知识库描述',
-    },
-    {
-      field: 'embeddingModel',
-      title: '向量化模型',
+      minWidth: 120,
     },
     {
       field: 'status',
-      title: '是否启用',
+      title: '状态',
+      minWidth: 120,
       cellRender: {
         name: 'CellDict',
         props: { type: DICT_TYPE.COMMON_STATUS },
@@ -145,11 +120,12 @@ export function useGridColumns(): VxeTableGridOptions['columns'] {
     {
       field: 'createTime',
       title: '创建时间',
+      minWidth: 120,
       formatter: 'formatDateTime',
     },
     {
       title: '操作',
-      width: 150,
+      width: 200,
       fixed: 'right',
       slots: { default: 'actions' },
     },

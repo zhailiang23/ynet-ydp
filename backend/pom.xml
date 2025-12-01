@@ -18,8 +18,8 @@
         <module>ynet-module-crm</module>
         <module>ynet-module-practice</module>
         <module>iplatform-module-twins</module>
-<!--        <module>iplatform-module-member</module>-->
-       <module>iplatform-module-bpm</module>
+        <module>iplatform-module-knowledge</module>
+        <module>iplatform-module-bpm</module>
 <!--        <module>iplatform-module-report</module>-->
 <!--        <module>iplatform-module-mp</module>-->
 <!--        <module>iplatform-module-pay</module>-->

@@ -64,12 +64,32 @@ func (s *sAdmin) Login(ctx context.Context, request *ghttp.Request) (admin *mode
 
 // LoginById authenticates an admin user by ID directly, returning the admin model and JWT token if successful.
 // This is used for internal calls where password verification is not required.
+// The adminId parameter is actually a system_user ID. This method:
+// 1. Queries system_users table to get the user's nickname
+// 2. Matches customer_admins table by username field with the nickname
 func (s *sAdmin) LoginById(ctx context.Context, adminId uint) (admin *model.CustomerAdmin, token string, err error) {
-	admin, err = s.Find(ctx, int(adminId))
+	// Step 1: Query system_users table to get nickname
+	var nickname string
+	value, err := g.DB().Ctx(ctx).Model("system_users").
+		Where("id", adminId).
+		Value("nickname")
+	if err != nil {
+		err = gerror.NewCode(gcode.CodeBusinessValidationFailed, "用户不存在")
+		return
+	}
+	nickname = value.String()
+	if nickname == "" {
+		err = gerror.NewCode(gcode.CodeBusinessValidationFailed, "用户不存在")
+		return
+	}
+
+	// Step 2: Query customer_admins table by username matching nickname
+	admin, err = s.First(ctx, do.CustomerAdmins{Username: nickname})
 	if err != nil {
 		err = gerror.NewCode(gcode.CodeBusinessValidationFailed, "客服不存在")
 		return
 	}
+
 	canAccess := s.CanAccess(admin)
 	if !canAccess {
 		err = gerror.NewCode(gcode.CodeBusinessValidationFailed, "账号已禁用")
