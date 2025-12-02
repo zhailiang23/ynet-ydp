@@ -7,14 +7,17 @@ import (
 	"fmt"
 	grpc "gf-chat/api/chat/v1"
 	"gf-chat/internal/cache"
+	ragclient "gf-chat/internal/client"
 	"gf-chat/internal/consts"
 	"gf-chat/internal/model"
 	"gf-chat/internal/model/do"
 	"gf-chat/internal/service"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gogf/gf/v2/errors/gcode"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -176,11 +179,16 @@ func (s *userManager) triggerAiResponse(ctx context.Context, msg *model.Customer
 }
 
 func (s *userManager) deliveryToAdmin(ctx context.Context, conn iWsConn, msg *model.CustomerChatMessage) error {
+	g.Log().Infof(ctx, "[AI-Flow] deliveryToAdmin 开始: msgId=%d, userId=%d, adminId=%d", msg.Id, msg.UserId, msg.AdminId)
+
 	// 获取有效会话
 	session, err := service.ChatSession().FirstActive(ctx, msg.UserId, msg.AdminId, nil)
 	if err != nil {
+		g.Log().Errorf(ctx, "[AI-Flow] 获取会话失败: %+v", err)
 		return err
 	}
+	g.Log().Infof(ctx, "[AI-Flow] 获取到会话: sessionId=%d, aiEnabled=%v, type=%d", session.Id, session.AiEnabled, session.Type)
+
 	// 更新有效时间
 	err = relation.updateUser(ctx, msg.AdminId, msg.UserId)
 	if err != nil {
@@ -196,8 +204,11 @@ func (s *userManager) deliveryToAdmin(ctx context.Context, conn iWsConn, msg *mo
 
 	// 检查是否启用了 AI 接管
 	if session.AiEnabled {
+		g.Log().Infof(ctx, "[AI-Flow] AI 接管已启用,准备异步调用 triggerAiResponseForSession")
 		// 异步调用 AI 生成回复
 		go s.triggerAiResponseForSession(ctx, msg, session, conn)
+	} else {
+		g.Log().Infof(ctx, "[AI-Flow] AI 接管未启用,跳过 AI 回复")
 	}
 
 	adminOnline, _, err := adminM.getConnInfo(ctx, msg.CustomerId, msg.AdminId)
@@ -313,17 +324,26 @@ func (s *userManager) onMessage(ctx context.Context, arg eventArg) (err error) {
 	conn := arg.conn
 	msg.Source = consts.MessageSourceUser
 	msg.UserId = conn.getUserId()
+
+	g.Log().Infof(ctx, "[AI-Flow] ========== 收到用户消息 ==========")
+	g.Log().Infof(ctx, "[AI-Flow] userId=%d, msgType=%s, content=%s", msg.UserId, msg.Type, msg.Content)
+
 	msg.AdminId, err = relation.getUserValidAdmin(ctx, msg.UserId)
 	if err != nil {
 		return err
 	}
+	g.Log().Infof(ctx, "[AI-Flow] 获取到分配的客服: adminId=%d", msg.AdminId)
+
 	msg, err = service.ChatMessage().Insert(ctx, msg)
 	if err != nil {
 		return
 	}
+	g.Log().Infof(ctx, "[AI-Flow] 消息已保存: msgId=%d", msg.Id)
+
 	// 发送回执
 	conn.deliver(action.newReceipt(msg))
 	if msg.AdminId > 0 {
+		g.Log().Infof(ctx, "[AI-Flow] 消息有客服接入,调用 deliveryToAdmin")
 		return s.deliveryToAdmin(ctx, conn, msg)
 	}
 	// 触发自动回复事件
@@ -584,41 +604,115 @@ func (s *userManager) triggerMessageEvent(ctx context.Context, scene string, mes
 
 // triggerAiResponseForSession 当会话启用 AI 接管时，调用 AI 生成回复
 func (s *userManager) triggerAiResponseForSession(ctx context.Context, msg *model.CustomerChatMessage, session *model.CustomerChatSession, conn iWsConn) {
+	g.Log().Infof(ctx, "[AI-Flow] triggerAiResponseForSession 开始: msgId=%d, sessionId=%d, msgType=%s, adminId=%d",
+		msg.Id, session.Id, msg.Type, msg.AdminId)
+
 	// 只处理文本消息
 	if msg.Type != consts.MessageTypeText {
+		g.Log().Infof(ctx, "[AI-Flow] 消息类型非文本,跳过: msgType=%s", msg.Type)
 		return
 	}
 
 	// 获取 AI 提示词模板
 	promptTemplate, err := service.ChatSetting().GetAiPrompt(ctx, msg.CustomerId)
 	if err != nil {
-		log.Errorf(ctx, "获取 AI 提示词模板失败: %+v", err)
+		log.Errorf(ctx, "[AI-Flow] 获取 AI 提示词模板失败: %+v", err)
 		return
 	}
 
 	// 如果没有配置提示词模板，使用默认提示词
 	if promptTemplate == "" {
-		promptTemplate = "你是一个专业的客服助手。用户消息: {{message}}，历史对话: {{history}}"
+		promptTemplate = `你是一个专业的客服助手,请基于以下知识库内容和历史对话信息回答客户问题。
+
+【知识库参考资料】
+{{knowledge}}
+
+【历史对话】
+{{history}}
+
+【客户问题】
+{{message}}
+
+请根据知识库内容回答问题,如果知识库中没有相关信息,则根据你的专业知识回答。回答要准确、专业、热情。`
 	}
+	g.Log().Infof(ctx, "[AI-Flow] AI 提示词模板长度: %d 字符", len(promptTemplate))
 
 	// 获取最近的对话历史（用于上下文），排除当前消息
 	historyMessages, err := service.ChatMessage().All(ctx, do.CustomerChatMessages{
 		SessionId: session.Id,
 	}, nil, "id asc", 10)
 	if err != nil {
-		log.Errorf(ctx, "获取对话历史失败: %+v", err)
+		log.Errorf(ctx, "[AI-Flow] 获取对话历史失败: %+v", err)
 		return
+	}
+	g.Log().Infof(ctx, "[AI-Flow] 获取到 %d 条历史消息", len(historyMessages))
+
+	// 【新增】集成 RAG 知识库召回
+	knowledgeContext := ""
+	if msg.AdminId > 0 {
+		g.Log().Infof(ctx, "[AI-Flow] 开始 RAG 知识库召回流程: adminId=%d", msg.AdminId)
+
+		// 1. 获取客服的个人知识库 ID
+		kbId, err := service.Knowledge().GetAdminKnowledgeBaseId(ctx, msg.AdminId)
+		if err != nil {
+			g.Log().Warningf(ctx, "[AI-Flow] [RAG] 获取知识库 ID 失败: %+v", err)
+		} else if kbId > 0 {
+			g.Log().Infof(ctx, "[AI-Flow] [RAG] 找到知识库: kbId=%d", kbId)
+
+			// 2. 调用 Python RAG 召回服务
+			ragClient := ragclient.NewRagClient(ctx)
+			topK := g.Cfg().MustGet(ctx, "rag.topK", 3).Int()
+			g.Log().Infof(ctx, "[AI-Flow] [RAG] 准备调用 Python RAG 服务: question=%s, kbId=%d, topK=%d",
+				msg.Content, kbId, topK)
+
+			retrieveResp, err := ragClient.Retrieve(ctx, msg.Content, []int64{kbId}, topK)
+			if err != nil {
+				g.Log().Warningf(ctx, "[AI-Flow] [RAG] RAG 召回失败: %+v", err)
+			} else if retrieveResp.Success && len(retrieveResp.Results) > 0 {
+				// 3. 构建知识上下文 - 结构化格式
+				var knowledgeParts []string
+				for i, chunk := range retrieveResp.Results {
+					knowledgeParts = append(knowledgeParts, fmt.Sprintf("[参考资料 %d] %s", i+1, chunk.Text))
+				}
+				knowledgeContext = strings.Join(knowledgeParts, "\n\n")
+				g.Log().Infof(ctx, "[AI-Flow] [RAG] ✅ RAG 召回成功: 找到 %d 个相关文本块, 总长度 %d 字符, adminId=%d, kbId=%d",
+					len(retrieveResp.Results), len(knowledgeContext), msg.AdminId, kbId)
+			} else {
+				g.Log().Infof(ctx, "[AI-Flow] [RAG] 未找到相关知识: adminId=%d, kbId=%d, response.Success=%v, resultsCount=%d",
+					msg.AdminId, kbId, retrieveResp.Success, len(retrieveResp.Results))
+			}
+		} else {
+			g.Log().Infof(ctx, "[AI-Flow] [RAG] 客服没有配置个人知识库: adminId=%d, kbId=%d", msg.AdminId, kbId)
+		}
+	} else {
+		g.Log().Infof(ctx, "[AI-Flow] [RAG] 消息没有 adminId,跳过知识库召回: msgId=%d", msg.Id)
 	}
 
+	// 替换模板中的变量 (新增 {{knowledge}} 变量支持)
+	g.Log().Infof(ctx, "[AI-Flow] 知识库上下文长度: %d 字符", len(knowledgeContext))
+	g.Log().Infof(ctx, "[AI-Flow] 原始提示词模板内容: %s", promptTemplate)
+	g.Log().Infof(ctx, "[AI-Flow] 提示词模板是否包含 {{knowledge}}: %v", strings.Contains(promptTemplate, "{{knowledge}}"))
+	finalPromptTemplate := strings.ReplaceAll(promptTemplate, "{{knowledge}}", knowledgeContext)
+	g.Log().Infof(ctx, "[AI-Flow] 最终提示词模板长度: %d 字符", len(finalPromptTemplate))
+	if len(knowledgeContext) > 0 && len(finalPromptTemplate) > len(promptTemplate) {
+		g.Log().Infof(ctx, "[AI-Flow] ✅ 知识库内容已成功注入到提示词中,注入了 %d 字符", len(knowledgeContext))
+	} else if len(knowledgeContext) > 0 {
+		g.Log().Warningf(ctx, "[AI-Flow] ⚠️ 知识库内容未被注入!原因:提示词模板中没有 {{knowledge}} 占位符")
+	}
+
+
 	// 调用 AI 生成回复（使用自定义提示词模板）
-	aiReply, err := service.Langchain().AskWithCustomPrompt(ctx, promptTemplate, msg.Content, historyMessages)
+	g.Log().Infof(ctx, "[AI-Flow] 开始调用 AI 服务生成回复...")
+	aiReply, err := service.Langchain().AskWithCustomPrompt(ctx, finalPromptTemplate, msg.Content, historyMessages)
 	if err != nil {
-		log.Errorf(ctx, "AI 生成回复失败: %+v", err)
+		log.Errorf(ctx, "[AI-Flow] AI 生成回复失败: %+v", err)
 		return
 	}
+	g.Log().Infof(ctx, "[AI-Flow] AI 生成回复成功: 回复长度=%d 字符", len(aiReply))
 
 	// 如果 AI 没有返回回复（可能是禁用了），则跳过
 	if aiReply == "" {
+		g.Log().Infof(ctx, "[AI-Flow] AI 返回空回复,跳过")
 		return
 	}
 
@@ -636,20 +730,23 @@ func (s *userManager) triggerAiResponseForSession(ctx context.Context, msg *mode
 	// 保存 AI 回复
 	aiMessage, err = service.ChatMessage().Insert(ctx, aiMessage)
 	if err != nil {
-		log.Errorf(ctx, "保存 AI 回复失败: %+v", err)
+		log.Errorf(ctx, "[AI-Flow] 保存 AI 回复失败: %+v", err)
 		return
 	}
+	g.Log().Infof(ctx, "[AI-Flow] AI 回复已保存: msgId=%d", aiMessage.Id)
 
 	// 发送给用户
 	err = s.deliveryMessage(ctx, aiMessage)
 	if err != nil {
-		log.Errorf(ctx, "发送 AI 回复给用户失败: %+v", err)
+		log.Errorf(ctx, "[AI-Flow] 发送 AI 回复给用户失败: %+v", err)
 		return
 	}
+	g.Log().Infof(ctx, "[AI-Flow] AI 回复已发送给用户")
 
 	// 同时发送给客服（让客服看到 AI 的回复）
 	err = adminM.deliveryMessage(ctx, aiMessage)
 	if err != nil {
-		log.Errorf(ctx, "发送 AI 回复给客服失败: %+v", err)
+		log.Errorf(ctx, "[AI-Flow] 发送 AI 回复给客服失败: %+v", err)
 	}
+	g.Log().Infof(ctx, "[AI-Flow] ✅ triggerAiResponseForSession 完成")
 }
