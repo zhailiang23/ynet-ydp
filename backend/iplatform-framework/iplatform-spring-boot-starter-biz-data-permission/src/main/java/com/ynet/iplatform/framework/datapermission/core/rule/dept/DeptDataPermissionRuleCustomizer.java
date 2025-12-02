@@ -3,7 +3,7 @@ package com.ynet.iplatform.framework.datapermission.core.rule.dept;
 /**
  * {@link DeptDataPermissionRule} 的自定义配置接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @FunctionalInterface
 public interface DeptDataPermissionRuleCustomizer {

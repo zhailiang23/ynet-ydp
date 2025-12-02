@@ -27,7 +27,7 @@ import static com.ynet.iplatform.module.promotion.enums.ErrorCodeConstants.*;
 /**
  * 优惠劵模板 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

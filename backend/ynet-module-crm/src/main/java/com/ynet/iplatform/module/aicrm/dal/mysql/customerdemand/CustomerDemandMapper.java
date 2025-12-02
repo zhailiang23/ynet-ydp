@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerdemand.vo.*;
 /**
  * 客户需求信息 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerDemandMapper extends BaseMapperX<CustomerDemandDO> {

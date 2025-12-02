@@ -38,7 +38,7 @@ import static com.ynet.iplatform.module.infra.enums.ErrorCodeConstants.*;
 /**
  * 代码生成 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 public class CodegenServiceImpl implements CodegenService {

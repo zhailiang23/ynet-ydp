@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 /**
- * 芋道 AI 自动配置
+ * 易诚 AI 自动配置
  *
  * @author fansili
  */

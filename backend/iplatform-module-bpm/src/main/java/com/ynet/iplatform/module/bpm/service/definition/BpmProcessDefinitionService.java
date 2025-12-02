@@ -22,7 +22,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
  *
  * @author yunlong.li
  * @author ZJQ
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface BpmProcessDefinitionService {
 

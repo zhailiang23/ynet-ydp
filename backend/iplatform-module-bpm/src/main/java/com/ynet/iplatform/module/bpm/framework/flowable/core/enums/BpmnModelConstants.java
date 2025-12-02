@@ -5,7 +5,7 @@ import com.ynet.iplatform.module.bpm.enums.definition.BpmModelTypeEnum;
 /**
  * BPMN XML 常量信息
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface BpmnModelConstants {
 

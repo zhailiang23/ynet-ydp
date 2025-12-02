@@ -12,7 +12,7 @@ import static com.ynet.iplatform.module.pay.dal.redis.RedisKeyConstants.PAY_NOTI
 /**
  * 支付通知的锁 Redis DAO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Repository
 public class PayNotifyLockRedisDAO {

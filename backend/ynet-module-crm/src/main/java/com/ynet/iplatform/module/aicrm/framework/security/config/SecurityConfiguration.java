@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 /**
  * CRM 模块的 Security 配置
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Configuration(proxyBeanMethods = false, value = "aicrmSecurityConfiguration")
 public class SecurityConfiguration {

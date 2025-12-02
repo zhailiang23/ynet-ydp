@@ -8,7 +8,7 @@ import com.ynet.iplatform.framework.common.pojo.PageResult;
 /**
  * 客户退回申请表 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerReturnService {
 

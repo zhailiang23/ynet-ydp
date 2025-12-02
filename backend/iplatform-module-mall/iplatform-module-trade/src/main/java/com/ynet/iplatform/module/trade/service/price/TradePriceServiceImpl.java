@@ -35,7 +35,7 @@ import static com.ynet.iplatform.module.trade.enums.ErrorCodeConstants.PRICE_CAL
 /**
  * 价格计算 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

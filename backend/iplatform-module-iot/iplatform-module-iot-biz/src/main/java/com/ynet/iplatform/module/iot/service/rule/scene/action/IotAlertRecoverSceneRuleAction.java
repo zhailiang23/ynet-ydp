@@ -17,7 +17,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * IoT 告警恢复的 {@link IotSceneRuleAction} 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Component
 public class IotAlertRecoverSceneRuleAction implements IotSceneRuleAction {

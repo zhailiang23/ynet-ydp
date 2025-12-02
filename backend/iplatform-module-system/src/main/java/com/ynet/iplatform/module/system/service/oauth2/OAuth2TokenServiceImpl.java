@@ -38,7 +38,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * OAuth2.0 Token Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 public class OAuth2TokenServiceImpl implements OAuth2TokenService {

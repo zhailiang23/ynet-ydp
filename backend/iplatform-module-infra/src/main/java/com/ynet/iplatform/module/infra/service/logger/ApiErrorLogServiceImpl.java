@@ -25,7 +25,7 @@ import static com.ynet.iplatform.module.infra.enums.ErrorCodeConstants.API_ERROR
 /**
  * API 错误日志 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

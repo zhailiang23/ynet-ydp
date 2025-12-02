@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerbusinessinfo.vo.
 /**
  * 客户经营信息表（精简版，只包含经营相关核心字段） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerBusinessInfoMapper extends BaseMapperX<CustomerBusinessInfoDO> {

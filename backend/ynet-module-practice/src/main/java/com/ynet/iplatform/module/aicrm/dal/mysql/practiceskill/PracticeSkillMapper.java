@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.practiceskill.vo.*;
 /**
  * CRM智能陪练-销售技巧 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface PracticeSkillMapper extends BaseMapperX<PracticeSkillDO> {

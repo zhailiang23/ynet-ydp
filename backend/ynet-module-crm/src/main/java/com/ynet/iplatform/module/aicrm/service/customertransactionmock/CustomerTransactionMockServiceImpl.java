@@ -23,7 +23,7 @@ import static com.ynet.iplatform.module.aicrm.enums.ErrorCodeConstants.*;
 /**
  * 客户交易明细信息表（Mock数据） Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

@@ -25,7 +25,7 @@ import static com.ynet.iplatform.module.aicrm.enums.ErrorCodeConstants.*;
 /**
  * CRM零售客户扩展表(零售客户特有基本信息) Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

@@ -16,7 +16,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * IoT 设备分组 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface IotDeviceGroupService {
 

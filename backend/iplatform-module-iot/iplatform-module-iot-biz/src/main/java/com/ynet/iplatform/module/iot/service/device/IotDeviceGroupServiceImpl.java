@@ -19,7 +19,7 @@ import static com.ynet.iplatform.module.iot.enums.ErrorCodeConstants.DEVICE_GROU
 /**
  * IoT 设备分组 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

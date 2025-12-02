@@ -15,7 +15,7 @@ import static com.ynet.iplatform.module.mp.enums.ErrorCodeConstants.USER_NOT_EXI
 /**
  * 公众号粉丝 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface MpUserService {
 

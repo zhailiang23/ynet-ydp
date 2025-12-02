@@ -31,7 +31,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * IoT 消息总线自动配置
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @AutoConfiguration
 @EnableConfigurationProperties(IotMessageBusProperties.class)

@@ -44,7 +44,7 @@ import static com.ynet.iplatform.module.iot.enums.ErrorCodeConstants.*;
 /**
  * IoT 设备 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

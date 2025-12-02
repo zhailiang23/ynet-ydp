@@ -19,7 +19,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * CRM 联系人 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CrmContactService {
 

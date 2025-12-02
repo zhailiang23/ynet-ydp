@@ -38,7 +38,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * Flowable 相关的工具方法
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public class FlowableUtils {
 

@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 客户归属关系表（零售+对公共用，支持主协办模式） Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

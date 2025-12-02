@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerclaim.vo.*;
 /**
  * 客户认领申请表 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerClaimApplicationMapper extends BaseMapperX<CustomerClaimApplicationDO> {

@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customergrouphistory.vo.
 /**
  * 客户归属客群调整历史表（记录调整当时的客群信息快照） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerGroupHistoryMapper extends BaseMapperX<CustomerGroupHistoryDO> {

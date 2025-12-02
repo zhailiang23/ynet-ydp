@@ -17,7 +17,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * ERP 采购退货项 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface ErpPurchaseReturnItemMapper extends BaseMapperX<ErpPurchaseReturnItemDO> {

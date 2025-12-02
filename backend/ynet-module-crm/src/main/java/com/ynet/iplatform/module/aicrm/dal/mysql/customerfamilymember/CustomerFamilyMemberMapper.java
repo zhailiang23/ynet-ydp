@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerfamilymember.vo.
 /**
  * 客户家庭成员信息表（零售客户） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerFamilyMemberMapper extends BaseMapperX<CustomerFamilyMemberDO> {

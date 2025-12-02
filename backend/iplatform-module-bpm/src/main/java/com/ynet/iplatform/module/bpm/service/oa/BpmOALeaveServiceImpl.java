@@ -25,7 +25,7 @@ import static com.ynet.iplatform.module.bpm.enums.ErrorCodeConstants.OA_LEAVE_NO
  * OA 请假申请 Service 实现类
  *
  * @author jason
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

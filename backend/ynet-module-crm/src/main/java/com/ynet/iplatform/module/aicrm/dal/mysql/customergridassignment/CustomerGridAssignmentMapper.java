@@ -14,7 +14,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customergridassignment.v
 /**
  * 客户归属网格关系表（只记录关系，网格信息通过关联查询） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerGridAssignmentMapper extends BaseMapperX<CustomerGridAssignmentDO> {

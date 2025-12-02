@@ -22,7 +22,7 @@ import static com.ynet.iplatform.module.iot.gateway.enums.ErrorCodeConstants.DEV
 /**
  * IoT 设备消息 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Slf4j

@@ -17,7 +17,7 @@ import static java.util.Arrays.asList;
 /**
  * Collection 工具类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public class CollectionUtils {
 

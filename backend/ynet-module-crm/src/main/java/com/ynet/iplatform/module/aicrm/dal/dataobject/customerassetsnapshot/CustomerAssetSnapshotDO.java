@@ -9,7 +9,7 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 /**
  * 客户资产快照表 DO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @TableName("crm_customer_asset_snapshot")
 @KeySequence("crm_customer_asset_snapshot_seq")

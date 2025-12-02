@@ -3,7 +3,7 @@ package com.ynet.iplatform.module.system.enums;
 /**
  * System 字典类型的枚举类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface DictTypeConstants {
 

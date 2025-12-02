@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customertransactionmock.
 /**
  * 客户交易明细信息表（Mock数据） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerTransactionMockMapper extends BaseMapperX<CustomerTransactionMockDO> {

@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.common.pojo.PageParam;
 /**
  * 客户归属网格关系表（只记录关系，网格信息通过关联查询） Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerGridAssignmentService {
 

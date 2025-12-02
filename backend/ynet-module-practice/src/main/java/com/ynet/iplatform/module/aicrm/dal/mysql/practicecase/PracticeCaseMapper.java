@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.practicecase.vo.*;
 /**
  * CRM智能陪练-销售案例 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface PracticeCaseMapper extends BaseMapperX<PracticeCaseDO> {

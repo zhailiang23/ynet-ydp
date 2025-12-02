@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.companybond.vo.*;
 /**
  * 对公客户债券信息 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CompanyBondMapper extends BaseMapperX<CompanyBondDO> {

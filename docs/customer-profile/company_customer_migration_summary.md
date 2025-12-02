@@ -627,7 +627,7 @@ const getDict = (type: string, value: string) => {
 
 ### 10.2 官方文档
 
-- 芋道框架文档: https://doc.iocoder.cn
+- 易诚框架文档: https://doc.iocoder.cn
 - 代码生成器: https://doc.iocoder.cn/codegen/
 - 字典管理: https://doc.iocoder.cn/dict/
 - 数据权限: https://doc.iocoder.cn/data-permission/
@@ -640,7 +640,7 @@ const getDict = (type: string, value: string) => {
 
 - 开发者: Claude Code
 - 执行日期: 2025-10-28
-- 项目: ynet-ydp (芋道快速开发平台)
+- 项目: ynet-ydp (易诚快速开发平台)
 
 ---
 

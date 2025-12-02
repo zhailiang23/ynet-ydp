@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.common.pojo.PageParam;
 /**
  * 客户归属调整历史表（零售+对公共用，记录所有归属变更历史） Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerAssignmentHistoryService {
 

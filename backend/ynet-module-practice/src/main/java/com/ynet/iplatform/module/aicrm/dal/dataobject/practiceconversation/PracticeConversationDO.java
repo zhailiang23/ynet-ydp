@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 /**
  * CRM智能陪练-陪练对话 DO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @TableName("crm_practice_conversation")
 @KeySequence("crm_practice_conversation_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。

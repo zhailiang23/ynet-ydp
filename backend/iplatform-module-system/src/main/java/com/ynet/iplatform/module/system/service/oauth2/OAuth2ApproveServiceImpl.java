@@ -20,7 +20,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * OAuth2 批准 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

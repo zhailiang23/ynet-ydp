@@ -21,7 +21,7 @@ import static com.ynet.iplatform.module.infra.enums.ErrorCodeConstants.DATA_SOUR
 /**
  * 数据源配置 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

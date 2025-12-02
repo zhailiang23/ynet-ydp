@@ -23,7 +23,7 @@ import static com.ynet.iplatform.module.aicrm.enums.ErrorCodeConstants.*;
 /**
  * 客户贡献度信息表（与客户主表1对1关系） Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

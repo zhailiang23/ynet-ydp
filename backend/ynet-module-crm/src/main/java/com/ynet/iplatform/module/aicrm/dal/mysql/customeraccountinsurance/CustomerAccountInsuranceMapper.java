@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customeraccountinsurance
 /**
  * 客户保险账户信息表（零售+对公共用） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerAccountInsuranceMapper extends BaseMapperX<CustomerAccountInsuranceDO> {

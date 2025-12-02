@@ -16,7 +16,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerassignment.vo.*;
 /**
  * 客户归属关系表（零售+对公共用，支持主协办模式） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerAssignmentMapper extends BaseMapperX<CustomerAssignmentDO> {

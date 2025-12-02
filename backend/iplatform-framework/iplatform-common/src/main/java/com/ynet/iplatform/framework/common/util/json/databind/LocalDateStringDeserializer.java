@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * LocalDate 反序列化器,解析 ISO 格式的日期字符串 (yyyy-MM-dd)
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public class LocalDateStringDeserializer extends JsonDeserializer<LocalDate> {
 

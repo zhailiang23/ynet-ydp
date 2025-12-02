@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.practicematerial.vo.*;
 /**
  * CRM智能陪练-培训文件 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface PracticeMaterialMapper extends BaseMapperX<PracticeMaterialDO> {

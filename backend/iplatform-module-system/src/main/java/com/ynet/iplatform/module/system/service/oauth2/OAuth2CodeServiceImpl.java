@@ -18,7 +18,7 @@ import static com.ynet.iplatform.module.system.enums.ErrorCodeConstants.OAUTH2_C
 /**
  * OAuth2.0 授权码 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

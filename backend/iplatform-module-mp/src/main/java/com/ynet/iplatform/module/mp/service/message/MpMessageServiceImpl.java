@@ -41,7 +41,7 @@ import static com.ynet.iplatform.module.mp.enums.ErrorCodeConstants.MESSAGE_SEND
 /**
  * 粉丝消息 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

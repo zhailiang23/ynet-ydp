@@ -8,7 +8,7 @@ import com.ynet.iplatform.module.system.api.logger.dto.OperateLogRespDTO;
 /**
  * 操作日志 API 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface OperateLogApi extends OperateLogCommonApi {
 

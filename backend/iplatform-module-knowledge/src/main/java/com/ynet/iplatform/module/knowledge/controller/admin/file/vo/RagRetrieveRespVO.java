@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * RAG 召回响应 VO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Schema(description = "管理后台 - RAG 召回响应 VO")
 @Data

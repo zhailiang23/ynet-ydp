@@ -6,7 +6,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerpreference.vo.*;
 /**
  * 客户偏好 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerPreferenceService {
 

@@ -3,7 +3,7 @@ package com.ynet.iplatform.module.infra.framework.file.core.client;
 /**
  * 文件客户端
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface FileClient {
 

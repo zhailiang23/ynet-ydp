@@ -15,7 +15,7 @@ import com.ynet.iplatform.module.customer.controller.admin.chatsessions.vo.*;
 /**
  * 会话信息 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface ChatSessionsMapper extends BaseMapperX<ChatSessionsDO> {

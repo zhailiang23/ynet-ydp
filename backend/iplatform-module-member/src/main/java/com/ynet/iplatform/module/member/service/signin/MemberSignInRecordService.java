@@ -9,7 +9,7 @@ import com.ynet.iplatform.module.member.dal.dataobject.signin.MemberSignInRecord
 /**
  * 签到记录 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface MemberSignInRecordService {
 

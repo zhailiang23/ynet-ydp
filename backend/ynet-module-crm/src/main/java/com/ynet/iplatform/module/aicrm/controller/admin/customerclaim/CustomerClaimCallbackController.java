@@ -19,7 +19,7 @@ import static com.ynet.iplatform.framework.common.pojo.CommonResult.success;
  * <p>
  * 用于接收 BPM 流程引擎的后置通知
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Tag(name = "管理后台 - 客户认领流程回调")
 @RestController

@@ -21,7 +21,7 @@ import static com.ynet.iplatform.module.system.enums.ErrorCodeConstants.*;
 /**
  * 字典类型 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 public class DictTypeServiceImpl implements DictTypeService {

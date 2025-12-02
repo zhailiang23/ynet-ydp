@@ -34,7 +34,7 @@ import static com.ynet.iplatform.framework.common.util.collection.MapUtils.findA
 /**
  * Bpm 任务 Convert
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface BpmTaskConvert {

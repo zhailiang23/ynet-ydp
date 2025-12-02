@@ -40,7 +40,7 @@ import static com.ynet.iplatform.module.iot.enums.ErrorCodeConstants.RULE_SCENE_
 /**
  * IoT 规则场景 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

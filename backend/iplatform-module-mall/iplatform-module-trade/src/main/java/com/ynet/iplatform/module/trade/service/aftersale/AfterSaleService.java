@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.trade.dal.dataobject.aftersale.AfterSaleDO;
 /**
  * 售后订单 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface AfterSaleService {
 

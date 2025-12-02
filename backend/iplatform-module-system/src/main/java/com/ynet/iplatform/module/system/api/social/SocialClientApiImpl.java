@@ -24,7 +24,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * 社交应用的 API 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

@@ -36,7 +36,7 @@ import static com.ynet.iplatform.module.product.enums.ErrorCodeConstants.*;
 /**
  * 商品 SPU Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

@@ -7,7 +7,7 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 /**
  * 客户偏好表 DO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @TableName("crm_customer_preference")
 @KeySequence("crm_customer_preference_seq")

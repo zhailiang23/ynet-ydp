@@ -3,7 +3,7 @@ package com.ynet.iplatform.module.aicrm.enums;
 /**
  * AICRM 字典类型常量
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CrmDictTypeConstants {
 

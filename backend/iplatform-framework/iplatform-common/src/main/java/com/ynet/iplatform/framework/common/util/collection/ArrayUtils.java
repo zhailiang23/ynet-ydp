@@ -13,7 +13,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * Array 工具类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public class ArrayUtils {
 

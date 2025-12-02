@@ -12,7 +12,7 @@ import jakarta.validation.Valid;
  * 请假申请 Service 接口
  *
  * @author jason
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface BpmOALeaveService {
 

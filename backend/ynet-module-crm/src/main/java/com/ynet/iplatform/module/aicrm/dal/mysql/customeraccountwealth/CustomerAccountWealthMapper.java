@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customeraccountwealth.vo
 /**
  * 客户理财账户信息表（零售+对公共用） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerAccountWealthMapper extends BaseMapperX<CustomerAccountWealthDO> {

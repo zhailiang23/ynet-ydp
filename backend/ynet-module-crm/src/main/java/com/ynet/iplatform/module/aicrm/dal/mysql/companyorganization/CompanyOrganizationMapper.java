@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.companyorganization.vo.*
 /**
  * CRM对公客户组织架构信息 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CompanyOrganizationMapper extends BaseMapperX<CompanyOrganizationDO> {

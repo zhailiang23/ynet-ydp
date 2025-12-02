@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.practiceconversation.vo.
 /**
  * CRM智能陪练-陪练对话 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface PracticeConversationMapper extends BaseMapperX<PracticeConversationDO> {

@@ -5,7 +5,7 @@ import com.ynet.iplatform.module.iot.core.util.IotDeviceAuthUtils;
 /**
  * IoT 设备 Token Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface IotDeviceTokenService {
 

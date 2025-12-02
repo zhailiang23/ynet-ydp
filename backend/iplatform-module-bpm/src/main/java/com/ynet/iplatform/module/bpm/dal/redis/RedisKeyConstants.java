@@ -3,7 +3,7 @@ package com.ynet.iplatform.module.bpm.dal.redis;
 /**
  * BPM Redis Key 枚举类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface RedisKeyConstants {
 

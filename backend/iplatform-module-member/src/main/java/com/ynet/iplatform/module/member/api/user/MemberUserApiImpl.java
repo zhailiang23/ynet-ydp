@@ -17,7 +17,7 @@ import static com.ynet.iplatform.module.member.enums.ErrorCodeConstants.USER_MOB
 /**
  * 会员用户的 API 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

@@ -55,7 +55,7 @@ import static com.ynet.iplatform.module.pay.framework.job.config.PayJobConfigura
 /**
  * 支付通知 Core Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Valid

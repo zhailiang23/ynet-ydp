@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.practiceuserrecord.vo.*;
 /**
  * CRM智能陪练-用户陪练记录 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface PracticeUserRecordMapper extends BaseMapperX<PracticeUserRecordDO> {

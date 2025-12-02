@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.companycustomer.vo.*;
 /**
  * CRM对公客户扩展表(对公客户特有基本信息) Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CompanyCustomerMapper extends BaseMapperX<CompanyCustomerDO> {

@@ -377,7 +377,7 @@ public class CompanyCustomerRespVO {
     @ExcelProperty("客户类型")
     private Integer customerType;
 
-    @Schema(description = "客户名称(企业名称)", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋道科技有限公司")
+    @Schema(description = "客户名称(企业名称)", requiredMode = Schema.RequiredMode.REQUIRED, example = "易诚科技有限公司")
     @ExcelProperty("客户名称")
     private String customerName;
 

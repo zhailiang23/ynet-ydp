@@ -25,7 +25,7 @@ import static com.ynet.iplatform.module.pay.framework.pay.core.client.impl.alipa
  *
  * 文档：<a href="https://opendocs.alipay.com/open/194/105072">当面付</a>
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Slf4j
 public class AlipayBarPayClient extends AbstractAlipayPayClient {

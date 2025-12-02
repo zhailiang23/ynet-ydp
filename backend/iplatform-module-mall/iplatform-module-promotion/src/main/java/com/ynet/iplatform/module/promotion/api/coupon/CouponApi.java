@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * 优惠劵 API 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CouponApi {
 

@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerproductrecommend
 /**
  * 客户产品推荐 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerProductRecommendationMapper extends BaseMapperX<CustomerProductRecommendationDO> {

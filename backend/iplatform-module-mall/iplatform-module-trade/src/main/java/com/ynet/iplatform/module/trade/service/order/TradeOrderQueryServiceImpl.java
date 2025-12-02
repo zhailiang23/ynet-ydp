@@ -38,7 +38,7 @@ import static com.ynet.iplatform.module.trade.enums.ErrorCodeConstants.ORDER_NOT
 /**
  * 交易订单【读】 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 public class TradeOrderQueryServiceImpl implements TradeOrderQueryService {

@@ -20,7 +20,7 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 /**
  * 对公客户股票发行人信息 DO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @TableName("crm_company_stock")
 @KeySequence("crm_company_stock_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。

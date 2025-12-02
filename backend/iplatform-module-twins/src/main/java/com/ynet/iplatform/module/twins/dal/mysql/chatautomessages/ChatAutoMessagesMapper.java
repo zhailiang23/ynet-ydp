@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.twins.controller.admin.chatautomessages.vo.*;
 /**
  * 客户留资消息 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface ChatAutoMessagesMapper extends BaseMapperX<ChatAutoMessagesDO> {

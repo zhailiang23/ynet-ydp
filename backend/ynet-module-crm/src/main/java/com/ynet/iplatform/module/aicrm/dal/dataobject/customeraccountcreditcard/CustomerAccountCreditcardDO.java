@@ -23,7 +23,7 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 /**
  * 客户信用卡账户信息表（仅限零售客户） DO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @TableName("crm_customer_account_creditcard")
 @KeySequence("crm_customer_account_creditcard_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。

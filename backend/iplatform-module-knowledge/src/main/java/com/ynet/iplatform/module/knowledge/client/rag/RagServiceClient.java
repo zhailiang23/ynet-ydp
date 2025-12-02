@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * Python RAG 服务客户端
  * 用于调用 Python 知识库嵌入和召回服务
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Component
 @Slf4j

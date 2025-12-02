@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerrating.vo.*;
 /**
  * 客户评级信息表（与客户主表1对1关系） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerRatingMapper extends BaseMapperX<CustomerRatingDO> {

@@ -10,7 +10,7 @@ import com.ynet.iplatform.module.knowledge.controller.admin.file.vo.*;
 /**
  * 知识库文件 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface KonwledgeFileMapper extends BaseMapperX<KonwledgeFileDO> {

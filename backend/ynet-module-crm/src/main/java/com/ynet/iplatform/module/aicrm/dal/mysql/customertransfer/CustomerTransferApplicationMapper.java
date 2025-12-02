@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 客户移交申请表 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerTransferApplicationMapper extends BaseMapperX<CustomerTransferApplicationDO> {

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-这是基于芋道开源框架 (RuoYi-Vue-Pro) 的企业级快速开发平台，采用 Spring Boot 多模块架构。
+这是基于易诚开源框架 (RuoYi-Vue-Pro) 的企业级快速开发平台，采用 Spring Boot 多模块架构。
 
 - **技术栈**: JDK 17 + Spring Boot 3.5.5 + MyBatis Plus + Redis + MySQL
 - **架构类型**: 单体应用（多模块 Maven 项目）

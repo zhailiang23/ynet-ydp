@@ -22,7 +22,7 @@ import static com.ynet.iplatform.module.ai.enums.ErrorCodeConstants.TOOL_NOT_EXI
 /**
  * AI 工具 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

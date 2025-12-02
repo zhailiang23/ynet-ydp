@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * 多租户配置
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @ConfigurationProperties(prefix = "iplatform.tenant")
 @Data

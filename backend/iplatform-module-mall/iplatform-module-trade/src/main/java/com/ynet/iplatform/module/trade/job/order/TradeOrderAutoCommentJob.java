@@ -10,7 +10,7 @@ import jakarta.annotation.Resource;
 /**
  * 交易订单的自动评论 Job
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Component
 public class TradeOrderAutoCommentJob implements JobHandler {

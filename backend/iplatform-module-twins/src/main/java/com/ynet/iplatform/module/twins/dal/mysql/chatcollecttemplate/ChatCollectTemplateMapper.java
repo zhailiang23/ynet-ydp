@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.twins.controller.admin.chatcollecttemplate.vo.*
 /**
  * 客户留资模板 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface ChatCollectTemplateMapper extends BaseMapperX<ChatCollectTemplateDO> {

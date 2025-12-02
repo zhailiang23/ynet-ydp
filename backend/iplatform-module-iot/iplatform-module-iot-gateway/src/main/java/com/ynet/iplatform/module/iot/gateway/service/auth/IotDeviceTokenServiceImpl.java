@@ -23,7 +23,7 @@ import static com.ynet.iplatform.module.iot.gateway.enums.ErrorCodeConstants.DEV
  *
  * 注意：目前仅 HTTP 协议使用
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Slf4j

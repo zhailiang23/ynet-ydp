@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerloanoverview.vo.
 /**
  * 客户贷款业务概览 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerLoanOverviewMapper extends BaseMapperX<CustomerLoanOverviewDO> {

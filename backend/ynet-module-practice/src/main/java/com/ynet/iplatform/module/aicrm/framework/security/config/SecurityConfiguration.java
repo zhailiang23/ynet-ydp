@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 /**
  * Practice 智能练习模块的 Security 配置
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Configuration(proxyBeanMethods = false, value = "practiceSecurityConfiguration")
 public class SecurityConfiguration {

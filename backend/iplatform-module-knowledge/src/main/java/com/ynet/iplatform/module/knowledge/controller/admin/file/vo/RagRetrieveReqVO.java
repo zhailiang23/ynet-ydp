@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 /**
  * RAG 召回请求 VO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Schema(description = "管理后台 - RAG 召回请求 VO")
 @Data

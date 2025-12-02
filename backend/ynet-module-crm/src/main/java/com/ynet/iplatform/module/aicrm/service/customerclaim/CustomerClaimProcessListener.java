@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * 客户认领流程监听器
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Component
 public class CustomerClaimProcessListener extends BpmProcessInstanceStatusEventListener {

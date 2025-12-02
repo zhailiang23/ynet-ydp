@@ -15,7 +15,7 @@ import static com.ynet.iplatform.module.mp.enums.ErrorCodeConstants.ACCOUNT_NOT_
 /**
  * 公众号账号 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface MpAccountService {
 

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 /**
  * 社交用户 Response DTO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Data
 @NoArgsConstructor

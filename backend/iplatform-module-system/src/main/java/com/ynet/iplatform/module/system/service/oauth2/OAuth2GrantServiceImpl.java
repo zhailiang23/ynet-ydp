@@ -19,7 +19,7 @@ import static com.ynet.iplatform.framework.common.exception.util.ServiceExceptio
 /**
  * OAuth2 授予 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 public class OAuth2GrantServiceImpl implements OAuth2GrantService {

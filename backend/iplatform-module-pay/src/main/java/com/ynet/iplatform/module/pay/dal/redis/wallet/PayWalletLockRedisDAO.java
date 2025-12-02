@@ -13,7 +13,7 @@ import static com.ynet.iplatform.module.pay.dal.redis.RedisKeyConstants.PAY_WALL
 /**
  * 支付钱包的锁 Redis DAO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Repository
 public class PayWalletLockRedisDAO {

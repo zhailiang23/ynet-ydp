@@ -14,7 +14,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * 文件嵌入事件监听器
  * 在事务提交后异步处理文件嵌入
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Component
 @Slf4j

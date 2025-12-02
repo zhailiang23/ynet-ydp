@@ -23,7 +23,7 @@ import static com.ynet.iplatform.framework.common.exception.enums.GlobalErrorCod
 /**
  * Iot 设备信息 Service 实现类：调用远程的 device http 接口，进行设备认证、设备获取等
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Slf4j

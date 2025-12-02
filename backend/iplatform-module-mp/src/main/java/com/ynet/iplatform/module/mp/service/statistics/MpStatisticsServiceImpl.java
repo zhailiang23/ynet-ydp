@@ -21,7 +21,7 @@ import static com.ynet.iplatform.module.mp.enums.ErrorCodeConstants.*;
 /**
  * 公众号统计 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 public class MpStatisticsServiceImpl implements MpStatisticsService {

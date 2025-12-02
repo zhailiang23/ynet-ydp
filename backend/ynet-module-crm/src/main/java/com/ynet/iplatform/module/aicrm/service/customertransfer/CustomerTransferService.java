@@ -8,7 +8,7 @@ import com.ynet.iplatform.module.aicrm.dal.dataobject.customertransfer.CustomerT
 /**
  * 客户移交申请表 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerTransferService {
 

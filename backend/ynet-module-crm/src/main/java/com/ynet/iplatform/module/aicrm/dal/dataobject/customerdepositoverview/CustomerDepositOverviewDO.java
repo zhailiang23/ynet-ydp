@@ -30,7 +30,7 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 /**
  * 客户存款业务概览 DO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @TableName("crm_customer_overview_deposit")
 @KeySequence("crm_customer_overview_deposit_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。

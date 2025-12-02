@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-这是一个基于芋道开源框架的企业级**前后端分离**快速开发平台。
+这是一个基于易诚开源框架的企业级**前后端分离**快速开发平台。
 
 - **后端**: JDK 17 + Spring Boot 3.5.5 + MyBatis Plus + Redis + MySQL (单体多模块架构)
 - **前端**: Vue 3 + Vite 7 + TypeScript + Pinia (Monorepo 架构，支持 Ant Design Vue / Element Plus / Naive UI)
@@ -38,6 +38,53 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **官方文档**:
 - 启动文档: https://doc.iocoder.cn/quick-start/
 - 视频教程: https://doc.iocoder.cn/video/
+
+---
+
+## 版本控制架构
+
+本项目采用 **Monorepo + 多子仓库** 的双重架构：
+
+### 主仓库 (GitHub)
+- **仓库地址**: git@github.com:zhailiang23/ynet-ydp.git
+- **分支**: feature/intelligent-practice
+- **用途**: 统一管理所有代码，便于跨模块开发
+
+### 子仓库 (git.ynet.io)
+主仓库的子目录已通过 `git subtree` 推送到独立仓库：
+
+| 子目录 | 仓库地址 |
+|--------|---------|
+| backend | git@git.ynet.io:belink/sysadmin-2025/backend.git |
+| frontend | git@git.ynet.io:belink/sysadmin-2025/frontend.git |
+| python | git@git.ynet.io:belink/sysadmin-2025/python.git |
+| frontend-practice | git@git.ynet.io:belink/ai-agent/ai-coach/frontend-practice.git |
+| chat-service-backend | git@git.ynet.io:belink/ai-agent/ai-digital-avatar/chat-service-backend.git |
+| chat-service-frontend-manager | git@git.ynet.io:belink/ai-agent/ai-digital-avatar/chat-service-frontend-manager.git |
+| chat-service-frontend-user | git@git.ynet.io:belink/ai-agent/ai-digital-avatar/chat-service-frontend-user.git |
+
+### 同步工作流
+
+```bash
+# 1. 在主仓库修改代码
+git add <files>
+git commit -m "feat: 新功能"
+git push origin feature/intelligent-practice
+
+# 2. 同步到子仓库（可选）
+git subtree push --prefix=<subdirectory> git@git.ynet.io:<repo-path> feature/intelligent-practice
+```
+
+**示例 - 同步 backend 目录**:
+```bash
+git subtree push --prefix=backend git@git.ynet.io:belink/sysadmin-2025/backend.git feature/intelligent-practice
+```
+
+### 重要说明
+- ✅ 主仓库和子仓库**独立存在**，修改主仓库不会自动同步到子仓库
+- ⚠️ **推荐在主仓库开发**，然后选择性同步到子仓库
+- ⚠️ 避免直接在子仓库修改代码，否则需要手动同步回主仓库
+- ℹ️ `git subtree push` 会保留完整的提交历史，但速度较慢
 
 ## 项目结构
 
@@ -56,6 +103,12 @@ ynet-ydp/
 │   │   └── web-naive/              # Naive UI 版本
 │   ├── packages/                    # 共享包
 │   └── internal/                    # 内部工具
+├── python/                          # Python 服务
+│   └── kb/                         # 知识库服务
+│       └── backend/                # RAG 向量检索服务 (FastAPI + ChromaDB)
+│           ├── app/                # 应用代码
+│           ├── data/               # 向量数据库存储
+│           └── requirements.txt    # Python 依赖
 ├── frontend-practice/               # 智能陪练前端 (Next.js)
 │   ├── app/                        # Next.js App Router 页面
 │   ├── components/                 # React 组件
@@ -684,13 +737,13 @@ VITE_GLOB_API_URL=https://api.yourdomain.com/admin-api
 
 ---
 
-# AI Agent 服务
+# Python RAG 知识库服务
 
 ## 技术栈
 
-- **框架**: DeepAgents (基于 LangGraph)
-- **LLM**: 支持 Anthropic Claude 和 DeepSeek
-- **服务**: FastAPI (HTTP 服务)
+- **框架**: FastAPI 0.115.12
+- **向量数据库**: ChromaDB
+- **嵌入模型**: bge-m3 (本地)
 - **Python**: >= 3.10
 - **包管理**: uv
 
@@ -699,131 +752,184 @@ VITE_GLOB_API_URL=https://api.yourdomain.com/admin-api
 ### 1. 安装依赖
 
 ```bash
-cd ai
+cd python/kb/backend
 
 # 使用 uv 创建虚拟环境
 uv venv
 
 # 激活虚拟环境
 source .venv/bin/activate  # Linux/Mac
-# 或 .venv\Scripts\activate  # Windows
 
 # 安装依赖
 uv pip install -r requirements.txt
 ```
 
-### 2. 配置环境变量
+### 2. 启动 RAG 服务
 
 ```bash
-# 复制配置文件模板
-cp .env.example .env
-
-# 编辑 .env 文件，配置以下内容：
-# - MODEL_PROVIDER: 模型提供商 (anthropic 或 deepseek)
-# - MODEL_NAME: 模型名称
-# - ANTHROPIC_API_KEY: Anthropic API Key (使用 Claude 时)
-# - DEEPSEEK_API_KEY: DeepSeek API Key (使用 DeepSeek 时)
-# - DEEPSEEK_API_BASE: DeepSeek API Base URL (默认: https://api.siliconflow.cn/v1)
-```
-
-**当前配置 (DeepSeek-V3.1-Terminus via 硅基流动)**:
-```bash
-MODEL_PROVIDER=deepseek
-MODEL_NAME=deepseek-ai/DeepSeek-V3.1-Terminus
-DEEPSEEK_API_KEY=your-api-key-here
-DEEPSEEK_API_BASE=https://api.siliconflow.cn/v1
-```
-
-### 3. 启动 AI Agent 服务
-
-```bash
-cd ai
+cd python/kb/backend
 source .venv/bin/activate
-python http_qa_agent.py
+uvicorn app.main:app --host 0.0.0.0 --port 9080 --reload
 ```
 
-服务将在 `http://localhost:8000` 启动。
+服务将在 `http://localhost:9080` 启动（**注意端口 9080，避免与其他服务冲突**）。
 
-### 4. 访问地址
+### 3. 访问地址
 
-- AI Agent 服务: http://localhost:8000
-- 健康检查: http://localhost:8000/health
-- API 文档: http://localhost:8000/docs
+- RAG 服务: http://localhost:9080
+- 健康检查: http://localhost:9080/health
+- API 文档: http://localhost:9080/docs
 
-## AI Agent 架构
+## RAG API 端点
 
-### 服务模式
-
-项目包含两种 Agent 模式:
-
-1. **命令行模式** (`simple_qa_agent.py`) - 交互式问答
-2. **HTTP 服务模式** (`http_qa_agent.py`) - RESTful API 服务
-
-### HTTP API 端点
+### 健康检查
 
 ```bash
-# 健康检查
 GET /health
 
-# 对话接口 (非流式)
-POST /chat
-Content-Type: application/json
+响应:
 {
-  "message": "用户消息",
-  "stream": false,
-  "virtual_customer_name": "客户名称",
-  "virtual_customer_profile": "客户画像"
-}
-
-# 对话接口 (流式)
-POST /chat
-Content-Type: application/json
-{
-  "message": "用户消息",
-  "stream": true,
-  "virtual_customer_name": "客户名称",
-  "virtual_customer_profile": "客户画像"
+  "status": "healthy",
+  "embedding_model": "BAAI/bge-m3",
+  "vector_db": "ChromaDB"
 }
 ```
 
-### 模型切换
+### 文件上传和向量化
 
-AI Agent 支持两种模型提供商:
-
-**Anthropic Claude**:
 ```bash
-MODEL_PROVIDER=anthropic
-MODEL_NAME=claude-sonnet-4-5-20250929
-ANTHROPIC_API_KEY=your-api-key
+POST /api/upload
+Content-Type: multipart/form-data
+
+参数:
+- file: 文件 (支持 PDF、TXT、MD、DOCX)
+- kb_id: 知识库 ID (整数)
+
+响应:
+{
+  "file_id": 123,
+  "filename": "document.pdf",
+  "kb_id": 1,
+  "status": "success"
+}
 ```
 
-**DeepSeek (通过硅基流动)**:
+### 文本检索
+
 ```bash
-MODEL_PROVIDER=deepseek
-MODEL_NAME=deepseek-ai/DeepSeek-V3.1-Terminus
-DEEPSEEK_API_KEY=your-api-key
-DEEPSEEK_API_BASE=https://api.siliconflow.cn/v1
+POST /api/retrieve
+Content-Type: application/json
+
+{
+  "question": "用户问题",
+  "kb_ids": [1, 2, 3],  // 知识库 ID 列表
+  "top_k": 5             // 返回最相关的前 N 个文本块
+}
+
+响应:
+{
+  "results": [
+    {
+      "text": "相关文本内容",
+      "score": 0.85,
+      "metadata": {
+        "file_id": 123,
+        "kb_id": 1,
+        "chunk_index": 0
+      }
+    }
+  ]
+}
 ```
 
-### 动态提示词
-
-AI Agent 支持基于剧本、案例、技巧、虚拟客户等数据动态生成系统提示词，实现智能陪练功能。
-
-## 测试 AI Agent
+### 删除文件
 
 ```bash
-# 使用测试客户端
-cd ai
-source .venv/bin/activate
-python test_http_client.py
+DELETE /api/delete/{file_id}
 
-# 或使用 curl 测试
-curl -X POST http://localhost:8000/chat \
+响应:
+{
+  "status": "success",
+  "message": "File deleted successfully"
+}
+```
+
+## 与 IM 客服系统集成
+
+RAG 服务已集成到 IM 客服系统（`chat-service-backend`）：
+
+### 集成流程
+
+```
+用户发送消息
+    ↓
+chat-service-backend (Go)
+    ↓
+查询客服的知识库 ID (system_users.knowledge_base_id)
+    ↓
+调用 Python RAG 服务 (HTTP POST http://localhost:9080/api/retrieve)
+    ↓
+RAG 返回相关文本块
+    ↓
+组装提示词 (系统提示词 + 知识库内容 + 用户消息)
+    ↓
+调用 AI 生成回复
+    ↓
+返回给用户
+```
+
+### 配置说明
+
+1. **数据库配置** - 在 `system_users` 表中设置 `knowledge_base_id` 字段：
+```sql
+UPDATE system_users
+SET knowledge_base_id = 3
+WHERE username = 'your_admin_username';
+```
+
+2. **Go 后端配置** - `chat-service-backend` 会自动调用 RAG 服务：
+```go
+// internal/client/rag_client.go
+const ragURL = "http://localhost:9080/api/retrieve"
+```
+
+3. **提示词模板** - 确保提示词包含 `{{knowledge}}` 占位符：
+```
+你是个专业热情的银行客服，请基于以下知识库内容和历史对话信息回答客户问题。
+
+【知识库参考资料】
+{{knowledge}}
+
+【历史对话】
+{{history}}
+
+【客户问题】
+{{message}}
+
+请根据知识库内容回答问题，如果知识库中没有相关信息，则根据你的专业知识回答。
+```
+
+## 重要提醒
+
+- ⚠️ RAG 服务使用 **9080 端口**，确保不与其他服务冲突
+- ⚠️ 首次启动会下载 bge-m3 嵌入模型（约 2GB），需要良好的网络连接
+- ⚠️ 向量数据存储在 `python/kb/backend/data/chroma` 目录
+- ✅ 支持自动重新加载（`--reload`），开发时修改代码无需重启服务
+- ✅ Go 后端通过 HTTP 调用 RAG 服务，已禁用代理确保本地连接
+
+## 测试 RAG 服务
+
+```bash
+# 1. 健康检查
+curl http://localhost:9080/health
+
+# 2. 测试检索
+curl -X POST http://localhost:9080/api/retrieve \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "你好",
-    "stream": false,
-    "virtual_customer_name": "张先生"
+    "question": "如何使用知识库？",
+    "kb_ids": [3],
+    "top_k": 5
   }'
 ```
 
@@ -1603,7 +1709,7 @@ chat-service-backend (Go)
 ## 文档和资源
 
 ### 官方文档
-- 芋道官方文档: https://doc.iocoder.cn
+- 易诚官方文档: https://doc.iocoder.cn
 - 启动文档: https://doc.iocoder.cn/quick-start/
 - 视频教程: https://doc.iocoder.cn/video/
 - 后端 API 文档: http://localhost:48080/doc.html (启动后访问)
@@ -1632,9 +1738,9 @@ chat-service-backend (Go)
 3. 查看视频教程: https://doc.iocoder.cn/video/
 4. 检查浏览器控制台和后端日志
 5. 查看各服务的日志文件:
-   - AI Agent 服务日志: `/tmp/ai_agent_new.log`
-   - chat-service-backend 日志: `./storage/sql/` (WebSocket 日志)
-   - chat-service-backend gRPC 日志: `./storage/grpc/`
+   - **RAG 知识库服务**: `/tmp/python_rag_final.log` 或控制台输出
+   - **chat-service-backend**: `./storage/sql/` (WebSocket 日志), `./storage/grpc/` (gRPC 日志)
+   - **Spring Boot 后端**: `./logs/` 或控制台输出
 
 ## 重要提醒
 
@@ -1646,6 +1752,53 @@ chat-service-backend (Go)
   - `chat-service-frontend-user` (用户端, Taro)
 - chat-service-backend 使用独立的 MySQL 数据库 (`chat`),需要单独初始化 (`database.sql`)
 - 客服系统完全独立部署,不依赖 yudao 后端
+
+## 服务端口总览
+
+| 服务 | 端口 | 协议 | 说明 |
+|------|------|------|------|
+| **主后端服务** | 48080 | HTTP | Spring Boot（yudao-server） |
+| **主前端服务** | 5666 | HTTP | Vue 3 + Vite（web-antd） |
+| **MySQL** | 3306 | TCP | 数据库 |
+| **Redis** | 6379 | TCP | 缓存 |
+| **RAG 知识库服务** | 9080 | HTTP | Python FastAPI（python/kb/backend） |
+| **IM 客服后端** | 8080 | HTTP/WebSocket | Go（chat-service-backend） |
+| **IM 客服管理端** | 8000 | HTTP | React（chat-service-frontend-manager） |
+| **IM 用户端 H5** | 10086 | HTTP | Taro H5（chat-service-frontend-user） |
+| **陪练前端** | 3000 或 5666 | HTTP | Next.js（frontend-practice） |
+
+### 端口冲突处理
+
+如果端口被占用，按以下方式修改：
+
+**主后端（48080）**:
+```yaml
+# backend/yudao-server/src/main/resources/application-local.yaml
+server:
+  port: 48081  # 修改为其他端口
+```
+
+**主前端（5666）**:
+```bash
+# frontend/apps/web-antd/.env.development
+VITE_PORT=5667  # 修改为其他端口
+```
+
+**RAG 服务（9080）**:
+```bash
+# 启动时指定端口
+cd python/kb/backend
+uvicorn app.main:app --host 0.0.0.0 --port 9081
+```
+
+**IM 客服后端（8080）**:
+```yaml
+# chat-service-backend/manifest/config/config.yaml
+server:
+  address: ":8081"  # 修改为其他端口
+```
+
+---
 
 ## 完整系统启动顺序
 
@@ -1665,23 +1818,51 @@ cd frontend && pnpm dev:antd
 ```bash
 # 1. 启动 yudao 后端 (同上, 端口 48080)
 
-# 2. 启动陪练前端 (端口 5666)
+# 2. 启动陪练前端 (端口 3000 或 5666)
 cd frontend-practice && npm run dev
 ```
 
-### 客服系统
+### 客服系统（集成 RAG 知识库）
 ```bash
 # 1. 初始化 chat 数据库
 cd chat-service-backend
 go run main.go migrate
 go run main.go fake
 
-# 2. 启动 chat-service-backend (端口 8080)
+# 2. 启动 RAG 知识库服务 (端口 9080)
+cd python/kb/backend
+source .venv/bin/activate
+uvicorn app.main:app --host 0.0.0.0 --port 9080 --reload
+
+# 3. 启动 chat-service-backend (端口 8080)
+cd chat-service-backend
 go run main.go http
 
-# 3. 启动客服管理端 (端口 8000)
+# 4. 启动客服管理端 (端口 8000)
 cd chat-service-frontend-manager && npm start
 
-# 4. 启动用户端 (小程序或 H5)
+# 5. 启动用户端 (小程序或 H5, 端口 10086)
 cd chat-service-frontend-user && npm run dev:h5
+```
+
+### 验证服务状态
+
+```bash
+# 检查主后端
+curl http://localhost:48080/doc.html
+
+# 检查 RAG 服务
+curl http://localhost:9080/health
+
+# 检查 IM 后端
+curl http://localhost:8080/
+
+# 检查主前端
+open http://localhost:5666
+
+# 检查客服管理端
+open http://localhost:8000
+
+# 检查用户端 H5
+open http://localhost:10086
 ```

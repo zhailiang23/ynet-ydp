@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.common.pojo.PageParam;
 /**
  * CRM智能陪练-陪练对话 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface PracticeConversationService {
 

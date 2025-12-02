@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * IoT 条件类型枚举
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @RequiredArgsConstructor
 @Getter

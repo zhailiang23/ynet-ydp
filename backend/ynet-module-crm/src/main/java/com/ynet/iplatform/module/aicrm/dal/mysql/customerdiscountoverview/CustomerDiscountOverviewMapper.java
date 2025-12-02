@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerdiscountoverview
 /**
  * 客户贴现业务概览 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerDiscountOverviewMapper extends BaseMapperX<CustomerDiscountOverviewDO> {

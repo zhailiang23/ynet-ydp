@@ -23,7 +23,7 @@ import static com.ynet.iplatform.module.pay.enums.PayChannelEnum.*;
 /**
  * 支付客户端的工厂实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Slf4j
 public class PayClientFactoryImpl implements PayClientFactory {

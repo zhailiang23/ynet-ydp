@@ -13,7 +13,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.practicevirtualcustomer.
 /**
  * CRM智能陪练-虚拟客户 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface PracticeVirtualCustomerMapper extends BaseMapperX<PracticeVirtualCustomerDO> {

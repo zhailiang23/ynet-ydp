@@ -25,7 +25,7 @@ import static com.ynet.iplatform.module.aicrm.enums.ErrorCodeConstants.*;
 /**
  * 客户归属客群关系表（只记录关系，客群信息通过关联查询） Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

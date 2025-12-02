@@ -5,7 +5,7 @@ import com.ynet.iplatform.module.iot.core.mq.message.IotDeviceMessage;
 /**
  * {@link com.ynet.iplatform.module.iot.core.mq.message.IotDeviceMessage} 的编解码器
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface IotDeviceMessageCodec {
 

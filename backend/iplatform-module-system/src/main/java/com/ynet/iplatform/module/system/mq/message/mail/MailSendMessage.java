@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * 邮箱发送消息
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Data
 public class MailSendMessage {

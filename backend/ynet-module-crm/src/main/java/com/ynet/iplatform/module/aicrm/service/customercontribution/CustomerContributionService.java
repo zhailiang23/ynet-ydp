@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.common.pojo.PageParam;
 /**
  * 客户贡献度信息表（与客户主表1对1关系） Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerContributionService {
 

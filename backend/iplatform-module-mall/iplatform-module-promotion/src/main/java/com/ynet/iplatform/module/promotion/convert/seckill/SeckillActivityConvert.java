@@ -33,7 +33,7 @@ import static com.ynet.iplatform.framework.common.util.collection.MapUtils.findA
 /**
  * 秒杀活动 Convert
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface SeckillActivityConvert {

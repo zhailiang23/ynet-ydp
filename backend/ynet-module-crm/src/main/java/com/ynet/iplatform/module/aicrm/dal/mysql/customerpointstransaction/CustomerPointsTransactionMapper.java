@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerpointstransactio
 /**
  * 客户积分消费明细表（积分交易流水表） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerPointsTransactionMapper extends BaseMapperX<CustomerPointsTransactionDO> {

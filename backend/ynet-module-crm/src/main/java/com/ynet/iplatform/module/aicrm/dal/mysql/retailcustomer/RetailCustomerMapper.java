@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.retailcustomer.vo.*;
 /**
  * CRM零售客户扩展表(零售客户特有基本信息) Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface RetailCustomerMapper extends BaseMapperX<RetailCustomerDO> {

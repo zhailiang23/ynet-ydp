@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.twins.controller.admin.customerUser.vo.*;
 /**
  * 接入用户 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerUserMapper extends BaseMapperX<CustomerUserDO> {

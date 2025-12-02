@@ -17,7 +17,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * ERP 销售出库项 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface ErpSaleOutItemMapper extends BaseMapperX<ErpSaleOutItemDO> {

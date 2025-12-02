@@ -14,7 +14,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customergridhistory.vo.*
 /**
  * 客户归属网格调整历史表（记录调整当时的网格信息快照） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerGridHistoryMapper extends BaseMapperX<CustomerGridHistoryDO> {

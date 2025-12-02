@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * CRM智能陪练-培训文件 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface PracticeMaterialService {
 

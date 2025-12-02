@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.knowledge.controller.admin.base.vo.*;
 /**
  * 知识库 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface KnowledgeBaseMapper extends BaseMapperX<KnowledgeBaseDO> {

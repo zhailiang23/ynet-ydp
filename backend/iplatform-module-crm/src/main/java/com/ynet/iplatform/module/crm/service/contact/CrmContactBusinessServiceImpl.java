@@ -26,7 +26,7 @@ import static com.ynet.iplatform.module.crm.enums.ErrorCodeConstants.CONTACT_NOT
 /**
  * 联系人与商机的关联 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

@@ -22,7 +22,7 @@ import static com.ynet.iplatform.framework.mq.redis.config.IplatformRedisMQConsu
 /**
  * Redis 的 {@link IotMessageBus} 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Slf4j
 public class IotRedisMessageBus implements IotMessageBus {

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * 客户资产快照表 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerAssetSnapshotMapper extends BaseMapperX<CustomerAssetSnapshotDO> {

@@ -14,7 +14,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customergroupassignment.
 /**
  * 客户归属客群关系表（只记录关系，客群信息通过关联查询） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerGroupAssignmentMapper extends BaseMapperX<CustomerGroupAssignmentDO> {

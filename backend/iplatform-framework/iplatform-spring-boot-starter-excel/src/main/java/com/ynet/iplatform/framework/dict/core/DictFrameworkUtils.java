@@ -18,7 +18,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * 字典工具类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Slf4j
 public class DictFrameworkUtils {

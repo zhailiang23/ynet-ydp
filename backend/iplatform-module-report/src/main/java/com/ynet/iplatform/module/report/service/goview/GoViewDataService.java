@@ -5,7 +5,7 @@ import com.ynet.iplatform.module.report.controller.admin.goview.vo.data.GoViewDa
 /**
  * GoView 数据 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface GoViewDataService {
 

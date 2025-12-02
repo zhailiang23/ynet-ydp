@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerchannelbehavior.
 /**
  * 客户渠道行为信息 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerChannelBehaviorMapper extends BaseMapperX<CustomerChannelBehaviorDO> {

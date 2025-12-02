@@ -17,7 +17,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * 佣金提现 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface BrokerageWithdrawService {
 

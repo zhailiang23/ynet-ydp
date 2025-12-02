@@ -14,7 +14,7 @@ import com.ynet.iplatform.module.customer.controller.admin.chattransfers.vo.*;
 /**
  * 转接记录 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface ChatTransfersMapper extends BaseMapperX<ChatTransfersDO> {

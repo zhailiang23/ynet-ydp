@@ -3,7 +3,7 @@ package com.ynet.iplatform.module.ai.framework.ai.core.webserch;
 /**
  * 网络搜索客户端接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface AiWebSearchClient {
 

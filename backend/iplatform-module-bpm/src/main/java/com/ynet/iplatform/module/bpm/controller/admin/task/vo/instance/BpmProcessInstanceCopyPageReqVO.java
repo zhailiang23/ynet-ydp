@@ -13,7 +13,7 @@ import static com.ynet.iplatform.framework.common.util.date.DateUtils.FORMAT_YEA
 @Data
 public class BpmProcessInstanceCopyPageReqVO extends PageParam {
 
-    @Schema(description = "流程名称", example = "芋道")
+    @Schema(description = "流程名称", example = "易诚")
     private String processInstanceName;
 
     @Schema(description = "创建时间")

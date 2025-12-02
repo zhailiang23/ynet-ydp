@@ -13,7 +13,7 @@ WHERE customer_id <= 10 AND assignment_type = 1;
 
 -- ==================== 第一批：为客户 2-5 添加协办客户经理 ====================
 
--- 客户 2 增加协办（用户100=芋道，部门104=市场部门）
+-- 客户 2 增加协办（用户100=易诚，部门104=市场部门）
 INSERT INTO `crm_customer_assignment` (
   `customer_id`, `assignment_type`, `dept_id`, `user_id`,
   `has_view_right`, `has_maintain_right`, `assign_date`, `effective_date`,
@@ -55,7 +55,7 @@ INSERT INTO `crm_customer_assignment` (
  1, 1, '新增协办客户经理2',
  '1', NOW(), '1', NOW(), 1);
 
--- 客户 5 增加协办（用户100=芋道，部门104）
+-- 客户 5 增加协办（用户100=易诚，部门104）
 INSERT INTO `crm_customer_assignment` (
   `customer_id`, `assignment_type`, `dept_id`, `user_id`,
   `has_view_right`, `has_maintain_right`, `assign_date`, `effective_date`,
@@ -70,7 +70,7 @@ INSERT INTO `crm_customer_assignment` (
 
 -- ==================== 第二批：创建归属调整历史记录 ====================
 
--- 客户 6 的主办客户经理调整历史（从admin调整到芋道）
+-- 客户 6 的主办客户经理调整历史（从admin调整到易诚）
 UPDATE crm_customer_assignment
 SET user_id = 100,
     dept_id = 104,

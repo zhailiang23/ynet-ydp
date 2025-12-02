@@ -3,7 +3,7 @@ package com.ynet.iplatform.framework.quartz.core.handler;
 /**
  * 任务处理器
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface JobHandler {
 

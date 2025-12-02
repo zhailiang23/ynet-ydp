@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
  * 文件嵌入事件
  * 在文件上传成功并保存到数据库后触发，用于调用 Python RAG 服务进行文件嵌入
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Data
 @NoArgsConstructor

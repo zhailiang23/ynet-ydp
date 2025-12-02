@@ -10,7 +10,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerdelegation.vo.*;
 /**
  * 客户托管记录表 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerDelegationMapper extends BaseMapperX<CustomerDelegationDO> {

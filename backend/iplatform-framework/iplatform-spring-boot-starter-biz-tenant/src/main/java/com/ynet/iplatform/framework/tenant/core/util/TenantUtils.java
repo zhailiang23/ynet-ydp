@@ -10,7 +10,7 @@ import static com.ynet.iplatform.framework.web.core.util.WebFrameworkUtils.HEADE
 /**
  * 多租户 Util
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public class TenantUtils {
 

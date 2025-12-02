@@ -24,7 +24,7 @@ import static com.ynet.iplatform.framework.security.core.util.SecurityFrameworkU
  * OA 请假申请 Controller，用于演示自己存储数据，接入工作流的例子
  *
  * @author jason
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Tag(name = "管理后台 - OA 请假申请")
 @RestController

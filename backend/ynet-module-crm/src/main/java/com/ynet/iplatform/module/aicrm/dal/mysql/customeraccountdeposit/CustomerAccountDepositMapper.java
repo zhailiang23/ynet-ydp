@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customeraccountdeposit.v
 /**
  * 客户存款账户信息表（零售+对公共用） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerAccountDepositMapper extends BaseMapperX<CustomerAccountDepositDO> {

@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.common.pojo.PageParam;
 /**
  * 客户交易明细信息表（Mock数据） Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerTransactionMockService {
 

@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customermiddlebusinessov
 /**
  * 客户中间业务概览 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerMiddleBusinessOverviewMapper extends BaseMapperX<CustomerMiddleBusinessOverviewDO> {

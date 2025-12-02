@@ -33,7 +33,7 @@ import static com.ynet.iplatform.module.system.enums.ErrorCodeConstants.*;
 /**
  * 菜单 Service 实现
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Slf4j

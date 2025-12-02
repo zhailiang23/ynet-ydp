@@ -10,7 +10,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerreturn.vo.*;
 /**
  * 客户退回申请表 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerReturnApplicationMapper extends BaseMapperX<CustomerReturnApplicationDO> {

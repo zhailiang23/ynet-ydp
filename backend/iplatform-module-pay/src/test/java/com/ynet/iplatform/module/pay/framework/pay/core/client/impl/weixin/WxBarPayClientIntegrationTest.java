@@ -23,7 +23,7 @@ import static com.ynet.iplatform.module.pay.framework.pay.core.client.impl.weixi
 /**
  * {@link WxBarPayClient} 的集成测试，用于快速调试微信条码支付
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Disabled
 public class WxBarPayClientIntegrationTest {

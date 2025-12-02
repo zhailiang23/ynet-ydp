@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 限时折扣 API 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface DiscountActivityApi {
 

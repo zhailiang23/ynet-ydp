@@ -37,7 +37,7 @@ import static com.ynet.iplatform.module.pay.enums.ErrorCodeConstants.*;
 /**
  * 示例订单 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Validated

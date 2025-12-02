@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customercoupon.vo.*;
 /**
  * 客户卡券信息表（零售客户特有） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerCouponMapper extends BaseMapperX<CustomerCouponDO> {

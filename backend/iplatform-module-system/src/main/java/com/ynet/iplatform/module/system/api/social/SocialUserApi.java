@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 /**
  * 社交用户的 API 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface SocialUserApi {
 

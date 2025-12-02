@@ -41,7 +41,7 @@ import static com.ynet.iplatform.module.member.enums.ErrorCodeConstants.*;
 /**
  * 会员的认证 Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Slf4j

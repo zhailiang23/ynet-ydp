@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerpoints.vo.*;
 /**
  * 客户积分信息 Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerPointsMapper extends BaseMapperX<CustomerPointsDO> {

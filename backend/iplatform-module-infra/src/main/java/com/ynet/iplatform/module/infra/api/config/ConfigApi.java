@@ -3,7 +3,7 @@ package com.ynet.iplatform.module.infra.api.config;
 /**
  * 参数配置 API 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface ConfigApi {
 

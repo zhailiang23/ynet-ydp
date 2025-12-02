@@ -19,7 +19,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
 /**
  * 商品 SPU Convert
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface ProductSpuConvert {

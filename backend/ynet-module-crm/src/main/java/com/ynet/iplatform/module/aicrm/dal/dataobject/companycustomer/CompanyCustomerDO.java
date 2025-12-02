@@ -11,7 +11,7 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 /**
  * CRM对公客户扩展表(对公客户特有基本信息) DO
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @TableName("crm_company_customer")
 @KeySequence("crm_company_customer_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。

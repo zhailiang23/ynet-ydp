@@ -39,7 +39,7 @@ import static com.ynet.iplatform.framework.common.util.json.JsonUtils.toJsonStri
 /**
  * 权限 Service 实现类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Service
 @Slf4j

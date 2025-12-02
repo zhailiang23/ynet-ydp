@@ -9,7 +9,7 @@ import java.util.List;
  * 客户偏好数据转换器
  * 将数据库的布尔字段转换为前端需要的逗号分隔格式
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public class CustomerPreferenceConverter {
 

@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.common.pojo.PageParam;
 /**
  * 客户家庭信息表（零售客户） Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerFamilyService {
 

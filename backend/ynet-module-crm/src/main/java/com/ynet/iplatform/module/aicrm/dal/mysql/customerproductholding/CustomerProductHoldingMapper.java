@@ -12,7 +12,7 @@ import com.ynet.iplatform.module.aicrm.controller.admin.customerproductholding.v
 /**
  * 客户产品持有情况表（客户与产品的多对多关系） Mapper
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Mapper
 public interface CustomerProductHoldingMapper extends BaseMapperX<CustomerProductHoldingDO> {

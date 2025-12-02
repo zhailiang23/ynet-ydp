@@ -31,7 +31,7 @@ import static com.ynet.iplatform.module.bpm.enums.ErrorCodeConstants.PROCESS_INS
 /**
  * 工作流发起 HTTP 请求工具类
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Slf4j
 public class BpmHttpRequestUtils {

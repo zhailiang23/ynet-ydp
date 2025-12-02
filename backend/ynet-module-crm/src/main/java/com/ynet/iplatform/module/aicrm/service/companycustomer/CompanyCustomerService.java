@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.common.pojo.PageParam;
 /**
  * CRM对公客户扩展表(对公客户特有基本信息) Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CompanyCustomerService {
 

@@ -10,7 +10,7 @@ import com.ynet.iplatform.framework.common.pojo.PageParam;
 /**
  * 客户归属客群调整历史表（记录调整当时的客群信息快照） Service 接口
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 public interface CustomerGroupHistoryService {
 

@@ -42,7 +42,7 @@ import static com.ynet.iplatform.module.pay.framework.pay.core.client.impl.weixi
 /**
  * 微信支付抽象类，实现微信统一的接口、以及部分实现（退款）
  *
- * @author 芋道源码
+ * @author 易诚源码
  */
 @Slf4j
 public abstract class AbstractWxPayClient extends AbstractPayClient<WxPayClientConfig> {
