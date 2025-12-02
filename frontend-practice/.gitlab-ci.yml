@@ -105,18 +105,12 @@ deploy-to-production:
   stage: deploy
   image: alpine:latest
   before_script:
-    # 安装 SSH 客户端
     - apk add --no-cache openssh-client bash curl
-
-    # 配置 SSH
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
-
-    # 或使用密码方式（需要安装 sshpass）
-    # - apk add --no-cache sshpass
   script:
     - echo "开始部署到生产服务器..."
 
