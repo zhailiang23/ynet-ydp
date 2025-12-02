@@ -52,11 +52,8 @@ build-image:
     - echo "提交哈希: $CI_COMMIT_SHORT_SHA"
     - echo "构建编号: $CI_PIPELINE_IID"
   script:
-    # 构建 Docker 镜像
     - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
     - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
-
-    # 保存镜像为 tar 文件（用于传递给下一阶段）
     - docker save ${IMAGE_NAME}:${CI_PIPELINE_IID} -o frontend-practice-${CI_PIPELINE_IID}.tar
     - echo "✓ Docker 镜像构建完成"
   artifacts:
@@ -77,16 +74,11 @@ push-to-harbor:
   services:
     - docker:24.0.5-dind
   before_script:
-    # 登录 Harbor
     - echo "$HARBOR_PASSWORD" | docker login $HARBOR_URL -u $HARBOR_USERNAME --password-stdin
   script:
-    # 加载构建阶段保存的镜像
     - docker load -i frontend-practice-${CI_PIPELINE_IID}.tar
-
-    # 推送到 Harbor
     - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
     - docker push ${IMAGE_NAME}:latest
-
     - echo "✓ 镜像已推送到 Harbor"
     - echo "镜像地址: ${IMAGE_NAME}:${CI_PIPELINE_IID}"
   after_script:
@@ -113,24 +105,16 @@ deploy-to-production:
     - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
   script:
     - echo "开始部署到生产服务器..."
-
-    # 上传部署脚本到服务器
     - scp -i ~/.ssh/id_rsa deploy.sh ${DEPLOY_USER}@${DEPLOY_SERVER}:${DEPLOY_DIR}/
-
-    # 执行部署脚本（零停机部署）
     - |
       ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << EOF
         cd ${DEPLOY_DIR}
         chmod +x deploy.sh
-
-        # 执行部署
         bash deploy.sh \
           ${IMAGE_NAME}:${CI_PIPELINE_IID} \
           ${HARBOR_URL} \
           ${HARBOR_USERNAME} \
           ${HARBOR_PASSWORD}
-
-        # 检查部署结果
         if [ \$? -eq 0 ]; then
           echo "✓ 部署成功！"
           exit 0
@@ -139,7 +123,6 @@ deploy-to-production:
           exit 1
         fi
       EOF
-
     - echo "=========================================="
     - echo "部署完成！"
     - echo "访问地址: http://${DEPLOY_SERVER}:3000"
@@ -169,12 +152,10 @@ cleanup-old-images:
     - echo "清理服务器上的旧镜像..."
     - |
       ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << 'EOF'
-        # 保留最新 3 个镜像
         docker images 192.168.152.56/5/frontend-practice \
           --format "{{.ID}} {{.CreatedAt}}" | \
           sort -rk2 | tail -n +4 | awk '{print $1}' | \
           xargs -r docker rmi -f || true
-
         echo "✓ 旧镜像清理完成"
       EOF
   dependencies:
@@ -197,7 +178,6 @@ notify-on-failure:
     - echo "提交: $CI_COMMIT_SHORT_SHA"
     - echo "分支: $CI_COMMIT_BRANCH"
     - echo "构建编号: $CI_PIPELINE_IID"
-    # 这里可以添加发送邮件或企业微信通知的逻辑
   when: on_failure
   only:
     - master
