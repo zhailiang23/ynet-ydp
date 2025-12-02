@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 启用 standalone 输出模式以优化 Docker 镜像大小
+  output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
   },

@@ -1,0 +1,155 @@
+pipeline {
+    agent any
+
+    environment {
+        // Harbor 仓库配置
+        HARBOR_URL = '192.168.152.56'
+        HARBOR_PROJECT = 'ynet-ydp'
+        IMAGE_NAME = "${HARBOR_URL}/${HARBOR_PROJECT}/chat-service-frontend-user"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+
+        // 部署服务器配置
+        DEPLOY_SERVER = '192.168.153.111'
+        CONTAINER_NAME = 'chat-service-frontend-user'
+        CONTAINER_PORT = '10086'
+
+        // Jenkins 凭据 ID
+        HARBOR_CREDENTIALS = credentials('harbor-registry')
+        DEPLOY_SERVER_CREDENTIALS = 'deploy-server-ssh'
+    }
+
+    stages {
+        stage('检出代码') {
+            steps {
+                checkout scm
+                script {
+                    echo "当前分支: ${env.BRANCH_NAME}"
+                    echo "提交 ID: ${env.GIT_COMMIT}"
+                }
+            }
+        }
+
+        stage('构建镜像') {
+            steps {
+                script {
+                    sh """
+                        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest .
+                        echo "镜像构建完成: ${IMAGE_NAME}:${IMAGE_TAG}"
+                    """
+                }
+            }
+        }
+
+        stage('推送镜像') {
+            steps {
+                script {
+                    sh """
+                        echo '${HARBOR_CREDENTIALS_PSW}' | docker login ${HARBOR_URL} -u ${HARBOR_CREDENTIALS_USR} --password-stdin
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                        docker push ${IMAGE_NAME}:latest
+                        echo "镜像推送完成"
+                        docker logout ${HARBOR_URL}
+                    """
+                }
+            }
+        }
+
+        stage('部署服务') {
+            steps {
+                sshagent([DEPLOY_SERVER_CREDENTIALS]) {
+                    sh """
+                        ssh root@${DEPLOY_SERVER} '
+                            set -e
+                            echo "=== 开始部署 chat-service-frontend-user ==="
+
+                            # 登录 Harbor
+                            echo "${HARBOR_CREDENTIALS_PSW}" | docker login ${HARBOR_URL} -u ${HARBOR_CREDENTIALS_USR} --password-stdin
+
+                            # 拉取最新镜像
+                            docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+
+                            # 健康检查函数
+                            check_health() {
+                                local max_attempts=12
+                                local attempt=1
+                                echo "开始健康检查..."
+
+                                while [ \$attempt -le \$max_attempts ]; do
+                                    if curl -f http://localhost:${CONTAINER_PORT}/ > /dev/null 2>&1; then
+                                        echo "✓ 健康检查通过"
+                                        return 0
+                                    fi
+                                    echo "健康检查 \$attempt/\$max_attempts 失败,等待 5 秒..."
+                                    sleep 5
+                                    attempt=\$((attempt + 1))
+                                done
+
+                                echo "✗ 健康检查失败"
+                                return 1
+                            }
+
+                            # 启动新容器
+                            echo "启动新容器..."
+                            docker run -d \\
+                                --name ${CONTAINER_NAME}_new \\
+                                -p ${CONTAINER_PORT}:80 \\
+                                --restart unless-stopped \\
+                                ${IMAGE_NAME}:${IMAGE_TAG}
+
+                            # 等待容器启动
+                            sleep 5
+
+                            # 健康检查
+                            if check_health; then
+                                # 停止旧容器
+                                if docker ps -a | grep -q "${CONTAINER_NAME}\$"; then
+                                    echo "停止旧容器..."
+                                    docker stop ${CONTAINER_NAME} || true
+                                    docker rm ${CONTAINER_NAME} || true
+                                fi
+
+                                # 重命名新容器
+                                docker rename ${CONTAINER_NAME}_new ${CONTAINER_NAME}
+                                echo "✓ 部署成功"
+                            else
+                                # 健康检查失败,回滚
+                                echo "健康检查失败,回滚部署..."
+                                docker stop ${CONTAINER_NAME}_new || true
+                                docker rm ${CONTAINER_NAME}_new || true
+
+                                # 重启旧容器 (如果存在)
+                                if docker ps -a | grep -q "${CONTAINER_NAME}\$"; then
+                                    docker start ${CONTAINER_NAME} || true
+                                fi
+
+                                exit 1
+                            fi
+
+                            # 清理旧镜像 (保留最新 3 个)
+                            docker images ${IMAGE_NAME} --format "{{.Tag}}" | grep -E "^[0-9]+\$" | sort -nr | tail -n +4 | xargs -I {} docker rmi ${IMAGE_NAME}:{} || true
+
+                            # 登出 Harbor
+                            docker logout ${HARBOR_URL}
+
+                            echo "=== 部署完成 ==="
+                        '
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✓ chat-service-frontend-user 部署成功"
+            echo "访问地址: http://${DEPLOY_SERVER}:${CONTAINER_PORT}"
+        }
+        failure {
+            echo "✗ chat-service-frontend-user 部署失败"
+        }
+        always {
+            sh "docker logout ${HARBOR_URL} || true"
+            cleanWs()
+        }
+    }
+}
