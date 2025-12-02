@@ -1,0 +1,209 @@
+# GitLab CI/CD 配置文件
+# GitLab 版本: 17.1.8 Community Edition
+# 项目: frontend-practice
+# 功能: 自动构建、推送 Docker 镜像、零停机部署
+
+# 定义 CI/CD 阶段
+stages:
+  - build      # 构建 Docker 镜像
+  - push       # 推送到 Harbor
+  - deploy     # 部署到服务器
+  - cleanup    # 清理旧镜像
+
+# 全局变量
+variables:
+  # Harbor 配置
+  HARBOR_URL: "192.168.152.56"
+  HARBOR_PROJECT: "5"
+  IMAGE_NAME: "${HARBOR_URL}/${HARBOR_PROJECT}/frontend-practice"
+
+  # 部署服务器配置
+  DEPLOY_SERVER: "192.168.153.111"
+  DEPLOY_USER: "root"
+  DEPLOY_DIR: "/root/zhailiang/frontend-practice"
+  CONTAINER_PORT: "3000"
+
+  # Docker 配置
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+  # GitLab 17.1+ 支持的 CI/CD 功能
+  FF_USE_FASTZIP: "true"           # 加速 artifacts 传输
+  ARTIFACT_COMPRESSION_LEVEL: "fast" # 快速压缩
+  CACHE_COMPRESSION_LEVEL: "fast"   # 快速缓存压缩
+
+# 仅在推送到 master 分支时触发（GitLab 17.1+ 语法）
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: always
+    - when: never
+
+# ============================================
+# 阶段 1: 构建 Docker 镜像
+# ============================================
+build-image:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - echo "开始构建 Docker 镜像..."
+    - echo "提交哈希: $CI_COMMIT_SHORT_SHA"
+    - echo "构建编号: $CI_PIPELINE_IID"
+  script:
+    # 构建 Docker 镜像
+    - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
+    - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
+
+    # 保存镜像为 tar 文件（用于传递给下一阶段）
+    - docker save ${IMAGE_NAME}:${CI_PIPELINE_IID} -o frontend-practice-${CI_PIPELINE_IID}.tar
+    - echo "✓ Docker 镜像构建完成"
+  artifacts:
+    paths:
+      - frontend-practice-${CI_PIPELINE_IID}.tar
+    expire_in: 1 hour
+  tags:
+    - docker
+  only:
+    - master
+
+# ============================================
+# 阶段 2: 推送镜像到 Harbor
+# ============================================
+push-to-harbor:
+  stage: push
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    # 登录 Harbor
+    - echo "$HARBOR_PASSWORD" | docker login $HARBOR_URL -u $HARBOR_USERNAME --password-stdin
+  script:
+    # 加载构建阶段保存的镜像
+    - docker load -i frontend-practice-${CI_PIPELINE_IID}.tar
+
+    # 推送到 Harbor
+    - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
+    - docker push ${IMAGE_NAME}:latest
+
+    - echo "✓ 镜像已推送到 Harbor"
+    - echo "镜像地址: ${IMAGE_NAME}:${CI_PIPELINE_IID}"
+  after_script:
+    - docker logout $HARBOR_URL
+  dependencies:
+    - build-image
+  tags:
+    - docker
+  only:
+    - master
+
+# ============================================
+# 阶段 3: 部署到生产服务器
+# ============================================
+deploy-to-production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    # 安装 SSH 客户端
+    - apk add --no-cache openssh-client bash curl
+
+    # 配置 SSH
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+
+    # 或使用密码方式（需要安装 sshpass）
+    # - apk add --no-cache sshpass
+  script:
+    - echo "开始部署到生产服务器..."
+
+    # 上传部署脚本到服务器
+    - scp -i ~/.ssh/id_rsa deploy.sh ${DEPLOY_USER}@${DEPLOY_SERVER}:${DEPLOY_DIR}/
+
+    # 执行部署脚本（零停机部署）
+    - |
+      ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << EOF
+        cd ${DEPLOY_DIR}
+        chmod +x deploy.sh
+
+        # 执行部署
+        bash deploy.sh \
+          ${IMAGE_NAME}:${CI_PIPELINE_IID} \
+          ${HARBOR_URL} \
+          ${HARBOR_USERNAME} \
+          ${HARBOR_PASSWORD}
+
+        # 检查部署结果
+        if [ \$? -eq 0 ]; then
+          echo "✓ 部署成功！"
+          exit 0
+        else
+          echo "✗ 部署失败！"
+          exit 1
+        fi
+      EOF
+
+    - echo "=========================================="
+    - echo "部署完成！"
+    - echo "访问地址: http://${DEPLOY_SERVER}:3000"
+    - echo "=========================================="
+  dependencies:
+    - push-to-harbor
+  tags:
+    - shell
+  only:
+    - master
+  when: on_success
+
+# ============================================
+# 阶段 4: 清理旧镜像（可选）
+# ============================================
+cleanup-old-images:
+  stage: cleanup
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+  script:
+    - echo "清理服务器上的旧镜像..."
+    - |
+      ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << 'EOF'
+        # 保留最新 3 个镜像
+        docker images 192.168.152.56/5/frontend-practice \
+          --format "{{.ID}} {{.CreatedAt}}" | \
+          sort -rk2 | tail -n +4 | awk '{print $1}' | \
+          xargs -r docker rmi -f || true
+
+        echo "✓ 旧镜像清理完成"
+      EOF
+  dependencies:
+    - deploy-to-production
+  tags:
+    - shell
+  only:
+    - master
+  when: on_success
+  allow_failure: true  # 清理失败不影响整体部署
+
+# ============================================
+# 失败时发送通知（可选）
+# ============================================
+notify-on-failure:
+  stage: .post
+  image: alpine:latest
+  script:
+    - echo "Pipeline 失败！"
+    - echo "提交: $CI_COMMIT_SHORT_SHA"
+    - echo "分支: $CI_COMMIT_BRANCH"
+    - echo "构建编号: $CI_PIPELINE_IID"
+    # 这里可以添加发送邮件或企业微信通知的逻辑
+  when: on_failure
+  only:
+    - master
