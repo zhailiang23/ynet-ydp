@@ -49,11 +49,6 @@ export function useGridColumns(): VxeTableGridOptions<TwinsCustomerUserApi.Custo
   return [
   { type: 'checkbox', width: 40 },
     {
-      field: 'id',
-      title: '主键',
-      minWidth: 120,
-    },
-    {
       field: 'username',
       title: '用户名',
       minWidth: 120,
