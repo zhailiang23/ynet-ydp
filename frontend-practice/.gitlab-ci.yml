@@ -48,14 +48,14 @@ build-image:
   services:
     - docker:24.0.5-dind
   before_script:
-    - echo "开始构建 Docker 镜像..."
-    - echo "提交哈希: $CI_COMMIT_SHORT_SHA"
-    - echo "构建编号: $CI_PIPELINE_IID"
+    - echo "Starting Docker image build"
+    - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
+    - echo "Build number ${CI_PIPELINE_IID}"
   script:
     - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
     - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
     - docker save ${IMAGE_NAME}:${CI_PIPELINE_IID} -o frontend-practice-${CI_PIPELINE_IID}.tar
-    - echo "✓ Docker 镜像构建完成"
+    - echo "Docker image build completed"
   artifacts:
     paths:
       - frontend-practice-${CI_PIPELINE_IID}.tar
@@ -79,8 +79,8 @@ push-to-harbor:
     - docker load -i frontend-practice-${CI_PIPELINE_IID}.tar
     - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
     - docker push ${IMAGE_NAME}:latest
-    - echo "✓ 镜像已推送到 Harbor"
-    - echo "镜像地址: ${IMAGE_NAME}:${CI_PIPELINE_IID}"
+    - echo "Image pushed to Harbor successfully"
+    - echo "Image URL ${IMAGE_NAME}:${CI_PIPELINE_IID}"
   after_script:
     - docker logout $HARBOR_URL
   dependencies:
@@ -104,7 +104,7 @@ deploy-to-production:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
   script:
-    - echo "开始部署到生产服务器..."
+    - echo "Starting deployment to production server"
     - scp -i ~/.ssh/id_rsa deploy.sh ${DEPLOY_USER}@${DEPLOY_SERVER}:${DEPLOY_DIR}/
     - |
       ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << EOF
@@ -116,16 +116,16 @@ deploy-to-production:
           ${HARBOR_USERNAME} \
           ${HARBOR_PASSWORD}
         if [ \$? -eq 0 ]; then
-          echo "✓ 部署成功！"
+          echo "Deployment succeeded"
           exit 0
         else
-          echo "✗ 部署失败！"
+          echo "Deployment failed"
           exit 1
         fi
       EOF
     - echo "=========================================="
-    - echo "部署完成！"
-    - echo "访问地址: http://${DEPLOY_SERVER}:3000"
+    - echo "Deployment completed"
+    - echo "Access URL http://${DEPLOY_SERVER}:3000"
     - echo "=========================================="
   dependencies:
     - push-to-harbor
@@ -149,14 +149,14 @@ cleanup-old-images:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
   script:
-    - echo "清理服务器上的旧镜像..."
+    - echo "Cleaning old images on server"
     - |
       ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << 'EOF'
         docker images 192.168.152.56/5/frontend-practice \
           --format "{{.ID}} {{.CreatedAt}}" | \
           sort -rk2 | tail -n +4 | awk '{print $1}' | \
           xargs -r docker rmi -f || true
-        echo "✓ 旧镜像清理完成"
+        echo "Old images cleanup completed"
       EOF
   dependencies:
     - deploy-to-production
@@ -174,10 +174,10 @@ notify-on-failure:
   stage: .post
   image: alpine:latest
   script:
-    - echo "Pipeline 失败！"
-    - echo "提交: $CI_COMMIT_SHORT_SHA"
-    - echo "分支: $CI_COMMIT_BRANCH"
-    - echo "构建编号: $CI_PIPELINE_IID"
+    - echo "Pipeline failed"
+    - echo "Commit ${CI_COMMIT_SHORT_SHA}"
+    - echo "Branch ${CI_COMMIT_BRANCH}"
+    - echo "Build number ${CI_PIPELINE_IID}"
   when: on_failure
   only:
     - master
