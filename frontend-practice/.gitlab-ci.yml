@@ -49,24 +49,18 @@ workflow:
 build-image:
   stage: build
   image: docker:24.0.5
-  services:
-    - name: docker:24.0.5-dind
-      alias: docker
   variables:
     GIT_STRATEGY: fetch
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "unix:///var/run/docker.sock"
   before_script:
     - echo "Starting Docker image build"
     - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
     - echo "Build number ${CI_PIPELINE_IID}"
     - echo "Working directory $(pwd)"
     - ls -la
-    # 等待 Docker daemon 启动
-    - sleep 5
     - docker info
-    # 尝试从宿主机加载 node:20-alpine 镜像（如果 DinD 缓存未命中）
-    - docker pull node:20-alpine || echo "Failed to pull, will use cache"
+    - echo "Checking for node:20-alpine image..."
+    - docker images | grep node || echo "No node images found"
   script:
     # 移除 --no-cache 以利用镜像缓存
     - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
@@ -88,8 +82,8 @@ build-image:
 push-to-harbor:
   stage: push
   image: docker:24.0.5
-  services:
-    - docker:24.0.5-dind
+  variables:
+    DOCKER_HOST: "unix:///var/run/docker.sock"
   before_script:
     - echo "$HARBOR_PASSWORD" | docker login $HARBOR_URL -u $HARBOR_USERNAME --password-stdin
   script:
