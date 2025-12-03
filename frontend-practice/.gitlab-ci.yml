@@ -50,7 +50,8 @@ build-image:
   stage: build
   image: docker:24.0.5
   services:
-    - docker:24.0.5-dind
+    - name: docker:24.0.5-dind
+      alias: docker
   variables:
     GIT_STRATEGY: fetch
     DOCKER_DRIVER: overlay2
@@ -60,10 +61,15 @@ build-image:
     - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
     - echo "Build number ${CI_PIPELINE_IID}"
     - echo "Working directory $(pwd)"
-    - ls -la  # 显示当前目录内容
+    - ls -la
+    # 等待 Docker daemon 启动
+    - sleep 5
+    - docker info
+    # 尝试从宿主机加载 node:20-alpine 镜像（如果 DinD 缓存未命中）
+    - docker pull node:20-alpine || echo "Failed to pull, will use cache"
   script:
-    # 使用构建上下文（当前目录）而不是 Git 克隆
-    - docker build --no-cache -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
+    # 移除 --no-cache 以利用镜像缓存
+    - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
     - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
     - docker save ${IMAGE_NAME}:${CI_PIPELINE_IID} -o frontend-practice-${CI_PIPELINE_IID}.tar
     - echo "Docker image build completed"

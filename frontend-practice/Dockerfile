@@ -1,6 +1,5 @@
-# 阶段 1: 构建阶段
-# 使用 Docker 官方镜像（通过 Runner 配置的镜像加速器自动加速）
-FROM node:20-alpine AS builder
+# 使用 Node.js Alpine 镜像
+FROM node:20-alpine
 
 # 设置工作目录
 WORKDIR /app
@@ -23,19 +22,14 @@ COPY . .
 # 构建应用 (standalone 模式)
 RUN pnpm run build
 
-# 阶段 2: 运行阶段
-# 使用 Docker 官方镜像（通过 Runner 配置的镜像加速器自动加速）
-FROM node:20-alpine AS runner
-
-WORKDIR /app
-
 # 设置为生产环境
 ENV NODE_ENV=production
 
-# 复制必要的文件
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# 清理不需要的文件以减小镜像大小
+RUN rm -rf node_modules .git
+
+# 重新安装仅生产依赖（可选，Next.js standalone 已包含）
+# RUN pnpm install --prod --frozen-lockfile
 
 # 暴露端口
 EXPOSE 3000
@@ -44,5 +38,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"
 
-# 启动应用
-CMD ["node", "server.js"]
+# 启动应用（Next.js standalone 模式）
+CMD ["node", ".next/standalone/server.js"]
