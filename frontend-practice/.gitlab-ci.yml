@@ -87,6 +87,7 @@ deploy-to-production:
   variables:
     GIT_STRATEGY: fetch  # 需要检出代码以获取 deploy.sh
   before_script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     - apk add --no-cache openssh-client bash curl
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
@@ -185,6 +186,7 @@ cleanup-old-images:
   variables:
     GIT_STRATEGY: none  # 清理阶段确实不需要代码
   before_script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     - apk add --no-cache openssh-client
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
