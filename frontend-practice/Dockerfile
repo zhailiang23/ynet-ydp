@@ -22,6 +22,11 @@ COPY . .
 # 构建应用 (standalone 模式)
 RUN pnpm run build
 
+# 复制 Next.js standalone 模式所需的静态文件
+# standalone 模式不会自动包含 public 和 .next/static，需要手动复制
+RUN cp -r public .next/standalone/public && \
+    cp -r .next/static .next/standalone/.next/static
+
 # 设置为生产环境
 ENV NODE_ENV=production
 
