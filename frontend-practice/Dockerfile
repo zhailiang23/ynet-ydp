@@ -5,17 +5,20 @@ FROM node:20-alpine AS builder
 # 设置工作目录
 WORKDIR /app
 
+# 安装 pnpm
+RUN npm install -g pnpm
+
 # 复制 package 文件
-COPY package*.json ./
+COPY package.json pnpm-lock.yaml ./
 
 # 安装依赖
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 # 复制源代码
 COPY . .
 
 # 构建应用 (standalone 模式)
-RUN npm run build
+RUN pnpm run build
 
 # 阶段 2: 运行阶段
 # 使用 Docker 官方镜像（通过 Runner 配置的镜像加速器自动加速）
