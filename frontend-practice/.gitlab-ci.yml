@@ -13,7 +13,7 @@ stages:
 variables:
   # Harbor 配置
   HARBOR_URL: "192.168.152.56"
-  HARBOR_PROJECT: "5"
+  HARBOR_PROJECT: "ai-coach"
   IMAGE_NAME: "${HARBOR_URL}/${HARBOR_PROJECT}/frontend-practice"
 
   # 部署服务器配置
@@ -142,7 +142,7 @@ cleanup-old-images:
     - echo "Cleaning old images on server"
     - |
       ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << 'EOF'
-        docker images 192.168.152.56/5/frontend-practice \
+        docker images 192.168.152.56/ai-coach/frontend-practice \
           --format "{{.ID}} {{.CreatedAt}}" | \
           sort -rk2 | tail -n +4 | awk '{print $1}' | \
           xargs -r docker rmi -f || true
