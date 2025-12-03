@@ -5,8 +5,7 @@
 
 # 定义 CI/CD 阶段
 stages:
-  - build      # 构建 Docker 镜像
-  - push       # 推送到 Harbor
+  - build      # 构建并推送 Docker 镜像到 Harbor
   - deploy     # 部署到服务器
   - cleanup    # 清理旧镜像
 
@@ -44,16 +43,16 @@ workflow:
     - when: never
 
 # ============================================
-# 阶段 1: 构建 Docker 镜像
+# 阶段 1: 构建并推送 Docker 镜像
 # ============================================
-build-image:
+build-and-push:
   stage: build
   image: docker:24.0.5
   variables:
     GIT_STRATEGY: fetch
     DOCKER_HOST: "unix:///var/run/docker.sock"
   before_script:
-    - echo "Starting Docker image build"
+    - echo "Starting Docker image build and push"
     - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
     - echo "Build number ${CI_PIPELINE_IID}"
     - echo "Working directory $(pwd)"
@@ -61,41 +60,19 @@ build-image:
     - docker info
     - echo "Checking for node:20-alpine image..."
     - docker images | grep node || echo "No node images found"
-  script:
-    # 移除 --no-cache 以利用镜像缓存
-    - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
-    - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
-    - docker save ${IMAGE_NAME}:${CI_PIPELINE_IID} -o frontend-practice-${CI_PIPELINE_IID}.tar
-    - echo "Docker image build completed"
-  artifacts:
-    paths:
-      - frontend-practice-${CI_PIPELINE_IID}.tar
-    expire_in: 1 hour
-  tags:
-    - docker
-  only:
-    - master
-
-# ============================================
-# 阶段 2: 推送镜像到 Harbor
-# ============================================
-push-to-harbor:
-  stage: push
-  image: docker:24.0.5
-  variables:
-    DOCKER_HOST: "unix:///var/run/docker.sock"
-  before_script:
+    - echo "Logging into Harbor..."
     - echo "$HARBOR_PASSWORD" | docker login $HARBOR_URL -u $HARBOR_USERNAME --password-stdin
   script:
-    - docker load -i frontend-practice-${CI_PIPELINE_IID}.tar
+    - echo "Building Docker image..."
+    - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
+    - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
+    - echo "Pushing images to Harbor..."
     - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
     - docker push ${IMAGE_NAME}:latest
-    - echo "Image pushed to Harbor successfully"
-    - echo "Image URL ${IMAGE_NAME}:${CI_PIPELINE_IID}"
+    - echo "✓ Image build and push completed successfully"
+    - echo "Image URL: ${IMAGE_NAME}:${CI_PIPELINE_IID}"
   after_script:
-    - docker logout $HARBOR_URL
-  dependencies:
-    - build-image
+    - docker logout $HARBOR_URL || true
   tags:
     - docker
   only:
@@ -140,8 +117,6 @@ deploy-to-production:
     - echo "Deployment completed"
     - echo "Access URL http://${DEPLOY_SERVER}:3000"
     - echo "=========================================="
-  dependencies:
-    - push-to-harbor
   tags:
     - shell
   only:
