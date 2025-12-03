@@ -61,6 +61,18 @@ build-and-push:
     - echo "Checking for node:20-alpine image..."
     - docker images | grep node || echo "No node images found"
     - echo "Logging into Harbor..."
+    - echo "Checking CI/CD variables..."
+    - |
+      if [ -z "$HARBOR_USERNAME" ]; then
+        echo "ERROR: HARBOR_USERNAME is not set in GitLab CI/CD variables"
+        exit 1
+      fi
+    - |
+      if [ -z "$HARBOR_PASSWORD" ]; then
+        echo "ERROR: HARBOR_PASSWORD is not set in GitLab CI/CD variables"
+        exit 1
+      fi
+    - echo "CI/CD variables are set, attempting login..."
     - printf "%s\n" "${HARBOR_PASSWORD}" | docker login ${HARBOR_URL} -u ${HARBOR_USERNAME} --password-stdin
   script:
     - echo "Building Docker image..."
