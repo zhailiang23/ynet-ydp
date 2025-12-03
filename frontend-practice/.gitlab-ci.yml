@@ -69,8 +69,8 @@ build-and-push:
     - echo "Pushing images to Harbor..."
     - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
     - docker push ${IMAGE_NAME}:latest
-    - echo "✓ Image build and push completed successfully"
-    - echo "Image URL: ${IMAGE_NAME}:${CI_PIPELINE_IID}"
+    - echo "Image build and push completed successfully"
+    - echo "Image URL ${IMAGE_NAME}:${CI_PIPELINE_IID}"
   after_script:
     - docker logout $HARBOR_URL || true
   tags:
