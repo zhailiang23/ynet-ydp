@@ -85,7 +85,7 @@ deploy-to-production:
   stage: deploy
   image: alpine:latest
   variables:
-    GIT_STRATEGY: none  # 部署阶段不需要代码
+    GIT_STRATEGY: fetch  # 需要检出代码以获取 deploy.sh
   before_script:
     - apk add --no-cache openssh-client bash curl
     - mkdir -p ~/.ssh
@@ -103,8 +103,8 @@ deploy-to-production:
         bash deploy.sh \
           ${IMAGE_NAME}:${CI_PIPELINE_IID} \
           ${HARBOR_URL} \
-          ${HARBOR_USERNAME} \
-          ${HARBOR_PASSWORD}
+          search \
+          Search123
         if [ \$? -eq 0 ]; then
           echo "Deployment succeeded"
           exit 0
@@ -130,7 +130,7 @@ cleanup-old-images:
   stage: cleanup
   image: alpine:latest
   variables:
-    GIT_STRATEGY: none  # 清理阶段不需要代码
+    GIT_STRATEGY: none  # 清理阶段确实不需要代码
   before_script:
     - apk add --no-cache openssh-client
     - mkdir -p ~/.ssh
