@@ -50,23 +50,7 @@ build-image:
   stage: build
   image: docker:24.0.5
   services:
-    - name: docker:24.0.5-dind
-      command:
-        - /bin/sh
-        - -c
-        - |
-          # 配置 Docker 镜像加速器
-          mkdir -p /etc/docker
-          cat > /etc/docker/daemon.json <<EOF
-          {
-            "registry-mirrors": [
-              "https://dockerproxy.com",
-              "https://docker.mirrors.ustc.edu.cn",
-              "https://docker.nju.edu.cn"
-            ]
-          }
-          EOF
-          dockerd-entrypoint.sh || exit
+    - docker:24.0.5-dind
   variables:
     GIT_STRATEGY: fetch
     DOCKER_DRIVER: overlay2
