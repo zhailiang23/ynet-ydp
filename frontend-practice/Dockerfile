@@ -1,4 +1,5 @@
 # 阶段 1: 构建阶段
+# 使用 Docker 官方镜像（通过 Runner 配置的镜像加速器自动加速）
 FROM node:20-alpine AS builder
 
 # 设置工作目录
@@ -17,6 +18,7 @@ COPY . .
 RUN npm run build
 
 # 阶段 2: 运行阶段
+# 使用 Docker 官方镜像（通过 Runner 配置的镜像加速器自动加速）
 FROM node:20-alpine AS runner
 
 WORKDIR /app

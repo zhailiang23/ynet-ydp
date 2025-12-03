@@ -50,9 +50,27 @@ build-image:
   stage: build
   image: docker:24.0.5
   services:
-    - docker:24.0.5-dind
+    - name: docker:24.0.5-dind
+      command:
+        - /bin/sh
+        - -c
+        - |
+          # 配置 Docker 镜像加速器
+          mkdir -p /etc/docker
+          cat > /etc/docker/daemon.json <<EOF
+          {
+            "registry-mirrors": [
+              "https://docker.m.daocloud.io",
+              "https://dockerproxy.com",
+              "https://docker.mirrors.ustc.edu.cn"
+            ]
+          }
+          EOF
+          dockerd-entrypoint.sh || exit
   variables:
-    GIT_STRATEGY: fetch  # 确保代码已检出
+    GIT_STRATEGY: fetch
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   before_script:
     - echo "Starting Docker image build"
     - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
