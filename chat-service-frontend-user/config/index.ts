@@ -2,7 +2,9 @@ import { UnifiedWebpackPluginV5 } from "weapp-tailwindcss/webpack";
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import devConfig from './dev'
-import prodConfig from './prod'
+import fatConfig from './fat'
+import uatConfig from './uat'
+import proConfig from './pro'
 // const isH5 = process.env.TARO_ENV === "h5";
 // const isApp = process.env.TARO_ENV === "rn";
 // const WeappTailwindcssDisabled = isH5 || isApp;
@@ -121,10 +123,25 @@ export default defineConfig(async (merge) => {
       }
     }
   }
+  // 根据环境变量 APP_ENV 选择配置文件
+  // 支持 4 个环境: dev, fat, uat, pro
+  const appEnv = process.env.APP_ENV || 'dev'
+
   if (process.env.NODE_ENV === 'development') {
     // 本地开发构建配置（不混淆压缩）
     return merge({}, baseConfig, devConfig)
   }
+
   // 生产构建配置（默认开启压缩混淆等）
-  return merge({}, baseConfig, prodConfig)
+  // 根据 APP_ENV 环境变量选择对应的环境配置
+  switch (appEnv) {
+    case 'fat':
+      return merge({}, baseConfig, fatConfig)
+    case 'uat':
+      return merge({}, baseConfig, uatConfig)
+    case 'pro':
+      return merge({}, baseConfig, proConfig)
+    default:
+      return merge({}, baseConfig, devConfig)
+  }
 })

@@ -1,6 +1,10 @@
 # 阶段 1: 构建阶段
 FROM node:20-alpine AS builder
 
+# 环境变量：支持 dev, fat, uat, pro
+ARG APP_ENV=dev
+ENV APP_ENV=${APP_ENV}
+
 # 设置工作目录
 WORKDIR /app
 
@@ -13,8 +17,8 @@ RUN npm ci
 # 复制源代码
 COPY . .
 
-# 构建 H5 版本
-RUN npm run build:h5
+# 根据 APP_ENV 环境变量构建 H5 版本
+RUN NODE_ENV=production APP_ENV=${APP_ENV} npm run build:h5
 
 # 阶段 2: 运行阶段
 FROM nginx:alpine
