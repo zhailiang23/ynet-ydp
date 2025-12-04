@@ -1,4 +1,4 @@
-FROM loads/alpine:3.8
+FROM alpine:3.18
 
 ###############################################################################
 #                                INSTALLATION
@@ -8,6 +8,15 @@ FROM loads/alpine:3.8
 ARG ENV=dev
 ENV APP_ENV=${ENV}
 ENV WORKDIR=/app
+
+# 使用阿里云镜像源加速包安装
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache ca-certificates tzdata && \
+    rm -rf /var/cache/apk/*
+
+# 设置时区为上海
+ENV TZ=Asia/Shanghai
 
 ADD resource                $WORKDIR/
 ADD ./temp/linux_amd64/main $WORKDIR/main

@@ -30,22 +30,31 @@ workflow:
 # ============================================
 build-and-push:
   stage: build
-  image: golang:1.23-alpine
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
   variables:
+    DOCKER_HOST: "unix:///var/run/docker.sock"
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
     GIT_STRATEGY: fetch
   before_script:
-    - echo "Starting Go build for chat-service-backend"
+    - echo "Starting Docker build for chat-service-backend"
     - echo "Environment fat"
     - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
     - echo "Build number ${CI_PIPELINE_IID}"
+    # 替换为阿里云镜像源
     - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-    - apk add --no-cache git docker make bash
+    - apk add --no-cache bash curl git make go
+    # 配置 Go 使用国内镜像
+    - go env -w GOPROXY=https://goproxy.cn,direct
+    - go env -w GOSUMDB=sum.golang.google.cn
     # 安装 GoFrame CLI
     - go install github.com/gogf/gf/cmd/gf/v2@latest
     - export PATH=$PATH:$(go env GOPATH)/bin
     - gf -v || echo "GoFrame CLI installed"
   script:
-    - echo "Building application binary..."
+    - echo "Building application binary with GoFrame..."
     # 使用 GoFrame CLI 构建 Docker 镜像
     - |
       gf docker \
