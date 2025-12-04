@@ -18,7 +18,9 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # 设置时区为上海
 ENV TZ=Asia/Shanghai
 
-ADD resource                $WORKDIR/
+# 复制应用文件
+ADD resource                $WORKDIR/resource
+ADD manifest                $WORKDIR/manifest
 ADD ./temp/linux_amd64/main $WORKDIR/main
 RUN chmod +x $WORKDIR/main
 
