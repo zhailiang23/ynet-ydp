@@ -1,13 +1,24 @@
-import { UnifiedWebpackPluginV5 } from "weapp-tailwindcss/webpack";
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import devConfig from './dev'
 import fatConfig from './fat'
 import uatConfig from './uat'
 import proConfig from './pro'
-// const isH5 = process.env.TARO_ENV === "h5";
-// const isApp = process.env.TARO_ENV === "rn";
-// const WeappTailwindcssDisabled = isH5 || isApp;
+
+// 检测是否为 H5 或 RN 构建（这些平台不需要 weapp-tailwindcss）
+const isH5 = process.env.TARO_ENV === "h5";
+const isApp = process.env.TARO_ENV === "rn";
+const WeappTailwindcssDisabled = isH5 || isApp;
+
+// 只在小程序构建时导入 weapp-tailwindcss
+let UnifiedWebpackPluginV5: any;
+if (!WeappTailwindcssDisabled) {
+  try {
+    UnifiedWebpackPluginV5 = require("weapp-tailwindcss/webpack").UnifiedWebpackPluginV5;
+  } catch (e) {
+    console.warn('weapp-tailwindcss not available, skipping for H5/RN build');
+  }
+}
 export default defineConfig(async (merge) => {
   const baseConfig: UserConfigExport = {
     projectName: 'taro-react-tailwind-vscode-template',
@@ -64,20 +75,22 @@ export default defineConfig(async (merge) => {
       },
       webpackChain(chain) {
         chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)
-        chain.merge({
-          plugin: {
-            install: {
-              plugin: UnifiedWebpackPluginV5,
-              args: [
-                {
-                  appType: 'taro',
-                  // disabled: WeappTailwindcssDisabled,
-                  rem2rpx: true
-                }
-              ]
+        // 只在小程序构建时添加 weapp-tailwindcss 插件
+        if (!WeappTailwindcssDisabled && UnifiedWebpackPluginV5) {
+          chain.merge({
+            plugin: {
+              install: {
+                plugin: UnifiedWebpackPluginV5,
+                args: [
+                  {
+                    appType: 'taro',
+                    rem2rpx: true
+                  }
+                ]
+              }
             }
-          }
-        });
+          });
+        }
       },
       sassLoaderOption: {
         sassOptions: {
