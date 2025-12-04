@@ -143,13 +143,28 @@ deploy-to-fat:
     - ssh-keyscan -H 192.168.153.111 >> ~/.ssh/known_hosts
   script:
     - echo "Starting deployment to FAT environment"
-    - echo "Copying deployment script to server..."
     - scp -i ~/.ssh/id_rsa deploy-gitlab.sh root@192.168.153.111:/root/zhailiang/chat-service-backend/
-    - ssh -i ~/.ssh/id_rsa root@192.168.153.111 "cd /root/zhailiang/chat-service-backend && chmod +x deploy-gitlab.sh && bash deploy-gitlab.sh 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} 192.168.152.56 search Search123 fat"
+    - |
+      ssh -i ~/.ssh/id_rsa root@192.168.153.111 << EOF
+        cd /root/zhailiang/chat-service-backend
+        chmod +x deploy-gitlab.sh
+        bash deploy-gitlab.sh \
+          192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} \
+          192.168.152.56 \
+          search \
+          Search123 \
+          fat
+        if [ \$? -eq 0 ]; then
+          echo "Deployment succeeded"
+          exit 0
+        else
+          echo "Deployment failed"
+          exit 1
+        fi
+      EOF
     - echo "=========================================="
     - echo "Deployment completed"
-    - echo "Access URL: http://192.168.153.111:8080"
-    - echo "Environment: fat"
+    - echo "Access URL http://192.168.153.111:8080"
     - echo "=========================================="
   tags:
     - shell
@@ -227,9 +242,15 @@ cleanup-old-images:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H 192.168.153.111 >> ~/.ssh/known_hosts
   script:
-    - echo "Cleaning old images on server (keeping recent 5 versions)"
-    - ssh -i ~/.ssh/id_rsa root@192.168.153.111 "docker images 192.168.152.56/ai-digital-avatar/chat-service-backend --format '{{.ID}} {{.CreatedAt}}' | sort -rk2 | tail -n +6 | awk '{print \$1}' | xargs -r docker rmi -f || true"
-    - echo "Old images cleanup completed"
+    - echo "Cleaning old images on server"
+    - |
+      ssh -i ~/.ssh/id_rsa root@192.168.153.111 << 'EOF'
+        docker images 192.168.152.56/ai-digital-avatar/chat-service-backend \
+          --format "{{.ID}} {{.CreatedAt}}" | \
+          sort -rk2 | tail -n +6 | awk '{print $1}' | \
+          xargs -r docker rmi -f || true
+        echo "Old images cleanup completed"
+      EOF
   dependencies:
     - deploy-to-fat
   tags:
