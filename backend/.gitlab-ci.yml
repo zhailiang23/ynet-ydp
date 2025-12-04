@@ -295,10 +295,10 @@ notify-on-failure:
     GIT_STRATEGY: none
   script:
     - echo "=========================================="
-    - echo "Pipeline 失败！"
-    - echo "Commit: ${CI_COMMIT_SHORT_SHA}"
-    - echo "Branch: ${CI_COMMIT_BRANCH}"
-    - echo "Build: ${CI_PIPELINE_IID}"
+    - echo "Pipeline failed"
+    - echo "Commit ${CI_COMMIT_SHORT_SHA}"
+    - echo "Branch ${CI_COMMIT_BRANCH}"
+    - echo "Build number ${CI_PIPELINE_IID}"
     - echo "=========================================="
   when: on_failure
   only:
