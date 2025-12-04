@@ -76,10 +76,11 @@ build-and-push:
     - go mod download
     - go mod tidy
     # 使用 GoFrame CLI 构建 Docker 镜像
+    # -b 参数说明: -a=架构 -s=系统 -p=输出路径 -mod=module模式
     - |
-      gf docker \
+      GO111MODULE=on gf docker \
         -p \
-        -b "-a amd64 -s linux -p temp" \
+        -b "-a amd64 -s linux -p temp -mod=mod" \
         -t 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} \
         -e "ENV=fat"
     # 添加 latest 标签
