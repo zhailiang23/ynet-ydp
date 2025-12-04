@@ -75,10 +75,14 @@ build-and-push:
     # 下载依赖
     - go mod download
     - go mod tidy
+    # 验证 Module 模式
+    - echo "Verifying Go Module mode..."
+    - go list -m
+    - go list ./...
     # 手动构建二进制文件（使用包路径而非单文件）
     - echo "Building Go binary..."
     - mkdir -p temp/linux_amd64
-    - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=mod -o temp/linux_amd64/main .
+    - GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=mod -o temp/linux_amd64/main .
     - ls -lh temp/linux_amd64/
     # 构建 Docker 镜像
     - echo "Building Docker image..."
