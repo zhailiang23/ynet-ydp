@@ -49,10 +49,13 @@ workflow:
     - when: never
 
 # Maven 依赖缓存
+# 使用项目级缓存键，所有分支共享 Maven 依赖
+# 这样可以避免重复下载相同的依赖包
 cache:
-  key: "${CI_COMMIT_REF_SLUG}"
+  key: "maven-cache"  # 固定缓存键，所有构建共享
   paths:
     - .m2/repository/
+  policy: pull-push  # 每次构建都尝试拉取缓存，结束后更新缓存
 
 # ============================================
 # 阶段 1: 构建 Spring Boot JAR 和 Docker 镜像
