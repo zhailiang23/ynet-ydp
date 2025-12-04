@@ -52,14 +52,12 @@ build-and-push:
   stage: build
   image: docker:24.0.5
   services:
-    - name: docker:24.0.5-dind
-      command: ["--insecure-registry=192.168.152.56"]
+    - docker:24.0.5-dind
   variables:
     GIT_STRATEGY: fetch
-    DOCKER_HOST: tcp://docker:2376
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_TLS_VERIFY: 1
-    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+    DOCKER_HOST: "unix:///var/run/docker.sock"
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   before_script:
     - echo "Starting Docker image build and push"
     - echo "Environment ${APP_ENV}"
