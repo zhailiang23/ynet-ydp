@@ -45,13 +45,19 @@ build-and-push:
     - echo "Build number ${CI_PIPELINE_IID}"
     # 替换为阿里云镜像源
     - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-    - apk add --no-cache bash curl git make go
+    - apk add --no-cache bash curl git make wget tar
+    # 手动安装 Go 1.23（使用国内镜像）
+    - wget -q https://mirrors.aliyun.com/golang/go1.23.4.linux-amd64.tar.gz -O /tmp/go.tar.gz
+    - tar -C /usr/local -xzf /tmp/go.tar.gz
+    - export PATH=/usr/local/go/bin:$PATH
+    - export GOPATH=/root/go
+    - export PATH=$GOPATH/bin:$PATH
+    - go version
     # 配置 Go 使用国内镜像
     - go env -w GOPROXY=https://goproxy.cn,direct
     - go env -w GOSUMDB=sum.golang.google.cn
     # 安装 GoFrame CLI
     - go install github.com/gogf/gf/cmd/gf/v2@latest
-    - export PATH=$PATH:$(go env GOPATH)/bin
     - gf -v || echo "GoFrame CLI installed"
   script:
     - echo "Building application binary with GoFrame..."
