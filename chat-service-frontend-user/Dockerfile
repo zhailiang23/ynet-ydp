@@ -11,6 +11,9 @@ WORKDIR /app
 # 复制 package 文件
 COPY package*.json ./
 
+# 配置 npm 使用淘宝镜像加速
+RUN npm config set registry https://registry.npmmirror.com
+
 # 安装依赖（使用 legacy-peer-deps 解决 webpack 版本冲突）
 RUN npm install --legacy-peer-deps
 
