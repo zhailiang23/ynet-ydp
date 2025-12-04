@@ -75,10 +75,17 @@ build-and-push:
     # 下载依赖
     - go mod download
     - go mod tidy
+    # 打印调试信息
+    - echo "Checking go.mod file..."
+    - cat go.mod | head -5
+    - echo "GO111MODULE=$GO111MODULE"
+    - go env | grep -E "GOMOD|GO111MODULE|GOPATH"
     # 使用 GoFrame CLI 构建 Docker 镜像
     # -b 参数说明: -a=架构 -s=系统 -p=输出路径 -mod=module模式
+    # 添加 --debug 查看详细构建信息
     - |
       GO111MODULE=on gf docker \
+        --debug \
         -p \
         -b "-a amd64 -s linux -p temp -mod=mod" \
         -t 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} \
