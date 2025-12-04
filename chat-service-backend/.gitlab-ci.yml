@@ -82,10 +82,10 @@ build-and-push:
     - go env | grep -E "GOMOD|GO111MODULE|GOPATH"
     # 使用 GoFrame CLI 构建 Docker 镜像
     # -b 参数说明: -a=架构 -s=系统 -p=输出路径 -mod=module模式
-    # 添加 --debug 查看详细构建信息
+    # -m 参数: 指定 main 包路径，使用 . 表示当前目录（而不是 main.go 单文件）
     - |
       GO111MODULE=on gf docker \
-        --debug \
+        -m . \
         -p \
         -b "-a amd64 -s linux -p temp -mod=mod" \
         -t 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} \
