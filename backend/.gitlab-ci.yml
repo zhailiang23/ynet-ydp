@@ -63,26 +63,24 @@ build-and-push:
   before_script:
     - echo "=========================================="
     - echo "开始构建 Spring Boot 应用"
-    - echo "Commit hash: ${CI_COMMIT_SHORT_SHA}"
-    - echo "Build number: ${CI_PIPELINE_IID}"
+    - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
+    - echo "Build number ${CI_PIPELINE_IID}"
     - echo "=========================================="
     - java -version
     - mvn -version
     - echo "配置 Maven 阿里云镜像..."
     - mkdir -p ~/.m2
-    - |
-      cat > ~/.m2/settings.xml << 'EOF'
-      <settings>
-        <mirrors>
-          <mirror>
-            <id>aliyun</id>
-            <mirrorOf>central</mirrorOf>
-            <name>Aliyun Maven</name>
-            <url>https://maven.aliyun.com/repository/public</url>
-          </mirror>
-        </mirrors>
-      </settings>
-      EOF
+    - echo '<?xml version="1.0" encoding="UTF-8"?>' > ~/.m2/settings.xml
+    - echo '<settings>' >> ~/.m2/settings.xml
+    - echo '  <mirrors>' >> ~/.m2/settings.xml
+    - echo '    <mirror>' >> ~/.m2/settings.xml
+    - echo '      <id>aliyun</id>' >> ~/.m2/settings.xml
+    - echo '      <mirrorOf>central</mirrorOf>' >> ~/.m2/settings.xml
+    - echo '      <name>Aliyun Maven</name>' >> ~/.m2/settings.xml
+    - echo '      <url>https://maven.aliyun.com/repository/public</url>' >> ~/.m2/settings.xml
+    - echo '    </mirror>' >> ~/.m2/settings.xml
+    - echo '  </mirrors>' >> ~/.m2/settings.xml
+    - echo '</settings>' >> ~/.m2/settings.xml
   script:
     # 1. 构建 Spring Boot JAR
     - echo "步骤 1: 清理并打包 Spring Boot 项目..."
@@ -94,33 +92,14 @@ build-and-push:
         exit 1
       fi
 
-    # 2. 构建 Docker 镜像
+    # 2. 构建 Docker 镜像（使用现有的 Dockerfile）
     - echo "步骤 2: 构建 Docker 镜像..."
     - cd iplatform-server
-    - |
-      cat > Dockerfile.build << 'DOCKERFILE'
-      FROM eclipse-temurin:21-jre
-
-      RUN mkdir -p /iplatform-server
-      WORKDIR /iplatform-server
-      COPY ./target/iplatform-server.jar app.jar
-
-      ENV TZ=Asia/Shanghai
-      ENV SPRING_PROFILES_ACTIVE=fat
-      ENV JAVA_OPTS="-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom"
-      ENV ARGS=""
-
-      EXPOSE 48080
-
-      CMD java ${JAVA_OPTS} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -jar app.jar $ARGS
-      DOCKERFILE
-
-    # 3. 使用 docker 命令构建镜像
     - apk add --no-cache docker-cli
-    - docker build -f Dockerfile.build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
+    - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
     - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
 
-    # 4. 登录 Harbor 并推送镜像
+    # 3. 登录 Harbor 并推送镜像
     - echo "步骤 3: 推送镜像到 Harbor..."
     - docker login ${HARBOR_URL} -u search -p Search123
     - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
