@@ -182,7 +182,11 @@ deploy-to-fat:
     - ssh-keyscan -H 192.168.153.111 >> ~/.ssh/known_hosts
   script:
     - echo "Starting deployment to FAT environment"
+    # 在目标服务器创建必要的目录
+    - ssh -i ~/.ssh/id_rsa root@192.168.153.111 "mkdir -p /root/zhailiang/chat-service-backend /root/zhailiang/configs /root/zhailiang/logs"
+    # 传输部署脚本
     - scp -i ~/.ssh/id_rsa deploy-gitlab.sh root@192.168.153.111:/root/zhailiang/chat-service-backend/
+    # 执行部署
     - |
       ssh -i ~/.ssh/id_rsa root@192.168.153.111 << EOF
         cd /root/zhailiang/chat-service-backend
