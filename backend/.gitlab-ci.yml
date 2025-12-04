@@ -105,10 +105,9 @@ build-and-push:
     - echo "构建成功"
     - echo "镜像 ${IMAGE_NAME}:${CI_PIPELINE_IID}"
     - echo "=========================================="
-  artifacts:
-    paths:
-      - iplatform-server/target/iplatform-server.jar
-    expire_in: 1 day
+  # 注意: JAR 文件已打包到 Docker 镜像中，无需保存为 artifact
+  # 如果需要下载 JAR，可以从 Docker 镜像中提取:
+  # docker run --rm ${IMAGE_NAME}:${CI_PIPELINE_IID} cat /app/iplatform-server.jar > iplatform-server.jar
   tags:
     - docker
   only:
@@ -194,8 +193,6 @@ deploy-to-fat:
     - echo "访问地址 http://${DEPLOY_SERVER}:${CONTAINER_PORT}"
     - echo "API 文档 http://${DEPLOY_SERVER}:${CONTAINER_PORT}/doc.html"
     - echo "=========================================="
-  dependencies:
-    - build-and-push
   tags:
     - shell
   only:
