@@ -70,14 +70,43 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 ### 环境配置
 
 项目支持多环境配置，通过 `spring.profiles.active` 切换:
-- `local`: 本地开发环境 (默认端口 48080)
+- `local`: 本地开发环境（默认激活）
 - `dev`: 开发环境
-- 配置文件位置: `iplatform-server/src/main/resources/application-{profile}.yaml`
+- `fat`: 功能验收测试环境
+- `uat`: 用户验收测试环境
+- `pro`: 生产环境
 
-本地开发配置 (`application-local.yaml`):
+**配置文件位置**: `iplatform-server/src/main/resources/application-{profile}.yaml`
+
+**本地开发配置** (`application-local.yaml`):
+- 端口: 48080
 - 数据库: jdbc:mysql://127.0.0.1:3306/ruoyi-vue-pro
 - Redis: 127.0.0.1:6379
 - 默认账号密码: root/123456
+
+**环境切换方式**:
+
+1. **Maven 运行时指定**:
+   ```bash
+   mvn spring-boot:run -Dspring-boot.run.profiles=dev
+   ```
+
+2. **直接运行 JAR 时指定**:
+   ```bash
+   java -Dspring.profiles.active=dev -jar iplatform-server.jar
+   ```
+
+3. **Docker 运行时指定**:
+   ```bash
+   docker run -e SPRING_PROFILES_ACTIVE=dev -p 48080:48080 your-image:tag
+   ```
+
+4. **修改主配置文件** (`application.yaml`):
+   ```yaml
+   spring:
+     profiles:
+       active: dev  # 修改为目标环境
+   ```
 
 ## 项目架构
 
@@ -263,6 +292,69 @@ mvn test -Dtest=UserServiceImplTest#testCreateUser
 
 ### Docker 部署
 
+#### 构建 Docker 镜像
+
+```bash
+# 1. 清理并打包项目
+cd backend
+mvn clean package -DskipTests
+
+# 2. 构建 Docker 镜像
+cd iplatform-server
+docker build -t iplatform-server:latest .
+```
+
+#### 运行 Docker 容器（多环境支持）
+
+**方式一：使用环境变量指定环境** (推荐)
+
+```bash
+# 开发环境
+docker run -d \
+  --name iplatform-server-dev \
+  -e SPRING_PROFILES_ACTIVE=dev \
+  -p 48080:48080 \
+  iplatform-server:latest
+
+# FAT 环境
+docker run -d \
+  --name iplatform-server-fat \
+  -e SPRING_PROFILES_ACTIVE=fat \
+  -p 48080:48080 \
+  iplatform-server:latest
+
+# UAT 环境
+docker run -d \
+  --name iplatform-server-uat \
+  -e SPRING_PROFILES_ACTIVE=uat \
+  -p 48080:48080 \
+  iplatform-server:latest
+
+# 生产环境
+docker run -d \
+  --name iplatform-server-pro \
+  -e SPRING_PROFILES_ACTIVE=pro \
+  -p 48080:48080 \
+  iplatform-server:latest
+```
+
+**方式二：使用 Docker Compose**
+
+修改 `docker-compose.yml`，添加环境变量：
+
+```yaml
+services:
+  server:
+    image: iplatform-server:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev  # 修改为目标环境: dev, fat, uat, pro
+      - TZ=Asia/Shanghai
+    ports:
+      - "48080:48080"
+```
+
+然后启动：
+
 ```bash
 # 进入 docker 脚本目录
 cd script/docker
@@ -274,7 +366,24 @@ docker-compose up -d
 docker-compose logs -f server
 ```
 
-环境变量配置参考 `docker-compose.yml` 文件。
+#### 环境变量说明
+
+| 环境变量 | 说明 | 默认值 | 可选值 |
+|---------|------|--------|--------|
+| `SPRING_PROFILES_ACTIVE` | Spring 环境配置 | `dev` | `local`, `dev`, `fat`, `uat`, `pro` |
+| `JAVA_OPTS` | JVM 参数 | `-Xms512m -Xmx512m` | 根据需要调整 |
+| `TZ` | 时区 | `Asia/Shanghai` | 任意时区 |
+
+#### 多环境配置文件说明
+
+所有环境配置文件位于 `iplatform-server/src/main/resources/`:
+- `application-local.yaml` - 本地开发环境
+- `application-dev.yaml` - 开发环境
+- `application-fat.yaml` - 功能验收测试环境
+- `application-uat.yaml` - 用户验收测试环境
+- `application-pro.yaml` - 生产环境
+
+**注意**: 部署前请根据实际环境修改对应配置文件中的数据库、Redis 等连接信息。
 
 ## 文档资源
 
