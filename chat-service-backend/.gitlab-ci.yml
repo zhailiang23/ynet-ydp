@@ -75,21 +75,19 @@ build-and-push:
     # 下载依赖
     - go mod download
     - go mod tidy
-    # 打印调试信息
-    - echo "Checking go.mod file..."
-    - cat go.mod | head -5
-    - echo "GO111MODULE=$GO111MODULE"
-    - go env | grep -E "GOMOD|GO111MODULE|GOPATH"
-    # 使用 GoFrame CLI 构建 Docker 镜像
-    # -b 参数说明: -a=架构 -s=系统 -p=输出路径 -mod=module模式
-    # -m 参数: 指定 main 包路径，使用 . 表示当前目录（而不是 main.go 单文件）
+    # 手动构建二进制文件（使用包路径而非单文件）
+    - echo "Building Go binary..."
+    - mkdir -p temp/linux_amd64
+    - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=mod -o temp/linux_amd64/main .
+    - ls -lh temp/linux_amd64/
+    # 构建 Docker 镜像
+    - echo "Building Docker image..."
     - |
-      GO111MODULE=on gf docker \
-        -m . \
-        -p \
-        -b "-a amd64 -s linux -p temp -mod=mod" \
+      docker build \
+        --build-arg ENV=fat \
+        -f manifest/docker/Dockerfile \
         -t 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} \
-        -e "ENV=fat"
+        .
     # 添加 latest 标签
     - docker tag 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} 192.168.152.56/ai-digital-avatar/chat-service-backend:latest
     # 登录 Harbor
