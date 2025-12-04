@@ -61,6 +61,14 @@ build-and-push:
     - gf -v || echo "GoFrame CLI installed"
   script:
     - echo "Building application binary with GoFrame..."
+    - echo "Current directory $(pwd)"
+    - ls -la
+    # 确保在项目根目录
+    - cd /builds/belink/ai-agent/ai-digital-avatar/chat-service-backend || true
+    - pwd
+    # 下载依赖
+    - go mod download
+    - go mod tidy
     # 使用 GoFrame CLI 构建 Docker 镜像
     - |
       gf docker \
