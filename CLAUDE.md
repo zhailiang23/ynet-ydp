@@ -2057,6 +2057,7 @@ open http://localhost:8000
 # 检查用户端 H5
 open http://localhost:10086
 ```
+- 我的 Gitlab 是社区版 v17.1.8
 - 我的 harbor 版本是 v2.4.2-ef2e2e56
 - 目前有四套环境 dev(本机), fat, uat, pro
 - 192.168.153.111 服务器的用户名是 root, 密码是 Ynet@2024
