@@ -15,6 +15,9 @@
 
 
 ### 开始
+
+#### 本地开发
+
 ```shell
 git clone https://github.com/zjwshisb/go-chat-service.git
 cd go-chat-service
@@ -24,6 +27,50 @@ go run main.go fake # 假数据填充
 go run main.go http # 启动服务
 ```
 详细参考 [goframe](https://goframe.org/)
+
+#### 多环境配置
+
+项目支持 4 个环境的独立配置：
+
+- `dev` - 开发环境
+- `fat` - 功能验收测试环境
+- `uat` - 用户验收测试环境
+- `pro` - 生产环境
+
+**本地开发使用指定环境**:
+```bash
+# 启动 dev 环境（默认）
+go run main.go http
+
+# 启动 fat 环境
+go run main.go http -c manifest/config/config.fat.yaml
+
+# 启动 pro 环境
+go run main.go http -c manifest/config/config.pro.yaml
+```
+
+**Docker 构建指定环境镜像**:
+```bash
+# 构建 dev 环境镜像
+make image
+
+# 构建 pro 环境镜像并指定标签
+make image ENV=pro TAG=v1.0.0
+```
+
+**快速部署脚本**:
+```bash
+# 部署 dev 环境
+./deploy.sh dev
+
+# 部署 pro 环境（指定版本）
+./deploy.sh pro v1.0.0
+```
+
+详细说明请参考：
+- [完整部署文档](DEPLOYMENT.md)
+- [快速开始指南](QUICK_START.md)
+- [GitLab CI/CD 部署指南](GITLAB_CI_CD_GUIDE.md)
 
 ### 功能
 
@@ -64,10 +111,11 @@ I -->|否| L[流程结束]
 
 ### 更新日志
 
-2025.1.4 使用[GOFRAME](https://github.com/gogf/gf)进行了重构  
-2025.1.9 支持集群部署  
+2025.1.4 使用[GOFRAME](https://github.com/gogf/gf)进行了重构
+2025.1.9 支持集群部署
 2025.1.19 pdf文件消息
 2025.3.26 对接langchiango, 可自定义RAG实现ai回复
+2025.12.4 新增多环境配置支持（dev/fat/uat/pro）及 GitLab CI/CD 自动化部署
 
 ### LICENSE
 

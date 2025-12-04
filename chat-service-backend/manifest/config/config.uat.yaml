@@ -1,0 +1,61 @@
+storage:
+  default: 'local'
+  qiniu:
+    ak: ""
+    sk: ""
+    url: ""
+    bucket: ""
+app:
+  jwtSecret: "chat-service-secret-key-2025"
+  host: "http://127.0.0.1:8080"
+server:
+  address: ":8080"
+  serverRoot: "storage"
+  openapiPath: "/api.json"
+  swaggerPath: "/swagger"
+database:
+  logger:
+    path: "./storage/sql"
+    level: "all"
+    stdout: true
+  default:
+    type: "mysql"
+    # UAT 环境 MySQL 配置
+    link: "root:root123@tcp(192.168.110.41:3306)/ynet-iplatform?loc=Local&parseTime=true"
+    debug: false  # UAT 环境关闭 debug
+    charset: "utf8mb4"
+redis:
+  # UAT 环境 Redis 配置
+  default:
+    address: 192.168.65.166:6379
+    pass: ynet1234
+    db: 6
+logger:
+  path:    "./storage/log"
+  level:   "info"  # UAT 环境降低日志级别
+  stdout:  true
+grpc:
+  open: false # UAT 环境暂时关闭 gRPC
+  logPath:          "./storage/grpc"
+  logStdout:        true
+  errorLogEnabled:  true
+  accessLogEnabled: true
+  errorStack:       true
+etcd:
+  host: "127.0.0.1:2379@root:123456"
+websocket:
+  logger:
+    path: "./storage/sql"
+    level: "info"
+    stdout: false
+langchain:
+  open: true                    # 是否开启 AI 回复功能
+  provider: "openai"            # 模型提供商: openai (兼容硅基流动/DeepSeek等) 或 ollama (本地)
+  model: "deepseek-ai/DeepSeek-V3"  # 模型名称
+  apiKey: "sk-iiqrscvxpnomsjmissalpxylgwbmoszzoawkgtowyuqirejb"
+  baseURL: "https://api.siliconflow.cn/v1"  # API 地址 (硅基流动)
+  systemPrompt: "你是一个专业的客服助手，请友好、专业地回答用户的问题。"
+rag:
+  serviceUrl: "http://localhost:9080"  # Python RAG 服务地址
+  timeout: 10000                       # 超时时间 (ms)
+  topK: 3                              # 每次召回的文本块数量

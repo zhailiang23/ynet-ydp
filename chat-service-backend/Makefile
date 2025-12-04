@@ -42,6 +42,8 @@ start:
 	make port;
 
 # Build docker image.
+# 支持环境参数: ENV=dev|fat|uat|pro (默认: dev)
+# 示例: make image ENV=pro TAG=v1.0.0
 .PHONY: image
 image: cli.install
 	$(eval _TAG  = $(shell git log -1 --format="%cd.%h" --date=format:"%Y%m%d%H%M%S"))
@@ -49,8 +51,10 @@ ifneq (, $(shell git status --porcelain 2>/dev/null))
 	$(eval _TAG  = $(_TAG).dirty)
 endif
 	$(eval _TAG  = $(if ${TAG},  ${TAG}, $(_TAG)))
+	$(eval _ENV  = $(if ${ENV},  ${ENV}, dev))
 	$(eval _PUSH = $(if ${PUSH}, ${PUSH}, ))
-	@gf docker -p -b "-a amd64 -s linux -p temp" -t $(DOCKER_NAME):${_TAG};
+	@echo "Building Docker image with ENV=${_ENV} TAG=${_TAG}"
+	@gf docker -p -b "-a amd64 -s linux -p temp" -t $(DOCKER_NAME):${_TAG} -e "ENV=${_ENV}";
 
 
 # Build docker image and automatically push to docker repo.
