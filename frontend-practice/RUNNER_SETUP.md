@@ -57,6 +57,9 @@ Runner 已成功验证！
 
 重新触发 Pipeline，验证构建是否成功。
 
-# Test Pipeline Wed Dec  3 09:47:47 CST 2025
-# Final test Wed Dec  3 09:53:33 CST 2025
-# Test trigger 2025-12-03 10:19:35
+# =========================================
+# Pipeline 成功记录
+# =========================================
+# Job 14263 (Pipeline #30) - build-and-push 成功: 2025-12-03 11:44:33
+# 镜像已推送到 Harbor: 192.168.152.56/ai-coach/frontend-practice:30
+# 耗时: 462 秒 (~7.7 分钟)

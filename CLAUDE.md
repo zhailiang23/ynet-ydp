@@ -1059,6 +1059,197 @@ GET    /admin-api/aicrm/practice-user-record/evaluate?recordId= // 评估练习
 | **用途** | **仅限学员陪练功能** | **完整 ERP 系统** |
 | **登录方式** | 自动登录 | 手动登录 |
 
+## GitLab CI/CD 部署实践经验
+
+frontend-practice 项目已配置 GitLab CI/CD 自动化部署，以下是关键经验总结：
+
+### 部署架构
+
+- **GitLab 仓库**: git@git.ynet.io:belink/ai-agent/ai-coach/frontend-practice.git
+- **GitLab Runner**: 部署在生产服务器 192.168.153.111 上
+- **Harbor 镜像仓库**: 192.168.152.56 (HTTP, 非 HTTPS)
+- **生产环境**: http://192.168.153.111:3000
+
+### Pipeline 阶段
+
+```yaml
+stages:
+  - build    # 构建 Docker 镜像并推送到 Harbor
+  - deploy   # SSH 到生产服务器执行部署脚本
+  - cleanup  # 清理旧镜像（保留最近 5 个版本）
+```
+
+### 关键配置要点
+
+#### 1. 使用国内镜像源
+
+**问题**: Alpine Linux 默认镜像源在国内访问慢或无法访问
+**解决**: 在 `before_script` 中替换为阿里云镜像
+
+```yaml
+before_script:
+  - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+  - apk add --no-cache openssh-client bash curl
+```
+
+#### 2. SSH 私钥直接嵌入脚本
+
+**问题**: 使用 GitLab CI/CD 变量 API 配置 SSH 私钥时，JSON 转义和换行符处理复杂
+**解决**: 将 SSH 私钥直接写入 `.gitlab-ci.yml` 的 `before_script` 中
+
+```yaml
+before_script:
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - |
+    cat > ~/.ssh/id_rsa << 'EOFKEY'
+    -----BEGIN RSA PRIVATE KEY-----
+    [完整的私钥内容]
+    -----END RSA PRIVATE KEY-----
+    EOFKEY
+  - chmod 600 ~/.ssh/id_rsa
+  - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+```
+
+**注意事项**:
+- 使用 `EOFKEY` 作为 heredoc 分隔符，避免与私钥内容冲突
+- 私钥必须包含 `-----BEGIN RSA PRIVATE KEY-----` 和 `-----END RSA PRIVATE KEY-----`
+- 设置正确的文件权限（600）
+
+#### 3. 在部署脚本中创建必需的目录
+
+**问题**: 目标服务器可能缺少必需的目录结构
+**解决**: 在 `deploy.sh` 脚本中主动创建所有必需目录
+
+```bash
+# 部署脚本中的目录检查和创建
+log_info "步骤 1: 创建必要的目录"
+mkdir -p "$DEPLOY_DIR"
+mkdir -p "$CONFIG_DIR"
+mkdir -p "$LOG_DIR"
+
+# 如果环境配置文件不存在，创建默认配置
+if [ ! -f "$ENV_FILE" ]; then
+    log_warning "环境变量文件不存在: $ENV_FILE"
+    log_warning "将创建默认环境变量文件，请根据实际情况修改"
+    cat > "$ENV_FILE" <<EOF
+NODE_ENV=production
+PORT=3000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:48080/admin-api
+NEXT_PUBLIC_TENANT_ID=1
+TZ=Asia/Shanghai
+EOF
+fi
+```
+
+**必需的目录**:
+- `/root/zhailiang/frontend-practice/` - 部署脚本和应用目录
+- `/root/zhailiang/configs/` - 环境配置文件目录
+- `/root/zhailiang/logs/` - 日志文件目录
+
+#### 4. Next.js Standalone 模式静态文件处理
+
+**问题**: Next.js `output: 'standalone'` 模式不会自动复制 `public` 和 `.next/static` 目录
+**现象**: 所有静态资源（CSS、JS chunks）返回 404 错误
+
+**解决**: 在 Dockerfile 中手动复制这些文件到 standalone 目录
+
+```dockerfile
+# 构建应用 (standalone 模式)
+RUN pnpm run build
+
+# 复制 Next.js standalone 模式所需的静态文件
+# standalone 模式不会自动包含 public 和 .next/static，需要手动复制
+RUN cp -r public .next/standalone/public && \
+    cp -r .next/static .next/standalone/.next/static
+
+# 设置为生产环境
+ENV NODE_ENV=production
+```
+
+**关键点**:
+- 必须在构建完成后立即复制
+- 目标路径是 `.next/standalone/public` 和 `.next/standalone/.next/static`
+- 这是 Next.js standalone 模式的已知行为，不是 bug
+
+### 5. Git Subtree 推送到子仓库
+
+**问题**: frontend-practice 是主仓库的子目录，需要单独推送到 GitLab
+**解决**: 使用 `git subtree split` 和 force push
+
+```bash
+# 方法一：使用 git subtree push（可能遇到 non-fast-forward）
+git subtree push --prefix=frontend-practice \
+  git@git.ynet.io:belink/ai-agent/ai-coach/frontend-practice.git master
+
+# 方法二：使用 git subtree split + force push（推荐）
+git push -f git@git.ynet.io:belink/ai-agent/ai-coach/frontend-practice.git \
+  $(git subtree split --prefix=frontend-practice master):master
+```
+
+### 常见问题排查
+
+#### Pipeline 失败 - Alpine 包安装失败
+```
+ERROR: unable to select packages:
+  bash (no such package)
+  openssh-client (no such package)
+```
+**解决**: 添加阿里云镜像源替换命令（见上文）
+
+#### SSH 认证失败
+```
+Load key "/root/.ssh/id_rsa": error in libcrypto
+Permission denied, please try again.
+```
+**解决**:
+1. 检查私钥格式是否完整
+2. 确认文件权限为 600
+3. 确认公钥已添加到目标服务器 `~/.ssh/authorized_keys`
+
+#### 部署失败 - 目录不存在
+```
+scp: dest open "/root/zhailiang/frontend-practice/": Failure
+deploy.sh:行191: /root/zhailiang/configs/frontend-practice.env: 没有那个文件或目录
+```
+**解决**:
+1. 在目标服务器手动创建目录，或
+2. 在部署脚本开头添加目录创建逻辑（推荐）
+
+#### 静态资源 404 错误
+```
+Failed to load resource: the server responded with a status of 404 (Not Found)
+/_next/static/css/*.css
+/_next/static/chunks/*.js
+```
+**解决**: 在 Dockerfile 中添加静态文件复制步骤（见上文）
+
+### 部署验证
+
+Pipeline 成功后，验证部署是否正常：
+
+```bash
+# 1. 检查容器状态
+ssh root@192.168.153.111 'docker ps | grep frontend-practice'
+
+# 2. 检查应用响应
+curl -I http://192.168.153.111:3000/
+
+# 3. 检查容器日志
+ssh root@192.168.153.111 'docker logs frontend-practice --tail 50'
+
+# 4. 使用浏览器访问并检查 Chrome DevTools Console
+# 确保没有 404 错误，所有静态资源正常加载
+```
+
+### 参考文档
+
+- GitLab CI/CD 配置: `frontend-practice/.gitlab-ci.yml`
+- 部署脚本: `frontend-practice/deploy.sh`
+- Dockerfile: `frontend-practice/Dockerfile`
+- GitLab Runner 安装: `frontend-practice/RUNNER_SETUP.md`
+- 详细 CI/CD 指南: `frontend-practice/GITLAB_CI_CD_GUIDE.md`
+
 ---
 
 # IM 即时通讯后端 (chat-service-backend)
@@ -1866,3 +2057,6 @@ open http://localhost:8000
 # 检查用户端 H5
 open http://localhost:10086
 ```
+- 我的 harbor 版本是 v2.4.2-ef2e2e56
+- 目前有四套环境 dev(本机), fat, uat, pro
+- 192.168.153.111 服务器的用户名是 root, 密码是 Ynet@2024
