@@ -35,8 +35,7 @@ variables:
 
   # GitLab Runner 配置
   # if-not-present: 优先使用本地缓存镜像，避免每次都从 Docker Hub 拉取
-  # 注意: 服务器端建议配置 Docker 镜像加速器以提升首次拉取速度
-  # 配置方法: 在 /etc/docker/daemon.json 添加 registry-mirrors
+  # 服务器已配置 Docker 镜像加速器 (DaoCloud, DockerHub.icu, 1panel, awsl9527)
   PULL_POLICY: if-not-present
   FF_USE_FASTZIP: "true"
   ARTIFACT_COMPRESSION_LEVEL: "fast"
