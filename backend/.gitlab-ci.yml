@@ -60,7 +60,7 @@ cache:
 # ============================================
 build-and-push:
   stage: build
-  image: maven:3.9.6-eclipse-temurin-21
+  image: maven:3.9.6-eclipse-temurin-21-alpine
   variables:
     GIT_STRATEGY: fetch
   before_script:
