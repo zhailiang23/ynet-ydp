@@ -30,5 +30,5 @@ RUN chmod +x $WORKDIR/main
 WORKDIR $WORKDIR
 
 # 根据 APP_ENV 环境变量选择配置文件启动
-# 默认使用 dev 环境配置
-CMD ./main -c=manifest/config/config.${APP_ENV}.yaml
+# 设置 GF_GCFG_FILE 环境变量让 GoFrame 在 init 阶段就能找到配置
+CMD ["/bin/sh", "-c", "export GF_GCFG_FILE=manifest/config/config.${APP_ENV}.yaml && ./main -c=manifest/config/config.${APP_ENV}.yaml"]
