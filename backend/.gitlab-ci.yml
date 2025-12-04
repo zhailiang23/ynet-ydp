@@ -285,21 +285,16 @@ cleanup-old-images:
   when: on_success
   allow_failure: true
 
-# ============================================
-# 失败时发送通知
-# ============================================
 notify-on-failure:
   stage: .post
   image: alpine:latest
   variables:
     GIT_STRATEGY: none
   script:
-    - echo "=========================================="
     - echo "Pipeline failed"
     - echo "Commit ${CI_COMMIT_SHORT_SHA}"
     - echo "Branch ${CI_COMMIT_BRANCH}"
     - echo "Build number ${CI_PIPELINE_IID}"
-    - echo "=========================================="
   when: on_failure
   only:
     - master
