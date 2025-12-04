@@ -11,8 +11,8 @@ WORKDIR /app
 # 复制 package 文件
 COPY package*.json ./
 
-# 安装依赖
-RUN npm ci
+# 安装依赖（使用 legacy-peer-deps 解决 webpack 版本冲突）
+RUN npm install --legacy-peer-deps
 
 # 复制源代码
 COPY . .
