@@ -15,7 +15,8 @@ COPY package*.json ./
 RUN npm config set registry https://registry.npmmirror.com
 
 # 安装依赖（使用 legacy-peer-deps 解决 webpack 版本冲突）
-RUN npm install --legacy-peer-deps
+# --ignore-scripts: 跳过 postinstall 脚本（weapp-tw patch 仅用于小程序，H5 构建不需要）
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 # 复制源代码
 COPY . .
