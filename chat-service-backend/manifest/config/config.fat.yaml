@@ -56,6 +56,6 @@ langchain:
   baseURL: "https://api.siliconflow.cn/v1"  # API 地址 (硅基流动)
   systemPrompt: "你是一个专业的客服助手，请友好、专业地回答用户的问题。"
 rag:
-  serviceUrl: "http://localhost:9080"  # Python RAG 服务地址
-  timeout: 10000                       # 超时时间 (ms)
-  topK: 3                              # 每次召回的文本块数量
+  serviceUrl: "http://192.168.153.111:9080"  # Python RAG 服务地址 (FAT 环境)
+  timeout: 10000                             # 超时时间 (ms)
+  topK: 3                                    # 每次召回的文本块数量
