@@ -59,41 +59,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf /etc/nginx/conf.d/default.conf /usr/share/nginx/html/*
 
 # 复制自定义 nginx 配置
-COPY <<'EOF' /etc/nginx/conf.d/default.conf
-server {
-    listen 80;
-    server_name localhost;
-
-    # Gzip 压缩
-    gzip on;
-    gzip_vary on;
-    gzip_min_length 1024;
-    gzip_comp_level 6;
-    gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss application/rss+xml font/truetype font/opentype application/vnd.ms-fontobject image/svg+xml;
-
-    # 根目录
-    root /usr/share/nginx/html;
-    index index.html;
-
-    # 静态资源缓存 (1 年)
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-
-    # SPA 路由支持 (Vue Router history 模式)
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # 健康检查端点
-    location /health {
-        access_log off;
-        return 200 "healthy\n";
-        add_header Content-Type text/plain;
-    }
-}
-EOF
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 从构建阶段复制打包后的文件
 COPY --from=builder /app/dist /usr/share/nginx/html
