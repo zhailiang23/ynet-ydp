@@ -1,5 +1,6 @@
 # 使用 Python 3.12 官方镜像作为基础镜像 (基于 Debian Bookworm 稳定版)
-FROM python:3.12-slim-bookworm
+# 使用 DaoCloud 镜像加速
+FROM docker.m.daocloud.io/python:3.12-slim-bookworm
 
 # 环境变量：支持 dev, fat, uat, pro
 ARG APP_ENV=dev
