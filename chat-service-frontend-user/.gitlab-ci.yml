@@ -157,6 +157,8 @@ deploy-to-fat:
     - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
   script:
     - echo "Starting deployment to FAT environment"
+    # 在目标服务器创建必要的目录
+    - ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} "mkdir -p ${DEPLOY_DIR} /root/zhailiang/configs /root/zhailiang/logs"
     - scp -i ~/.ssh/id_rsa deploy.sh ${DEPLOY_USER}@${DEPLOY_SERVER}:${DEPLOY_DIR}/
     - |
       ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << EOF
