@@ -37,15 +37,12 @@ RUN pnpm install --frozen-lockfile
 # 复制 web-antd 源代码
 COPY apps/web-antd ./apps/web-antd
 
-# 构建所有依赖的 workspace 包
-# @vben-core 包需要先构建，因为生产模式下需要 dist 目录
-RUN pnpm --filter "@vben-core/*" run build || echo "Some core packages have no build script, continuing..."
-RUN pnpm --filter "./packages/**" run build || echo "Some packages have no build script, continuing..."
-
 # 环境变量 (默认为 dev)
 ARG VITE_ENV=dev
 
 # 构建应用 (根据 VITE_ENV 加载对应的 .env 文件)
+# 使用 NODE_ENV=development 让 package.json exports 优先使用源码而非 dist
+# 这样无需预构建所有依赖包，大幅提升构建速度
 RUN cd apps/web-antd && \
     echo "Building for environment: $VITE_ENV" && \
     if [ "$VITE_ENV" = "dev" ]; then \
@@ -60,7 +57,7 @@ RUN cd apps/web-antd && \
         echo "Unknown environment: $VITE_ENV, using dev as default"; \
         cp .env.dev .env.production; \
     fi && \
-    pnpm run build
+    NODE_ENV=development pnpm run build
 
 # 阶段 2: 运行阶段 (使用 Nginx)
 FROM nginx:1.27-alpine
