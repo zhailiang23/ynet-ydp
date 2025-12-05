@@ -79,3 +79,10 @@ export function deleteCustomerWorkInfoApi(id: number) {
     params: { id },
   });
 }
+
+// 向后兼容：导出无 Api 后缀的别名（供旧代码使用）
+export const getCustomerWorkInfoPage = getCustomerWorkInfoPageApi;
+export const getCustomerWorkInfo = getCustomerWorkInfoApi;
+export const createCustomerWorkInfo = createCustomerWorkInfoApi;
+export const updateCustomerWorkInfo = updateCustomerWorkInfoApi;
+export const deleteCustomerWorkInfo = deleteCustomerWorkInfoApi;
