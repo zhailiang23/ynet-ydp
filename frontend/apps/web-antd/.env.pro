@@ -26,3 +26,8 @@ VITE_APP_DEFAULT_USERNAME=admin
 
 # 默认登录密码
 VITE_APP_DEFAULT_PASSWORD=admin123
+
+# IM 客服系统后端地址 (生产环境 - 待配置实际生产地址)
+VITE_CHAT_BACKEND_URL=http://192.168.153.111:8080
+# IM 客服系统前端地址 (生产环境 - 待配置实际生产地址)
+VITE_CHAT_FRONTEND_URL=http://192.168.153.111:8000
