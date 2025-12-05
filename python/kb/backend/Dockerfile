@@ -11,6 +11,10 @@ WORKDIR /app
 # 配置 pip 使用国内镜像加速
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
+# 配置 Debian 使用阿里云镜像源加速
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources
+
 # 安装系统依赖 (禁用 APT 缓存清理钩子避免权限问题)
 RUN rm -f /etc/apt/apt.conf.d/docker-clean && \
     echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache && \
