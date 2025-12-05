@@ -11,11 +11,15 @@ WORKDIR /app
 # 复制 package 文件
 COPY package*.json ./
 
-# 配置 npm 使用淘宝镜像加速
-RUN npm config set registry https://registry.npmmirror.com
+# 配置 npm 使用淘宝镜像加速依赖安装
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm config set disturl https://npmmirror.com/dist && \
+    npm config set electron_mirror https://npmmirror.com/mirrors/electron/ && \
+    npm config set sass_binary_site https://npmmirror.com/mirrors/node-sass/ && \
+    npm config set phantomjs_cdnurl https://npmmirror.com/mirrors/phantomjs/
 
-# 安装依赖
-RUN npm ci
+# 安装依赖（使用 install 而非 ci，因为项目没有 package-lock.json）
+RUN npm install --production=false
 
 # 复制源代码
 COPY . .
