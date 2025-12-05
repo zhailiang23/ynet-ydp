@@ -205,23 +205,33 @@ docker pull "$IMAGE_WITH_TAG" || {
     exit 1
 }
 
-# 4. 停止并重命名旧容器（如果存在）
+# 4. 清理旧容器（包括运行中和已停止的）
 NEW_CONTAINER_NAME="${CONTAINER_NAME}_new"
 BACKUP_CONTAINER_NAME="${CONTAINER_NAME}_backup"
 
-if docker ps | grep -q "$CONTAINER_NAME\$"; then
-    log_step "步骤 4: 备份当前运行的容器"
+log_step "步骤 4: 清理旧容器"
 
-    # 先停止旧容器
-    docker stop "$CONTAINER_NAME" || true
+# 检查并清理所有相关容器（不管是否在运行）
+for name in "$CONTAINER_NAME" "$NEW_CONTAINER_NAME" "$BACKUP_CONTAINER_NAME"; do
+    if docker ps -a | grep -q "$name\$"; then
+        log_info "发现容器: $name"
 
-    # 重命名为 backup
-    docker rename "$CONTAINER_NAME" "$BACKUP_CONTAINER_NAME" || true
+        # 如果是主容器且正在运行，先备份
+        if [ "$name" = "$CONTAINER_NAME" ] && docker ps | grep -q "$name\$"; then
+            log_info "停止并备份主容器: $name"
+            docker stop "$name" || true
+            docker rename "$name" "$BACKUP_CONTAINER_NAME" || true
+            log_info "✓ 旧容器已备份为: $BACKUP_CONTAINER_NAME"
+        else
+            # 其他容器直接停止删除
+            log_info "清理容器: $name"
+            docker stop "$name" || true
+            docker rm "$name" || true
+        fi
+    fi
+done
 
-    log_info "✓ 旧容器已备份为: $BACKUP_CONTAINER_NAME"
-else
-    log_step "步骤 4: 未发现运行中的容器，跳过备份"
-fi
+log_info "✓ 容器清理完成"
 
 # 5. 启动新容器
 log_step "步骤 5: 启动新容器"
