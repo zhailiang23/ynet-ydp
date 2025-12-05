@@ -3,8 +3,12 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# 加载.env文件
-load_dotenv()
+# 获取环境变量（支持 dev, fat, uat, pro）
+APP_ENV = os.getenv("APP_ENV", "dev")
+
+# 加载对应环境的 .env 文件
+env_file = f".env.{APP_ENV}"
+load_dotenv(env_file)
 
 
 class Settings:

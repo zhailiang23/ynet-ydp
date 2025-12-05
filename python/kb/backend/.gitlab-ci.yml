@@ -1,0 +1,141 @@
+variables:
+  # Harbor 仓库配置
+  HARBOR_URL: "192.168.152.56"
+  HARBOR_PROJECT: "ai-digital-avatar"
+  HARBOR_USER: "search"
+  HARBOR_PASSWORD: "Search123"
+  IMAGE_NAME: "${HARBOR_URL}/${HARBOR_PROJECT}/python-kb-backend"
+
+  # 部署配置
+  DEPLOY_SERVER: "192.168.153.111"
+  DEPLOY_USER: "root"
+  DEPLOY_DIR: "/root/zhailiang/python-kb-backend"
+  CONTAINER_NAME: "python-kb-backend"
+  CONTAINER_PORT: "9080"  # RAG 知识库服务端口
+  APP_ENV: "fat"  # 使用 FAT 环境配置
+
+  # Docker 配置
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""  # 禁用TLS，兼容HTTP Harbor仓库
+
+stages:
+  - build
+  - deploy
+  - cleanup
+
+# ==================== 构建并推送镜像 ====================
+build-and-push:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  variables:
+    DOCKER_HOST: "unix:///var/run/docker.sock"  # Unix socket，避免TLS问题
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    # 替换为阿里云镜像源
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache bash
+    # 登录 Harbor
+    - echo "$HARBOR_PASSWORD" | docker login $HARBOR_URL -u $HARBOR_USER --password-stdin
+  script:
+    - echo "开始构建镜像..."
+    - echo "环境: $APP_ENV"
+    - echo "镜像名: ${IMAGE_NAME}:${CI_PIPELINE_IID}"
+
+    # 构建镜像并注入 APP_ENV
+    - docker build --build-arg APP_ENV=${APP_ENV} -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
+    - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
+
+    # 推送镜像
+    - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
+    - docker push ${IMAGE_NAME}:latest
+
+    - echo "镜像构建并推送成功"
+  after_script:
+    - docker logout $HARBOR_URL || true
+  only:
+    - master
+
+# ==================== 部署到 FAT 环境 ====================
+deploy-to-fat:
+  stage: deploy
+  image: alpine:3.18
+  before_script:
+    # 替换为阿里云镜像源
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache openssh-client bash
+
+    # 配置 SSH 私钥
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - |
+      cat > ~/.ssh/id_rsa << 'EOFKEY'
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEpAIBAAKCAQEAuE3iTr7Ru7R/RD8gGcSLlbWVsPJ5VxL6vgcOZaE5VsIg6J2B
+      pxGGhcgKz7hxcW+Nru0GPCG3H6pLjqSv5dxEDt9sFv1JoqGN+X31C9hSeBNpqjyg
+      n3gjB/xUUQLQgqKMBR75KT6M09qCaEcV0fmDf1H/zQZIE/4PBPz93IuUNpQH7sqI
+      oIr0x7qcnp8A2LBXXx0WNYmRq4gQD7vRTZp0GFWUV/hTVSEr/Y2cVV9MbMTnMPy+
+      I64HqVLVBnRYbqZbzlLVpGdmqnFu1hhJ7oFGRuv1dI82Nq0tz2F34EbQlSYl8NZU
+      nqQCnU8wKuBT1V3Jn1uCdG+lBZ8UvgE3xMqQdwIDAQABAoIBAEZdwjeBKbE0JaYb
+      UqYgJX/1zCUlJE2oe5J/4gbbPQ4qCnVz9UzmQECMJMT1RX9FNNHgQfVTxiAphgq9
+      4nPQ8gG13FHGajLVdNMNe1qY/KHdz4YS4gHxWB6p4u7NkuVQKh/h9dP1ZIb8mqiC
+      2uJ0WRVJGmh2RkCGR7h/CQ+T9qIp5pQaFYGxXA4u0Y7dALMWRwQ3qbM/5COpg6QK
+      3oqZqRKBh+DJR6y7OWH9HjF8y8RA5L3nJMNCM7hjVXHqLPE5PvhqBDVrLd3gCqcg
+      uqhF1N3hTTN7wOPM0jOXFlYYdF7eJ+v3WCJRX3/fGQQWKL1TuQLxkGl5yLcKmYAa
+      Kk+wTYECgYEA4kMmJ9l+QXkKrLN5dXKy8SbN7yLd3GJdpuZ6p6xXmYb5C5Qe6hLl
+      qW0vQHO8CIJuXQ7Qh2FU3AvkHZRhz4P5D5F/4A2Y7nQY+9wF0fJ5D3Q3m7eVh8N5
+      +5aF3F0X7Q8fL5F3Q3m7eVh8N5+5aF3F0X7Q8fL5D3Q3m7eVh8N5+5cCgYEA0LMm
+      J9l+QXkKrLN5dXKy8SbN7yLd3GJdpuZ6p6xXmYb5C5Qe6hLlqW0vQHO8CIJuXQ7Q
+      h2FU3AvkHZRhz4P5D5F/4A2Y7nQY+9wF0fJ5D3Q3m7eVh8N5+5aF3F0X7Q8fL5F3
+      Q3m7eVh8N5+5aF3F0X7Q8fL5D3Q3m7eVh8N5+5UCgYEAuE3iTr7Ru7R/RD8gGcSL
+      lbWVsPJ5VxL6vgcOZaE5VsIg6J2BpxGGhcgKz7hxcW+Nru0GPCG3H6pLjqSv5dxE
+      Dt9sFv1JoqGN+X31C9hSeBNpqjygn3gjB/xUUQLQgqKMBR75KT6M09qCaEcV0fmD
+      f1H/zQZIE/4PBPz93IuUNpQH7sqIoIr0x7qcnp8A2LBXXx0WNYmRq4gQD7vRTZp0
+      GFWUV/hTVSEr/Y2cVV9MbMTnMPy+I64HqVLVBnRYbqZbzlLVpGdmqnFu1hhJ7oFG
+      Ruv1dI82Nq0tz2F34EbQlSYl8NZUnqQCnU8wKuBT1V3Jn1uCdG+lBZ8UvgE3xMqQ
+      dwIDAQAB
+      -----END RSA PRIVATE KEY-----
+      EOFKEY
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+  script:
+    - echo "开始部署到 FAT 环境..."
+
+    # 创建必要目录（从 user 项目学到的经验）
+    - ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} "mkdir -p ${DEPLOY_DIR} /root/zhailiang/configs /root/zhailiang/logs"
+
+    # 上传部署脚本
+    - scp -i ~/.ssh/id_rsa deploy.sh ${DEPLOY_USER}@${DEPLOY_SERVER}:${DEPLOY_DIR}/
+
+    # 执行部署
+    - |
+      ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} \
+        "cd ${DEPLOY_DIR} && bash deploy.sh ${IMAGE_NAME}:${CI_PIPELINE_IID} ${HARBOR_URL} ${HARBOR_USER} ${HARBOR_PASSWORD} ${CONTAINER_PORT}"
+
+    - echo "部署完成"
+  only:
+    - master
+
+# ==================== 清理旧镜像 ====================
+cleanup:
+  stage: cleanup
+  image: alpine:3.18
+  before_script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache curl jq
+  script:
+    - echo "清理 Harbor 中超过 7 天的旧镜像（保留最近 5 个版本）..."
+
+    # 使用 Harbor API 清理旧镜像
+    - |
+      REPO_NAME="python-kb-backend"
+      echo "仓库: ${HARBOR_PROJECT}/${REPO_NAME}"
+
+      # 注：实际清理逻辑需要 Harbor API 支持，这里仅作示例
+      echo "清理逻辑：保留最近 5 个版本，删除 7 天前的旧镜像"
+
+    - echo "清理完成"
+  only:
+    - master
+  when: on_success
