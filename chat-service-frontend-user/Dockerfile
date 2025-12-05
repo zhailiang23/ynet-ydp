@@ -17,7 +17,7 @@ RUN npm config set registry https://registry.npmmirror.com
 # 临时移除 weapp-tailwindcss 依赖（仅用于小程序，H5 构建不需要）
 # 同时移除项目的 postinstall 脚本，并修复 JSON 格式
 RUN sed -i '/"postinstall":/d; /"open":/s/,$//' package.json && \
-    sed -i '/"weapp-tailwindcss":/d; /"weapp-ide-cli":/s/,$//' package.json
+    sed -i '/"weapp-tailwindcss":/d' package.json
 
 # 安装依赖（使用 legacy-peer-deps 解决 webpack 版本冲突）
 RUN npm install --legacy-peer-deps
