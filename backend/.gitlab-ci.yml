@@ -186,7 +186,8 @@ deploy-to-fat:
     - echo "部署目录 ${DEPLOY_DIR}"
     - echo "Spring Profile ${SPRING_PROFILE}"
     - echo "=========================================="
-    - scp -i ~/.ssh/id_rsa deploy.sh ${DEPLOY_USER}@${DEPLOY_SERVER}:${DEPLOY_DIR}/
+    - ls -la deploy.sh  # 验证脚本存在
+    - scp -i ~/.ssh/id_rsa ./deploy.sh ${DEPLOY_USER}@${DEPLOY_SERVER}:${DEPLOY_DIR}/
     - ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} "cd ${DEPLOY_DIR} && chmod +x deploy.sh && bash deploy.sh ${IMAGE_NAME}:${CI_PIPELINE_IID} ${HARBOR_URL} search Search123 ${SPRING_PROFILE}"
     - echo "=========================================="
     - echo "部署完成"
@@ -194,7 +195,7 @@ deploy-to-fat:
     - echo "API 文档 http://${DEPLOY_SERVER}:${CONTAINER_PORT}/doc.html"
     - echo "=========================================="
   tags:
-    - shell
+    - docker
   only:
     - master
   when: on_success
@@ -278,10 +279,8 @@ cleanup-old-images:
           xargs -r docker rmi -f || true
         echo "旧镜像清理完成（保留最近 5 个版本）"
       EOF
-  dependencies:
-    - deploy-to-fat
   tags:
-    - shell
+    - docker
   only:
     - master
   when: on_success
