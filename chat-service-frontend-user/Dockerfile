@@ -14,9 +14,12 @@ COPY package*.json ./
 # 配置 npm 使用淘宝镜像加速
 RUN npm config set registry https://registry.npmmirror.com
 
+# 临时移除 weapp-tailwindcss 的 postinstall 脚本，避免构建失败
+# 保留其他包（如 @tarojs/binding）的 postinstall，它们需要下载平台特定的二进制文件
+RUN sed -i '/"postinstall":/d' package.json
+
 # 安装依赖（使用 legacy-peer-deps 解决 webpack 版本冲突）
-# --ignore-scripts: 跳过 postinstall 脚本（weapp-tw patch 仅用于小程序，H5 构建不需要）
-RUN npm install --legacy-peer-deps --ignore-scripts
+RUN npm install --legacy-peer-deps
 
 # 复制源代码
 COPY . .
