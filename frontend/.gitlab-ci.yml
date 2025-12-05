@@ -14,10 +14,10 @@
 #   VITE_ENV - 部署环境 (dev/fat/uat/pro)
 ################################################################################
 
-# 工作流规则: 仅在 master 分支触发
+# 工作流规则: 在 master 和 fix-api-exports 分支触发
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "fix-api-exports"
       when: always
     - when: never
 
@@ -95,6 +95,7 @@ build-and-push:
 
   only:
     - master
+    - fix-api-exports
 
 ################################################################################
 # 阶段 2: 部署到目标服务器 (FAT 环境)
@@ -159,6 +160,7 @@ deploy-to-fat:
 
   only:
     - master
+    - fix-api-exports
 
 ################################################################################
 # 阶段 3: 清理旧镜像
@@ -219,5 +221,6 @@ cleanup-old-images:
 
   only:
     - master
+    - fix-api-exports
 
   when: on_success
