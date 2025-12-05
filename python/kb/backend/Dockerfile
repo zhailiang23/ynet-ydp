@@ -16,6 +16,10 @@ ENV PIP_PROGRESS_BAR=off
 ENV PIP_NO_PYTHON_VERSION_WARNING=1
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
+# 禁用 OpenBLAS 多线程避免线程创建失败导致崩溃
+ENV OPENBLAS_NUM_THREADS=1
+ENV OMP_NUM_THREADS=1
+
 # 跳过系统包安装,避免内存不足错误
 # 使用 Python 的 httpx 进行健康检查
 
