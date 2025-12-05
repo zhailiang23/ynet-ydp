@@ -338,3 +338,4 @@ notify-on-failure:
   when: on_failure
   only:
     - master
+
