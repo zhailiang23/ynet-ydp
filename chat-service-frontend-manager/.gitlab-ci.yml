@@ -1,0 +1,291 @@
+# GitLab CI/CD 配置文件
+# GitLab 版本: 17.1.8 Community Edition
+# 项目: chat-service-frontend-manager
+# 功能: 自动构建、推送 Docker 镜像、零停机部署
+
+# 定义 CI/CD 阶段
+stages:
+  - build      # 构建并推送 Docker 镜像到 Harbor
+  - deploy     # 部署到服务器
+  - cleanup    # 清理旧镜像
+
+# 全局变量
+variables:
+  # Harbor 配置
+  HARBOR_URL: "192.168.152.56"
+  HARBOR_PROJECT: "ai-digital-avatar"
+  IMAGE_NAME: "${HARBOR_URL}/${HARBOR_PROJECT}/chat-service-frontend-manager"
+
+  # 部署服务器配置
+  DEPLOY_SERVER: "192.168.153.111"
+  DEPLOY_USER: "root"
+  DEPLOY_DIR: "/root/zhailiang/chat-service-frontend-manager"
+  CONTAINER_PORT: "8000"  # 客服管理端口
+
+  # 环境配置
+  APP_ENV: "fat"  # 使用 FAT 环境配置
+
+  # Docker 配置
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+  # GitLab Runner 镜像拉取策略
+  PULL_POLICY: if-not-present
+
+  # GitLab 17.1+ 支持的 CI/CD 功能
+  FF_USE_FASTZIP: "true"
+  ARTIFACT_COMPRESSION_LEVEL: "fast"
+  CACHE_COMPRESSION_LEVEL: "fast"
+
+# 仅在推送到 master 分支时触发
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: always
+    - when: never
+
+# ============================================
+# 阶段 1: 构建并推送 Docker 镜像
+# ============================================
+build-and-push:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  variables:
+    GIT_STRATEGY: fetch
+    DOCKER_HOST: "unix:///var/run/docker.sock"
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - echo "Starting Docker image build and push"
+    - echo "Environment ${APP_ENV}"
+    - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
+    - echo "Build number ${CI_PIPELINE_IID}"
+    - echo "Working directory $(pwd)"
+    - ls -la
+    - docker info
+    - echo "Logging into Harbor (HTTP, insecure registry)..."
+    - echo "Search123" | docker login ${HARBOR_URL} -u search --password-stdin
+  script:
+    - echo "Building Docker image with APP_ENV=${APP_ENV}..."
+    - docker build --build-arg APP_ENV=${APP_ENV} -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
+    - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
+    - echo "Pushing images to Harbor..."
+    - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
+    - docker push ${IMAGE_NAME}:latest
+    - echo "Image build and push completed successfully"
+    - echo "Image URL ${IMAGE_NAME}:${CI_PIPELINE_IID}"
+  after_script:
+    - docker logout $HARBOR_URL || true
+  tags:
+    - docker
+  only:
+    - master
+
+# ============================================
+# 阶段 2: 部署到 FAT 环境服务器
+# ============================================
+deploy-to-fat:
+  stage: deploy
+  image: alpine:latest
+  variables:
+    GIT_STRATEGY: fetch  # 需要检出代码以获取 deploy.sh
+  before_script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache openssh-client bash curl
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - |
+      cat > ~/.ssh/id_rsa << 'EOFKEY'
+      -----BEGIN RSA PRIVATE KEY-----
+      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
+      -----END RSA PRIVATE KEY-----
+      EOFKEY
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+  script:
+    - echo "Starting deployment to FAT environment"
+    # 在目标服务器创建必要的目录
+    - ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} "mkdir -p ${DEPLOY_DIR} /root/zhailiang/configs /root/zhailiang/logs"
+    - scp -i ~/.ssh/id_rsa deploy.sh ${DEPLOY_USER}@${DEPLOY_SERVER}:${DEPLOY_DIR}/
+    - |
+      ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << EOF
+        cd ${DEPLOY_DIR}
+        chmod +x deploy.sh
+        bash deploy.sh \
+          ${IMAGE_NAME}:${CI_PIPELINE_IID} \
+          ${HARBOR_URL} \
+          search \
+          Search123 \
+          ${CONTAINER_PORT}
+        if [ \$? -eq 0 ]; then
+          echo "Deployment succeeded"
+          exit 0
+        else
+          echo "Deployment failed"
+          exit 1
+        fi
+      EOF
+    - echo "=========================================="
+    - echo "Deployment completed"
+    - echo "Access URL http://${DEPLOY_SERVER}:${CONTAINER_PORT}"
+    - echo "=========================================="
+  tags:
+    - shell
+  only:
+    - master
+  when: on_success
+
+# ============================================
+# 阶段 3: 清理旧镜像（可选）
+# ============================================
+cleanup-old-images:
+  stage: cleanup
+  image: alpine:latest
+  variables:
+    GIT_STRATEGY: none  # 清理阶段不需要代码
+  before_script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - |
+      cat > ~/.ssh/id_rsa << 'EOFKEY'
+      -----BEGIN RSA PRIVATE KEY-----
+      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
+      -----END RSA PRIVATE KEY-----
+      EOFKEY
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+  script:
+    - echo "Cleaning old images on server"
+    - |
+      ssh -i ~/.ssh/id_rsa ${DEPLOY_USER}@${DEPLOY_SERVER} << 'EOF'
+        docker images 192.168.152.56/ai-digital-avatar/chat-service-frontend-manager \
+          --format "{{.ID}} {{.CreatedAt}}" | \
+          sort -rk2 | tail -n +4 | awk '{print $1}' | \
+          xargs -r docker rmi -f || true
+        echo "Old images cleanup completed"
+      EOF
+  dependencies:
+    - deploy-to-fat
+  tags:
+    - shell
+  only:
+    - master
+  when: on_success
+  allow_failure: true
+
+# ============================================
+# 失败时发送通知（可选）
+# ============================================
+notify-on-failure:
+  stage: .post
+  image: alpine:latest
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "Pipeline failed"
+    - echo "Commit ${CI_COMMIT_SHORT_SHA}"
+    - echo "Branch ${CI_COMMIT_BRANCH}"
+    - echo "Build number ${CI_PIPELINE_IID}"
+  when: on_failure
+  only:
+    - master

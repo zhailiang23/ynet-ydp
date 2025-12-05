@@ -1,11 +1,18 @@
 # 阶段 1: 构建阶段
 FROM node:20-alpine AS builder
 
+# 环境变量：支持 dev, fat, uat, pro
+ARG APP_ENV=dev
+ENV UMI_ENV=${APP_ENV}
+
 # 设置工作目录
 WORKDIR /app
 
 # 复制 package 文件
 COPY package*.json ./
+
+# 配置 npm 使用淘宝镜像加速
+RUN npm config set registry https://registry.npmmirror.com
 
 # 安装依赖
 RUN npm ci
@@ -13,7 +20,7 @@ RUN npm ci
 # 复制源代码
 COPY . .
 
-# 构建应用
+# 根据 UMI_ENV 环境变量构建
 RUN npm run build
 
 # 阶段 2: 运行阶段
