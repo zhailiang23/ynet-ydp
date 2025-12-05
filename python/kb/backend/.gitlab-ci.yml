@@ -2,6 +2,7 @@
 # GitLab 版本: 17.1.8 Community Edition
 # 项目: python-kb-backend
 # 功能: 自动构建、推送 Docker 镜像、零停机部署
+# 最后更新: 2025-12-05 - 修复 Docker 层缓存和 pip 选项问题
 
 # 定义 CI/CD 阶段
 stages:
