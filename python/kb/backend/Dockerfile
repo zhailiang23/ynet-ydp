@@ -12,11 +12,13 @@ WORKDIR /app
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 # 安装系统依赖
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # 复制 requirements.txt
 COPY requirements.txt .
