@@ -63,14 +63,15 @@ build-and-push:
     - echo "Logging into Harbor..."
     - docker login ${HARBOR_URL} -u search -p Search123
   script:
-    - echo "Building Docker image..."
-    - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
+    - echo "Building Docker image for environment fat..."
+    - docker build --build-arg BUILD_ENV=fat -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
     - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
     - echo "Pushing images to Harbor..."
     - docker push ${IMAGE_NAME}:${CI_PIPELINE_IID}
     - docker push ${IMAGE_NAME}:latest
     - echo "Image build and push completed successfully"
     - echo "Image URL ${IMAGE_NAME}:${CI_PIPELINE_IID}"
+    - echo "Environment fat with API base URL http://192.168.153.111:48080/admin-api"
   after_script:
     - docker logout $HARBOR_URL || true
   tags:

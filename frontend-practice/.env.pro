@@ -1,0 +1,14 @@
+# 生产环境配置
+# 部署服务器: TODO (待配置)
+
+# 后端 API 地址 (生产环境)
+NEXT_PUBLIC_API_BASE_URL=http://YOUR_PRO_SERVER:48080/admin-api
+
+# 默认租户ID
+NEXT_PUBLIC_TENANT_ID=1
+
+# Node.js 环境
+NODE_ENV=production
+
+# 时区配置
+TZ=Asia/Shanghai

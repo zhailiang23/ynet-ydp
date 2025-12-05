@@ -16,8 +16,22 @@ COPY package.json pnpm-lock.yaml ./
 # 安装依赖
 RUN pnpm install --frozen-lockfile
 
-# 复制源代码
+# 定义构建参数（用于指定环境）
+ARG BUILD_ENV=fat
+
+# 复制源代码和所有环境配置文件
 COPY . .
+
+# 根据 BUILD_ENV 参数选择对应的环境配置文件
+# 将 .env.{BUILD_ENV} 复制为 .env.production，Next.js 会在构建时读取它
+RUN echo "Building for environment: ${BUILD_ENV}" && \
+    if [ -f ".env.${BUILD_ENV}" ]; then \
+        cp .env.${BUILD_ENV} .env.production; \
+        echo "Using .env.${BUILD_ENV} as .env.production"; \
+        cat .env.production; \
+    else \
+        echo "Warning: .env.${BUILD_ENV} not found, using default .env.production"; \
+    fi
 
 # 构建应用 (standalone 模式)
 RUN pnpm run build
