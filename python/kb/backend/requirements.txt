@@ -7,7 +7,7 @@ httpx==0.27.2
 
 # 嵌入服务 (使用远程 API)
 numpy<2
-faiss-cpu==1.8.0
+faiss-cpu>=1.9.0
 openai==1.40.0
 packaging  # faiss-cpu 隐式依赖
 
