@@ -1,0 +1,28 @@
+# 生产环境配置
+
+# 端口
+VITE_PORT=5666
+
+# 根路径
+VITE_BASE=/
+
+# 后端服务地址 (生产环境)
+VITE_BASE_URL=http://192.168.153.111:48080
+
+# API 路径前缀
+VITE_GLOB_API_URL=/admin-api
+
+# 文件上传类型 (server=后端上传, client=前端直传)
+VITE_UPLOAD_TYPE=server
+
+# 是否启用 Vue DevTools
+VITE_DEVTOOLS=false
+
+# 是否注入 App Loading
+VITE_INJECT_APP_LOADING=true
+
+# 默认登录用户名
+VITE_APP_DEFAULT_USERNAME=admin
+
+# 默认登录密码
+VITE_APP_DEFAULT_PASSWORD=admin123
