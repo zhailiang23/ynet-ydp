@@ -45,3 +45,4 @@ logs/
 .DS_Store
 Thumbs.db
 *.tmp
+# Helper 镜像已从 Docker Hub 缓存
