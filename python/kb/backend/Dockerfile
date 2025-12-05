@@ -11,18 +11,8 @@ WORKDIR /app
 # 配置 pip 使用国内镜像加速
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-# 配置 Debian 使用阿里云镜像源加速
-RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
-    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources
-
-# 安装系统依赖 (只安装 curl,使用预编译的 Python 轮子避免编译)
-RUN rm -f /etc/apt/apt.conf.d/docker-clean && \
-    echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    curl \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# 跳过系统包安装,避免内存不足错误
+# 使用 Python 的 httpx 进行健康检查
 
 # 复制 requirements.txt
 COPY requirements.txt .
@@ -39,9 +29,9 @@ RUN mkdir -p /app/data
 # 暴露端口
 EXPOSE 9080
 
-# 健康检查
+# 健康检查 (使用 Python,无需 curl)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:9080/health || exit 1
+    CMD python -c "import httpx; exit(0 if httpx.get('http://localhost:9080/health', timeout=5).status_code == 200 else 1)"
 
 # 启动命令
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "9080"]
