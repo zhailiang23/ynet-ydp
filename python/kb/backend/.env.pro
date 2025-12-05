@@ -3,9 +3,11 @@
 # 数据目录
 DATA_DIR=./data
 
-# 嵌入模型配置
+# 嵌入模型配置（使用硅基流动 API）
 EMBEDDING_MODEL_NAME=BAAI/bge-small-zh-v1.5
-EMBEDDING_REMOTE=false  # 使用本地模型
+EMBEDDING_REMOTE=true  # 使用远程 API
+EMBEDDING_API_BASE=https://api.siliconflow.cn/v1
+EMBEDDING_API_KEY=sk-iiqrscvxpnomsjmissalpxylgwbmoszzoawkgtowyuqirejb
 
 # 嵌入向量维度
 EMBEDDING_DIM=512
