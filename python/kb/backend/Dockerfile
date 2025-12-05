@@ -23,7 +23,11 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 COPY requirements.txt .
 
 # 安装 Python 依赖（进度条已通过环境变量禁用）
-# 使用 pip 缓存以加速构建（仅当 requirements.txt 变化时重新下载）
+# 先安装 PyTorch CPU 版本，避免自动拉取 CUDA 依赖（节省磁盘空间）
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# 安装其他依赖（使用 pip 缓存以加速构建）
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.txt
 
