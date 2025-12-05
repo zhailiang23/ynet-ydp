@@ -10,6 +10,11 @@ COPY ./target/iplatform-server.jar app.jar
 
 ## 设置 TZ 时区
 ENV TZ=Asia/Shanghai
+
+## 设置 Spring Profile 环境变量，可通过 docker run -e "SPRING_PROFILES_ACTIVE=dev" 进行覆盖
+## 支持的环境: local, dev, fat, uat, pro
+ENV SPRING_PROFILES_ACTIVE=dev
+
 ## 设置 JAVA_OPTS 环境变量，可通过 docker run -e "JAVA_OPTS=" 进行覆盖
 ENV JAVA_OPTS="-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom"
 
@@ -20,4 +25,4 @@ ENV ARGS=""
 EXPOSE 48080
 
 ## 启动后端项目
-CMD java ${JAVA_OPTS} -jar app.jar $ARGS
+CMD java ${JAVA_OPTS} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -jar app.jar $ARGS

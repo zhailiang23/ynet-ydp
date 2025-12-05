@@ -1,131 +1,113 @@
-# GitLab CI/CD 配置文件
-# GitLab 版本: 17.1.8 Community Edition
-# 项目: chat-service-backend
-# 功能: 自动构建、推送 Docker 镜像、零停机部署（FAT 环境）
+################################################################################
+# GitLab CI/CD 配置 - web-antd (易诚管理系统前端)
+#
+# 流水线阶段:
+#   1. build  - 构建 Docker 镜像并推送到 Harbor
+#   2. deploy - 部署到目标服务器 (FAT 环境)
+#   3. cleanup - 清理旧镜像
+#
+# 环境变量:
+#   HARBOR_URL - Harbor 仓库地址 (192.168.152.56)
+#   HARBOR_USER - Harbor 用户名 (search)
+#   HARBOR_PASSWORD - Harbor 密码 (Search123)
+#   DEPLOY_SERVER - 部署服务器地址 (192.168.153.111)
+#   VITE_ENV - 部署环境 (dev/fat/uat/pro)
+################################################################################
 
-# 定义 CI/CD 阶段
-stages:
-  - build      # 构建并推送 Docker 镜像到 Harbor
-  - deploy     # 部署到服务器
-  - cleanup    # 清理旧镜像
-
-# 全局变量（仅用于 GitLab 内置变量）
-variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
-  PULL_POLICY: if-not-present
-  FF_USE_FASTZIP: "true"
-  ARTIFACT_COMPRESSION_LEVEL: "fast"
-  CACHE_COMPRESSION_LEVEL: "fast"
-
-# 仅在推送到 master 分支时触发
+# 工作流规则: 在 master 和 fix-api-exports 分支触发
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "fix-api-exports"
       when: always
     - when: never
 
-# ============================================
+# 定义阶段
+stages:
+  - build
+  - deploy
+  - cleanup
+
+# 全局变量
+variables:
+  # Harbor 配置
+  HARBOR_URL: "192.168.152.56"
+  HARBOR_PROJECT: "sysadmin-2025"
+  HARBOR_USER: "search"
+  HARBOR_PASSWORD: "Search123"
+
+  # 部署服务器配置
+  DEPLOY_SERVER: "192.168.153.111"
+  DEPLOY_USER: "root"
+
+  # Docker 镜像配置
+  IMAGE_NAME: "web-antd"
+  IMAGE_TAG: "${CI_PIPELINE_ID}"
+  IMAGE_WITH_TAG: "${HARBOR_URL}/${HARBOR_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG}"
+
+  # 环境配置 (部署到 FAT 环境)
+  VITE_ENV: "fat"
+
+################################################################################
 # 阶段 1: 构建并推送 Docker 镜像
-# ============================================
+################################################################################
 build-and-push:
   stage: build
-  image: docker:24.0.5
+  image: docker:27.5.0
   services:
-    - docker:24.0.5-dind
-  timeout: 2h  # 设置超时为2小时
-  variables:
-    DOCKER_HOST: "unix:///var/run/docker.sock"
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-    GIT_STRATEGY: fetch
+    - docker:27.5.0-dind
   before_script:
-    - echo "Starting Docker build for chat-service-backend"
-    - echo "Environment fat"
-    - echo "Commit hash ${CI_COMMIT_SHORT_SHA}"
-    - echo "Build number ${CI_PIPELINE_IID}"
-    # 替换为阿里云镜像源
-    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-    - apk add --no-cache bash curl git make wget tar
-    # 手动安装 Go 1.23（使用国内镜像）
-    - wget -q https://mirrors.aliyun.com/golang/go1.23.4.linux-amd64.tar.gz -O /tmp/go.tar.gz
-    - tar -C /usr/local -xzf /tmp/go.tar.gz
-    - export PATH=/usr/local/go/bin:$PATH
-    - export GOPATH=/root/go
-    - export PATH=$GOPATH/bin:$PATH
-    - go version
-    # 配置 Go 使用国内镜像和 Module 模式
-    - go env -w GO111MODULE=on
-    - go env -w GOPROXY=https://goproxy.cn,direct
-    - go env -w GOSUMDB=sum.golang.google.cn
-    # 安装 GoFrame CLI（添加超时和进度提示）
-    - echo "开始安装 GoFrame CLI，可能需要 5-10 分钟..."
-    - timeout 20m go install -v github.com/gogf/gf/cmd/gf/v2@latest || echo "⚠️ GoFrame CLI 安装超时或失败，尝试继续..."
-    - gf -v || echo "GoFrame CLI 安装状态检查"
-  script:
-    - echo "Building application binary with GoFrame..."
-    # 重新设置 PATH 和环境变量（script 是独立的 shell）
-    - export PATH=/usr/local/go/bin:/root/go/bin:$PATH
-    - export GOPATH=/root/go
-    - export GO111MODULE=on
-    - go env
-    - echo "Current directory $(pwd)"
-    - ls -la
-    # 确保在项目根目录
-    - cd /builds/belink/ai-agent/ai-digital-avatar/chat-service-backend || true
-    - pwd
-    # 下载依赖
-    - go mod download
-    - go mod tidy
-    # 验证 Module 模式
-    - echo "Verifying Go Module mode..."
-    - go list -m
-    - go list ./...
-    # 手动构建二进制文件（使用包路径而非单文件）
-    - echo "Building Go binary..."
-    - mkdir -p temp/linux_amd64
-    - GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=mod -o temp/linux_amd64/main .
-    - ls -lh temp/linux_amd64/
-    # 构建 Docker 镜像
-    - echo "Building Docker image..."
+    - echo "配置 Docker 镜像加速器..."
+    - mkdir -p /etc/docker
     - |
-      docker build \
-        --build-arg ENV=fat \
-        -f manifest/docker/Dockerfile \
-        -t 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} \
-        .
-    # 添加 latest 标签
-    - docker tag 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} 192.168.152.56/ai-digital-avatar/chat-service-backend:latest
-    # 登录 Harbor
-    - echo "Logging into Harbor..."
-    - echo "Search123" | docker login 192.168.152.56 -u search --password-stdin
-    # 推送镜像
-    - echo "Pushing images to Harbor..."
-    - docker push 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID}
-    - docker push 192.168.152.56/ai-digital-avatar/chat-service-backend:latest
-    - echo "Image build and push completed successfully"
-    - echo "Image URL 192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID}"
+      cat > /etc/docker/daemon.json <<'EOF'
+      {
+        "registry-mirrors": [
+          "https://docker.rainbond.cc",
+          "https://docker.1panel.live",
+          "https://hub.rat.dev"
+        ],
+        "insecure-registries": ["${HARBOR_URL}"]
+      }
+      EOF
+    - cat /etc/docker/daemon.json
+    - echo "等待 Docker daemon 启动..."
+    - timeout 60 sh -c 'until docker info >/dev/null 2>&1; do sleep 1; done' || exit 1
+    - echo "Docker daemon 已就绪"
+    - echo "登录 Harbor 仓库..."
+    - echo "$HARBOR_PASSWORD" | docker login "$HARBOR_URL" -u "$HARBOR_USER" --password-stdin
+
+  script:
+    - echo "=========================================="
+    - echo "开始构建 Docker 镜像"
+    - echo "=========================================="
+    - echo "环境 $VITE_ENV"
+    - echo "镜像 $IMAGE_WITH_TAG"
+    - echo "=========================================="
+    - docker build --build-arg VITE_ENV=$VITE_ENV -t "$IMAGE_WITH_TAG" -f apps/web-antd/Dockerfile .
+    - echo "✓ 镜像构建完成"
+    - echo "推送镜像到 Harbor..."
+    - docker push "$IMAGE_WITH_TAG"
+    - echo "✓ 镜像推送完成"
+    - docker logout "$HARBOR_URL"
+
   after_script:
-    - docker logout 192.168.152.56 || true
-  tags:
-    - docker
+    - echo "构建阶段完成"
+
   only:
     - master
+    - fix-api-exports
 
-# ============================================
-# 阶段 2: 部署到服务器（FAT 环境）
-# ============================================
+################################################################################
+# 阶段 2: 部署到目标服务器 (FAT 环境)
+################################################################################
 deploy-to-fat:
   stage: deploy
-  image: alpine:latest
-  variables:
-    GIT_STRATEGY: fetch  # 需要检出代码以获取 deploy-gitlab.sh
+  image: alpine:3.21
   before_script:
     - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     - apk add --no-cache openssh-client bash curl
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    # 配置 SSH 私钥
     - |
       cat > ~/.ssh/id_rsa << 'EOFKEY'
       -----BEGIN RSA PRIVATE KEY-----
@@ -181,53 +163,42 @@ deploy-to-fat:
       -----END RSA PRIVATE KEY-----
       EOFKEY
     - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -H 192.168.153.111 >> ~/.ssh/known_hosts
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+
   script:
-    - echo "Starting deployment to FAT environment"
-    # 在目标服务器创建必要的目录
-    - ssh -i ~/.ssh/id_rsa root@192.168.153.111 "mkdir -p /root/zhailiang/chat-service-backend /root/zhailiang/configs /root/zhailiang/logs"
-    # 传输部署脚本
-    - scp -i ~/.ssh/id_rsa deploy-gitlab.sh root@192.168.153.111:/root/zhailiang/chat-service-backend/
-    # 执行部署
-    - |
-      ssh -i ~/.ssh/id_rsa root@192.168.153.111 << EOF
-        cd /root/zhailiang/chat-service-backend
-        chmod +x deploy-gitlab.sh
-        bash deploy-gitlab.sh \
-          192.168.152.56/ai-digital-avatar/chat-service-backend:${CI_PIPELINE_IID} \
-          192.168.152.56 \
-          search \
-          Search123 \
-          fat
-        if [ \$? -eq 0 ]; then
-          echo "Deployment succeeded"
-          exit 0
-        else
-          echo "Deployment failed"
-          exit 1
-        fi
-      EOF
     - echo "=========================================="
-    - echo "Deployment completed"
-    - echo "Access URL http://192.168.153.111:8080"
+    - echo "开始部署到 FAT 环境"
     - echo "=========================================="
-  tags:
-    - shell
+    - echo "目标服务器 $DEPLOY_SERVER"
+    - echo "镜像 $IMAGE_WITH_TAG"
+    - echo "环境 $VITE_ENV"
+    - echo "=========================================="
+    - echo "步骤 1 创建部署目录"
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "mkdir -p /root/zhailiang/web-antd /root/zhailiang/logs/web-antd"
+    - echo "步骤 2 复制部署脚本"
+    - scp -o StrictHostKeyChecking=no apps/web-antd/deploy.sh $DEPLOY_USER@$DEPLOY_SERVER:/root/zhailiang/web-antd/
+    - echo "步骤 3 执行部署脚本"
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "bash /root/zhailiang/web-antd/deploy.sh $IMAGE_WITH_TAG $HARBOR_URL $HARBOR_USER $HARBOR_PASSWORD $VITE_ENV"
+
+  after_script:
+    - echo "部署阶段完成"
+
+  dependencies:
+    - build-and-push
+
   only:
     - master
-  when: on_success
+    - fix-api-exports
 
-# ============================================
-# 阶段 3: 清理旧镜像（可选）
-# ============================================
+################################################################################
+# 阶段 3: 清理旧镜像
+################################################################################
 cleanup-old-images:
   stage: cleanup
-  image: alpine:latest
-  variables:
-    GIT_STRATEGY: none
+  image: alpine:3.21
   before_script:
     - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-    - apk add --no-cache openssh-client
+    - apk add --no-cache openssh-client bash
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - |
@@ -285,40 +256,23 @@ cleanup-old-images:
       -----END RSA PRIVATE KEY-----
       EOFKEY
     - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -H 192.168.153.111 >> ~/.ssh/known_hosts
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+
   script:
-    - echo "Cleaning old images on server"
-    - |
-      ssh -i ~/.ssh/id_rsa root@192.168.153.111 << 'EOF'
-        docker images 192.168.152.56/ai-digital-avatar/chat-service-backend \
-          --format "{{.ID}} {{.CreatedAt}}" | \
-          sort -rk2 | tail -n +6 | awk '{print $1}' | \
-          xargs -r docker rmi -f || true
-        echo "Old images cleanup completed"
-      EOF
+    - echo "=========================================="
+    - echo "清理服务器上的旧镜像"
+    - echo "=========================================="
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "docker images '${HARBOR_URL}/${HARBOR_PROJECT}/${IMAGE_NAME}' --format '{{.ID}} {{.CreatedAt}}' | sort -rk2 | awk '{print \$1}' | tail -n +6 | xargs -r docker rmi || true"
+    - echo "✓ 旧镜像清理完成（保留最新 5 个版本）"
+
+  after_script:
+    - echo "清理阶段完成"
+
   dependencies:
     - deploy-to-fat
-  tags:
-    - shell
-  only:
-    - master
-  when: on_success
-  allow_failure: true
 
-# ============================================
-# 失败时发送通知（可选）
-# ============================================
-notify-on-failure:
-  stage: .post
-  image: alpine:latest
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - echo "Pipeline failed for chat-service-backend"
-    - echo "Commit ${CI_COMMIT_SHORT_SHA}"
-    - echo "Branch ${CI_COMMIT_BRANCH}"
-    - echo "Build number ${CI_PIPELINE_IID}"
-    - echo "Environment fat"
-  when: on_failure
   only:
     - master
+    - fix-api-exports
+
+  when: on_success

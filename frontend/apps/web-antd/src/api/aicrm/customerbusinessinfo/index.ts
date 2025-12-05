@@ -85,3 +85,30 @@ export function deleteCustomerBusinessInfoApi(id: number) {
     params: { id },
   });
 }
+
+/**
+ * 批量删除客户经营信息
+ */
+export function deleteCustomerBusinessInfoListApi(ids: number[]) {
+  return requestClient.delete<boolean>('/aicrm/customer-business-info/delete-list', {
+    data: ids,
+  });
+}
+
+/**
+ * 导出客户经营信息
+ */
+export function exportCustomerBusinessInfoApi(
+  params: CustomerBusinessInfoApi.CustomerBusinessInfoPageReq,
+) {
+  return requestClient.download('/aicrm/customer-business-info/export', { params });
+}
+
+// 向后兼容：导出无 Api 后缀的别名（供旧代码使用）
+export const getCustomerBusinessInfoPage = getCustomerBusinessInfoPageApi;
+export const getCustomerBusinessInfo = getCustomerBusinessInfoApi;
+export const createCustomerBusinessInfo = createCustomerBusinessInfoApi;
+export const updateCustomerBusinessInfo = updateCustomerBusinessInfoApi;
+export const deleteCustomerBusinessInfo = deleteCustomerBusinessInfoApi;
+export const deleteCustomerBusinessInfoList = deleteCustomerBusinessInfoListApi;
+export const exportCustomerBusinessInfo = exportCustomerBusinessInfoApi;
