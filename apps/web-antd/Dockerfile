@@ -4,8 +4,8 @@
 # 多环境支持: dev, fat, uat, pro
 # 通过环境变量 VITE_ENV 控制加载哪个配置文件
 #
-# 构建命令:
-#   docker build -t web-antd:latest .
+# 构建命令 (从 frontend 根目录执行):
+#   docker build --build-arg VITE_ENV=fat -t web-antd:latest -f apps/web-antd/Dockerfile .
 #
 # 运行命令:
 #   docker run -d --name web-antd -e VITE_ENV=fat -p 5666:80 web-antd:latest
@@ -14,7 +14,7 @@
 # 阶段 1: 构建阶段
 FROM node:20-alpine AS builder
 
-WORKDIR /app
+WORKDIR /workspace
 
 # 设置 pnpm
 RUN npm install -g pnpm@10.14.0
@@ -22,20 +22,26 @@ RUN npm install -g pnpm@10.14.0
 # 配置 pnpm 使用淘宝镜像源
 RUN pnpm config set registry https://registry.npmmirror.com
 
-# 复制 package.json 和 lockfile
-COPY package.json pnpm-lock.yaml ./
+# 复制 pnpm workspace 配置文件
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 
-# 安装依赖
+# 复制所有 package.json (用于依赖解析)
+COPY apps/web-antd/package.json ./apps/web-antd/
+COPY packages ./packages
+COPY internal ./internal
+
+# 安装依赖 (整个 workspace)
 RUN pnpm install --frozen-lockfile
 
-# 复制项目文件
-COPY . .
+# 复制 web-antd 源代码
+COPY apps/web-antd ./apps/web-antd
 
 # 环境变量 (默认为 dev)
 ARG VITE_ENV=dev
 
 # 构建应用 (根据 VITE_ENV 加载对应的 .env 文件)
-RUN echo "Building for environment: $VITE_ENV" && \
+RUN cd apps/web-antd && \
+    echo "Building for environment: $VITE_ENV" && \
     if [ "$VITE_ENV" = "dev" ]; then \
         cp .env.dev .env.production; \
     elif [ "$VITE_ENV" = "fat" ]; then \
@@ -59,10 +65,10 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf /etc/nginx/conf.d/default.conf /usr/share/nginx/html/*
 
 # 复制自定义 nginx 配置
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/web-antd/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 从构建阶段复制打包后的文件
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /workspace/apps/web-antd/dist /usr/share/nginx/html
 
 # 设置时区
 ENV TZ=Asia/Shanghai

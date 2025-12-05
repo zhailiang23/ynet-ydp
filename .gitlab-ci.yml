@@ -83,8 +83,7 @@ build-and-push:
     - echo "环境 $VITE_ENV"
     - echo "镜像 $IMAGE_WITH_TAG"
     - echo "=========================================="
-    - cd apps/web-antd
-    - docker build --build-arg VITE_ENV=$VITE_ENV -t "$IMAGE_WITH_TAG" -f Dockerfile .
+    - docker build --build-arg VITE_ENV=$VITE_ENV -t "$IMAGE_WITH_TAG" -f apps/web-antd/Dockerfile .
     - echo "✓ 镜像构建完成"
     - echo "推送镜像到 Harbor..."
     - docker push "$IMAGE_WITH_TAG"
