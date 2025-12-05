@@ -16,7 +16,8 @@ RUN npm config set registry https://registry.npmmirror.com
 
 # 临时移除 weapp-tailwindcss 的 postinstall 脚本，避免构建失败
 # 保留其他包（如 @tarojs/binding）的 postinstall，它们需要下载平台特定的二进制文件
-RUN sed -i '/"postinstall":/d' package.json
+# 使用 sed 删除 postinstall 行，并修复前一行的悬空逗号
+RUN sed -i '/"postinstall":/d; /"open":/s/,$//' package.json
 
 # 安装依赖（使用 legacy-peer-deps 解决 webpack 版本冲突）
 RUN npm install --legacy-peer-deps
