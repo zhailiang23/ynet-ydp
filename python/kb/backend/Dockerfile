@@ -11,14 +11,19 @@ WORKDIR /app
 # 配置 pip 使用国内镜像加速
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
+# 禁用 pip 进度条避免线程创建（GitLab Runner 有线程限制）
+ENV PIP_PROGRESS_BAR=off
+ENV PIP_NO_PYTHON_VERSION_WARNING=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
 # 跳过系统包安装,避免内存不足错误
 # 使用 Python 的 httpx 进行健康检查
 
 # 复制 requirements.txt
 COPY requirements.txt .
 
-# 安装 Python 依赖 (使用单个 -q 减少输出但保留错误信息)
-RUN pip install --no-cache-dir -q -r requirements.txt
+# 安装 Python 依赖（进度条已通过环境变量禁用）
+RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制项目文件
 COPY . .
