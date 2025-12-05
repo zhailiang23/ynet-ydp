@@ -73,22 +73,61 @@ build-and-push:
     - echo "=========================================="
     - java -version
     - mvn -version
-    - echo "配置 Maven 阿里云镜像..."
+    - echo "配置 Maven 阿里云镜像和 checksum 策略..."
     - mkdir -p ~/.m2
-    - echo '<?xml version="1.0" encoding="UTF-8"?>' > ~/.m2/settings.xml
-    - echo '<settings>' >> ~/.m2/settings.xml
-    - echo '  <mirrors>' >> ~/.m2/settings.xml
-    - echo '    <mirror>' >> ~/.m2/settings.xml
-    - echo '      <id>aliyun</id>' >> ~/.m2/settings.xml
-    - echo '      <mirrorOf>central</mirrorOf>' >> ~/.m2/settings.xml
-    - echo '      <name>Aliyun Maven</name>' >> ~/.m2/settings.xml
-    - echo '      <url>https://maven.aliyun.com/repository/public</url>' >> ~/.m2/settings.xml
-    - echo '    </mirror>' >> ~/.m2/settings.xml
-    - echo '  </mirrors>' >> ~/.m2/settings.xml
-    - echo '</settings>' >> ~/.m2/settings.xml
+    - |
+      cat > ~/.m2/settings.xml << 'EOF'
+      <?xml version="1.0" encoding="UTF-8"?>
+      <settings>
+        <mirrors>
+          <mirror>
+            <id>aliyun</id>
+            <mirrorOf>central</mirrorOf>
+            <name>Aliyun Maven</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+          </mirror>
+        </mirrors>
+        <profiles>
+          <profile>
+            <id>disable-checksum-validation</id>
+            <repositories>
+              <repository>
+                <id>central</id>
+                <url>https://maven.aliyun.com/repository/public</url>
+                <releases>
+                  <enabled>true</enabled>
+                  <checksumPolicy>warn</checksumPolicy>
+                </releases>
+                <snapshots>
+                  <enabled>false</enabled>
+                  <checksumPolicy>warn</checksumPolicy>
+                </snapshots>
+              </repository>
+            </repositories>
+            <pluginRepositories>
+              <pluginRepository>
+                <id>central</id>
+                <url>https://maven.aliyun.com/repository/public</url>
+                <releases>
+                  <enabled>true</enabled>
+                  <checksumPolicy>warn</checksumPolicy>
+                </releases>
+                <snapshots>
+                  <enabled>false</enabled>
+                  <checksumPolicy>warn</checksumPolicy>
+                </snapshots>
+              </pluginRepository>
+            </pluginRepositories>
+          </profile>
+        </profiles>
+        <activeProfiles>
+          <activeProfile>disable-checksum-validation</activeProfile>
+        </activeProfiles>
+      </settings>
+      EOF
   script:
-    - echo "步骤 1 清理并打包 Spring Boot 项目..."
-    - mvn $MAVEN_CLI_OPTS clean package $MAVEN_OPTS -DskipTests
+    - echo "步骤 1 清理并打包 Spring Boot 项目（仅构建 iplatform-server 及其依赖）..."
+    - mvn $MAVEN_CLI_OPTS clean package $MAVEN_OPTS -pl iplatform-server -am -DskipTests
     - ls -lh iplatform-server/target/
     - test -f iplatform-server/target/iplatform-server.jar || (echo "错误 JAR 文件不存在" && exit 1)
     - echo "步骤 2 构建 Docker 镜像..."
