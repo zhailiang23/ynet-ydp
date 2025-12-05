@@ -213,8 +213,23 @@ docker pull "$IMAGE_WITH_TAG" || {
 NEW_CONTAINER_NAME="${CONTAINER_NAME}_new"
 BACKUP_CONTAINER_NAME="${CONTAINER_NAME}_backup"
 
+# 清理可能存在的残留容器（_new 和 _backup）
+log_info "步骤 4.1: 清理残留容器"
+if docker ps -a | grep -q "${CONTAINER_NAME}_new"; then
+    log_warning "发现残留的 _new 容器，正在清理..."
+    docker stop "${CONTAINER_NAME}_new" 2>/dev/null || true
+    docker rm "${CONTAINER_NAME}_new" 2>/dev/null || true
+fi
+
+if docker ps -a | grep -q "${CONTAINER_NAME}_backup"; then
+    log_warning "发现残留的 _backup 容器，正在清理..."
+    docker stop "${CONTAINER_NAME}_backup" 2>/dev/null || true
+    docker rm "${CONTAINER_NAME}_backup" 2>/dev/null || true
+fi
+
+# 备份当前运行的容器
 if docker ps | grep -q "$CONTAINER_NAME\$"; then
-    log_info "步骤 4: 备份当前运行的容器"
+    log_info "步骤 4.2: 备份当前运行的容器"
 
     # 先停止旧容器
     docker stop "$CONTAINER_NAME" || true
@@ -224,7 +239,7 @@ if docker ps | grep -q "$CONTAINER_NAME\$"; then
 
     log_info "✓ 旧容器已备份为: $BACKUP_CONTAINER_NAME"
 else
-    log_info "步骤 4: 未发现运行中的容器，跳过备份"
+    log_info "步骤 4.2: 未发现运行中的容器，跳过备份"
 fi
 
 # 5. 启动新容器
