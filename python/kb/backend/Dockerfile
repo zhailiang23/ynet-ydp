@@ -23,7 +23,9 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 COPY requirements.txt .
 
 # 安装 Python 依赖（进度条已通过环境变量禁用）
-RUN pip install --no-cache-dir -r requirements.txt
+# 使用 pip 缓存以加速构建（仅当 requirements.txt 变化时重新下载）
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt
 
 # 复制项目文件
 COPY . .
