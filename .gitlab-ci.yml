@@ -173,7 +173,11 @@ deploy-to-fat:
     - echo "镜像 $IMAGE_WITH_TAG"
     - echo "环境 $VITE_ENV"
     - echo "=========================================="
+    - echo "步骤 1 创建部署目录"
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "mkdir -p /root/zhailiang/web-antd /root/zhailiang/logs/web-antd"
+    - echo "步骤 2 复制部署脚本"
     - scp -o StrictHostKeyChecking=no apps/web-antd/deploy.sh $DEPLOY_USER@$DEPLOY_SERVER:/root/zhailiang/web-antd/
+    - echo "步骤 3 执行部署脚本"
     - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "bash /root/zhailiang/web-antd/deploy.sh $IMAGE_WITH_TAG $HARBOR_URL $HARBOR_USER $HARBOR_PASSWORD $VITE_ENV"
 
   after_script:
