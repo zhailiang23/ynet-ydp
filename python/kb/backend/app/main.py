@@ -1,4 +1,13 @@
 """FastAPI 应用主入口"""
+import os
+
+# 在导入任何科学计算库之前，强制禁用 OpenBLAS 多线程
+# 必须在 import numpy/faiss 之前设置，否则无效
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
