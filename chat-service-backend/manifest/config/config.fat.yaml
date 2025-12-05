@@ -25,9 +25,9 @@ database:
     debug: true
     charset: "utf8mb4"
 redis:
-  # FAT 环境 Redis 配置 - 使用本地 Redis 6.0.6（兼容旧版 ZRange 语法）
+  # FAT 环境 Redis 配置 - 使用服务器本地 Redis 6.0.6（兼容旧版 ZRange 语法）
   default:
-    address: 127.0.0.1:6380
+    address: 192.168.153.111:6380
     db: 6
 logger:
   path:    "./storage/log"
