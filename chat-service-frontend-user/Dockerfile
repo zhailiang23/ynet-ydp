@@ -22,6 +22,10 @@ RUN sed -i '/"postinstall":/d; /"open":/s/,$//' package.json && \
 # 安装依赖（使用 legacy-peer-deps 解决 webpack 版本冲突）
 RUN npm install --legacy-peer-deps
 
+# 手动安装 Taro 的 Alpine Linux (musl) 平台二进制包
+# @tarojs/binding 的 postinstall 可能无法自动下载 musl 版本
+RUN npm install --legacy-peer-deps @tarojs/binding-linux-x64-musl || true
+
 # 复制源代码
 COPY . .
 
