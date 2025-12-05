@@ -209,6 +209,7 @@ docker run -d \
     -p "$CONTAINER_PORT:9080" \
     -v "$DATA_DIR:/app/data" \
     -v "$LOG_DIR:/app/logs" \
+    --security-opt seccomp=unconfined \
     --restart unless-stopped \
     "$IMAGE_WITH_TAG" || {
         log_error "启动新容器失败"
