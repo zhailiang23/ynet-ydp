@@ -238,7 +238,9 @@ docker run -d \
     -e TZ=Asia/Shanghai \
     -e JAVA_OPTS="-Xms1024m -Xmx2048m -Djava.security.egd=file:/dev/./urandom" \
     -v "$LOG_DIR:/iplatform-server/logs" \
+    --security-opt seccomp=unconfined \
     --cap-add SYS_RESOURCE \
+    --cap-add SYS_ADMIN \
     --restart unless-stopped \
     "$IMAGE_WITH_TAG" || {
         log_error "启动新容器失败"
