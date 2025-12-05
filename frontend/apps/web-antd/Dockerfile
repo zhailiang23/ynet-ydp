@@ -31,10 +31,16 @@ COPY packages ./packages
 COPY internal ./internal
 
 # 安装依赖 (整个 workspace)
+# 注意: postinstall 会自动执行 "pnpm -r run stub --if-present"
 RUN pnpm install --frozen-lockfile
 
 # 复制 web-antd 源代码
 COPY apps/web-antd ./apps/web-antd
+
+# 构建所有依赖的 workspace 包
+# @vben-core 包需要先构建，因为生产模式下需要 dist 目录
+RUN pnpm --filter "@vben-core/*" run build || echo "Some core packages have no build script, continuing..."
+RUN pnpm --filter "./packages/**" run build || echo "Some packages have no build script, continuing..."
 
 # 环境变量 (默认为 dev)
 ARG VITE_ENV=dev
