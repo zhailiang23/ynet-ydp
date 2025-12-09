@@ -144,6 +144,11 @@ const AI_DICT = {
   AI_WRITE_TYPE: 'ai_write_type', // AI 写作类型
 } as const;
 
+/** ========== AICRM - AI智能客户关系管理模块 ========== */
+const AICRM_DICT = {
+  AI_AGENT_PLATFORM_TYPE: 'ai_agent_platform_type', // 外部智能体平台类型
+} as const;
+
 /** ========== IOT - 物联网模块 ========== */
 const IOT_DICT = {
   IOT_ALERT_LEVEL: 'iot_alert_level', // IoT 告警级别
@@ -175,6 +180,7 @@ const IOT_DICT = {
 /** 字典类型枚举 - 统一导出 */
 const DICT_TYPE = {
   ...AI_DICT,
+  ...AICRM_DICT,
   ...BPM_DICT,
   ...CRM_DICT,
   ...ERP_DICT,

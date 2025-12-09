@@ -14,10 +14,10 @@
 #   VITE_ENV - 部署环境 (dev/fat/uat/pro)
 ################################################################################
 
-# 工作流规则: 仅在 master 分支触发
+# 工作流规则: 在 master 和 fix-api-exports 分支触发
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "fix-api-exports"
       when: always
     - when: never
 
@@ -95,6 +95,7 @@ build-and-push:
 
   only:
     - master
+    - fix-api-exports
 
 ################################################################################
 # 阶段 2: 部署到目标服务器 (FAT 环境)
@@ -110,31 +111,55 @@ deploy-to-fat:
     - |
       cat > ~/.ssh/id_rsa << 'EOFKEY'
       -----BEGIN RSA PRIVATE KEY-----
-      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
+      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
       -----END RSA PRIVATE KEY-----
       EOFKEY
     - chmod 600 ~/.ssh/id_rsa
@@ -148,7 +173,11 @@ deploy-to-fat:
     - echo "镜像 $IMAGE_WITH_TAG"
     - echo "环境 $VITE_ENV"
     - echo "=========================================="
+    - echo "步骤 1 创建部署目录"
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "mkdir -p /root/zhailiang/web-antd /root/zhailiang/logs/web-antd"
+    - echo "步骤 2 复制部署脚本"
     - scp -o StrictHostKeyChecking=no apps/web-antd/deploy.sh $DEPLOY_USER@$DEPLOY_SERVER:/root/zhailiang/web-antd/
+    - echo "步骤 3 执行部署脚本"
     - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "bash /root/zhailiang/web-antd/deploy.sh $IMAGE_WITH_TAG $HARBOR_URL $HARBOR_USER $HARBOR_PASSWORD $VITE_ENV"
 
   after_script:
@@ -159,6 +188,7 @@ deploy-to-fat:
 
   only:
     - master
+    - fix-api-exports
 
 ################################################################################
 # 阶段 3: 清理旧镜像
@@ -174,31 +204,55 @@ cleanup-old-images:
     - |
       cat > ~/.ssh/id_rsa << 'EOFKEY'
       -----BEGIN RSA PRIVATE KEY-----
-      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
+      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
       -----END RSA PRIVATE KEY-----
       EOFKEY
     - chmod 600 ~/.ssh/id_rsa
@@ -219,5 +273,6 @@ cleanup-old-images:
 
   only:
     - master
+    - fix-api-exports
 
   when: on_success

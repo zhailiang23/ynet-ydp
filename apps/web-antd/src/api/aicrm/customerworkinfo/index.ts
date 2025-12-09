@@ -80,24 +80,29 @@ export function deleteCustomerWorkInfoApi(id: number) {
   });
 }
 
-// 向后兼容：导出无 Api 后缀的别名（供旧代码使用）
-export const export = exportApi;
-export const function = functionApi;
-export const createCustomerWorkInfoApi( = createCustomerWorkInfoApi(Api;
-export const export = exportApi;
-export const function = functionApi;
-export const deleteCustomerWorkInfoApi(id: = deleteCustomerWorkInfoApi(id:Api;
-export const number) = number)Api;
-export const { = {Api;
-export const export = exportApi;
-export const function = functionApi;
-export const getCustomerWorkInfoApi(id: = getCustomerWorkInfoApi(id:Api;
-export const number) = number)Api;
-export const { = {Api;
-export const export = exportApi;
-export const function = functionApi;
-export const getCustomerWorkInfoPageApi( = getCustomerWorkInfoPageApi(Api;
-export const export = exportApi;
-export const function = functionApi;
-export const updateCustomerWorkInfoApi( = updateCustomerWorkInfoApi(Api;
+/**
+ * 批量删除客户工作信息
+ */
+export function deleteCustomerWorkInfoListApi(ids: number[]) {
+  return requestClient.delete<boolean>('/aicrm/customer-work-info/delete-list', {
+    data: ids,
+  });
+}
 
+/**
+ * 导出客户工作信息
+ */
+export function exportCustomerWorkInfoApi(
+  params: CustomerWorkInfoApi.CustomerWorkInfoPageReq,
+) {
+  return requestClient.download('/aicrm/customer-work-info/export', { params });
+}
+
+// 向后兼容：导出无 Api 后缀的别名（供旧代码使用）
+export const getCustomerWorkInfoPage = getCustomerWorkInfoPageApi;
+export const getCustomerWorkInfo = getCustomerWorkInfoApi;
+export const createCustomerWorkInfo = createCustomerWorkInfoApi;
+export const updateCustomerWorkInfo = updateCustomerWorkInfoApi;
+export const deleteCustomerWorkInfo = deleteCustomerWorkInfoApi;
+export const deleteCustomerWorkInfoList = deleteCustomerWorkInfoListApi;
+export const exportCustomerWorkInfo = exportCustomerWorkInfoApi;
