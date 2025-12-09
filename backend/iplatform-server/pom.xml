@@ -33,6 +33,11 @@
         </dependency>
         <dependency>
             <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-module-ynet-infra</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
             <artifactId>iplatform-module-twins</artifactId>
             <version>${revision}</version>
         </dependency>

@@ -15,6 +15,7 @@
         <!-- 各种 module 拓展 -->
         <module>iplatform-module-system</module>
         <module>iplatform-module-infra</module>
+        <module>iplatform-module-ynet-infra</module>
         <module>ynet-module-crm</module>
         <module>ynet-module-practice</module>
         <module>iplatform-module-twins</module>

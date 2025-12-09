@@ -220,8 +220,9 @@ export function PracticeSession() {
   const customerId = searchParams.get("customerId")
   const courseType = searchParams.get("courseType")
 
-  // 常量配置
-  const AI_AGENT_URL = "http://localhost:48080/admin-api/aicrm/dify-chat-test/stream"
+  // 常量配置 - 使用环境变量
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:48080/admin-api"
+  const AI_AGENT_URL = `${API_BASE_URL}/aicrm/dify-chat-test/stream`
 
   // 状态管理
   const [course, setCourse] = useState<Course | null>(null)

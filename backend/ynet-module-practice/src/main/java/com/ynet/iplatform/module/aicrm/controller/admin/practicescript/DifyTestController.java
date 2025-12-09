@@ -24,17 +24,9 @@ public class DifyTestController {
     @GetMapping("/connection")
     @Operation(summary = "测试 Dify 连接")
     public CommonResult<String> testConnection() {
-        try {
-            boolean connected = difyScriptGeneratorClient.testConnection();
-            if (connected) {
-                return CommonResult.success("Dify 连接成功");
-            } else {
-                return CommonResult.error(500, "Dify 连接失败");
-            }
-        } catch (Exception e) {
-            log.error("测试 Dify 连接异常", e);
-            return CommonResult.error(500, "测试异常: " + e.getMessage());
-        }
+        // testConnection 方法已移除，因为使用 DifyClientUtil 后配置存储在数据库中
+        // 可以通过调用 generateScript 测试连接是否正常
+        return CommonResult.success("请使用 /generate 接口测试 Dify 连接");
     }
 
     @PostMapping("/generate")
