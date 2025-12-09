@@ -61,7 +61,8 @@ RUN cd apps/web-antd && \
     NODE_ENV=development NODE_OPTIONS="--max-old-space-size=4096" pnpm run build
 
 # 阶段 2: 运行阶段 (使用 Nginx)
-FROM nginx:1.27-alpine
+# 使用 DaoCloud 国内镜像加速
+FROM docker.m.daocloud.io/library/nginx:1.27-alpine
 
 WORKDIR /usr/share/nginx/html
 
