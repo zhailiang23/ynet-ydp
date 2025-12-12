@@ -12,8 +12,10 @@ const src = ref('');
 // 根据路由设置iframe src
 const setIframeSrc = () => {
   // 支持本地和测试环境
-  const localBaseUrl = 'http://localhost:3000/organizations/127d315a9e1f499590edc151db7ba353';
-  const testBaseUrl = 'http://192.168.66.96:8080/organizations/127d315a9e1f499590edc151db7ba353';
+  const localBaseUrl =
+    'http://localhost:3000/organizations/127d315a9e1f499590edc151db7ba353';
+  const testBaseUrl =
+    'http://192.168.66.96:8080/organizations/127d315a9e1f499590edc151db7ba353';
 
   // 根据当前域名或环境选择baseUrl
   const isLocalEnv =
