@@ -54,17 +54,23 @@ const setIframeSrc = () => {
     window.location.hostname === '127.0.0.1';
   const baseUrl = isLocalEnv ? localBaseUrl : fatBaseUrl;
 
-  const path = route.path;
+  // 获取用户名
+  const username = localStorage.getItem('user') || 'admin';
+  // 构建URL参数
+  const params = new URLSearchParams({ username });
 
-  if (path.includes('database')) {
-    src.value = `${baseUrl}/database`;
-  } else if (path.includes('metric')) {
-    src.value = `${baseUrl}/metric`;
-  } else if (path.includes('model')) {
-    src.value = `${baseUrl}/model`;
-  } else {
-    src.value = `${baseUrl}/metric`;
-  }
+  const path = route.path;
+  // 使用映射对象确定目标路径，提高可维护性
+  const targetPathMap: Record<string, string> = {
+    database: 'database',
+    metric: 'metric',
+    model: 'model',
+  };
+
+  // 查找匹配的目标路径，默认使用metric
+  const targetPath =
+    Object.keys(targetPathMap).find((key) => path.includes(key)) || 'metric';
+  src.value = `${baseUrl}/${targetPath}?${params.toString()}`;
 };
 
 // 监听路由变化
