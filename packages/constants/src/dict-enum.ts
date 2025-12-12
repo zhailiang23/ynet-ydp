@@ -37,6 +37,7 @@ const INFRA_DICT = {
   INFRA_CODEGEN_SCENE: 'infra_codegen_scene',
   INFRA_FILE_STORAGE: 'infra_file_storage',
   INFRA_OPERATE_TYPE: 'infra_operate_type',
+  INFRA_CHAT_ROBOT_PLATFORM_TYPE: 'infra_chat_robot_platform_type', // 对话机器人平台类型
 } as const;
 
 /** ========== BPM - 工作流模块 ========== */
