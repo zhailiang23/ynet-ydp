@@ -66,6 +66,26 @@
             <artifactId>iplatform-spring-boot-starter-excel</artifactId>
         </dependency>
 
+        <!-- 钉钉 SDK -->
+        <dependency>
+            <groupId>com.dingtalk.open</groupId>
+            <artifactId>dingtalk-stream</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dingtalk</artifactId>
+        </dependency>
+
+        <!-- Jakarta EE API (JDK 17 需要) -->
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
         <!-- Test 测试相关 -->
         <dependency>
             <groupId>com.ynet.iplatform</groupId>

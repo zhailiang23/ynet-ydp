@@ -67,4 +67,11 @@ public interface ExternalAgentService {
      */
     ExternalAgentDO getExternalAgentByCode(String code);
 
+    /**
+     * 获取外部智能体精简信息列表
+     *
+     * @return 外部智能体精简信息列表
+     */
+    List<ExternalAgentDO> getExternalAgentList();
+
 }

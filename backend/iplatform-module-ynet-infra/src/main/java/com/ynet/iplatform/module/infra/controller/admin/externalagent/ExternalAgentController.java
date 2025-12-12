@@ -80,6 +80,13 @@ public class ExternalAgentController {
         return success(BeanUtils.toBean(externalAgent, ExternalAgentRespVO.class));
     }
 
+    @GetMapping(value = {"/list-all-simple", "simple-list"})
+    @Operation(summary = "获取外部智能体精简列表", description = "只包含 id 和 name，主要用于前端的下拉选项")
+    public CommonResult<List<ExternalAgentSimpleRespVO>> getSimpleExternalAgentList() {
+        List<ExternalAgentDO> list = externalAgentService.getExternalAgentList();
+        return success(BeanUtils.toBean(list, ExternalAgentSimpleRespVO.class));
+    }
+
     @GetMapping("/page")
     @Operation(summary = "获得外部智能体管理分页")
     @PreAuthorize("@ss.hasPermission('infra:external-agent:query')")

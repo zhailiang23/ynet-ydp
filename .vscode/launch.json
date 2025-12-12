@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "IplatformServerApplication",
+            "request": "launch",
+            "mainClass": "com.ynet.iplatform.server.IplatformServerApplication",
+            "projectName": "iplatform-server"
+        },
+        {
+            "type": "java",
             "name": "ProjectReactor",
             "request": "launch",
             "mainClass": "cn.iocoder.yudao.ProjectReactor",

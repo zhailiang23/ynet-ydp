@@ -15,6 +15,12 @@ export namespace InfraExternalAgentApi {
     apiKey?: string; // API密钥
     status?: number; // 状态
   }
+
+  /** 外部智能体精简信息 */
+  export interface ExternalAgentSimple {
+    id: number; // 智能体ID
+    name: string; // 智能体名称
+  }
 }
 
 /** 查询外部智能体管理分页 */
@@ -57,4 +63,11 @@ export function deleteExternalAgentList(ids: number[]) {
 /** 导出外部智能体管理 */
 export function exportExternalAgent(params: any) {
   return requestClient.download('/infra/external-agent/export-excel', { params });
+}
+
+/** 获取外部智能体精简列表 */
+export function getSimpleExternalAgentList() {
+  return requestClient.get<InfraExternalAgentApi.ExternalAgentSimple[]>(
+    '/infra/external-agent/simple-list',
+  );
 }

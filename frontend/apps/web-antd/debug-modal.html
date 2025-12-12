@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Modal Debug</title>
+  <style>
+    /* 调试用：检查滚动问题 */
+    * {
+      outline: 1px solid rgba(255, 0, 0, 0.1);
+    }
+
+    .debug-scroll {
+      background: yellow !important;
+    }
+
+    [style*="overflow"] {
+      background: lightblue !important;
+    }
+  </style>
+</head>
+<body>
+  <h1>在浏览器控制台运行以下代码来诊断滚动问题：</h1>
+  <pre>
+// 1. 找出所有有滚动条的元素
+function findScrollableElements() {
+  const all = document.querySelectorAll('*');
+  const scrollable = [];
+
+  all.forEach(el => {
+    const style = window.getComputedStyle(el);
+    const hasOverflow = el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
+    const canScroll = style.overflow !== 'visible' && style.overflow !== 'hidden' &&
+                     (style.overflowY === 'auto' || style.overflowY === 'scroll' ||
+                      style.overflow === 'auto' || style.overflow === 'scroll');
+
+    if (hasOverflow && canScroll) {
+      scrollable.push({
+        element: el,
+        className: el.className,
+        scrollHeight: el.scrollHeight,
+        clientHeight: el.clientHeight,
+        overflow: style.overflow,
+        overflowY: style.overflowY
+      });
+    }
+  });
+
+  return scrollable;
+}
+
+// 2. 高亮显示可滚动元素
+function highlightScrollable() {
+  const scrollable = findScrollableElements();
+  scrollable.forEach(item => {
+    item.element.style.outline = '3px solid red';
+  });
+  console.table(scrollable);
+}
+
+// 3. 查找 modal 相关元素
+function findModalElements() {
+  const modal = document.querySelector('.vben-modal');
+  const modalContent = document.querySelector('.vben-modal-content');
+  const modalBody = document.querySelector('.vben-modal-body');
+
+  console.log('Modal:', modal);
+  console.log('Modal computed style:', modal ? window.getComputedStyle(modal) : null);
+  console.log('Modal Content:', modalContent);
+  console.log('Modal Content computed style:', modalContent ? window.getComputedStyle(modalContent) : null);
+  console.log('Modal Body:', modalBody);
+  console.log('Modal Body computed style:', modalBody ? window.getComputedStyle(modalBody) : null);
+}
+
+// 运行诊断
+console.log('=== 可滚动元素 ===');
+highlightScrollable();
+console.log('=== Modal 元素 ===');
+findModalElements();
+  </pre>
+
+  <h2>或者直接在控制台运行简化版：</h2>
+  <pre>
+// 快速查看所有可滚动元素
+[...document.querySelectorAll('*')].filter(el => {
+  const s = window.getComputedStyle(el);
+  return (s.overflow === 'auto' || s.overflow === 'scroll' ||
+          s.overflowY === 'auto' || s.overflowY === 'scroll') &&
+         el.scrollHeight > el.clientHeight;
+}).forEach(el => {
+  el.style.outline = '3px solid red';
+  console.log(el.className, 'scrollHeight:', el.scrollHeight, 'clientHeight:', el.clientHeight);
+});
+  </pre>
+</body>
+</html>

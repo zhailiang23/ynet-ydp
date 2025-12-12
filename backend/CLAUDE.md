@@ -15,21 +15,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 本地开发环境准备
 
-1. **数据库初始化**
-   - MySQL 8.0+ 数据库
-   - 执行初始化脚本: `sql/mysql/ruoyi-vue-pro.sql`
-   - 默认数据库名: `ruoyi-vue-pro`
-   - 默认账号密码: root/123456
+1. **开发环境数据库**
+   - **数据库地址**: 192.168.110.41:3306
+   - **数据库名**: ynet-iplatform
+   - **账号密码**: root/root123
+   - MySQL 版本: 8.0+
+   - **注意**: 开发环境已切换到远程数据库，无需本地启动 MySQL 和 Redis
 
-2. **Redis 准备**
-   - Redis 6.0+
-   - 默认连接: 127.0.0.1:6379
+2. **开发环境 Redis**
+   - 使用远程 Redis 服务（与数据库同服务器）
+   - 具体配置见 `application-fat.yaml`
 
-3. **使用 Docker Compose 快速启动依赖**
+3. **本地测试环境（可选）**
+   如果需要本地隔离环境测试，可使用 Docker Compose:
    ```bash
    cd script/docker
    docker-compose up -d mysql redis
    ```
+   - 本地数据库: 127.0.0.1:3306/ruoyi-vue-pro
+   - 本地 Redis: 127.0.0.1:6379
+   - 需要切换 profile 为 `local`
 
 ### 构建命令
 
@@ -51,14 +56,25 @@ mvn clean package -DskipTests
 
 ### 运行应用
 
-**本地开发模式**:
+**开发环境模式（推荐）**:
 ```bash
-# 方式1: 使用 Maven 运行
+# 方式1: 使用 Maven 运行（连接开发环境数据库）
 cd iplatform-server
-mvn spring-boot:run -Dspring-boot.run.profiles=local
+mvn spring-boot:run -Dspring-boot.run.profiles=fat
 
 # 方式2: 直接运行主类
-# 运行 IplatformServerApplication.java，使用 VM options: -Dspring.profiles.active=local
+# 运行 IplatformServerApplication.java，使用 VM options: -Dspring.profiles.active=fat
+```
+
+**本地测试模式**:
+```bash
+# 需要先启动 Docker Compose 中的 MySQL 和 Redis
+cd script/docker
+docker-compose up -d mysql redis
+
+# 然后使用 local profile 启动
+cd iplatform-server
+mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
 **访问地址**:
@@ -70,19 +86,26 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 ### 环境配置
 
 项目支持多环境配置，通过 `spring.profiles.active` 切换:
-- `local`: 本地开发环境（默认激活）
-- `dev`: 开发环境
+- `local`: 本地隔离测试环境（使用 Docker Compose）
+- `dev`: 开发环境（**推荐日常开发使用**）
 - `fat`: 功能验收测试环境
 - `uat`: 用户验收测试环境
 - `pro`: 生产环境
 
 **配置文件位置**: `iplatform-server/src/main/resources/application-{profile}.yaml`
 
-**本地开发配置** (`application-local.yaml`):
+**开发环境配置** (`application-dev.yaml` 或 `application-fat.yaml`):
+- 端口: 48080
+- 数据库: jdbc:mysql://192.168.110.41:3306/ynet-iplatform
+- 账号密码: root/root123
+- **推荐使用**: 日常开发直接连接开发环境数据库
+
+**本地测试配置** (`application-local.yaml`):
 - 端口: 48080
 - 数据库: jdbc:mysql://127.0.0.1:3306/ruoyi-vue-pro
 - Redis: 127.0.0.1:6379
-- 默认账号密码: root/123456
+- 账号密码: root/123456
+- **适用场景**: 需要本地隔离环境测试时使用
 
 **环境切换方式**:
 

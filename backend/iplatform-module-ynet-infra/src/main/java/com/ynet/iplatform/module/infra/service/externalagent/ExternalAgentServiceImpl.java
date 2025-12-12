@@ -87,4 +87,9 @@ public class ExternalAgentServiceImpl implements ExternalAgentService {
         return externalAgentMapper.selectByCode(code);
     }
 
+    @Override
+    public List<ExternalAgentDO> getExternalAgentList() {
+        return externalAgentMapper.selectList();
+    }
+
 }
