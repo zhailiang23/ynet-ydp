@@ -132,6 +132,8 @@ build-and-push:
     - test -f iplatform-server/target/iplatform-server.jar || (echo "错误 JAR 文件不存在" && exit 1)
     - echo "步骤 2 构建 Docker 镜像..."
     - cd iplatform-server
+    - echo "配置 Alpine 国内镜像源..."
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     - apk add --no-cache docker-cli
     - docker build -t ${IMAGE_NAME}:${CI_PIPELINE_IID} .
     - docker tag ${IMAGE_NAME}:${CI_PIPELINE_IID} ${IMAGE_NAME}:latest
