@@ -48,25 +48,27 @@ public class DifyScriptGeneratorClient {
             throw new Exception("剧本不存在: " + scriptId);
         }
 
-        // 验证必填参数
-        if (script.getCaseId() == null) {
-            throw new Exception("案例ID (case_id) 不能为空");
-        }
+        // 验证核心必填参数
         if (StrUtil.isBlank(script.getMarketingStep())) {
-            throw new Exception("营销节点 (marketing_step) 不能为空");
+            throw new Exception("营销节点 (marketing_step) 不能为空，请在表单中选择营销环节");
         }
         if (StrUtil.isBlank(script.getDifficultyLevel())) {
-            throw new Exception("难度等级 (difficulty_level) 不能为空");
+            throw new Exception("难度等级 (difficulty_level) 不能为空，请在表单中选择场景复杂度");
+        }
+        if (script.getCaseId() == null) {
+            throw new Exception("案例ID (case_id) 不能为空，请在表单中选择关联案例");
         }
         if (StrUtil.isBlank(script.getMaterialIds())) {
-            throw new Exception("培训材料ID (material_ids) 不能为空");
+            throw new Exception("培训材料ID (material_ids) 不能为空，请在表单中选择关联培训文件");
         }
         if (script.getSkillId() == null) {
-            throw new Exception("技巧ID (skill_id) 不能为空");
+            throw new Exception("技巧ID (skill_id) 不能为空，请在表单中选择关联销售技巧");
         }
-        if (StrUtil.isBlank(script.getDescription())) {
-            throw new Exception("剧本描述 (description) 不能为空");
-        }
+
+        // description 可以为空，使用默认值
+        String description = StrUtil.isNotBlank(script.getDescription())
+            ? script.getDescription()
+            : "陪练剧本";
 
         try {
             // 使用 Builder 构建请求参数
@@ -78,7 +80,7 @@ public class DifyScriptGeneratorClient {
                     .input("difficulty_level", script.getDifficultyLevel()) // 输入变量: 难度等级
                     .input("material_ids", script.getMaterialIds())         // 输入变量: 培训材料ID
                     .input("skill_id", script.getSkillId())                 // 输入变量: 技巧ID
-                    .input("description", script.getDescription());         // 输入变量: 剧本描述
+                    .input("description", description);                     // 输入变量: 剧本描述
 
             // 可选参数 - script_id 必须是数字,只有当 scriptNo 是纯数字时才传递
             if (StrUtil.isNotBlank(script.getScriptNo())) {
