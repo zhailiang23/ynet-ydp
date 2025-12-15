@@ -64,7 +64,7 @@ const setIframeSrc = () => {
   params.append('username', encodeURIComponent(username));
   src.value = relId.value
     ? `${baseUrl}/${relId.value}${iframePath}?${params.toString()}`
-    : `${baseUrl}${iframePath}?${params.toString()}`;
+    : `${baseUrl}?${params.toString()}`;
 };
 
 // 组件挂载时添加事件监听器
