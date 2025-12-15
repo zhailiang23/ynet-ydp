@@ -28,6 +28,17 @@ export namespace AicrmPracticeScriptApi {
     contentEdit: string; // 手工调整内容（用户编辑）
     usageCount: number; // 使用次数（该版本被使用的次数）
   }
+
+  /** 生成剧本内容请求参数 */
+  export interface GenerateScriptContentReq {
+    scriptId: number; // 剧本ID
+    caseId?: number; // 关联案例ID
+    materialIds?: string; // 关联培训文件ID列表（多个ID逗号分隔）
+    skillId?: number; // 关联销售技巧ID
+    marketingStep: string; // 营销环节
+    difficultyLevel: string; // 难度等级
+    scriptDescription?: string; // 剧本描述
+  }
 }
 
 /** 查询CRM智能陪练-陪练剧本表（支持版本控制）分页 */
@@ -77,4 +88,9 @@ export function getVersionHistory(scriptNo: string) {
   return requestClient.get<AicrmPracticeScriptApi.PracticeScript[]>(
     `/aicrm/practice-script/version-history?scriptNo=${scriptNo}`,
   );
+}
+
+/** 生成剧本内容 */
+export function generateScriptContent(data: AicrmPracticeScriptApi.GenerateScriptContentReq) {
+  return requestClient.post<string>('/aicrm/practice-script/generate-content', data);
 }
