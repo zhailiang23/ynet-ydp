@@ -3,12 +3,19 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { IFrame, Page } from '@vben/common-ui';
+import { usePreferences } from '@vben/preferences';
 
 defineOptions({ name: 'DtartsVizs' });
 
 const route = useRoute();
 const src = ref('');
 const relId = ref('');
+
+// 获取主题信息
+const { theme } = usePreferences();
+
+// iframe引用
+const iframeRef = ref<HTMLIFrameElement | null>(null);
 
 // 存储relId的localStorage键名
 const REL_ID_STORAGE_KEY = 'datart_rel_id';
@@ -62,6 +69,7 @@ const setIframeSrc = () => {
   // 构建URL参数
   const params = new URLSearchParams();
   params.append('username', encodeURIComponent(username));
+  params.append('theme', theme.value); // 添加主题参数
   src.value = relId.value
     ? `${baseUrl}/${relId.value}${iframePath}?${params.toString()}`
     : `${baseUrl}?${params.toString()}`;
@@ -85,10 +93,27 @@ watch(
   },
   { immediate: true },
 );
+
+// 监听主题变化
+watch(
+  () => theme.value,
+  (newTheme) => {
+    // 更新iframe的URL，添加主题参数
+    setIframeSrc();
+
+    // 同时发送消息给iframe，通知主题变化
+    if (iframeRef.value?.frameRef?.contentWindow) {
+      iframeRef.value.frameRef.contentWindow.postMessage(
+        { type: 'THEME_CHANGE', theme: newTheme },
+        '*',
+      );
+    }
+  },
+);
 </script>
 
 <template>
   <Page auto-content-height>
-    <IFrame :src="src" />
+    <IFrame :src="src" :ref="iframeRef" />
   </Page>
 </template>
