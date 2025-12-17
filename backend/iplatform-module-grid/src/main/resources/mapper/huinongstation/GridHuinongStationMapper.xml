@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.grid.dal.mysql.huinongstation.GridHuinongStationMapper">
+
+    <!-- 查询带关联信息的站点分页列表 -->
+    <select id="selectPageWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongStationRespVO">
+        SELECT
+            s.id,
+            s.station_code AS stationCode,
+            s.station_name AS stationName,
+            s.create_time AS createTime,
+            s.grid_marketing_flag AS gridMarketingFlag,
+            -- 管理行名称: 惠农专员所在部门的上级部门
+            parent_dept.name AS manageBranchName,
+            -- 二级支行名称: 惠农专员所在部门
+            sub_branch.name AS subBranchName,
+            -- 从 system_users 表关联查询惠农人员信息
+            u.username AS specialistEmployeeNo,
+            u.nickname AS specialistName,
+            s.station_type AS stationType,
+            s.location,
+            s.address,
+            s.grid_id AS gridId,
+            s.contact_person AS contactPerson,
+            s.contact_phone AS contactPhone,
+            s.specialist_id AS specialistId,
+            s.status,
+            s.data_source AS dataSource,
+            s.import_batch AS importBatch,
+            s.import_time AS importTime,
+            s.creator AS creator,
+            s.updater AS updater
+        FROM grid_huinong_station s
+        -- 关联惠农专员
+        LEFT JOIN system_users u ON s.specialist_id = u.id AND u.deleted = 0
+        -- 关联二级支行（惠农专员所在部门）
+        LEFT JOIN system_dept sub_branch ON u.dept_id = sub_branch.id AND sub_branch.deleted = 0
+        -- 关联管理行（二级支行的上级部门）
+        LEFT JOIN system_dept parent_dept ON sub_branch.parent_id = parent_dept.id AND parent_dept.deleted = 0
+        WHERE s.deleted = 0
+            <if test="reqVO.stationCode != null and reqVO.stationCode != ''">
+                AND s.station_code = #{reqVO.stationCode}
+            </if>
+            <if test="reqVO.stationName != null and reqVO.stationName != ''">
+                AND s.station_name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+            </if>
+            <if test="reqVO.gridMarketingFlag != null and reqVO.gridMarketingFlag != ''">
+                AND s.grid_marketing_flag = #{reqVO.gridMarketingFlag}
+            </if>
+        ORDER BY s.create_time DESC
+    </select>
+
+    <!-- 地图数据结果映射 -->
+    <resultMap id="mapDataResultMap" type="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongStationMapVO" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="stationName" property="stationName"/>
+        <result column="stationCode" property="stationCode"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="address" property="address"/>
+        <result column="gridMarketingFlag" property="gridMarketingFlag"/>
+        <result column="specialistEmployeeNo" property="specialistEmployeeNo"/>
+        <result column="specialistName" property="specialistName"/>
+        <result column="manageBranchName" property="manageBranchName"/>
+        <result column="subBranchName" property="subBranchName"/>
+        <result column="specialistLongitude" property="specialistLongitude"/>
+        <result column="specialistLatitude" property="specialistLatitude"/>
+        <!-- 嵌套网格信息 -->
+        <association property="gridInfo" javaType="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongStationMapVO$GridInfo" autoMapping="false">
+            <result column="gridId" property="gridId"/>
+            <result column="gridName" property="gridName"/>
+            <result column="gridCode" property="gridCode"/>
+            <result column="centerLongitude" property="centerLongitude"/>
+            <result column="centerLatitude" property="centerLatitude"/>
+            <result column="boundaryGeometry" property="boundaryGeometry"/>
+        </association>
+    </resultMap>
+
+    <!-- 查询站点地图数据 -->
+    <select id="selectMapDataById" resultMap="mapDataResultMap">
+        SELECT
+            s.id,
+            s.station_name AS stationName,
+            s.station_code AS stationCode,
+            ST_Y(s.location) AS longitude,
+            ST_X(s.location) AS latitude,
+            s.address,
+            s.grid_marketing_flag AS gridMarketingFlag,
+            -- 惠农人员信息
+            u.username AS specialistEmployeeNo,
+            u.nickname AS specialistName,
+            -- 管理行名称: 惠农专员所在部门的上级部门
+            parent_dept.name AS manageBranchName,
+            -- 二级支行名称: 惠农专员所在部门
+            sub_branch.name AS subBranchName,
+            -- 网格信息
+            g.id AS gridId,
+            g.grid_name AS gridName,
+            g.grid_code AS gridCode,
+            ST_Y(g.center_point) AS centerLongitude,
+            ST_X(g.center_point) AS centerLatitude,
+            ST_AsGeoJSON(g.boundary_geometry) AS boundaryGeometry
+        FROM grid_huinong_station s
+        LEFT JOIN system_users u ON s.specialist_id = u.id AND u.deleted = 0
+        LEFT JOIN system_dept sub_branch ON u.dept_id = sub_branch.id AND sub_branch.deleted = 0
+        LEFT JOIN system_dept parent_dept ON sub_branch.parent_id = parent_dept.id AND parent_dept.deleted = 0
+        LEFT JOIN grid_info g ON s.grid_id = g.id AND g.deleted = 0
+        WHERE s.id = #{id} AND s.deleted = 0
+    </select>
+
+    <!-- 插入站点并设置位置坐标 -->
+    <insert id="insertWithLocation" useGeneratedKeys="true" keyProperty="station.id">
+        INSERT INTO grid_huinong_station (
+            station_code,
+            station_name,
+            station_type,
+            location,
+            address,
+            grid_id,
+            grid_marketing_flag,
+            contact_person,
+            contact_phone,
+            specialist_id,
+            status,
+            data_source,
+            import_batch,
+            import_time,
+            creator,
+            create_time,
+            updater,
+            update_time,
+            deleted,
+            tenant_id
+        ) VALUES (
+            #{station.stationCode},
+            #{station.stationName},
+            #{station.stationType},
+            ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326),
+            #{station.address},
+            #{station.gridId},
+            #{station.gridMarketingFlag},
+            #{station.contactPerson},
+            #{station.contactPhone},
+            #{station.specialistId},
+            #{station.status},
+            #{station.dataSource},
+            #{station.importBatch},
+            #{station.importTime},
+            #{station.creator},
+            #{station.createTime},
+            #{station.updater},
+            #{station.updateTime},
+            #{station.deleted},
+            #{station.tenantId}
+        )
+    </insert>
+
+    <!-- 更新站点并设置位置坐标 -->
+    <update id="updateWithLocation">
+        UPDATE grid_huinong_station
+        SET station_name = #{station.stationName},
+            station_type = #{station.stationType},
+            location = ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326),
+            address = #{station.address},
+            grid_id = #{station.gridId},
+            grid_marketing_flag = #{station.gridMarketingFlag},
+            contact_person = #{station.contactPerson},
+            contact_phone = #{station.contactPhone},
+            specialist_id = #{station.specialistId},
+            status = #{station.status},
+            updater = #{station.updater},
+            update_time = #{station.updateTime}
+        WHERE id = #{station.id}
+          AND deleted = 0
+    </update>
+
+</mapper>

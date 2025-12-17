@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.grid.dal.mysql.huinongmarketing.GridHuinongMarketingMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 查询带关联信息的营销信息分页列表 -->
+    <select id="selectPageWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongmarketing.vo.GridHuinongMarketingRespVO">
+        SELECT
+            m.id,
+            m.grid_id AS gridId,
+            m.station_id AS stationId,
+            s.station_name AS stationName,
+            s.station_code AS stationCode,
+            m.village_name AS villageName,
+            m.registered_population AS registeredPopulation,
+            m.customer_type AS customerType,
+            m.customer_count AS customerCount,
+            u.nickname AS creatorName,
+            m.create_time AS createTime
+        FROM grid_huinong_marketing m
+        LEFT JOIN grid_huinong_station s ON m.station_id = s.id AND s.deleted = 0
+        LEFT JOIN system_users u ON m.creator = u.id AND u.deleted = 0
+        WHERE m.deleted = 0
+            <if test="reqVO.stationName != null and reqVO.stationName != ''">
+                AND s.station_name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+            </if>
+            <if test="reqVO.stationCode != null and reqVO.stationCode != ''">
+                AND s.station_code = #{reqVO.stationCode}
+            </if>
+            <if test="reqVO.villageName != null and reqVO.villageName != ''">
+                AND m.village_name LIKE CONCAT('%', #{reqVO.villageName}, '%')
+            </if>
+        ORDER BY m.create_time DESC
+    </select>
+
+    <!-- 查询站点下的营销信息地图标记列表 -->
+    <select id="selectMarkersByStationId" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongMarketingMarkerVO">
+        SELECT
+            m.id,
+            m.village_name AS villageName,
+            m.village_address AS villageAddress,
+            m.registered_population AS registeredPopulation,
+            m.resident_population AS residentPopulation,
+            m.main_industries AS mainIndustries,
+            m.industry_situation AS industrySituation,
+            -- 解析 village_location 字段（格式：经度,纬度）
+            CAST(SUBSTRING_INDEX(m.village_location, ',', 1) AS DECIMAL(10, 7)) AS longitude,
+            CAST(SUBSTRING_INDEX(m.village_location, ',', -1) AS DECIMAL(10, 7)) AS latitude
+        FROM grid_huinong_marketing m
+        WHERE m.station_id = #{stationId}
+          AND m.deleted = 0
+          AND m.village_location IS NOT NULL
+          AND m.village_location != ''
+        ORDER BY m.create_time DESC
+    </select>
+
+    <!-- 查询热力图营销信息列表（带站点关联） -->
+    <select id="selectHeatmapMarketingList" resultType="com.ynet.iplatform.module.grid.dal.dataobject.huinongmarketing.GridHuinongMarketingDO">
+        SELECT
+            m.id,
+            m.station_id,
+            m.village_name,
+            m.village_location,
+            m.registered_population,
+            m.customer_type,
+            m.customer_count,
+            s.grid_marketing_flag
+        FROM grid_huinong_marketing m
+        INNER JOIN grid_huinong_station s ON m.station_id = s.id AND s.deleted = 0
+        WHERE m.deleted = 0
+            AND m.village_location IS NOT NULL
+            AND m.village_location != ''
+            <if test="reqVO.stationType != null and reqVO.stationType != ''">
+                AND s.grid_marketing_flag = #{reqVO.stationType}
+            </if>
+            <if test="reqVO.customerTypes != null and reqVO.customerTypes.size() > 0">
+                AND (
+                    <foreach collection="reqVO.customerTypes" item="type" separator=" OR ">
+                        JSON_CONTAINS(m.customer_type, JSON_QUOTE(#{type}))
+                    </foreach>
+                )
+            </if>
+        ORDER BY m.create_time DESC
+    </select>
+
+    <!-- 查询热力图数据（按位置分组统计） -->
+    <select id="selectHeatmapData" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongmarketing.vo.GridHuinongMarketingHeatmapDataVO">
+        SELECT
+            CAST(SUBSTRING_INDEX(m.village_location, ',', 1) AS DECIMAL(10, 7)) AS longitude,
+            CAST(SUBSTRING_INDEX(m.village_location, ',', -1) AS DECIMAL(10, 7)) AS latitude,
+            COUNT(*) AS count,
+            MAX(m.village_name) AS villageName
+        FROM grid_huinong_marketing m
+        INNER JOIN grid_huinong_station s ON m.station_id = s.id AND s.deleted = 0
+        WHERE m.deleted = 0
+            AND m.village_location IS NOT NULL
+            AND m.village_location != ''
+            <if test="reqVO.stationType != null and reqVO.stationType != ''">
+                AND s.grid_marketing_flag = #{reqVO.stationType}
+            </if>
+            <if test="reqVO.customerTypes != null and reqVO.customerTypes.size() > 0">
+                AND (
+                    <foreach collection="reqVO.customerTypes" item="type" separator=" OR ">
+                        JSON_CONTAINS(m.customer_type, JSON_QUOTE(#{type}))
+                    </foreach>
+                )
+            </if>
+        GROUP BY m.village_location
+        ORDER BY count DESC
+    </select>
+
+</mapper>

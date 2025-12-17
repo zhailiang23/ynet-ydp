@@ -38,6 +38,11 @@
         </dependency>
         <dependency>
             <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-module-grid</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
             <artifactId>iplatform-module-twins</artifactId>
             <version>${revision}</version>
         </dependency>
