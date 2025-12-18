@@ -100,4 +100,20 @@ public class GridHuinongCustomerLoanController {
         ExcelUtils.write(response, "惠农贷款客户扩展.xls", "数据", GridHuinongCustomerLoanRespVO.class, list);
     }
 
+    @GetMapping("/heatmap/data")
+    @Operation(summary = "获取惠农贷款目标客户热力图数据")
+    @PreAuthorize("@ss.hasPermission('grid:huinong-customer-loan:query')")
+    public CommonResult<List<GridHuinongCustomerLoanHeatmapDataVO>> getHeatmapData(@Valid GridHuinongCustomerLoanHeatmapReqVO reqVO) {
+        List<GridHuinongCustomerLoanHeatmapDataVO> data = huinongCustomerLoanService.getHeatmapData(reqVO);
+        return success(data);
+    }
+
+    @GetMapping("/heatmap/customer-markers")
+    @Operation(summary = "获取惠农贷款目标客户标记列表")
+    @PreAuthorize("@ss.hasPermission('grid:huinong-customer-loan:query')")
+    public CommonResult<List<GridHuinongCustomerLoanCustomerMarkerVO>> getCustomerMarkers() {
+        List<GridHuinongCustomerLoanCustomerMarkerVO> markers = huinongCustomerLoanService.getCustomerMarkers();
+        return success(markers);
+    }
+
 }

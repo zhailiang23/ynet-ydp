@@ -20,6 +20,15 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('#/views/grid/huinongmarketing/heatmap.vue'),
       },
+      {
+        path: 'huinong-customer-loan-heatmap',
+        name: 'HuinongCustomerLoanHeatmap',
+        meta: {
+          title: '惠农贷款目标客户热力图',
+          icon: 'ant-design:fire-outlined',
+        },
+        component: () => import('#/views/grid/huinongcustomerloan/heatmap.vue'),
+      },
     ],
   },
 ];

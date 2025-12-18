@@ -59,4 +59,19 @@ public interface GridHuinongCustomerLoanService {
      */
     PageResult<GridHuinongCustomerLoanRespVO> getHuinongCustomerLoanPage(GridHuinongCustomerLoanPageReqVO pageReqVO);
 
+    /**
+     * 获取惠农贷款目标客户热力图数据
+     *
+     * @param reqVO 请求参数
+     * @return 热力图数据列表
+     */
+    List<GridHuinongCustomerLoanHeatmapDataVO> getHeatmapData(GridHuinongCustomerLoanHeatmapReqVO reqVO);
+
+    /**
+     * 获取惠农贷款目标客户标记列表
+     *
+     * @return 客户标记列表
+     */
+    List<GridHuinongCustomerLoanCustomerMarkerVO> getCustomerMarkers();
+
 }

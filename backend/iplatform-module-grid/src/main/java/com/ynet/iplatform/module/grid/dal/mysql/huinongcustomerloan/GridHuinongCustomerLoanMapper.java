@@ -74,4 +74,17 @@ public interface GridHuinongCustomerLoanMapper extends BaseMapperX<GridHuinongCu
      */
     List<GridHuinongCustomerMarkerVO> selectMarkersByStationId(@Param("stationId") Long stationId);
 
+    /**
+     * 查询惠农贷款目标客户热力图数据（按网格分组）
+     * @param reqVO 请求参数
+     * @return 热力图数据列表
+     */
+    List<GridHuinongCustomerLoanHeatmapDataVO> selectHeatmapData(@Param("reqVO") GridHuinongCustomerLoanHeatmapReqVO reqVO);
+
+    /**
+     * 查询惠农贷款目标客户标记列表
+     * @return 客户标记列表
+     */
+    List<GridHuinongCustomerLoanCustomerMarkerVO> selectCustomerMarkers();
+
 }

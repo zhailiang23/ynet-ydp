@@ -92,4 +92,16 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
         return new PageResult<>(mpPage.getRecords(), mpPage.getTotal());
     }
 
+    @Override
+    public List<GridHuinongCustomerLoanHeatmapDataVO> getHeatmapData(GridHuinongCustomerLoanHeatmapReqVO reqVO) {
+        // 直接查询热力图数据（按网格分组，根据 metricType 计算热力值）
+        return huinongCustomerLoanMapper.selectHeatmapData(reqVO);
+    }
+
+    @Override
+    public List<GridHuinongCustomerLoanCustomerMarkerVO> getCustomerMarkers() {
+        // 查询所有客户标记数据
+        return huinongCustomerLoanMapper.selectCustomerMarkers();
+    }
+
 }

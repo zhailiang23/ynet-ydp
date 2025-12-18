@@ -77,3 +77,46 @@ export function deleteHuinongCustomerLoanList(ids: number[]) {
 export function exportHuinongCustomerLoan(params: any) {
   return requestClient.download('/grid/huinong-customer-loan/export-excel', { params });
 }
+
+// ==================== 热力图相关 ====================
+
+/** 热力图请求参数 */
+export interface HeatmapReqVO {
+  metricType?: string; // 热力值类型: CUSTOMER_COUNT/APPLIED_COUNT/APPROVED_COUNT/LOAN_BALANCE
+}
+
+/** 热力图数据点 */
+export interface HeatmapDataVO {
+  longitude: number; // 经度
+  latitude: number; // 纬度
+  value: number; // 热力值
+  gridId: number; // 网格ID
+  stationName: string; // 站点名称
+}
+
+/** 客户标记 */
+export interface CustomerMarkerVO {
+  customerId: number; // 客户ID
+  customerName: string; // 客户姓名
+  longitude: number; // 经度
+  latitude: number; // 纬度
+  stationType: string; // 站点类型: REQUIRED/OPTIONAL
+  isApplied: boolean; // 是否已申请
+  isApproved: boolean; // 是否已批准
+  loanBalance: number; // 贷款余额
+  customerCategory: string; // 客户类别
+}
+
+/** 获取热力图数据 */
+export function getHeatmapData(params: HeatmapReqVO) {
+  return requestClient.get<HeatmapDataVO[]>('/grid/huinong-customer-loan/heatmap/data', {
+    params,
+  });
+}
+
+/** 获取客户标记列表 */
+export function getCustomerMarkers() {
+  return requestClient.get<CustomerMarkerVO[]>(
+    '/grid/huinong-customer-loan/heatmap/customer-markers',
+  );
+}

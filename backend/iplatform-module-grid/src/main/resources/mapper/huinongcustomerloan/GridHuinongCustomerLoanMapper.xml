@@ -100,4 +100,57 @@
         ORDER BY l.create_time DESC
     </select>
 
+    <!-- 查询惠农贷款目标客户热力图数据（按网格分组，关联站点位置） -->
+    <select id="selectHeatmapData" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanHeatmapDataVO">
+        SELECT
+            c.grid_id AS gridId,
+            s.station_name AS stationName,
+            ST_X(s.location) AS latitude,
+            ST_Y(s.location) AS longitude,
+            <choose>
+                <when test="reqVO.metricType == 'CUSTOMER_COUNT'">
+                    COUNT(*) AS value
+                </when>
+                <when test="reqVO.metricType == 'APPLIED_COUNT'">
+                    SUM(CASE WHEN l.is_applied = 1 THEN 1 ELSE 0 END) AS value
+                </when>
+                <when test="reqVO.metricType == 'APPROVED_COUNT'">
+                    SUM(CASE WHEN l.is_approved = 1 THEN 1 ELSE 0 END) AS value
+                </when>
+                <when test="reqVO.metricType == 'LOAN_BALANCE'">
+                    SUM(IFNULL(l.loan_balance, 0)) AS value
+                </when>
+                <otherwise>
+                    COUNT(*) AS value
+                </otherwise>
+            </choose>
+        FROM grid_huinong_customer_loan l
+        INNER JOIN grid_customer c ON l.customer_id = c.id AND c.deleted = 0
+        INNER JOIN grid_huinong_station s ON c.grid_id = s.grid_id AND s.deleted = 0
+        WHERE l.deleted = 0
+          AND s.location IS NOT NULL
+        GROUP BY c.grid_id, s.station_name, s.location
+        ORDER BY value DESC
+    </select>
+
+    <!-- 查询惠农贷款目标客户标记列表 -->
+    <select id="selectCustomerMarkers" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanCustomerMarkerVO">
+        SELECT
+            c.id AS customerId,
+            c.customer_name AS customerName,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude,
+            s.grid_marketing_flag AS stationType,
+            l.is_applied AS isApplied,
+            l.is_approved AS isApproved,
+            l.loan_balance AS loanBalance,
+            l.customer_category AS customerCategory
+        FROM grid_huinong_customer_loan l
+        INNER JOIN grid_customer c ON l.customer_id = c.id AND c.deleted = 0
+        INNER JOIN grid_huinong_station s ON c.grid_id = s.grid_id AND s.deleted = 0
+        WHERE l.deleted = 0
+          AND c.location IS NOT NULL
+        ORDER BY l.create_time DESC
+    </select>
+
 </mapper>
