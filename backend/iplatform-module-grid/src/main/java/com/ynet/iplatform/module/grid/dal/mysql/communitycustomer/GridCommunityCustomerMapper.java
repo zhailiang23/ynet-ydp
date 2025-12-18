@@ -1,13 +1,14 @@
 package com.ynet.iplatform.module.grid.dal.mysql.communitycustomer;
 
-import java.util.*;
-
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
-import com.ynet.iplatform.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.ynet.iplatform.framework.mybatis.core.mapper.BaseMapperX;
 import com.ynet.iplatform.module.grid.dal.dataobject.communitycustomer.GridCommunityCustomerDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import com.ynet.iplatform.module.grid.controller.admin.communitycustomer.vo.*;
+
+import java.util.List;
 
 /**
  * 社区客户扩展 Mapper
@@ -17,16 +18,11 @@ import com.ynet.iplatform.module.grid.controller.admin.communitycustomer.vo.*;
 @Mapper
 public interface GridCommunityCustomerMapper extends BaseMapperX<GridCommunityCustomerDO> {
 
-    default PageResult<GridCommunityCustomerDO> selectPage(GridCommunityCustomerPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<GridCommunityCustomerDO>()
-                .eqIfPresent(GridCommunityCustomerDO::getCustomerId, reqVO.getCustomerId())
-                .eqIfPresent(GridCommunityCustomerDO::getFamilyMembers, reqVO.getFamilyMembers())
-                .eqIfPresent(GridCommunityCustomerDO::getHousingType, reqVO.getHousingType())
-                .eqIfPresent(GridCommunityCustomerDO::getMonthlyIncome, reqVO.getMonthlyIncome())
-                .eqIfPresent(GridCommunityCustomerDO::getCreator, reqVO.getCreatorId())
-                .betweenIfPresent(GridCommunityCustomerDO::getCreateTime, reqVO.getCreateTime())
-                .eqIfPresent(GridCommunityCustomerDO::getUpdater, reqVO.getUpdaterId())
-                .orderByDesc(GridCommunityCustomerDO::getId));
-    }
+    /**
+     * 查询社区客户扩展分页（带关联信息）
+     */
+    IPage<GridCommunityCustomerRespVO> selectPageWithRelations(IPage<GridCommunityCustomerRespVO> page, @Param("customerName") String customerName);
+
+    // 注：原 selectPage 方法已废弃，因查询条件已简化，现统一使用 selectPageWithRelations
 
 }

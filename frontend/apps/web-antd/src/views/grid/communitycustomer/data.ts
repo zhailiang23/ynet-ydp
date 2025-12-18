@@ -74,67 +74,12 @@ export function useFormSchema(): VbenFormSchema[] {
 export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
-      fieldName: 'customerId',
-      label: '客户ID (关联 grid_customer)',
+      fieldName: 'customerName',
+      label: '客户名称',
       component: 'Input',
       componentProps: {
         allowClear: true,
-        placeholder: '请输入客户ID (关联 grid_customer)',
-      },
-    },
-    {
-      fieldName: 'familyMembers',
-      label: '家庭成员数',
-      component: 'Input',
-      componentProps: {
-        allowClear: true,
-        placeholder: '请输入家庭成员数',
-      },
-    },
-    {
-      fieldName: 'housingType',
-      label: '住房类型',
-      component: 'Select',
-      componentProps: {
-        allowClear: true,
-        options: [],
-        placeholder: '请选择住房类型',
-      },
-    },
-    {
-      fieldName: 'monthlyIncome',
-      label: '月收入 (元)',
-      component: 'Input',
-      componentProps: {
-        allowClear: true,
-        placeholder: '请输入月收入 (元)',
-      },
-    },
-    {
-      fieldName: 'creatorId',
-      label: '创建人ID',
-      component: 'Input',
-      componentProps: {
-        allowClear: true,
-        placeholder: '请输入创建人ID',
-      },
-    },
-    {
-      fieldName: 'createTime',
-      label: '创建时间',
-      component: 'RangePicker',
-      componentProps: {
-        ...getRangePickerDefaultProps(),
-        allowClear: true,
-      },
-    },
-    {
-      fieldName: 'updaterId',
-      label: '更新人ID',
-      component: 'Input',
-      componentProps: {
-        allowClear: true,
-        placeholder: '请输入更新人ID',
+        placeholder: '请输入客户名称',
       },
     },
   ];
@@ -143,46 +88,35 @@ export function useGridFormSchema(): VbenFormSchema[] {
 /** 列表的字段 */
 export function useGridColumns(): VxeTableGridOptions<GridCommunityCustomerApi.CommunityCustomer>['columns'] {
   return [
-  { type: 'checkbox', width: 40 },
+    { type: 'checkbox', width: 40 },
     {
-      field: 'id',
-      title: '扩展ID',
+      field: 'customerName',
+      title: '客户姓名',
       minWidth: 120,
     },
     {
-      field: 'customerId',
-      title: '客户ID (关联 grid_customer)',
-      minWidth: 120,
+      field: 'phone',
+      title: '手机号',
+      minWidth: 130,
     },
     {
-      field: 'familyMembers',
-      title: '家庭成员数',
-      minWidth: 120,
+      field: 'idType',
+      title: '证件类型',
+      minWidth: 100,
     },
     {
-      field: 'housingType',
-      title: '住房类型',
-      minWidth: 120,
+      field: 'idNumber',
+      title: '证件号',
+      minWidth: 180,
     },
     {
-      field: 'monthlyIncome',
-      title: '月收入 (元)',
-      minWidth: 120,
+      field: 'orgName',
+      title: '机构名称',
+      minWidth: 150,
     },
     {
-      field: 'creatorId',
-      title: '创建人ID',
-      minWidth: 120,
-    },
-    {
-      field: 'createTime',
-      title: '创建时间',
-      minWidth: 120,
-      formatter: 'formatDateTime',
-    },
-    {
-      field: 'updaterId',
-      title: '更新人ID',
+      field: 'managerName',
+      title: '客户经理姓名',
       minWidth: 120,
     },
     {

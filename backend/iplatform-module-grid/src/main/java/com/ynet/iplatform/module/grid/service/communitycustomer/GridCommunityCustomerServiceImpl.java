@@ -79,7 +79,9 @@ public class GridCommunityCustomerServiceImpl implements GridCommunityCustomerSe
 
     @Override
     public PageResult<GridCommunityCustomerDO> getCommunityCustomerPage(GridCommunityCustomerPageReqVO pageReqVO) {
-        return communityCustomerMapper.selectPage(pageReqVO);
+        // 注意：此方法已不再使用，Controller 层直接调用 Mapper 的 selectPageWithRelations 方法
+        // 返回空结果以保持接口兼容性
+        return new PageResult<>(new ArrayList<>(), 0L);
     }
 
 }

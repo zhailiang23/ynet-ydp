@@ -38,6 +38,9 @@ public class GridCommunityCustomerController {
     @Resource
     private GridCommunityCustomerService communityCustomerService;
 
+    @Resource
+    private com.ynet.iplatform.module.grid.dal.mysql.communitycustomer.GridCommunityCustomerMapper communityCustomerMapper;
+
     @PostMapping("/create")
     @Operation(summary = "创建社区客户扩展")
     @PreAuthorize("@ss.hasPermission('grid:community-customer:create')")
@@ -84,8 +87,24 @@ public class GridCommunityCustomerController {
     @Operation(summary = "获得社区客户扩展分页")
     @PreAuthorize("@ss.hasPermission('grid:community-customer:query')")
     public CommonResult<PageResult<GridCommunityCustomerRespVO>> getCommunityCustomerPage(@Valid GridCommunityCustomerPageReqVO pageReqVO) {
-        PageResult<GridCommunityCustomerDO> pageResult = communityCustomerService.getCommunityCustomerPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, GridCommunityCustomerRespVO.class));
+        // 创建 MyBatis Plus 分页对象
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<GridCommunityCustomerRespVO> mpPage =
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        // 使用 Mapper 的关联查询方法，获取完整的客户信息（包含客户姓名、手机号、机构、客户经理等）
+        com.baomidou.mybatisplus.core.metadata.IPage<GridCommunityCustomerRespVO> result =
+                communityCustomerMapper.selectPageWithRelations(mpPage, pageReqVO.getCustomerName());
+
+        // 转换为 PageResult
+        PageResult<GridCommunityCustomerRespVO> pageResult = new PageResult<>(result.getRecords(), result.getTotal());
+
+        // 为每条记录设置默认证件类型为"身份证"（数据库中没有该字段）
+        pageResult.getList().forEach(vo -> {
+            if (vo.getIdNumber() != null && !vo.getIdNumber().isEmpty()) {
+                vo.setIdType("身份证");
+            }
+        });
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")
@@ -94,11 +113,23 @@ public class GridCommunityCustomerController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportCommunityCustomerExcel(@Valid GridCommunityCustomerPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<GridCommunityCustomerDO> list = communityCustomerService.getCommunityCustomerPage(pageReqVO).getList();
+        // 创建一个超大分页对象来获取所有数据
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<GridCommunityCustomerRespVO> mpPage =
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(1, PageParam.PAGE_SIZE_NONE);
+
+        // 使用关联查询获取完整信息
+        com.baomidou.mybatisplus.core.metadata.IPage<GridCommunityCustomerRespVO> result =
+                communityCustomerMapper.selectPageWithRelations(mpPage, pageReqVO.getCustomerName());
+        List<GridCommunityCustomerRespVO> list = result.getRecords();
+
+        // 设置默认证件类型
+        list.forEach(vo -> {
+            if (vo.getIdNumber() != null && !vo.getIdNumber().isEmpty()) {
+                vo.setIdType("身份证");
+            }
+        });
         // 导出 Excel
-        ExcelUtils.write(response, "社区客户扩展.xls", "数据", GridCommunityCustomerRespVO.class,
-                        BeanUtils.toBean(list, GridCommunityCustomerRespVO.class));
+        ExcelUtils.write(response, "社区客户扩展.xls", "数据", GridCommunityCustomerRespVO.class, list);
     }
 
 }

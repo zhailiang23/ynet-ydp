@@ -21,6 +21,30 @@ public class GridCommunityCustomerRespVO {
     @ExcelProperty("客户ID (关联 grid_customer)")
     private Long customerId;
 
+    @Schema(description = "客户姓名", example = "张三")
+    @ExcelProperty("客户姓名")
+    private String customerName;
+
+    @Schema(description = "手机号", example = "13800138000")
+    @ExcelProperty("手机号")
+    private String phone;
+
+    @Schema(description = "证件类型", example = "身份证")
+    @ExcelProperty("证件类型")
+    private String idType;
+
+    @Schema(description = "证件号", example = "110101199001011234")
+    @ExcelProperty("证件号")
+    private String idNumber;
+
+    @Schema(description = "机构名称", example = "研发部门")
+    @ExcelProperty("机构名称")
+    private String orgName;
+
+    @Schema(description = "客户经理姓名", example = "李四")
+    @ExcelProperty("客户经理姓名")
+    private String managerName;
+
     @Schema(description = "家庭成员数")
     @ExcelProperty("家庭成员数")
     private Integer familyMembers;
