@@ -59,4 +59,8 @@ public interface ErrorCodeConstants {
     // ========== 数据同步模块 1-020-010-000 ==========
     ErrorCode GRID_DATA_SYNC_LOG_NOT_EXISTS = new ErrorCode(1_020_010_000, "数据同步记录不存在");
     ErrorCode DATA_SYNC_LOG_NOT_EXISTS = GRID_DATA_SYNC_LOG_NOT_EXISTS; // 简短别名
+
+    // ========== 社区信息模块 1-020-011-000 ==========
+    ErrorCode COMMUNITY_NOT_EXISTS = new ErrorCode(1_020_011_000, "社区不存在");
+    ErrorCode COMMUNITY_CODE_DUPLICATE = new ErrorCode(1_020_011_001, "社区编号已存在");
 }

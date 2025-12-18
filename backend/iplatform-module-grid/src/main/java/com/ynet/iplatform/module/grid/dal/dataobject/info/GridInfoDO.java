@@ -42,6 +42,14 @@ public class GridInfoDO extends TenantBaseDO {
      */
     private Long orgId;
     /**
+     * 责任人用户ID
+     */
+    private Long managerUserId;
+    /**
+     * 团队人数
+     */
+    private Integer teamCount;
+    /**
      * 父网格ID
      */
     private Long parentId;

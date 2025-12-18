@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.grid.dal.mysql.communitygrid.CommunityGridMapper">
+
+    <!-- 插入社区网格，使用 ST_GeomFromGeoJSON 转换边界几何 -->
+    <insert id="insertCommunityGrid" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO grid_info (
+            grid_code,
+            grid_name,
+            grid_type,
+            org_id,
+            manager_user_id,
+            team_count,
+            status,
+            boundary_geometry,
+            creator,
+            create_time,
+            updater,
+            update_time,
+            tenant_id,
+            deleted
+        ) VALUES (
+            #{gridCode},
+            #{gridName},
+            #{gridType},
+            #{orgId},
+            #{managerUserId},
+            #{teamCount},
+            #{status},
+            <choose>
+                <when test="boundaryGeometry != null and boundaryGeometry != ''">
+                    ST_GeomFromGeoJSON(#{boundaryGeometry})
+                </when>
+                <otherwise>
+                    NULL
+                </otherwise>
+            </choose>,
+            #{creator},
+            #{createTime},
+            #{updater},
+            #{updateTime},
+            #{tenantId},
+            0
+        )
+    </insert>
+
+    <!-- 更新社区网格，使用 ST_GeomFromGeoJSON 转换边界几何 -->
+    <update id="updateCommunityGridById" parameterType="map">
+        UPDATE grid_info
+        <set>
+            <if test="gridName != null">grid_name = #{gridName},</if>
+            <if test="orgId != null">org_id = #{orgId},</if>
+            <if test="managerUserId != null">manager_user_id = #{managerUserId},</if>
+            <if test="teamCount != null">team_count = #{teamCount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="boundaryGeometry != null and boundaryGeometry != ''">
+                boundary_geometry = ST_GeomFromGeoJSON(#{boundaryGeometry}),
+            </if>
+            <if test="updater != null">updater = #{updater},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id} AND deleted = 0
+    </update>
+
+    <!-- 查询社区网格，使用 ST_AsGeoJSON 转换边界几何 -->
+    <select id="selectCommunityGridById" resultType="map">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            g.org_id,
+            d.name as org_name,
+            g.manager_user_id,
+            u.nickname as manager_user_name,
+            g.team_count,
+            g.parent_id,
+            ST_AsGeoJSON(g.boundary_geometry) as boundary_geometry,
+            g.radius_meters,
+            g.resident_count,
+            g.merchant_count,
+            g.status,
+            g.creator,
+            g.create_time,
+            g.updater,
+            g.update_time,
+            g.tenant_id,
+            g.deleted
+        FROM grid_info g
+        LEFT JOIN system_dept d ON g.org_id = d.id
+        LEFT JOIN system_users u ON g.manager_user_id = u.id
+        WHERE g.id = #{id} AND g.deleted = 0
+    </select>
+
+    <!-- 分页查询社区网格（包含关联数据） -->
+    <select id="selectCommunityGridPageWithJoin" resultType="map">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            g.org_id,
+            d.name as org_name,
+            g.manager_user_id,
+            u.nickname as manager_user_name,
+            g.team_count,
+            g.status,
+            g.create_time,
+            g.updater,
+            g.update_time
+        FROM grid_info g
+        LEFT JOIN system_dept d ON g.org_id = d.id
+        LEFT JOIN system_users u ON g.manager_user_id = u.id
+        WHERE g.deleted = 0
+        AND g.grid_type = 'COMMUNITY'
+        <if test="reqVO.gridCode != null and reqVO.gridCode != ''">
+            AND g.grid_code LIKE CONCAT('%', #{reqVO.gridCode}, '%')
+        </if>
+        <if test="reqVO.gridName != null and reqVO.gridName != ''">
+            AND g.grid_name LIKE CONCAT('%', #{reqVO.gridName}, '%')
+        </if>
+        ORDER BY g.create_time DESC
+        <if test="reqVO.pageSize != null and reqVO.pageSize > 0">
+            LIMIT #{reqVO.pageSize} OFFSET ${(reqVO.pageNo - 1) * reqVO.pageSize}
+        </if>
+    </select>
+
+    <!-- 查询社区网格总数 -->
+    <select id="selectCommunityGridCount" resultType="long">
+        SELECT COUNT(*)
+        FROM grid_info g
+        WHERE g.deleted = 0
+        AND g.grid_type = 'COMMUNITY'
+        <if test="reqVO.gridCode != null and reqVO.gridCode != ''">
+            AND g.grid_code LIKE CONCAT('%', #{reqVO.gridCode}, '%')
+        </if>
+        <if test="reqVO.gridName != null and reqVO.gridName != ''">
+            AND g.grid_name LIKE CONCAT('%', #{reqVO.gridName}, '%')
+        </if>
+    </select>
+
+</mapper>
