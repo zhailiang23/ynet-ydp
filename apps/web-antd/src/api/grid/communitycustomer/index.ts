@@ -8,11 +8,18 @@ export namespace GridCommunityCustomerApi {
   export interface CommunityCustomer {
     id: number; // 扩展ID
     customerId?: number; // 客户ID (关联 grid_customer)
-    familyMembers: number; // 家庭成员数
-    housingType: string; // 住房类型
-    monthlyIncome: number; // 月收入 (元)
-    creatorId: number; // 创建人ID
-    updaterId: number; // 更新人ID
+    customerName?: string; // 客户姓名
+    phone?: string; // 手机号
+    idType?: string; // 证件类型
+    idNumber?: string; // 证件号
+    orgName?: string; // 机构名称
+    managerName?: string; // 客户经理姓名
+    familyMembers?: number; // 家庭成员数
+    housingType?: string; // 住房类型
+    monthlyIncome?: number; // 月收入 (元)
+    creatorId?: number; // 创建人ID
+    updaterId?: number; // 更新人ID
+    createTime?: string; // 创建时间
   }
 }
 
