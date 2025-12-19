@@ -18,7 +18,8 @@
             c.phone,
             c.id_card AS idNumber,
             u.nickname AS managerName,
-            d.name AS orgName
+            d.name AS orgName,
+            cc.create_time AS createTime
         FROM grid_community_customer cc
         LEFT JOIN grid_customer c ON cc.customer_id = c.id AND c.deleted = 0
         LEFT JOIN system_users u ON c.manager_id = u.id AND u.deleted = 0
@@ -28,6 +29,31 @@
                 AND c.customer_name LIKE CONCAT('%', #{customerName}, '%')
             </if>
         ORDER BY cc.create_time DESC
+    </select>
+
+    <!-- 查询社区客户扩展详情（带关联信息） -->
+    <select id="selectByIdWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.communitycustomer.vo.GridCommunityCustomerRespVO">
+        SELECT
+            cc.id,
+            cc.customer_id AS customerId,
+            c.customer_name AS customerName,
+            c.phone,
+            c.id_card AS idNumber,
+            c.address,
+            c.manager_id AS managerId,
+            u.nickname AS managerName,
+            d.name AS orgName,
+            cc.family_members AS familyMembers,
+            cc.housing_type AS housingType,
+            cc.monthly_income AS monthlyIncome,
+            cc.create_time AS createTime,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_community_customer cc
+        LEFT JOIN grid_customer c ON cc.customer_id = c.id AND c.deleted = 0
+        LEFT JOIN system_users u ON c.manager_id = u.id AND u.deleted = 0
+        LEFT JOIN system_dept d ON u.dept_id = d.id AND d.deleted = 0
+        WHERE cc.id = #{id} AND cc.deleted = 0
     </select>
 
 </mapper>

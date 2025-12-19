@@ -17,7 +17,6 @@ import java.io.IOException;
 import com.ynet.iplatform.framework.common.pojo.PageParam;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
 import com.ynet.iplatform.framework.common.pojo.CommonResult;
-import com.ynet.iplatform.framework.common.util.object.BeanUtils;
 import static com.ynet.iplatform.framework.common.pojo.CommonResult.success;
 
 import com.ynet.iplatform.framework.excel.core.util.ExcelUtils;
@@ -26,7 +25,6 @@ import com.ynet.iplatform.framework.apilog.core.annotation.ApiAccessLog;
 import static com.ynet.iplatform.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import com.ynet.iplatform.module.grid.controller.admin.communitycustomer.vo.*;
-import com.ynet.iplatform.module.grid.dal.dataobject.communitycustomer.GridCommunityCustomerDO;
 import com.ynet.iplatform.module.grid.service.communitycustomer.GridCommunityCustomerService;
 
 @Tag(name = "管理后台 - 社区客户扩展")
@@ -79,8 +77,16 @@ public class GridCommunityCustomerController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('grid:community-customer:query')")
     public CommonResult<GridCommunityCustomerRespVO> getCommunityCustomer(@RequestParam("id") Long id) {
-        GridCommunityCustomerDO communityCustomer = communityCustomerService.getCommunityCustomer(id);
-        return success(BeanUtils.toBean(communityCustomer, GridCommunityCustomerRespVO.class));
+        // 使用关联查询获取完整信息（包含客户姓名、手机号、地址、经纬度等）
+        GridCommunityCustomerRespVO respVO = communityCustomerMapper.selectByIdWithRelations(id);
+        if (respVO == null) {
+            return success(null);
+        }
+        // 设置默认证件类型为"身份证"
+        if (respVO.getIdNumber() != null && !respVO.getIdNumber().isEmpty()) {
+            respVO.setIdType("身份证");
+        }
+        return success(respVO);
     }
 
     @GetMapping("/page")

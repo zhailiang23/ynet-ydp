@@ -12,6 +12,7 @@ import com.ynet.iplatform.module.grid.dal.dataobject.customer.GridCustomerDO;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
 import com.ynet.iplatform.framework.common.pojo.PageParam;
 import com.ynet.iplatform.framework.common.util.object.BeanUtils;
+import com.ynet.iplatform.framework.tenant.core.context.TenantContextHolder;
 
 import com.ynet.iplatform.module.grid.dal.mysql.customer.GridCustomerMapper;
 import com.ynet.iplatform.module.grid.dal.mysql.huinongstation.GridHuinongStationMapper;
@@ -41,6 +42,12 @@ public class GridCustomerServiceImpl implements GridCustomerService {
     public Long createCustomer(GridCustomerSaveReqVO createReqVO) {
         // 插入
         GridCustomerDO customer = BeanUtils.toBean(createReqVO, GridCustomerDO.class);
+
+        // 设置租户 ID
+        customer.setTenantId(TenantContextHolder.getTenantId());
+
+        // 设置逻辑删除标记（使用自定义 XML 插入时需要手动设置）
+        customer.setDeleted(false);
 
         // 如果传了 stationId，根据站点查询 gridId
         if (createReqVO.getStationId() != null && customer.getGridId() == null) {

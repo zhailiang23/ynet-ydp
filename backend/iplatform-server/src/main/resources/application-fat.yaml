@@ -189,6 +189,7 @@ logging:
     com.ynet.iplatform.module.ai.dal.mysql: debug
     com.ynet.iplatform.module.customer.dal.mysql: debug
     com.ynet.iplatform.module.twins.dal.mysql: debug
+    com.ynet.iplatform.module.grid.dal.mysql: debug
     org.springframework.context.support.PostProcessorRegistrationDelegate: ERROR # TODO 芋艿：先禁用，Spring Boot 3.X 存在部分错误的 WARN 提示
 
 debug: false

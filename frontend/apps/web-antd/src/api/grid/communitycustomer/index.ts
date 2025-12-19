@@ -8,12 +8,19 @@ export namespace GridCommunityCustomerApi {
   export interface CommunityCustomer {
     id: number; // 扩展ID
     customerId?: number; // 客户ID (关联 grid_customer)
+    // ==================== 客户基本信息 (grid_customer 表字段) ====================
     customerName?: string; // 客户姓名
     phone?: string; // 手机号
     idType?: string; // 证件类型
     idNumber?: string; // 证件号
+    address?: string; // 详细地址
+    longitude?: number; // 经度
+    latitude?: number; // 纬度
+    managerId?: number; // 客户经理ID (关联 system_users)
+    // ==================== 关联信息（查询时返回） ====================
     orgName?: string; // 机构名称
     managerName?: string; // 客户经理姓名
+    // ==================== 社区客户扩展信息 (grid_community_customer 表字段) ====================
     familyMembers?: number; // 家庭成员数
     housingType?: string; // 住房类型
     monthlyIncome?: number; // 月收入 (元)

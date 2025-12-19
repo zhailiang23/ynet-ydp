@@ -36,8 +36,7 @@ public class GridCustomerSaveReqVO {
     @Schema(description = "手机号是否已二次验证")
     private Boolean phoneVerified;
 
-    @Schema(description = "详细地址", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "详细地址不能为空")
+    @Schema(description = "详细地址")
     private String address;
 
     @Schema(description = "客户位置 (经纬度)")

@@ -3,7 +3,7 @@ package com.ynet.iplatform.module.grid.dal.dataobject.customer;
 import lombok.*;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
-import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
+import com.ynet.iplatform.framework.tenant.core.db.TenantBaseDO;
 
 /**
  * 网格客户 DO
@@ -18,7 +18,7 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GridCustomerDO extends BaseDO {
+public class GridCustomerDO extends TenantBaseDO {
 
     /**
      * 客户ID

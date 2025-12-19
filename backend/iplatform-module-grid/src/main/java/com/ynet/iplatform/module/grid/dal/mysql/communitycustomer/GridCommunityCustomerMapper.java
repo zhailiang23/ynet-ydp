@@ -23,6 +23,11 @@ public interface GridCommunityCustomerMapper extends BaseMapperX<GridCommunityCu
      */
     IPage<GridCommunityCustomerRespVO> selectPageWithRelations(IPage<GridCommunityCustomerRespVO> page, @Param("customerName") String customerName);
 
+    /**
+     * 查询社区客户扩展详情（带关联信息）
+     */
+    GridCommunityCustomerRespVO selectByIdWithRelations(@Param("id") Long id);
+
     // 注：原 selectPage 方法已废弃，因查询条件已简化，现统一使用 selectPageWithRelations
 
 }

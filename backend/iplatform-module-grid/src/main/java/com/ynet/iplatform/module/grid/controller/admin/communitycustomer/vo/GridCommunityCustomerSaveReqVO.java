@@ -13,9 +13,38 @@ public class GridCommunityCustomerSaveReqVO {
     @Schema(description = "扩展ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "859")
     private Long id;
 
-    @Schema(description = "客户ID (关联 grid_customer)", requiredMode = Schema.RequiredMode.REQUIRED, example = "7456")
-    @NotNull(message = "客户ID (关联 grid_customer)不能为空")
+    @Schema(description = "客户ID (关联 grid_customer)", example = "7456")
     private Long customerId;
+
+    // ==================== 客户基本信息 (grid_customer 表字段) ====================
+
+    @Schema(description = "客户姓名", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
+    @NotBlank(message = "客户姓名不能为空")
+    private String customerName;
+
+    @Schema(description = "手机号", requiredMode = Schema.RequiredMode.REQUIRED, example = "13800138000")
+    @NotBlank(message = "手机号不能为空")
+    private String phone;
+
+    @Schema(description = "身份证号", example = "110101199001011234")
+    private String idNumber;
+
+    @Schema(description = "详细地址", example = "北京市朝阳区XXX")
+    private String address;
+
+    @Schema(description = "经度", example = "116.404")
+    private Double longitude;
+
+    @Schema(description = "纬度", example = "39.915")
+    private Double latitude;
+
+    @Schema(description = "客户经理ID (关联 system_users)", example = "1")
+    private Long managerId;
+
+    @Schema(description = "所属网格ID (关联 grid_info)", example = "1")
+    private Long gridId;
+
+    // ==================== 社区客户扩展信息 (grid_community_customer 表字段) ====================
 
     @Schema(description = "家庭成员数")
     private Integer familyMembers;
@@ -25,11 +54,5 @@ public class GridCommunityCustomerSaveReqVO {
 
     @Schema(description = "月收入 (元)")
     private BigDecimal monthlyIncome;
-
-    @Schema(description = "创建人ID", example = "25814")
-    private Long creatorId;
-
-    @Schema(description = "更新人ID", example = "18958")
-    private Long updaterId;
 
 }

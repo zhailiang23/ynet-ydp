@@ -58,6 +58,8 @@ public class AuthController {
     private PermissionService permissionService;
     @Resource
     private SocialClientService socialClientService;
+    @Resource
+    private com.ynet.iplatform.module.system.service.dept.DeptService deptService;
 
     @Resource
     private SecurityProperties securityProperties;
@@ -101,7 +103,15 @@ public class AuthController {
         // 1.2 获得角色列表
         Set<Long> roleIds = permissionService.getUserRoleIdListByUserId(getLoginUserId());
         if (CollUtil.isEmpty(roleIds)) {
-            return success(AuthConvert.INSTANCE.convert(user, Collections.emptyList(), Collections.emptyList()));
+            AuthPermissionInfoRespVO result = AuthConvert.INSTANCE.convert(user, Collections.emptyList(), Collections.emptyList());
+            // 设置部门名称
+            if (user.getDeptId() != null) {
+                var dept = deptService.getDept(user.getDeptId());
+                if (dept != null && result.getUser() != null) {
+                    result.getUser().setDeptName(dept.getName());
+                }
+            }
+            return success(result);
         }
         List<RoleDO> roles = roleService.getRoleList(roleIds);
         roles.removeIf(role -> !CommonStatusEnum.ENABLE.getStatus().equals(role.getStatus())); // 移除禁用的角色
@@ -112,7 +122,17 @@ public class AuthController {
         menuList = menuService.filterDisableMenus(menuList);
 
         // 2. 拼接结果返回
-        return success(AuthConvert.INSTANCE.convert(user, roles, menuList));
+        AuthPermissionInfoRespVO result = AuthConvert.INSTANCE.convert(user, roles, menuList);
+
+        // 3. 设置部门名称
+        if (user.getDeptId() != null) {
+            var dept = deptService.getDept(user.getDeptId());
+            if (dept != null && result.getUser() != null) {
+                result.getUser().setDeptName(dept.getName());
+            }
+        }
+
+        return success(result);
     }
 
     @PostMapping("/register")

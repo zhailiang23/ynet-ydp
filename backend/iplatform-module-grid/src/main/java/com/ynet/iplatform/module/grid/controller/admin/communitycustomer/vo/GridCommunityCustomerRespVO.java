@@ -45,6 +45,18 @@ public class GridCommunityCustomerRespVO {
     @ExcelProperty("客户经理姓名")
     private String managerName;
 
+    @Schema(description = "客户经理ID", example = "1")
+    private Long managerId;
+
+    @Schema(description = "地址", example = "北京市朝阳区xxx路xxx号")
+    private String address;
+
+    @Schema(description = "经度", example = "116.397128")
+    private Double longitude;
+
+    @Schema(description = "纬度", example = "39.916527")
+    private Double latitude;
+
     @Schema(description = "家庭成员数")
     @ExcelProperty("家庭成员数")
     private Integer familyMembers;
@@ -57,16 +69,8 @@ public class GridCommunityCustomerRespVO {
     @ExcelProperty("月收入 (元)")
     private BigDecimal monthlyIncome;
 
-    @Schema(description = "创建人ID", example = "25814")
-    @ExcelProperty("创建人ID")
-    private Long creatorId;
-
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
-
-    @Schema(description = "更新人ID", example = "18958")
-    @ExcelProperty("更新人ID")
-    private Long updaterId;
 
 }
