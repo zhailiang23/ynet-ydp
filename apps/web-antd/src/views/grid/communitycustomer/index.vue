@@ -126,12 +126,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal @success="handleRefresh" />
-    <Grid table-title="社区客户扩展列表">
+    <Grid table-title="社区客户列表">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['社区客户扩展']),
+              label: $t('ui.actionTitle.create', ['社区客户']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
               auth: ['grid:community-customer:create'],
