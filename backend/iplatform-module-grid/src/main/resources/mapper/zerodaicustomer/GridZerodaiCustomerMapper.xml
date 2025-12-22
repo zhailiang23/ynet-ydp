@@ -9,4 +9,57 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 查询零贷客户扩展分页（带关联信息） -->
+    <select id="selectPageWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.zerodaicustomer.vo.GridZerodaiCustomerRespVO">
+        SELECT
+            zc.id,
+            zc.customer_id AS customerId,
+            c.customer_name AS customerName,
+            zc.principal_name AS principalName,
+            c.address,
+            zc.create_time AS createTime
+        FROM grid_zerodai_customer zc
+        LEFT JOIN grid_customer c ON zc.customer_id = c.id AND c.deleted = 0
+        WHERE zc.deleted = 0
+            <if test="customerName != null and customerName != ''">
+                AND c.customer_name LIKE CONCAT('%', #{customerName}, '%')
+            </if>
+            <if test="principalName != null and principalName != ''">
+                AND zc.principal_name LIKE CONCAT('%', #{principalName}, '%')
+            </if>
+        ORDER BY zc.create_time DESC
+    </select>
+
+    <!-- 查询零贷客户扩展详情（带关联信息） -->
+    <select id="selectByIdWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.zerodaicustomer.vo.GridZerodaiCustomerRespVO">
+        SELECT
+            zc.id,
+            zc.customer_id AS customerId,
+            c.customer_name AS customerName,
+            c.address,
+            c.manager_id AS managerId,
+            zc.principal_name AS principalName,
+            zc.gender,
+            zc.phone,
+            zc.business_situation AS businessSituation,
+            zc.financing_situation AS financingSituation,
+            zc.credit_demand AS creditDemand,
+            zc.customer_no AS customerNo,
+            zc.customer_classification AS customerClassification,
+            zc.credit_amount AS creditAmount,
+            zc.loan_amount AS loanAmount,
+            zc.status,
+            zc.photos,
+            zc.employee_no AS employeeNo,
+            zc.employee_name AS employeeName,
+            zc.is_applied AS isApplied,
+            zc.is_completed AS isCompleted,
+            zc.create_time AS createTime,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_zerodai_customer zc
+        LEFT JOIN grid_customer c ON zc.customer_id = c.id AND c.deleted = 0
+        WHERE zc.id = #{id} AND zc.deleted = 0
+    </select>
+
 </mapper>

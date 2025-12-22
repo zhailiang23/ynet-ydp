@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.grid.dal.mysql.zerodaigrid.ZerodaiGridMapper">
+
+    <!-- 插入零贷网格，使用 ST_GeomFromGeoJSON 转换边界几何 -->
+    <insert id="insertZerodaiGrid" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO grid_info (
+            grid_code,
+            grid_name,
+            grid_type,
+            org_id,
+            resource_tags,
+            org_type,
+            status,
+            boundary_geometry,
+            creator,
+            create_time,
+            updater,
+            update_time,
+            tenant_id,
+            deleted
+        ) VALUES (
+            #{gridCode},
+            #{gridName},
+            #{gridType},
+            #{orgId},
+            #{resourceTags},
+            #{orgType},
+            #{status},
+            <choose>
+                <when test="boundaryGeometry != null and boundaryGeometry != ''">
+                    ST_GeomFromGeoJSON(#{boundaryGeometry})
+                </when>
+                <otherwise>
+                    NULL
+                </otherwise>
+            </choose>,
+            #{creator},
+            #{createTime},
+            #{updater},
+            #{updateTime},
+            #{tenantId},
+            0
+        )
+    </insert>
+
+    <!-- 更新零贷网格，使用 ST_GeomFromGeoJSON 转换边界几何 -->
+    <update id="updateZerodaiGridById" parameterType="map">
+        UPDATE grid_info
+        <set>
+            <if test="gridName != null">grid_name = #{gridName},</if>
+            <if test="orgId != null">org_id = #{orgId},</if>
+            <if test="resourceTags != null">resource_tags = #{resourceTags},</if>
+            <if test="orgType != null">org_type = #{orgType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="boundaryGeometry != null and boundaryGeometry != ''">
+                boundary_geometry = ST_GeomFromGeoJSON(#{boundaryGeometry}),
+            </if>
+            <if test="updater != null">updater = #{updater},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id} AND deleted = 0
+    </update>
+
+    <!-- 查询零贷网格，使用 ST_AsGeoJSON 转换边界几何 -->
+    <select id="selectZerodaiGridById" resultType="map">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            g.org_id,
+            d.name as org_name,
+            g.resource_tags,
+            g.org_type,
+            g.status,
+            g.creator,
+            cu.nickname as creator_name,
+            g.create_time,
+            g.updater,
+            g.update_time,
+            ST_AsGeoJSON(g.boundary_geometry) as boundary_geometry,
+            g.tenant_id,
+            g.deleted
+        FROM grid_info g
+        LEFT JOIN system_dept d ON g.org_id = d.id
+        LEFT JOIN system_users cu ON g.creator = cu.id
+        WHERE g.id = #{id} AND g.deleted = 0 AND g.grid_type = 'ZERODAI'
+    </select>
+
+    <!-- 分页查询零贷网格（包含关联数据） -->
+    <select id="selectZerodaiGridPageWithJoin" resultType="map">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            g.org_id,
+            d.name as org_name,
+            g.resource_tags,
+            g.org_type,
+            g.creator,
+            cu.nickname as creator_name,
+            g.create_time,
+            g.updater,
+            g.update_time
+        FROM grid_info g
+        LEFT JOIN system_dept d ON g.org_id = d.id
+        LEFT JOIN system_users cu ON g.creator = cu.id
+        WHERE g.deleted = 0
+        AND g.grid_type = 'ZERODAI'
+        <if test="reqVO.gridName != null and reqVO.gridName != ''">
+            AND g.grid_name LIKE CONCAT('%', #{reqVO.gridName}, '%')
+        </if>
+        <if test="reqVO.orgId != null">
+            AND g.org_id = #{reqVO.orgId}
+        </if>
+        <if test="reqVO.resourceTags != null and reqVO.resourceTags != ''">
+            AND g.resource_tags LIKE CONCAT('%', #{reqVO.resourceTags}, '%')
+        </if>
+        <if test="reqVO.creator != null and reqVO.creator != ''">
+            AND cu.nickname LIKE CONCAT('%', #{reqVO.creator}, '%')
+        </if>
+        ORDER BY g.create_time DESC
+        <if test="reqVO.pageSize != null and reqVO.pageSize > 0">
+            LIMIT #{reqVO.pageSize} OFFSET ${(reqVO.pageNo - 1) * reqVO.pageSize}
+        </if>
+    </select>
+
+    <!-- 查询零贷网格总数 -->
+    <select id="selectZerodaiGridCount" resultType="long">
+        SELECT COUNT(*)
+        FROM grid_info g
+        LEFT JOIN system_users cu ON g.creator = cu.id
+        WHERE g.deleted = 0
+        AND g.grid_type = 'ZERODAI'
+        <if test="reqVO.gridName != null and reqVO.gridName != ''">
+            AND g.grid_name LIKE CONCAT('%', #{reqVO.gridName}, '%')
+        </if>
+        <if test="reqVO.orgId != null">
+            AND g.org_id = #{reqVO.orgId}
+        </if>
+        <if test="reqVO.resourceTags != null and reqVO.resourceTags != ''">
+            AND g.resource_tags LIKE CONCAT('%', #{reqVO.resourceTags}, '%')
+        </if>
+        <if test="reqVO.creator != null and reqVO.creator != ''">
+            AND cu.nickname LIKE CONCAT('%', #{reqVO.creator}, '%')
+        </if>
+    </select>
+
+</mapper>

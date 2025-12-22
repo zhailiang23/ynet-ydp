@@ -22,45 +22,77 @@ import com.ynet.iplatform.framework.mybatis.core.dataobject.BaseDO;
 public class GridZerodaiCustomerDO extends BaseDO {
 
     /**
-     * ID
+     * 扩展ID
      */
     @TableId
     private Long id;
     /**
-     * 客户ID
+     * 客户ID (关联 grid_customer)
      */
     private Long customerId;
     /**
-     * 业务类型
+     * 负责人姓名
      */
-    private String businessType;
+    private String principalName;
     /**
-     * 年营业额
+     * 性别（男/女）
      */
-    private BigDecimal annualRevenue;
+    private String gender;
     /**
-     * 信用等级
+     * 手机号
      */
-    private String creditRating;
+    private String phone;
     /**
-     * 是否已申请
+     * 经营情况
      */
-    private Boolean isApplied;
+    private String businessSituation;
     /**
-     * 是否已完成
+     * 当前融资情况
      */
-    private Boolean isCompleted;
+    private String financingSituation;
     /**
-     * 贷款金额
+     * 对我行信贷等产品需求
+     */
+    private String creditDemand;
+    /**
+     * 客户号（信贷系统客户号）
+     */
+    private String customerNo;
+    /**
+     * 客户分类（潜力客户/月标客户/存量客户）
+     */
+    private String customerClassification;
+    /**
+     * 授信金额（万元）
+     */
+    private BigDecimal creditAmount;
+    /**
+     * 在贷金额（万元）
      */
     private BigDecimal loanAmount;
     /**
-     * 贷款余额
+     * 状态（营销中/二次营销/待分支行审批/待总行审批/已审批/被拒）
      */
-    private BigDecimal loanBalance;
+    private String status;
     /**
-     * 档案保护标识
+     * 上传照片（JSON数组）
      */
-    private Boolean archiveProtected;
+    private String photos;
+    /**
+     * 员工号
+     */
+    private String employeeNo;
+    /**
+     * 员工姓名
+     */
+    private String employeeName;
+    /**
+     * 是否进件（保留原有字段用于后续逻辑）
+     */
+    private Boolean isApplied;
+    /**
+     * 是否完件（保留原有字段用于后续逻辑）
+     */
+    private Boolean isCompleted;
 
 }

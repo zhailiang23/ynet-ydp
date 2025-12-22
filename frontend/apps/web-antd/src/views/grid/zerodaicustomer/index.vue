@@ -85,7 +85,7 @@ function handleRowCheckboxChange({
 /** 导出表格 */
 async function handleExport() {
   const data = await exportZerodaiCustomer(await gridApi.formApi.getValues());
-  downloadFileFromBlobPart({ fileName: '零贷客户扩展.xls', source: data });
+  downloadFileFromBlobPart({ fileName: '零贷客户.xls', source: data });
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -126,12 +126,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal @success="handleRefresh" />
-    <Grid table-title="零贷客户扩展列表">
+    <Grid table-title="零贷客户列表">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['零贷客户扩展']),
+              label: $t('ui.actionTitle.create', ['零贷客户']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
               auth: ['grid:zerodai-customer:create'],

@@ -17,7 +17,6 @@ import java.io.IOException;
 import com.ynet.iplatform.framework.common.pojo.PageParam;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
 import com.ynet.iplatform.framework.common.pojo.CommonResult;
-import com.ynet.iplatform.framework.common.util.object.BeanUtils;
 import static com.ynet.iplatform.framework.common.pojo.CommonResult.success;
 
 import com.ynet.iplatform.framework.excel.core.util.ExcelUtils;
@@ -26,7 +25,6 @@ import com.ynet.iplatform.framework.apilog.core.annotation.ApiAccessLog;
 import static com.ynet.iplatform.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import com.ynet.iplatform.module.grid.controller.admin.zerodaicustomer.vo.*;
-import com.ynet.iplatform.module.grid.dal.dataobject.zerodaicustomer.GridZerodaiCustomerDO;
 import com.ynet.iplatform.module.grid.service.zerodaicustomer.GridZerodaiCustomerService;
 
 @Tag(name = "管理后台 - 零贷客户扩展")
@@ -37,6 +35,9 @@ public class GridZerodaiCustomerController {
 
     @Resource
     private GridZerodaiCustomerService zerodaiCustomerService;
+
+    @Resource
+    private com.ynet.iplatform.module.grid.dal.mysql.zerodaicustomer.GridZerodaiCustomerMapper zerodaiCustomerMapper;
 
     @PostMapping("/create")
     @Operation(summary = "创建零贷客户扩展")
@@ -76,16 +77,26 @@ public class GridZerodaiCustomerController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('grid:zerodai-customer:query')")
     public CommonResult<GridZerodaiCustomerRespVO> getZerodaiCustomer(@RequestParam("id") Long id) {
-        GridZerodaiCustomerDO zerodaiCustomer = zerodaiCustomerService.getZerodaiCustomer(id);
-        return success(BeanUtils.toBean(zerodaiCustomer, GridZerodaiCustomerRespVO.class));
+        // 使用关联查询获取完整信息（包含商户名称、经营地址、经纬度等）
+        GridZerodaiCustomerRespVO respVO = zerodaiCustomerMapper.selectByIdWithRelations(id);
+        return success(respVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得零贷客户扩展分页")
     @PreAuthorize("@ss.hasPermission('grid:zerodai-customer:query')")
     public CommonResult<PageResult<GridZerodaiCustomerRespVO>> getZerodaiCustomerPage(@Valid GridZerodaiCustomerPageReqVO pageReqVO) {
-        PageResult<GridZerodaiCustomerDO> pageResult = zerodaiCustomerService.getZerodaiCustomerPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, GridZerodaiCustomerRespVO.class));
+        // 创建 MyBatis Plus 分页对象
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<GridZerodaiCustomerRespVO> mpPage =
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        // 使用 Mapper 的关联查询方法，获取完整的客户信息（包含商户名称、负责人姓名、经营地址等）
+        com.baomidou.mybatisplus.core.metadata.IPage<GridZerodaiCustomerRespVO> result =
+                zerodaiCustomerMapper.selectPageWithRelations(mpPage, pageReqVO.getCustomerName(), pageReqVO.getPrincipalName());
+
+        // 转换为 PageResult
+        PageResult<GridZerodaiCustomerRespVO> pageResult = new PageResult<>(result.getRecords(), result.getTotal());
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")
@@ -94,11 +105,17 @@ public class GridZerodaiCustomerController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportZerodaiCustomerExcel(@Valid GridZerodaiCustomerPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<GridZerodaiCustomerDO> list = zerodaiCustomerService.getZerodaiCustomerPage(pageReqVO).getList();
+        // 创建一个超大分页对象来获取所有数据
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<GridZerodaiCustomerRespVO> mpPage =
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(1, PageParam.PAGE_SIZE_NONE);
+
+        // 使用关联查询获取完整信息
+        com.baomidou.mybatisplus.core.metadata.IPage<GridZerodaiCustomerRespVO> result =
+                zerodaiCustomerMapper.selectPageWithRelations(mpPage, pageReqVO.getCustomerName(), pageReqVO.getPrincipalName());
+        List<GridZerodaiCustomerRespVO> list = result.getRecords();
+
         // 导出 Excel
-        ExcelUtils.write(response, "零贷客户扩展.xls", "数据", GridZerodaiCustomerRespVO.class,
-                        BeanUtils.toBean(list, GridZerodaiCustomerRespVO.class));
+        ExcelUtils.write(response, "零贷客户扩展.xls", "数据", GridZerodaiCustomerRespVO.class, list);
     }
 
 }

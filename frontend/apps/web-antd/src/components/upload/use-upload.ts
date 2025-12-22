@@ -111,7 +111,10 @@ export function useUpload(directory?: string) {
         });
     } else {
       // 模式二：后端上传
-      return uploadFile({ file, directory }, onUploadProgress);
+      // 后端返回的是字符串 URL，需要包装成对象以保持格式一致
+      return uploadFile({ file, directory }, onUploadProgress).then((url) => {
+        return { url };
+      });
     }
   }
 

@@ -77,5 +77,13 @@ public class GridInfoDO extends TenantBaseDO {
      * 状态
      */
     private String status;
+    /**
+     * 资源标签(JSON数组)
+     */
+    private String resourceTags;
+    /**
+     * 组织类型
+     */
+    private String orgType;
 
 }
