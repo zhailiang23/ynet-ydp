@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { GridTingtangCustomerApi } from '#/api/grid/tingtangcustomer';
+import type { GridKeyPersonApi } from '#/api/grid/keyperson';
 
 import { ref } from 'vue';
 
@@ -11,11 +11,11 @@ import { message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteTingtangCustomer,
-  deleteTingtangCustomerList,
-  exportTingtangCustomer,
-  getTingtangCustomerPage,
-} from '#/api/grid/tingtangcustomer';
+  deleteKeyPerson,
+  deleteKeyPersonList,
+  exportKeyPerson,
+  getKeyPersonPage,
+} from '#/api/grid/keyperson';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -31,24 +31,24 @@ function handleRefresh() {
   gridApi.query();
 }
 
-/** 创建厅堂客户 */
+/** 创建关键人信息 */
 function handleCreate() {
   formModalApi.setData(null).open();
 }
 
-/** 编辑厅堂客户 */
-function handleEdit(row: GridTingtangCustomerApi.TingtangCustomer) {
+/** 编辑关键人信息 */
+function handleEdit(row: GridKeyPersonApi.KeyPerson) {
   formModalApi.setData(row).open();
 }
 
-/** 删除厅堂客户 */
-async function handleDelete(row: GridTingtangCustomerApi.TingtangCustomer) {
+/** 删除关键人信息 */
+async function handleDelete(row: GridKeyPersonApi.KeyPerson) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.id]),
     duration: 0,
   });
   try {
-    await deleteTingtangCustomer(row.id!);
+    await deleteKeyPerson(row.id!);
     message.success($t('ui.actionMessage.deleteSuccess', [row.id]));
     handleRefresh();
   } finally {
@@ -56,7 +56,7 @@ async function handleDelete(row: GridTingtangCustomerApi.TingtangCustomer) {
   }
 }
 
-/** 批量删除厅堂客户 */
+/** 批量删除关键人信息 */
 async function handleDeleteBatch() {
   await confirm($t('ui.actionMessage.deleteBatchConfirm'));
   const hideLoading = message.loading({
@@ -64,7 +64,7 @@ async function handleDeleteBatch() {
     duration: 0,
   });
   try {
-    await deleteTingtangCustomerList(checkedIds.value);
+    await deleteKeyPersonList(checkedIds.value);
     checkedIds.value = [];
     message.success($t('ui.actionMessage.deleteSuccess'));
     handleRefresh();
@@ -77,15 +77,15 @@ const checkedIds = ref<number[]>([]);
 function handleRowCheckboxChange({
   records,
 }: {
-  records: GridTingtangCustomerApi.TingtangCustomer[];
+  records: GridKeyPersonApi.KeyPerson[];
 }) {
   checkedIds.value = records.map((item) => item.id!);
 }
 
 /** 导出表格 */
 async function handleExport() {
-  const data = await exportTingtangCustomer(await gridApi.formApi.getValues());
-  downloadFileFromBlobPart({ fileName: '厅堂客户.xls', source: data });
+  const data = await exportKeyPerson(await gridApi.formApi.getValues());
+  downloadFileFromBlobPart({ fileName: '关键人信息.xls', source: data });
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -99,7 +99,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getTingtangCustomerPage({
+          return await getKeyPersonPage({
             pageNo: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -115,7 +115,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: true,
       search: true,
     },
-  } as VxeTableGridOptions<GridTingtangCustomerApi.TingtangCustomer>,
+  } as VxeTableGridOptions<GridKeyPersonApi.KeyPerson>,
   gridEvents: {
     checkboxAll: handleRowCheckboxChange,
     checkboxChange: handleRowCheckboxChange,
@@ -126,22 +126,22 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal @success="handleRefresh" />
-    <Grid table-title="厅堂客户列表">
+    <Grid table-title="关键人信息列表">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['厅堂客户']),
+              label: $t('ui.actionTitle.create', ['关键人信息']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
-              auth: ['grid:tingtang-customer:create'],
+              auth: ['grid:key-person:create'],
               onClick: handleCreate,
             },
             {
               label: $t('ui.actionTitle.export'),
               type: 'primary',
               icon: ACTION_ICON.DOWNLOAD,
-              auth: ['grid:tingtang-customer:export'],
+              auth: ['grid:key-person:export'],
               onClick: handleExport,
             },
             {
@@ -149,7 +149,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'primary',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              auth: ['grid:tingtang-customer:delete'],
+              auth: ['grid:key-person:delete'],
               disabled: isEmpty(checkedIds),
               onClick: handleDeleteBatch,
             },
@@ -163,7 +163,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               label: $t('common.edit'),
               type: 'link',
               icon: ACTION_ICON.EDIT,
-              auth: ['grid:tingtang-customer:update'],
+              auth: ['grid:key-person:update'],
               onClick: handleEdit.bind(null, row),
             },
             {
@@ -171,7 +171,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'link',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              auth: ['grid:tingtang-customer:delete'],
+              auth: ['grid:key-person:delete'],
               popConfirm: {
                 title: $t('ui.actionMessage.deleteConfirm', [row.id]),
                 confirm: handleDelete.bind(null, row),

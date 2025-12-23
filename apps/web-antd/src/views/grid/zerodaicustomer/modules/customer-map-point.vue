@@ -36,7 +36,7 @@ onMounted(async () => {
     };
 
     const AMap = await AMapLoader.load({
-      key: '36b4c632e48e5d3a7112513fef24bb72',
+      key: import.meta.env.VITE_AMAP_KEY,
       version: '2.0',
       plugins: ['AMap.Geocoder'],
     });
