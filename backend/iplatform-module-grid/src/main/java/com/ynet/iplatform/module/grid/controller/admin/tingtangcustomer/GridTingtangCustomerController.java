@@ -72,33 +72,30 @@ public class GridTingtangCustomerController {
     }
 
     @GetMapping("/get")
-    @Operation(summary = "获得厅堂客户扩展")
+    @Operation(summary = "获得厅堂客户")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('grid:tingtang-customer:query')")
     public CommonResult<GridTingtangCustomerRespVO> getTingtangCustomer(@RequestParam("id") Long id) {
-        GridTingtangCustomerDO tingtangCustomer = tingtangCustomerService.getTingtangCustomer(id);
-        return success(BeanUtils.toBean(tingtangCustomer, GridTingtangCustomerRespVO.class));
+        return success(tingtangCustomerService.getTingtangCustomer(id));
     }
 
     @GetMapping("/page")
-    @Operation(summary = "获得厅堂客户扩展分页")
+    @Operation(summary = "获得厅堂客户分页")
     @PreAuthorize("@ss.hasPermission('grid:tingtang-customer:query')")
     public CommonResult<PageResult<GridTingtangCustomerRespVO>> getTingtangCustomerPage(@Valid GridTingtangCustomerPageReqVO pageReqVO) {
-        PageResult<GridTingtangCustomerDO> pageResult = tingtangCustomerService.getTingtangCustomerPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, GridTingtangCustomerRespVO.class));
+        return success(tingtangCustomerService.getTingtangCustomerPage(pageReqVO));
     }
 
     @GetMapping("/export-excel")
-    @Operation(summary = "导出厅堂客户扩展 Excel")
+    @Operation(summary = "导出厅堂客户 Excel")
     @PreAuthorize("@ss.hasPermission('grid:tingtang-customer:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportTingtangCustomerExcel(@Valid GridTingtangCustomerPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<GridTingtangCustomerDO> list = tingtangCustomerService.getTingtangCustomerPage(pageReqVO).getList();
+        List<GridTingtangCustomerRespVO> list = tingtangCustomerService.getTingtangCustomerPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "厅堂客户扩展.xls", "数据", GridTingtangCustomerRespVO.class,
-                        BeanUtils.toBean(list, GridTingtangCustomerRespVO.class));
+        ExcelUtils.write(response, "厅堂客户.xls", "数据", GridTingtangCustomerRespVO.class, list);
     }
 
 }

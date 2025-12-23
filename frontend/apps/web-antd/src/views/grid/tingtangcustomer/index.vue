@@ -31,17 +31,17 @@ function handleRefresh() {
   gridApi.query();
 }
 
-/** 创建厅堂客户扩展 */
+/** 创建厅堂客户 */
 function handleCreate() {
   formModalApi.setData(null).open();
 }
 
-/** 编辑厅堂客户扩展 */
+/** 编辑厅堂客户 */
 function handleEdit(row: GridTingtangCustomerApi.TingtangCustomer) {
   formModalApi.setData(row).open();
 }
 
-/** 删除厅堂客户扩展 */
+/** 删除厅堂客户 */
 async function handleDelete(row: GridTingtangCustomerApi.TingtangCustomer) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.id]),
@@ -56,7 +56,7 @@ async function handleDelete(row: GridTingtangCustomerApi.TingtangCustomer) {
   }
 }
 
-/** 批量删除厅堂客户扩展 */
+/** 批量删除厅堂客户 */
 async function handleDeleteBatch() {
   await confirm($t('ui.actionMessage.deleteBatchConfirm'));
   const hideLoading = message.loading({
@@ -85,7 +85,7 @@ function handleRowCheckboxChange({
 /** 导出表格 */
 async function handleExport() {
   const data = await exportTingtangCustomer(await gridApi.formApi.getValues());
-  downloadFileFromBlobPart({ fileName: '厅堂客户扩展.xls', source: data });
+  downloadFileFromBlobPart({ fileName: '厅堂客户.xls', source: data });
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -126,12 +126,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal @success="handleRefresh" />
-    <Grid table-title="厅堂客户扩展列表">
+    <Grid table-title="厅堂客户列表">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['厅堂客户扩展']),
+              label: $t('ui.actionTitle.create', ['厅堂客户']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
               auth: ['grid:tingtang-customer:create'],

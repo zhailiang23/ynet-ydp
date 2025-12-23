@@ -85,5 +85,33 @@ public class GridInfoDO extends TenantBaseDO {
      * 组织类型
      */
     private String orgType;
+    /**
+     * 管理层级
+     */
+    private String managementLevel;
+    /**
+     * 所属区域
+     */
+    private String region;
+    /**
+     * 行政片区
+     */
+    private String district;
+    /**
+     * 网点类型
+     */
+    private String outletType;
+    /**
+     * 位置名称
+     */
+    private String locationName;
+    /**
+     * 经度
+     */
+    private java.math.BigDecimal longitude;
+    /**
+     * 纬度
+     */
+    private java.math.BigDecimal latitude;
 
 }

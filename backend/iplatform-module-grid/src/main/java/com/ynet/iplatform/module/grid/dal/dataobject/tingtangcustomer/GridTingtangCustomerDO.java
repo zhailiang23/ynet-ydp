@@ -45,5 +45,9 @@ public class GridTingtangCustomerDO extends BaseDO {
      * CRM客户ID
      */
     private String crmCustomerId;
+    /**
+     * 是否建档
+     */
+    private Boolean isArchived;
 
 }

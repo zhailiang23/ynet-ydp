@@ -56,6 +56,7 @@ public class ZerodaiGridServiceImpl implements ZerodaiGridService {
             vo.setOrgType((String) map.get("org_type"));
             vo.setCreator((String) map.get("creator"));
             vo.setCreatorName((String) map.get("creator_name"));
+            vo.setBoundaryGeometry((String) map.get("boundary_geometry"));
             vo.setCreateTime((LocalDateTime) map.get("create_time"));
             return vo;
         }).collect(Collectors.toList());

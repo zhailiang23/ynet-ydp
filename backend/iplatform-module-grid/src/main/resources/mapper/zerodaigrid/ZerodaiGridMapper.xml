@@ -101,6 +101,7 @@
             g.org_type,
             g.creator,
             cu.nickname as creator_name,
+            ST_AsGeoJSON(g.boundary_geometry) as boundary_geometry,
             g.create_time,
             g.updater,
             g.update_time

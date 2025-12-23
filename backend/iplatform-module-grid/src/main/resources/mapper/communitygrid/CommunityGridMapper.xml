@@ -105,6 +105,7 @@
             u.nickname as manager_user_name,
             g.team_count,
             g.status,
+            ST_AsGeoJSON(g.boundary_geometry) as boundary_geometry,
             g.create_time,
             g.updater,
             g.update_time

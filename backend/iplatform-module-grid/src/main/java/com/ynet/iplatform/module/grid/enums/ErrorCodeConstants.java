@@ -63,4 +63,10 @@ public interface ErrorCodeConstants {
     // ========== 社区信息模块 1-020-011-000 ==========
     ErrorCode COMMUNITY_NOT_EXISTS = new ErrorCode(1_020_011_000, "社区不存在");
     ErrorCode COMMUNITY_CODE_DUPLICATE = new ErrorCode(1_020_011_001, "社区编号已存在");
+
+    // ========== 同业信息模块 1-020-012-000 ==========
+    ErrorCode COMPETITOR_INFO_NOT_EXISTS = new ErrorCode(1_020_012_000, "同业信息不存在");
+
+    // ========== 关键人信息模块 1-020-013-000 ==========
+    ErrorCode KEY_PERSON_NOT_EXISTS = new ErrorCode(1_020_013_000, "关键人信息不存在");
 }

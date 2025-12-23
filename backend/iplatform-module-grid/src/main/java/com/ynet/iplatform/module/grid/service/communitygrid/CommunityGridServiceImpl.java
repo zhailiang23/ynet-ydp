@@ -62,6 +62,7 @@ public class CommunityGridServiceImpl implements CommunityGridService {
                 vo.setTeamCount((Integer) map.get("team_count"));
             }
             vo.setStatus((String) map.get("status"));
+            vo.setBoundaryGeometry((String) map.get("boundary_geometry"));
             vo.setCreateTime((LocalDateTime) map.get("create_time"));
             return vo;
         }).collect(Collectors.toList());
