@@ -9,4 +9,53 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 根据ID查询厅堂客户（带关联信息） -->
+    <select id="selectTingtangCustomerById" resultType="com.ynet.iplatform.module.grid.controller.admin.tingtangcustomer.vo.GridTingtangCustomerRespVO">
+        SELECT
+            tc.id,
+            tc.customer_id AS customerId,
+            c.customer_name AS customerName,
+            c.gender,
+            c.customer_group AS customerGroup,
+            c.id_card AS idCard,
+            c.phone,
+            c.address,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude,
+            tc.is_archived AS isArchived,
+            tc.crm_customer_id AS crmCustomerId,
+            tc.create_time AS createTime
+        FROM grid_tingtang_customer tc
+        LEFT JOIN grid_customer c ON tc.customer_id = c.id AND c.deleted = 0
+        WHERE tc.id = #{id} AND tc.deleted = 0
+    </select>
+
+    <!-- 查询厅堂客户分页（带关联信息） -->
+    <select id="selectPageWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.tingtangcustomer.vo.GridTingtangCustomerRespVO">
+        SELECT
+            tc.id,
+            tc.customer_id AS customerId,
+            c.customer_name AS customerName,
+            c.gender,
+            c.customer_group AS customerGroup,
+            c.id_card AS idCard,
+            c.phone,
+            c.address,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude,
+            tc.is_archived AS isArchived,
+            tc.crm_customer_id AS crmCustomerId,
+            tc.create_time AS createTime
+        FROM grid_tingtang_customer tc
+        LEFT JOIN grid_customer c ON tc.customer_id = c.id AND c.deleted = 0
+        WHERE tc.deleted = 0
+            <if test="customerName != null and customerName != ''">
+                AND c.customer_name LIKE CONCAT('%', #{customerName}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                AND c.phone LIKE CONCAT('%', #{phone}, '%')
+            </if>
+        ORDER BY tc.create_time DESC
+    </select>
+
 </mapper>

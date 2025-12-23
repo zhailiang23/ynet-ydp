@@ -15,6 +15,8 @@
             grid_id,
             customer_type,
             customer_name,
+            gender,
+            customer_group,
             id_card,
             phone,
             phone_verified,
@@ -33,13 +35,15 @@
             #{customer.gridId},
             #{customer.customerType},
             #{customer.customerName},
+            #{customer.gender},
+            #{customer.customerGroup},
             #{customer.idCard},
             #{customer.phone},
             #{customer.phoneVerified},
             #{customer.address},
             <choose>
                 <when test="longitude != null and latitude != null">
-                    ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+                    ST_GeomFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
                 </when>
                 <otherwise>
                     NULL
@@ -64,13 +68,15 @@
             grid_id = #{customer.gridId},
             customer_type = #{customer.customerType},
             customer_name = #{customer.customerName},
+            gender = #{customer.gender},
+            customer_group = #{customer.customerGroup},
             id_card = #{customer.idCard},
             phone = #{customer.phone},
             phone_verified = #{customer.phoneVerified},
             address = #{customer.address},
             location = <choose>
                 <when test="longitude != null and latitude != null">
-                    ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+                    ST_GeomFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
                 </when>
                 <otherwise>
                     NULL

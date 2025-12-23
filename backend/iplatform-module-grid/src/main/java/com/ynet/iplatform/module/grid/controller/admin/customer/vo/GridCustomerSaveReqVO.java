@@ -26,6 +26,12 @@ public class GridCustomerSaveReqVO {
     @NotBlank(message = "客户姓名不能为空")
     private String customerName;
 
+    @Schema(description = "性别（男、女）", example = "男")
+    private String gender;
+
+    @Schema(description = "客群类型", example = "信贷客户")
+    private String customerGroup;
+
     @Schema(description = "身份证号 (脱敏: 前3后3)")
     private String idCard;
 

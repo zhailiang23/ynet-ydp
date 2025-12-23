@@ -38,6 +38,14 @@ public class GridCustomerDO extends TenantBaseDO {
      */
     private String customerName;
     /**
+     * 性别（男、女）
+     */
+    private String gender;
+    /**
+     * 客群类型
+     */
+    private String customerGroup;
+    /**
      * 身份证号
      */
     private String idCard;
