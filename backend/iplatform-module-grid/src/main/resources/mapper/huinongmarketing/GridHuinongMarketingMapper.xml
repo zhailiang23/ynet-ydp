@@ -15,8 +15,8 @@
             m.id,
             m.grid_id AS gridId,
             m.station_id AS stationId,
-            s.station_name AS stationName,
-            s.station_code AS stationCode,
+            g.grid_name AS stationName,
+            g.grid_code AS stationCode,
             m.village_name AS villageName,
             m.registered_population AS registeredPopulation,
             m.customer_type AS customerType,
@@ -24,14 +24,14 @@
             u.nickname AS creatorName,
             m.create_time AS createTime
         FROM grid_huinong_marketing m
-        LEFT JOIN grid_huinong_station s ON m.station_id = s.id AND s.deleted = 0
+        LEFT JOIN grid_info g ON m.station_id = g.id AND g.deleted = 0 AND g.grid_type = 'HUINONG'
         LEFT JOIN system_users u ON m.creator = u.id AND u.deleted = 0
         WHERE m.deleted = 0
             <if test="reqVO.stationName != null and reqVO.stationName != ''">
-                AND s.station_name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+                AND g.grid_name LIKE CONCAT('%', #{reqVO.stationName}, '%')
             </if>
             <if test="reqVO.stationCode != null and reqVO.stationCode != ''">
-                AND s.station_code = #{reqVO.stationCode}
+                AND g.grid_code = #{reqVO.stationCode}
             </if>
             <if test="reqVO.villageName != null and reqVO.villageName != ''">
                 AND m.village_name LIKE CONCAT('%', #{reqVO.villageName}, '%')
@@ -70,14 +70,14 @@
             m.registered_population,
             m.customer_type,
             m.customer_count,
-            s.grid_marketing_flag
+            g.grid_marketing_flag
         FROM grid_huinong_marketing m
-        INNER JOIN grid_huinong_station s ON m.station_id = s.id AND s.deleted = 0
+        INNER JOIN grid_info g ON m.station_id = g.id AND g.deleted = 0 AND g.grid_type = 'HUINONG'
         WHERE m.deleted = 0
             AND m.village_location IS NOT NULL
             AND m.village_location != ''
             <if test="reqVO.stationType != null and reqVO.stationType != ''">
-                AND s.grid_marketing_flag = #{reqVO.stationType}
+                AND g.grid_marketing_flag = #{reqVO.stationType}
             </if>
             <if test="reqVO.customerTypes != null and reqVO.customerTypes.size() > 0">
                 AND (
@@ -97,12 +97,12 @@
             COUNT(*) AS count,
             MAX(m.village_name) AS villageName
         FROM grid_huinong_marketing m
-        INNER JOIN grid_huinong_station s ON m.station_id = s.id AND s.deleted = 0
+        INNER JOIN grid_info g ON m.station_id = g.id AND g.deleted = 0 AND g.grid_type = 'HUINONG'
         WHERE m.deleted = 0
             AND m.village_location IS NOT NULL
             AND m.village_location != ''
             <if test="reqVO.stationType != null and reqVO.stationType != ''">
-                AND s.grid_marketing_flag = #{reqVO.stationType}
+                AND g.grid_marketing_flag = #{reqVO.stationType}
             </if>
             <if test="reqVO.customerTypes != null and reqVO.customerTypes.size() > 0">
                 AND (

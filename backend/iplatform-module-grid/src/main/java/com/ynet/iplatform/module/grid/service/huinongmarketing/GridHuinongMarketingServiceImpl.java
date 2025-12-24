@@ -20,8 +20,6 @@ import com.ynet.iplatform.framework.common.util.object.BeanUtils;
 import com.ynet.iplatform.framework.mybatis.core.util.MyBatisUtils;
 
 import com.ynet.iplatform.module.grid.dal.mysql.huinongmarketing.GridHuinongMarketingMapper;
-import com.ynet.iplatform.module.grid.dal.mysql.huinongstation.GridHuinongStationMapper;
-import com.ynet.iplatform.module.grid.dal.dataobject.huinongstation.GridHuinongStationDO;
 
 import static com.ynet.iplatform.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.ynet.iplatform.framework.common.util.collection.CollectionUtils.convertList;
@@ -41,17 +39,11 @@ public class GridHuinongMarketingServiceImpl implements GridHuinongMarketingServ
     @Resource
     private GridHuinongMarketingMapper huinongMarketingMapper;
 
-    @Resource
-    private GridHuinongStationMapper huinongStationMapper;
-
     @Override
     public Long createHuinongMarketing(GridHuinongMarketingSaveReqVO createReqVO) {
-        // 如果 gridId 为空，从站点信息中获取
+        // 惠农站点现在存储在 grid_info 表中，stationId 就是 gridId
         if (createReqVO.getGridId() == null && createReqVO.getStationId() != null) {
-            GridHuinongStationDO station = huinongStationMapper.selectById(createReqVO.getStationId());
-            if (station != null && station.getGridId() != null) {
-                createReqVO.setGridId(station.getGridId());
-            }
+            createReqVO.setGridId(createReqVO.getStationId());
         }
 
         // 插入
@@ -67,12 +59,9 @@ public class GridHuinongMarketingServiceImpl implements GridHuinongMarketingServ
         // 校验存在
         validateHuinongMarketingExists(updateReqVO.getId());
 
-        // 如果 gridId 为空，从站点信息中获取
+        // 惠农站点现在存储在 grid_info 表中，stationId 就是 gridId
         if (updateReqVO.getGridId() == null && updateReqVO.getStationId() != null) {
-            GridHuinongStationDO station = huinongStationMapper.selectById(updateReqVO.getStationId());
-            if (station != null && station.getGridId() != null) {
-                updateReqVO.setGridId(station.getGridId());
-            }
+            updateReqVO.setGridId(updateReqVO.getStationId());
         }
 
         // 更新

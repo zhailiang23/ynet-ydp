@@ -26,7 +26,7 @@ import com.ynet.iplatform.framework.apilog.core.annotation.ApiAccessLog;
 import static com.ynet.iplatform.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.*;
-import com.ynet.iplatform.module.grid.dal.dataobject.huinongstation.GridHuinongStationDO;
+import com.ynet.iplatform.module.grid.dal.dataobject.info.GridInfoDO;
 import com.ynet.iplatform.module.grid.service.huinongstation.GridHuinongStationService;
 
 @Tag(name = "管理后台 - 惠农站点信息")
@@ -39,7 +39,7 @@ public class GridHuinongStationController {
     private GridHuinongStationService huinongStationService;
 
     @Resource
-    private com.ynet.iplatform.module.grid.dal.mysql.huinongstation.GridHuinongStationMapper huinongStationMapper;
+    private com.ynet.iplatform.module.grid.dal.mysql.info.GridInfoMapper gridInfoMapper;
 
     @PostMapping("/create")
     @Operation(summary = "创建惠农站点信息")
@@ -79,8 +79,8 @@ public class GridHuinongStationController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('grid:huinong-station:query')")
     public CommonResult<GridHuinongStationRespVO> getHuinongStation(@RequestParam("id") Long id) {
-        GridHuinongStationDO huinongStation = huinongStationService.getHuinongStation(id);
-        return success(BeanUtils.toBean(huinongStation, GridHuinongStationRespVO.class));
+        GridHuinongStationRespVO huinongStation = huinongStationService.getHuinongStation(id);
+        return success(huinongStation);
     }
 
     @GetMapping("/map-data")
@@ -114,9 +114,16 @@ public class GridHuinongStationController {
     @Operation(summary = "获取惠农站点全列表", description = "只包含启用状态的站点，主要用于前端的下拉选项")
     public CommonResult<List<GridHuinongStationSimpleRespVO>> getSimpleHuinongStationList() {
         // 获得惠农站点列表，只要启用状态的
-        List<GridHuinongStationDO> list = huinongStationService.getHuinongStationList();
-        // 转换为简化 VO
-        return success(BeanUtils.toBean(list, GridHuinongStationSimpleRespVO.class));
+        List<GridInfoDO> list = huinongStationService.getHuinongStationList();
+        // 转换为简化 VO（手动映射字段：gridName -> stationName, gridCode -> stationCode）
+        List<GridHuinongStationSimpleRespVO> result = list.stream().map(grid -> {
+            GridHuinongStationSimpleRespVO vo = new GridHuinongStationSimpleRespVO();
+            vo.setId(grid.getId());
+            vo.setStationName(grid.getGridName());
+            vo.setStationCode(grid.getGridCode());
+            return vo;
+        }).collect(java.util.stream.Collectors.toList());
+        return success(result);
     }
 
     @GetMapping("/page")
@@ -128,8 +135,8 @@ public class GridHuinongStationController {
         com.baomidou.mybatisplus.core.metadata.IPage<GridHuinongStationRespVO> mpPage =
                 com.ynet.iplatform.framework.mybatis.core.util.MyBatisUtils.buildPage(pageReqVO);
 
-        // 2. 执行分页查询
-        mpPage = huinongStationMapper.selectPageWithRelations(mpPage, pageReqVO);
+        // 2. 执行分页查询 (使用 GridInfoMapper 的查询方法)
+        mpPage = gridInfoMapper.selectHuinongStationPageWithRelations(mpPage, pageReqVO);
 
         // 3. 转换为框架的 PageResult
         PageResult<GridHuinongStationRespVO> pageResult = new PageResult<>(mpPage.getRecords(), mpPage.getTotal());
@@ -144,7 +151,7 @@ public class GridHuinongStationController {
     public void exportHuinongStationExcel(@Valid GridHuinongStationPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<GridHuinongStationDO> list = huinongStationService.getHuinongStationPage(pageReqVO).getList();
+        List<GridInfoDO> list = huinongStationService.getHuinongStationPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "惠农站点信息.xls", "数据", GridHuinongStationRespVO.class,
                         BeanUtils.toBean(list, GridHuinongStationRespVO.class));

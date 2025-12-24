@@ -15,8 +15,6 @@ import com.ynet.iplatform.framework.common.util.object.BeanUtils;
 import com.ynet.iplatform.framework.tenant.core.context.TenantContextHolder;
 
 import com.ynet.iplatform.module.grid.dal.mysql.customer.GridCustomerMapper;
-import com.ynet.iplatform.module.grid.dal.mysql.huinongstation.GridHuinongStationMapper;
-import com.ynet.iplatform.module.grid.dal.dataobject.huinongstation.GridHuinongStationDO;
 
 import static com.ynet.iplatform.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.ynet.iplatform.framework.common.util.collection.CollectionUtils.convertList;
@@ -35,9 +33,6 @@ public class GridCustomerServiceImpl implements GridCustomerService {
     @Resource
     private GridCustomerMapper gridCustomerMapper;
 
-    @Resource
-    private GridHuinongStationMapper huinongStationMapper;
-
     @Override
     public Long createCustomer(GridCustomerSaveReqVO createReqVO) {
         // 插入
@@ -49,12 +44,9 @@ public class GridCustomerServiceImpl implements GridCustomerService {
         // 设置逻辑删除标记（使用自定义 XML 插入时需要手动设置）
         customer.setDeleted(false);
 
-        // 如果传了 stationId，根据站点查询 gridId
+        // 惠农站点现在存储在 grid_info 表中，stationId 就是 gridId
         if (createReqVO.getStationId() != null && customer.getGridId() == null) {
-            GridHuinongStationDO station = huinongStationMapper.selectById(createReqVO.getStationId());
-            if (station != null && station.getGridId() != null) {
-                customer.setGridId(station.getGridId());
-            }
+            customer.setGridId(createReqVO.getStationId());
         }
 
         // 如果提供了经纬度，使用 insertWithLocation 方法处理位置信息
@@ -75,12 +67,9 @@ public class GridCustomerServiceImpl implements GridCustomerService {
         // 更新
         GridCustomerDO updateObj = BeanUtils.toBean(updateReqVO, GridCustomerDO.class);
 
-        // 如果传了 stationId，根据站点查询 gridId
+        // 惠农站点现在存储在 grid_info 表中，stationId 就是 gridId
         if (updateReqVO.getStationId() != null && updateObj.getGridId() == null) {
-            GridHuinongStationDO station = huinongStationMapper.selectById(updateReqVO.getStationId());
-            if (station != null && station.getGridId() != null) {
-                updateObj.setGridId(station.getGridId());
-            }
+            updateObj.setGridId(updateReqVO.getStationId());
         }
 
         // 如果提供了经纬度，使用 updateWithLocation 方法处理位置信息

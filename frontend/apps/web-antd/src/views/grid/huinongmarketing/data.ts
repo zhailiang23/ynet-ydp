@@ -4,6 +4,7 @@ import type { GridHuinongMarketingApi } from '#/api/grid/huinongmarketing';
 
 import { getDictOptions } from '@vben/hooks';
 
+import { getSimpleHuinongStationList } from '#/api/grid/huinongstation';
 import { getRangePickerDefaultProps } from '#/utils';
 
 /** 新增/修改的表单 */
@@ -18,12 +19,22 @@ export function useFormSchema(): VbenFormSchema[] {
       },
     },
     {
-      fieldName: 'gridId',
-      label: '网格ID',
+      fieldName: 'stationId',
+      label: '选择站点',
       rules: 'required',
-      component: 'Input',
+      component: 'ApiSelect',
       componentProps: {
-        placeholder: '请输入网格ID',
+        placeholder: '请选择惠农站点',
+        api: getSimpleHuinongStationList,
+        labelField: 'stationName',
+        valueField: 'id',
+        showSearch: true,
+        filterOption: (input: string, option: any) => {
+          return (
+            option?.stationName?.toLowerCase().includes(input.toLowerCase()) ||
+            option?.stationCode?.toLowerCase().includes(input.toLowerCase())
+          );
+        },
       },
     },
     {

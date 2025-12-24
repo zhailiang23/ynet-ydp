@@ -35,6 +35,12 @@ public class GridHuinongStationImportVO {
     @ExcelProperty("站点地址")
     private String address;
 
+    @ExcelProperty("所属机构ID")
+    private Long orgId;
+
+    @ExcelProperty("圆形半径(米)")
+    private Integer radiusMeters;
+
     @ExcelProperty(value = "网格营销站点", converter = DictConvert.class)
     @DictFormat("grid_marketing_flag")
     private String gridMarketingFlag;

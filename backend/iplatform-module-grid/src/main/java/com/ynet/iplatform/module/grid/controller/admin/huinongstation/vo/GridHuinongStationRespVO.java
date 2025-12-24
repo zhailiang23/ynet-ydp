@@ -3,6 +3,7 @@ package com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
+import java.math.BigDecimal;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
@@ -20,21 +21,34 @@ public class GridHuinongStationRespVO {
     @ExcelProperty("站点编号")
     private String stationCode;
 
-    @Schema(description = "站点名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
+    @Schema(description = "站点名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "郑州惠农站")
     @ExcelProperty("站点名称")
     private String stationName;
 
-    @Schema(description = "站点类型", example = "2")
+    @Schema(description = "所属机构ID", example = "1")
+    @ExcelProperty("所属机构ID")
+    private Long orgId;
+
+    @Schema(description = "所属机构名称")
+    @ExcelProperty("所属机构名称")
+    private String orgName;
+
+    @Schema(description = "站点类型", example = "惠农")
     @ExcelProperty("站点类型")
     private String stationType;
-
-    @Schema(description = "站点坐标", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("站点坐标")
-    private byte[] location;
 
     @Schema(description = "站点地址")
     @ExcelProperty("站点地址")
     private String address;
+
+    @Schema(description = "经度", example = "113.6234")
+    private BigDecimal longitude;
+
+    @Schema(description = "纬度", example = "34.7490")
+    private BigDecimal latitude;
+
+    @Schema(description = "圆形半径（米）", example = "3000")
+    private Integer radiusMeters;
 
     @Schema(description = "关联的网格ID", example = "13533")
     @ExcelProperty("关联的网格ID")

@@ -3,7 +3,7 @@ package com.ynet.iplatform.module.grid.service.huinongstation;
 import java.util.*;
 import jakarta.validation.*;
 import com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.*;
-import com.ynet.iplatform.module.grid.dal.dataobject.huinongstation.GridHuinongStationDO;
+import com.ynet.iplatform.module.grid.dal.dataobject.info.GridInfoDO;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
 import com.ynet.iplatform.framework.common.pojo.PageParam;
 
@@ -44,19 +44,19 @@ public interface GridHuinongStationService {
     void deleteHuinongStationListByIds(List<Long> ids);
 
     /**
-     * 获得惠农站点信息
+     * 获得惠农站点信息（包含关联的机构、经纬度、半径等完整信息）
      *
      * @param id 编号
-     * @return 惠农站点信息
+     * @return 惠农站点完整信息
      */
-    GridHuinongStationDO getHuinongStation(Long id);
+    GridHuinongStationRespVO getHuinongStation(Long id);
 
     /**
      * 获得惠农站点列表（用于下拉选择）
      *
      * @return 惠农站点列表
      */
-    List<GridHuinongStationDO> getHuinongStationList();
+    List<GridInfoDO> getHuinongStationList();
 
     /**
      * 获得惠农站点信息分页
@@ -64,7 +64,7 @@ public interface GridHuinongStationService {
      * @param pageReqVO 分页查询
      * @return 惠农站点信息分页
      */
-    PageResult<GridHuinongStationDO> getHuinongStationPage(GridHuinongStationPageReqVO pageReqVO);
+    PageResult<GridInfoDO> getHuinongStationPage(GridHuinongStationPageReqVO pageReqVO);
 
     /**
      * 获取惠农站点地图数据

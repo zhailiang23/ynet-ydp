@@ -59,4 +59,259 @@
         )
     </insert>
 
+    <!-- ==================== 惠农站点相关查询 ==================== -->
+
+    <!-- 查询带关联信息的惠农站点分页列表 -->
+    <select id="selectHuinongStationPageWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongStationRespVO">
+        SELECT
+            g.id,
+            g.grid_code AS stationCode,
+            g.grid_name AS stationName,
+            g.create_time AS createTime,
+            g.grid_marketing_flag AS gridMarketingFlag,
+            -- 管理行名称: 惠农专员所在部门的上级部门
+            parent_dept.name AS manageBranchName,
+            -- 二级支行名称: 惠农专员所在部门
+            sub_branch.name AS subBranchName,
+            -- 从 system_users 表关联查询惠农人员信息
+            u.username AS specialistEmployeeNo,
+            u.nickname AS specialistName,
+            g.station_type AS stationType,
+            g.location_name AS address,
+            g.contact_person AS contactPerson,
+            g.contact_phone AS contactPhone,
+            g.manager_user_id AS specialistId,
+            g.status,
+            g.data_source AS dataSource,
+            g.import_batch AS importBatch,
+            g.import_time AS importTime,
+            g.creator AS creator,
+            g.updater AS updater,
+            -- 所属机构信息
+            g.org_id AS orgId,
+            g.radius_meters AS radiusMeters,
+            -- 从部门表获取所属机构名称
+            org_dept.name AS orgName,
+            -- 从 center_point 字段提取经纬度
+            ST_Y(g.center_point) AS longitude,
+            ST_X(g.center_point) AS latitude
+        FROM grid_info g
+        -- 关联惠农专员
+        LEFT JOIN system_users u ON g.manager_user_id = u.id AND u.deleted = 0
+        -- 关联二级支行（惠农专员所在部门）
+        LEFT JOIN system_dept sub_branch ON u.dept_id = sub_branch.id AND sub_branch.deleted = 0
+        -- 关联管理行（二级支行的上级部门）
+        LEFT JOIN system_dept parent_dept ON sub_branch.parent_id = parent_dept.id AND parent_dept.deleted = 0
+        -- 关联机构部门表
+        LEFT JOIN system_dept org_dept ON g.org_id = org_dept.id AND org_dept.deleted = 0
+        WHERE g.deleted = 0 AND g.grid_type = 'HUINONG'
+            <if test="reqVO.stationCode != null and reqVO.stationCode != ''">
+                AND g.grid_code = #{reqVO.stationCode}
+            </if>
+            <if test="reqVO.stationName != null and reqVO.stationName != ''">
+                AND g.grid_name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+            </if>
+            <if test="reqVO.gridMarketingFlag != null and reqVO.gridMarketingFlag != ''">
+                AND g.grid_marketing_flag = #{reqVO.gridMarketingFlag}
+            </if>
+        ORDER BY g.create_time DESC
+    </select>
+
+    <!-- 根据ID查询带关联信息的惠农站点详情 -->
+    <select id="selectHuinongStationByIdWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongStationRespVO">
+        SELECT
+            g.id,
+            g.grid_code AS stationCode,
+            g.grid_name AS stationName,
+            g.create_time AS createTime,
+            g.grid_marketing_flag AS gridMarketingFlag,
+            -- 管理行名称: 惠农专员所在部门的上级部门
+            parent_dept.name AS manageBranchName,
+            -- 二级支行名称: 惠农专员所在部门
+            sub_branch.name AS subBranchName,
+            -- 从 system_users 表关联查询惠农人员信息
+            u.username AS specialistEmployeeNo,
+            u.nickname AS specialistName,
+            g.station_type AS stationType,
+            g.location_name AS address,
+            g.contact_person AS contactPerson,
+            g.contact_phone AS contactPhone,
+            g.manager_user_id AS specialistId,
+            g.status,
+            g.data_source AS dataSource,
+            g.import_batch AS importBatch,
+            g.import_time AS importTime,
+            g.creator AS creator,
+            g.updater AS updater,
+            -- 所属机构信息
+            g.org_id AS orgId,
+            g.radius_meters AS radiusMeters,
+            -- 从部门表获取所属机构名称
+            org_dept.name AS orgName,
+            -- 从 center_point 字段提取经纬度
+            ST_Y(g.center_point) AS longitude,
+            ST_X(g.center_point) AS latitude
+        FROM grid_info g
+        -- 关联惠农专员
+        LEFT JOIN system_users u ON g.manager_user_id = u.id AND u.deleted = 0
+        -- 关联二级支行（惠农专员所在部门）
+        LEFT JOIN system_dept sub_branch ON u.dept_id = sub_branch.id AND sub_branch.deleted = 0
+        -- 关联管理行（二级支行的上级部门）
+        LEFT JOIN system_dept parent_dept ON sub_branch.parent_id = parent_dept.id AND parent_dept.deleted = 0
+        -- 关联机构部门表
+        LEFT JOIN system_dept org_dept ON g.org_id = org_dept.id AND org_dept.deleted = 0
+        WHERE g.id = #{id} AND g.deleted = 0 AND g.grid_type = 'HUINONG'
+    </select>
+
+    <!-- 地图数据结果映射 -->
+    <resultMap id="huinongStationMapDataResultMap" type="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongStationMapVO" autoMapping="false">
+        <id column="id" property="id"/>
+        <result column="stationName" property="stationName"/>
+        <result column="stationCode" property="stationCode"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="address" property="address"/>
+        <result column="gridMarketingFlag" property="gridMarketingFlag"/>
+        <result column="specialistEmployeeNo" property="specialistEmployeeNo"/>
+        <result column="specialistName" property="specialistName"/>
+        <result column="manageBranchName" property="manageBranchName"/>
+        <result column="subBranchName" property="subBranchName"/>
+        <result column="specialistLongitude" property="specialistLongitude"/>
+        <result column="specialistLatitude" property="specialistLatitude"/>
+        <!-- 嵌套网格信息 -->
+        <association property="gridInfo" javaType="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongStationMapVO$GridInfo" autoMapping="false">
+            <result column="gridId" property="gridId"/>
+            <result column="gridName" property="gridName"/>
+            <result column="gridCode" property="gridCode"/>
+            <result column="centerLongitude" property="centerLongitude"/>
+            <result column="centerLatitude" property="centerLatitude"/>
+            <result column="boundaryGeometry" property="boundaryGeometry"/>
+        </association>
+    </resultMap>
+
+    <!-- 查询惠农站点地图数据 -->
+    <select id="selectHuinongStationMapDataById" resultMap="huinongStationMapDataResultMap">
+        SELECT
+            g.id,
+            g.grid_name AS stationName,
+            g.grid_code AS stationCode,
+            ST_Y(g.center_point) AS longitude,
+            ST_X(g.center_point) AS latitude,
+            g.location_name AS address,
+            g.grid_marketing_flag AS gridMarketingFlag,
+            -- 惠农人员信息
+            u.username AS specialistEmployeeNo,
+            u.nickname AS specialistName,
+            -- 管理行名称: 惠农专员所在部门的上级部门
+            parent_dept.name AS manageBranchName,
+            -- 二级支行名称: 惠农专员所在部门
+            sub_branch.name AS subBranchName,
+            -- 网格信息
+            g.id AS gridId,
+            g.grid_name AS gridName,
+            g.grid_code AS gridCode,
+            ST_Y(g.center_point) AS centerLongitude,
+            ST_X(g.center_point) AS centerLatitude,
+            ST_AsGeoJSON(g.boundary_geometry) AS boundaryGeometry
+        FROM grid_info g
+        LEFT JOIN system_users u ON g.manager_user_id = u.id AND u.deleted = 0
+        LEFT JOIN system_dept sub_branch ON u.dept_id = sub_branch.id AND sub_branch.deleted = 0
+        LEFT JOIN system_dept parent_dept ON sub_branch.parent_id = parent_dept.id AND parent_dept.deleted = 0
+        WHERE g.id = #{id} AND g.deleted = 0 AND g.grid_type = 'HUINONG'
+    </select>
+
+    <!-- 插入惠农站点并设置位置坐标 -->
+    <insert id="insertHuinongStationWithLocation" useGeneratedKeys="true" keyProperty="station.id">
+        INSERT INTO grid_info (
+            grid_code,
+            grid_name,
+            grid_type,
+            station_type,
+            center_point,
+            location_name,
+            grid_marketing_flag,
+            contact_person,
+            contact_phone,
+            manager_user_id,
+            status,
+            data_source,
+            import_batch,
+            import_time,
+            org_id,
+            radius_meters,
+            longitude,
+            latitude,
+            creator,
+            create_time,
+            updater,
+            update_time,
+            deleted,
+            tenant_id
+        ) VALUES (
+            #{station.gridCode},
+            #{station.gridName},
+            'HUINONG',
+            #{station.stationType},
+            ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326),
+            #{station.locationName},
+            #{station.gridMarketingFlag},
+            #{station.contactPerson},
+            #{station.contactPhone},
+            #{station.managerUserId},
+            #{station.status},
+            #{station.dataSource},
+            #{station.importBatch},
+            #{station.importTime},
+            #{station.orgId},
+            #{station.radiusMeters},
+            #{station.longitude},
+            #{station.latitude},
+            #{station.creator},
+            #{station.createTime},
+            #{station.updater},
+            #{station.updateTime},
+            #{station.deleted},
+            #{station.tenantId}
+        )
+    </insert>
+
+    <!-- 更新惠农站点并设置位置坐标 -->
+    <update id="updateHuinongStationWithLocation">
+        UPDATE grid_info
+        SET grid_name = #{station.gridName},
+            station_type = #{station.stationType},
+            center_point = ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326),
+            location_name = #{station.locationName},
+            grid_marketing_flag = #{station.gridMarketingFlag},
+            contact_person = #{station.contactPerson},
+            contact_phone = #{station.contactPhone},
+            manager_user_id = #{station.managerUserId},
+            status = #{station.status},
+            org_id = #{station.orgId},
+            radius_meters = #{station.radiusMeters},
+            longitude = #{station.longitude},
+            latitude = #{station.latitude},
+            updater = #{station.updater},
+            update_time = #{station.updateTime}
+        WHERE id = #{station.id}
+          AND deleted = 0
+          AND grid_type = 'HUINONG'
+    </update>
+
+    <!-- 更新网格的边界几何（圆形缓冲区） -->
+    <update id="updateBoundaryGeometry">
+        UPDATE grid_info
+        SET boundary_geometry = ST_Transform(
+                ST_Buffer(
+                    ST_Transform(
+                        ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326),
+                        3857
+                    ),
+                    #{radiusMeters}
+                ),
+                4326
+            )
+        WHERE id = #{id}
+    </update>
+
 </mapper>

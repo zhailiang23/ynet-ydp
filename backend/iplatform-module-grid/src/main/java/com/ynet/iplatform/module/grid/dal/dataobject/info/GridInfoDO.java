@@ -38,6 +38,10 @@ public class GridInfoDO extends TenantBaseDO {
      */
     private String gridType;
     /**
+     * 站点类型（惠农站点专用）
+     */
+    private String stationType;
+    /**
      * 所属机构ID
      */
     private Long orgId;
@@ -77,6 +81,30 @@ public class GridInfoDO extends TenantBaseDO {
      * 状态
      */
     private String status;
+    /**
+     * 网格营销站点标识（惠农站点专用）: REQUIRED(必选)/OPTIONAL(可选)
+     */
+    private String gridMarketingFlag;
+    /**
+     * 联系人（惠农站点专用）
+     */
+    private String contactPerson;
+    /**
+     * 联系电话（惠农站点专用）
+     */
+    private String contactPhone;
+    /**
+     * 数据来源（惠农站点专用）: IMPORTED(导入)/MANUAL(手动)
+     */
+    private String dataSource;
+    /**
+     * 导入批次号（惠农站点专用）
+     */
+    private String importBatch;
+    /**
+     * 导入时间（惠农站点专用）
+     */
+    private LocalDateTime importTime;
     /**
      * 资源标签(JSON数组)
      */
