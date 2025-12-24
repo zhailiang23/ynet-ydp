@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import type { GridHuinongCustomerLoanApi } from '#/api/grid/huinongcustomerloan';
 
-import { computed, ref, reactive, onMounted } from 'vue';
+import { computed, ref, reactive } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { Form, Input, InputNumber, Select, DatePicker, message } from 'ant-design-vue';
 import { createHuinongCustomerLoan, getHuinongCustomerLoan, updateHuinongCustomerLoan } from '#/api/grid/huinongcustomerloan';
 import { createCustomer, updateCustomer } from '#/api/grid/customer';
-import { getSimpleHuinongStationList, getHuinongStationMapData } from '#/api/grid/huinongstation';
 import { useUserStore } from '@vben/stores';
 import { $t } from '#/locales';
 import VillageMapSelect from '../../huinongmarketing/modules/village-map-select.vue';
@@ -15,9 +14,6 @@ import dayjs from 'dayjs';
 const emit = defineEmits(['success']);
 const formData = ref<GridHuinongCustomerLoanApi.HuinongCustomerLoan>();
 const userStore = useUserStore();
-
-// 网格边界数据
-const gridBoundary = ref<string>();
 
 const getTitle = computed(() => {
   return formData.value?.id
@@ -69,29 +65,10 @@ const customerSourceOptions = [
 //   { label: '否', value: false },
 // ];
 
-// 站点列表
-const stationList = ref<any[]>([]);
-
-// 加载站点列表
-async function loadStationList() {
-  try {
-    stationList.value = await getSimpleHuinongStationList();
-  } catch (error) {
-    console.error('加载站点列表失败:', error);
-    message.error('加载站点列表失败');
-  }
-}
-
-// 组件挂载时加载站点列表
-onMounted(() => {
-  loadStationList();
-});
-
 // 表单数据
 const formState = reactive({
   id: undefined as number | undefined,
   customerId: undefined as number | undefined,
-  stationId: undefined as number | undefined,
 
   // (1-2) 员工信息（从当前用户获取）
   employeeCode: userStore.userInfo?.username || '', // 员工工号
@@ -135,30 +112,8 @@ function handleMapLocationChange(location: { lng: number; lat: number; address: 
   formState.businessAddress = location.address;
 }
 
-// 监听站点选择，加载网格边界
-async function handleStationChange(stationId: number) {
-  if (!stationId) {
-    gridBoundary.value = undefined;
-    return;
-  }
-
-  try {
-    const mapData = await getHuinongStationMapData(stationId);
-    if (mapData.gridInfo && mapData.gridInfo.boundaryGeometry) {
-      gridBoundary.value = mapData.gridInfo.boundaryGeometry;
-    } else {
-      gridBoundary.value = undefined;
-      message.warning('该站点未配置网格边界信息');
-    }
-  } catch (error) {
-    console.error('加载网格边界失败:', error);
-    gridBoundary.value = undefined;
-  }
-}
-
 // 表单验证规则
 const rules = {
-  stationId: [{ required: true, message: '站点信息请选择' }],
   customerCategory: [{ required: true, message: '客户大类请选择' }],
   subdivisionType: [{ required: true, message: '细分类型请输入' }],
   businessAddress: [{ required: true, message: '经营地址请输入' }],
@@ -194,12 +149,6 @@ async function initFormData(data?: GridHuinongCustomerLoanApi.HuinongCustomerLoa
     const result = await getHuinongCustomerLoan(data.id);
     formState.id = result.id;
     formState.customerId = result.customerId;
-    formState.stationId = result.stationId; // 从后端 LEFT JOIN 查询结果获取
-
-    // 如果有站点ID，加载网格边界并在地图上显示
-    if (result.stationId) {
-      await handleStationChange(result.stationId);
-    }
 
     formState.customerCategory = result.customerCategory;
     formState.subdivisionType = result.subdivisionType || '';
@@ -218,9 +167,9 @@ async function initFormData(data?: GridHuinongCustomerLoanApi.HuinongCustomerLoa
 
     // Mock 数据字段（金额从元转换为万元显示）
     formState.isApplied = result.isApplied ?? true;
-    formState.applyTime = result.applyTime ? dayjs(result.applyTime) : dayjs();
+    formState.applyTime = result.applyTime ? dayjs(result.applyTime) : undefined;
     formState.isApproved = result.isApproved ?? true;
-    formState.approveTime = result.approveTime ? dayjs(result.approveTime) : dayjs();
+    formState.approveTime = result.approveTime ? dayjs(result.approveTime) : undefined;
     formState.loanProductName = result.loanProductName || '';
     formState.creditLimit = result.creditLimit ? result.creditLimit / 10000 : 0;
     formState.loanAmount = result.loanAmount ? result.loanAmount / 10000 : 0;
@@ -245,10 +194,6 @@ async function initFormData(data?: GridHuinongCustomerLoanApi.HuinongCustomerLoa
 // 提交表单
 async function handleSubmit() {
   // 验证必填字段
-  if (!formState.stationId) {
-    message.error('站点信息请选择');
-    return false;
-  }
   if (!formState.customerCategory) {
     message.error('客户大类请选择');
     return false;
@@ -316,7 +261,6 @@ async function handleSubmit() {
 
     const customerData: any = {
       id: customerId,
-      stationId: formState.stationId, // 站点ID，后端会根据此ID查询gridId
       customerName: formState.customerName,
       phone: formState.phone,
       address: formState.businessAddress,
@@ -357,9 +301,9 @@ async function handleSubmit() {
 
       // Mock 数据字段（金额从万元转换为元）
       isApplied: formState.isApplied,
-      applyTime: formState.applyTime?.format('YYYY-MM-DD HH:mm:ss'),
+      applyTime: formState.applyTime ? formState.applyTime.format('YYYY-MM-DD HH:mm:ss') : undefined,
       isApproved: formState.isApproved,
-      approveTime: formState.approveTime?.format('YYYY-MM-DD HH:mm:ss'),
+      approveTime: formState.approveTime ? formState.approveTime.format('YYYY-MM-DD HH:mm:ss') : undefined,
       loanProductName: formState.loanProductName,
       creditLimit: formState.creditLimit ? formState.creditLimit * 10000 : undefined,
       loanAmount: formState.loanAmount ? formState.loanAmount * 10000 : undefined,
@@ -391,7 +335,6 @@ const [Modal, modalApi] = useVbenModal({
       formData.value = undefined;
       formState.id = undefined;
       formState.customerId = undefined;
-      formState.stationId = undefined;
       formState.customerCategory = undefined;
       formState.subdivisionType = '';
       formState.businessAddress = '';
@@ -427,36 +370,12 @@ const [Modal, modalApi] = useVbenModal({
     <div class="flex h-[700px] gap-4">
       <!-- 左侧：地图（2/3宽度） -->
       <div class="flex-[2]">
-        <VillageMapSelect v-model="mapLocation" :grid-boundary="gridBoundary" @update:model-value="handleMapLocationChange" />
+        <VillageMapSelect v-model="mapLocation" @update:model-value="handleMapLocationChange" />
       </div>
 
       <!-- 右侧：表单（1/3宽度） -->
       <div class="flex-[1] overflow-y-auto pr-2">
         <Form layout="vertical" :model="formState">
-          <!-- 站点信息 -->
-          <Form.Item label="站点信息" name="stationId" :rules="rules.stationId">
-            <Select
-              v-model:value="formState.stationId"
-              placeholder="请选择惠农站点"
-              show-search
-              :filter-option="(input: string, option: any) =>
-                option.stationName?.toLowerCase().includes(input.toLowerCase()) ||
-                option.stationCode?.toLowerCase().includes(input.toLowerCase())
-              "
-              @change="handleStationChange"
-            >
-              <Select.Option
-                v-for="station in stationList"
-                :key="station.id"
-                :value="station.id"
-                :stationName="station.stationName"
-                :stationCode="station.stationCode"
-              >
-                {{ station.stationName }} ({{ station.stationCode }})
-              </Select.Option>
-            </Select>
-          </Form.Item>
-
           <!-- (1) 员工工号 -->
           <Form.Item label="员工工号">
             <Input v-model:value="formState.employeeCode" disabled />

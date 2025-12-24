@@ -192,10 +192,14 @@ export function useGridColumns(
       minWidth: 120,
     },
     {
-      field: 'createTime',
-      title: '创建时间',
-      minWidth: 160,
-      formatter: 'formatDateTime',
+      field: 'orgName',
+      title: '所属机构',
+      minWidth: 150,
+    },
+    {
+      field: 'address',
+      title: '站点地址',
+      minWidth: 200,
     },
     {
       field: 'gridMarketingFlag',
@@ -214,28 +218,20 @@ export function useGridColumns(
       },
     },
     {
-      field: 'manageBranchName',
-      title: '管理行名称',
-      minWidth: 150,
-      // TODO: 需要后端关联查询机构信息
-    },
-    {
-      field: 'subBranchName',
-      title: '二级支行名称',
-      minWidth: 150,
-      // TODO: 需要后端关联查询机构信息
-    },
-    {
       field: 'specialistEmployeeNo',
       title: '惠农人员工号',
       minWidth: 120,
-      // TODO: 需要后端关联 system_users 表查询
     },
     {
       field: 'specialistName',
       title: '惠农人员姓名',
       minWidth: 120,
-      // TODO: 需要后端关联 system_users 表查询
+    },
+    {
+      field: 'createTime',
+      title: '创建时间',
+      minWidth: 160,
+      formatter: 'formatDateTime',
     },
     {
       title: '操作',

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { message } from 'ant-design-vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 
@@ -16,6 +16,7 @@ let map: any = null;
 let marker: any = null;
 let geocoder: any = null;
 let gridPolygon: any = null; // 网格边界多边形
+let mapInitialized = false; // 标记地图是否已初始化
 
 const selectedLocation = ref(props.modelValue);
 
@@ -38,9 +39,17 @@ async function initMap() {
     geocoder = new AMap.Geocoder();
 
     // 创建地图实例
+    // 如果有初始坐标，以该坐标为中心；否则使用郑州默认坐标
+    const initialCenter = props.modelValue
+      ? [props.modelValue.lng, props.modelValue.lat]
+      : [113.6254, 34.7466];
+
+    // 如果有初始坐标，使用更大的缩放级别以更清晰显示位置
+    const initialZoom = props.modelValue ? 15 : 13;
+
     map = new AMap.Map('village-map-container', {
-      zoom: 13,
-      center: props.modelValue ? [props.modelValue.lng, props.modelValue.lat] : [113.6254, 34.7466],
+      zoom: initialZoom,
+      center: initialCenter,
       viewMode: '2D',
     });
 
@@ -56,6 +65,9 @@ async function initMap() {
       // 逆地理编码获取地址信息
       getAddressFromLocation(lng, lat);
     });
+
+    // 标记地图已初始化
+    mapInitialized = true;
   } catch (error) {
     console.error('地图初始化失败:', error);
     message.error('地图加载失败');
@@ -165,8 +177,9 @@ function drawGridBoundary(boundaryGeoJSON: string | undefined) {
 
       map.add(gridPolygon);
 
-      // 将地图视野调整到多边形区域
-      map.setFitView([gridPolygon]);
+      // 注释掉 setFitView，避免覆盖用户设置的中心点和缩放级别
+      // 网格边界只作为参考，不应该改变视野
+      // map.setFitView([gridPolygon]);
     }
   } catch (error) {
     console.error('绘制网格边界失败:', error);
@@ -175,11 +188,12 @@ function drawGridBoundary(boundaryGeoJSON: string | undefined) {
 
 // 监听外部值变化
 watch(() => props.modelValue, (newValue) => {
-  if (newValue && map) {
+  if (newValue && map && mapInitialized) {
     addMarker(newValue.lng, newValue.lat);
     map.setCenter([newValue.lng, newValue.lat]);
+    map.setZoom(15); // 设置更大的缩放级别以便看清位置
   }
-});
+}, { immediate: true }); // 添加 immediate 选项，在组件挂载时立即执行
 
 // 监听网格边界变化
 watch(() => props.gridBoundary, (newBoundary) => {
@@ -187,17 +201,17 @@ watch(() => props.gridBoundary, (newBoundary) => {
 });
 
 // 组件挂载时初始化地图
+onMounted(() => {
+  initMap();
+});
+
+// 组件卸载时销毁地图
 onBeforeUnmount(() => {
   if (map) {
     map.destroy();
     map = null;
   }
 });
-
-// 在组件挂载后初始化地图
-setTimeout(() => {
-  initMap();
-}, 100);
 </script>
 
 <template>

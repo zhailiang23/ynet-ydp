@@ -261,6 +261,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
         <TableAction
           :actions="[
             {
+              label: $t('ui.actionTitle.create', ['惠农站点']),
+              type: 'primary',
+              icon: ACTION_ICON.ADD,
+              auth: ['grid:huinong-station:create'],
+              onClick: handleCreate,
+            },
+            {
               label: '下载导入模板',
               type: 'default',
               icon: ACTION_ICON.DOWNLOAD,
@@ -290,11 +297,22 @@ const [Grid, gridApi] = useVbenVxeGrid({
         <TableAction
           :actions="[
             {
-              label: '地图显示',
+              label: $t('ui.actionTitle.edit'),
               type: 'link',
-              icon: ACTION_ICON.VIEW,
-              auth: ['grid:huinong-station:query'],
-              onClick: handleShowMap.bind(null, row),
+              icon: ACTION_ICON.EDIT,
+              auth: ['grid:huinong-station:update'],
+              onClick: handleEdit.bind(null, row),
+            },
+            {
+              label: $t('ui.actionTitle.delete'),
+              icon: ACTION_ICON.DELETE,
+              color: 'error',
+              danger: true,
+              auth: ['grid:huinong-station:delete'],
+              popConfirm: {
+                title: `确定要删除站点【${row.stationName}】吗？`,
+                confirm: handleDelete.bind(null, row),
+              },
             },
           ]"
         />
