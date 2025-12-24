@@ -9,6 +9,9 @@ import com.ynet.iplatform.module.grid.dal.dataobject.customer.GridCustomerDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.ynet.iplatform.module.grid.controller.admin.customer.vo.*;
+import com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.*;
+import com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongCustomerMarkerVO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * 网格客户档案 Mapper
@@ -58,5 +61,47 @@ public interface GridCustomerMapper extends BaseMapperX<GridCustomerDO> {
     int updateWithLocation(@Param("customer") GridCustomerDO customer,
                           @Param("longitude") Double longitude,
                           @Param("latitude") Double latitude);
+
+    // ==================== 惠农贷款客户查询方法（customerType='HUINONG_LOAN'） ====================
+
+    /**
+     * 根据ID查询惠农贷款客户（带关联信息）
+     * @param id 客户ID
+     * @return 惠农贷款客户信息
+     */
+    GridHuinongCustomerLoanRespVO selectHuinongLoanByIdWithRelations(@Param("id") Long id);
+
+    /**
+     * 分页查询惠农贷款客户（带关联信息）
+     * @param page 分页对象
+     * @param reqVO 查询条件
+     * @return 分页结果
+     */
+    IPage<GridHuinongCustomerLoanRespVO> selectHuinongLoanPageWithRelations(
+            IPage<GridHuinongCustomerLoanRespVO> page,
+            @Param("reqVO") GridHuinongCustomerLoanPageReqVO reqVO
+    );
+
+    /**
+     * 查询站点下的客户地图标记列表
+     * @param stationId 站点ID
+     * @return 客户标记列表
+     */
+    List<GridHuinongCustomerMarkerVO> selectHuinongLoanMarkersByStationId(@Param("stationId") Long stationId);
+
+    /**
+     * 查询惠农贷款目标客户热力图数据（按网格分组）
+     * @param reqVO 查询条件
+     * @return 热力图数据
+     */
+    List<GridHuinongCustomerLoanHeatmapDataVO> selectHuinongLoanHeatmapData(
+            @Param("reqVO") GridHuinongCustomerLoanHeatmapReqVO reqVO
+    );
+
+    /**
+     * 查询惠农贷款目标客户标记列表
+     * @return 客户标记列表
+     */
+    List<GridHuinongCustomerLoanCustomerMarkerVO> selectHuinongLoanCustomerMarkers();
 
 }

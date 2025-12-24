@@ -91,4 +91,148 @@
           AND deleted = 0
     </update>
 
+    <!-- ==================== 惠农贷款客户查询（customerType='HUINONG_LOAN'） ==================== -->
+
+    <!-- 根据ID查询惠农贷款客户（带关联信息） -->
+    <select id="selectHuinongLoanByIdWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanRespVO">
+        SELECT
+            c.id,
+            c.id AS customerId,
+            gi.id AS stationId,
+            c.customer_name AS customerName,
+            c.phone,
+            c.customer_category AS customerCategory,
+            c.subdivision_type AS subdivisionType,
+            c.business_address AS businessAddress,
+            c.gender,
+            c.customer_situation AS customerSituation,
+            c.business_years AS businessYears,
+            c.current_financing AS currentFinancing,
+            c.credit_demand AS creditDemand,
+            c.demand_month AS demandMonth,
+            c.demand_period AS demandPeriod,
+            c.business_progress AS businessProgress,
+            c.customer_source AS customerSource,
+            c.is_applied AS isApplied,
+            c.apply_time AS applyTime,
+            c.is_approved AS isApproved,
+            c.approve_time AS approveTime,
+            c.loan_product_name AS loanProductName,
+            c.loan_amount AS loanAmount,
+            c.credit_limit AS creditLimit,
+            c.loan_balance AS loanBalance,
+            c.overdue_status AS overdueStatus,
+            c.creator AS creatorId,
+            c.create_time AS createTime,
+            c.updater AS updaterId,
+            -- 从 grid_customer 的 location 字段提取经纬度（POINT 类型）
+            -- 注意：POINT存储格式为 POINT(latitude, longitude)
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_customer c
+        LEFT JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+        WHERE c.id = #{id} AND c.customer_type = 'HUINONG_LOAN' AND c.deleted = 0
+    </select>
+
+    <!-- 分页查询惠农贷款客户（带关联信息） -->
+    <select id="selectHuinongLoanPageWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanRespVO">
+        SELECT
+            c.id,
+            c.id AS customerId,
+            c.customer_name AS customerName,
+            c.phone,
+            c.customer_category AS customerCategory,
+            c.subdivision_type AS subdivisionType,
+            c.business_years AS businessYears,
+            c.current_financing AS currentFinancing,
+            c.create_time AS createTime
+        FROM grid_customer c
+        WHERE c.customer_type = 'HUINONG_LOAN' AND c.deleted = 0
+            <if test="reqVO.customerName != null and reqVO.customerName != ''">
+                AND c.customer_name LIKE CONCAT('%', #{reqVO.customerName}, '%')
+            </if>
+            <if test="reqVO.phone != null and reqVO.phone != ''">
+                AND c.phone LIKE CONCAT('%', #{reqVO.phone}, '%')
+            </if>
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- 查询站点下的客户地图标记列表 -->
+    <select id="selectHuinongLoanMarkersByStationId" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongCustomerMarkerVO">
+        SELECT
+            c.id,
+            c.id AS customerId,
+            c.customer_name AS customerName,
+            c.phone,
+            c.customer_category AS customerCategory,
+            c.subdivision_type AS subdivisionType,
+            c.business_address AS businessAddress,
+            c.loan_amount AS loanAmount,
+            c.overdue_status AS overdueStatus,
+            -- 从 grid_customer 的 location 字段提取经纬度（POINT 类型）
+            -- 注意：POINT存储格式为 POINT(latitude, longitude)
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_customer c
+        INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+        WHERE gi.id = #{stationId}
+          AND c.customer_type = 'HUINONG_LOAN'
+          AND c.deleted = 0
+          AND c.location IS NOT NULL
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- 查询惠农贷款目标客户热力图数据（按网格分组，关联站点位置） -->
+    <select id="selectHuinongLoanHeatmapData" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanHeatmapDataVO">
+        SELECT
+            c.grid_id AS gridId,
+            gi.grid_name AS stationName,
+            ST_X(gi.center_point) AS latitude,
+            ST_Y(gi.center_point) AS longitude,
+            <choose>
+                <when test="reqVO.metricType == 'CUSTOMER_COUNT'">
+                    COUNT(*) AS value
+                </when>
+                <when test="reqVO.metricType == 'APPLIED_COUNT'">
+                    SUM(CASE WHEN c.is_applied = 1 THEN 1 ELSE 0 END) AS value
+                </when>
+                <when test="reqVO.metricType == 'APPROVED_COUNT'">
+                    SUM(CASE WHEN c.is_approved = 1 THEN 1 ELSE 0 END) AS value
+                </when>
+                <when test="reqVO.metricType == 'LOAN_BALANCE'">
+                    SUM(IFNULL(c.loan_balance, 0)) AS value
+                </when>
+                <otherwise>
+                    COUNT(*) AS value
+                </otherwise>
+            </choose>
+        FROM grid_customer c
+        INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+        WHERE c.customer_type = 'HUINONG_LOAN'
+          AND c.deleted = 0
+          AND gi.center_point IS NOT NULL
+        GROUP BY c.grid_id, gi.grid_name, gi.center_point
+        ORDER BY value DESC
+    </select>
+
+    <!-- 查询惠农贷款目标客户标记列表 -->
+    <select id="selectHuinongLoanCustomerMarkers" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanCustomerMarkerVO">
+        SELECT
+            c.id AS customerId,
+            c.customer_name AS customerName,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude,
+            gi.grid_marketing_flag AS stationType,
+            c.is_applied AS isApplied,
+            c.is_approved AS isApproved,
+            c.loan_balance AS loanBalance,
+            c.customer_category AS customerCategory
+        FROM grid_customer c
+        INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+        WHERE c.customer_type = 'HUINONG_LOAN'
+          AND c.deleted = 0
+          AND c.location IS NOT NULL
+        ORDER BY c.create_time DESC
+    </select>
+
 </mapper>

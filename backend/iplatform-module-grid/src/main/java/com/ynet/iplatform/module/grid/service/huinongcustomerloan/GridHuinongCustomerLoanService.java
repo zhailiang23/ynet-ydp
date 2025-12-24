@@ -3,9 +3,7 @@ package com.ynet.iplatform.module.grid.service.huinongcustomerloan;
 import java.util.*;
 import jakarta.validation.*;
 import com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.*;
-import com.ynet.iplatform.module.grid.dal.dataobject.huinongcustomerloan.GridHuinongCustomerLoanDO;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
-import com.ynet.iplatform.framework.common.pojo.PageParam;
 
 /**
  * 惠农贷款客户扩展 Service 接口

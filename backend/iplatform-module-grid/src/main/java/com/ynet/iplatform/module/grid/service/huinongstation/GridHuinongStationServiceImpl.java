@@ -17,7 +17,7 @@ import com.ynet.iplatform.framework.security.core.util.SecurityFrameworkUtils;
 
 import com.ynet.iplatform.module.grid.dal.mysql.info.GridInfoMapper;
 import com.ynet.iplatform.module.grid.dal.mysql.huinongmarketing.GridHuinongMarketingMapper;
-import com.ynet.iplatform.module.grid.dal.mysql.huinongcustomerloan.GridHuinongCustomerLoanMapper;
+import com.ynet.iplatform.module.grid.dal.mysql.customer.GridCustomerMapper;
 import com.ynet.iplatform.framework.tenant.core.context.TenantContextHolder;
 
 import static com.ynet.iplatform.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -40,7 +40,7 @@ public class GridHuinongStationServiceImpl implements GridHuinongStationService 
     private GridHuinongMarketingMapper huinongMarketingMapper;
 
     @Resource
-    private GridHuinongCustomerLoanMapper huinongCustomerLoanMapper;
+    private GridCustomerMapper customerMapper;
 
     @Override
     public Long createHuinongStation(GridHuinongStationSaveReqVO createReqVO) {
@@ -331,7 +331,7 @@ public class GridHuinongStationServiceImpl implements GridHuinongStationService 
 
     @Override
     public List<GridHuinongCustomerMarkerVO> getCustomerMarkers(Long stationId) {
-        return huinongCustomerLoanMapper.selectMarkersByStationId(stationId);
+        return customerMapper.selectHuinongLoanMarkersByStationId(stationId);
     }
 
     /**

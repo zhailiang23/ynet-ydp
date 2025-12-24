@@ -26,7 +26,6 @@ import com.ynet.iplatform.framework.apilog.core.annotation.ApiAccessLog;
 import static com.ynet.iplatform.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.*;
-import com.ynet.iplatform.module.grid.dal.dataobject.huinongcustomerloan.GridHuinongCustomerLoanDO;
 import com.ynet.iplatform.module.grid.service.huinongcustomerloan.GridHuinongCustomerLoanService;
 
 @Tag(name = "管理后台 - 惠农贷款客户扩展")
