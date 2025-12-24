@@ -156,6 +156,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
           ]"
         />
       </template>
+      <template #isFormalCustomer="{ row }">
+        <a-tag :color="row.isFormalCustomer ? 'green' : 'default'">
+          {{ row.isFormalCustomer ? '是' : '否' }}
+        </a-tag>
+      </template>
       <template #actions="{ row }">
         <TableAction
           :actions="[

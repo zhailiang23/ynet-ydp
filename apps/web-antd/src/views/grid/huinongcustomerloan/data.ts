@@ -207,6 +207,16 @@ export function useFormSchema(): VbenFormSchema[] {
       },
     },
     {
+      fieldName: 'isFormalCustomer',
+      label: '是否正式客户',
+      component: 'Switch',
+      componentProps: {
+        checkedChildren: '是',
+        unCheckedChildren: '否',
+      },
+      defaultValue: false,
+    },
+    {
       fieldName: 'creatorId',
       label: '创建人ID',
       component: 'Input',
@@ -282,6 +292,12 @@ export function useGridColumns(): VxeTableGridOptions<GridHuinongCustomerLoanApi
       field: 'currentFinancing',
       title: '当前融资情况',
       minWidth: 150,
+    },
+    {
+      field: 'isFormalCustomer',
+      title: '是否正式客户',
+      minWidth: 120,
+      slots: { default: 'isFormalCustomer' },
     },
     {
       title: '操作',

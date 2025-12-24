@@ -3,7 +3,7 @@ import type { GridHuinongCustomerLoanApi } from '#/api/grid/huinongcustomerloan'
 
 import { computed, ref, reactive } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
-import { Form, Input, InputNumber, Select, DatePicker, message } from 'ant-design-vue';
+import { Form, Input, InputNumber, Select, DatePicker, Switch, message } from 'ant-design-vue';
 import { createHuinongCustomerLoan, getHuinongCustomerLoan, updateHuinongCustomerLoan } from '#/api/grid/huinongcustomerloan';
 import { createCustomer, updateCustomer } from '#/api/grid/customer';
 import { useUserStore } from '@vben/stores';
@@ -100,6 +100,7 @@ const formState = reactive({
   loanAmount: 30, // 贷款金额（万元）
   loanBalance: 25, // 贷款余额（万元）
   overdueStatus: '正常', // 逾期状态
+  isFormalCustomer: false, // 是否正式客户
   createTime: undefined as any, // 录入日期（提交时自动获取）
 });
 
@@ -175,6 +176,7 @@ async function initFormData(data?: GridHuinongCustomerLoanApi.HuinongCustomerLoa
     formState.loanAmount = result.loanAmount ? result.loanAmount / 10000 : 0;
     formState.loanBalance = result.loanBalance ? result.loanBalance / 10000 : 0;
     formState.overdueStatus = result.overdueStatus || '';
+    formState.isFormalCustomer = result.isFormalCustomer ?? false;
 
     // 设置地图位置（如果有经纬度数据）
     if (result.longitude && result.latitude) {
@@ -309,6 +311,7 @@ async function handleSubmit() {
       loanAmount: formState.loanAmount ? formState.loanAmount * 10000 : undefined,
       loanBalance: formState.loanBalance ? formState.loanBalance * 10000 : undefined,
       overdueStatus: formState.overdueStatus,
+      isFormalCustomer: formState.isFormalCustomer,
     };
 
     await (formState.id ? updateHuinongCustomerLoan(submitData) : createHuinongCustomerLoan(submitData));
@@ -349,6 +352,7 @@ const [Modal, modalApi] = useVbenModal({
       formState.demandPeriod = undefined;
       formState.businessProgress = '';
       formState.customerSource = undefined;
+      formState.isFormalCustomer = false;
       mapLocation.value = undefined;
       return;
     }
@@ -522,6 +526,11 @@ const [Modal, modalApi] = useVbenModal({
             <!-- (23) 逾期状态 -->
             <Form.Item label="逾期状态">
               <Input v-model:value="formState.overdueStatus" disabled />
+            </Form.Item>
+
+            <!-- (24) 是否正式客户 -->
+            <Form.Item label="是否正式客户">
+              <Switch v-model:checked="formState.isFormalCustomer" checked-children="是" un-checked-children="否" />
             </Form.Item>
           </div>
         </Form>
