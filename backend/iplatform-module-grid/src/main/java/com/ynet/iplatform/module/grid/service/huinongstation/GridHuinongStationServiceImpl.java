@@ -39,8 +39,8 @@ public class GridHuinongStationServiceImpl implements GridHuinongStationService 
     @Resource
     private GridHuinongMarketingMapper huinongMarketingMapper;
 
-    @Resource
-    private GridCustomerMapper customerMapper;
+    @Resource(name = "gridCustomerMapper")
+    private GridCustomerMapper gridCustomerMapper;
 
     @Override
     public Long createHuinongStation(GridHuinongStationSaveReqVO createReqVO) {
@@ -331,7 +331,7 @@ public class GridHuinongStationServiceImpl implements GridHuinongStationService 
 
     @Override
     public List<GridHuinongCustomerMarkerVO> getCustomerMarkers(Long stationId) {
-        return customerMapper.selectHuinongLoanMarkersByStationId(stationId);
+        return gridCustomerMapper.selectHuinongLoanMarkersByStationId(stationId);
     }
 
     /**

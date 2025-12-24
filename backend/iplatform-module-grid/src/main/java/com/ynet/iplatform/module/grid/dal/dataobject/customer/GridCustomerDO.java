@@ -77,6 +77,10 @@ public class GridCustomerDO extends TenantBaseDO {
      * 状态
      */
     private String status;
+    /**
+     * 是否正式客户（通用字段，所有客户类型适用）
+     */
+    private Boolean isFormalCustomer;
 
     // ==================== 惠农贷款客户专属字段（仅 customerType='HUINONG_LOAN' 时使用） ====================
 

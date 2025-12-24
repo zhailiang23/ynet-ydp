@@ -29,8 +29,8 @@ import static com.ynet.iplatform.module.grid.enums.ErrorCodeConstants.*;
 @Validated
 public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLoanService {
 
-    @Resource
-    private GridCustomerMapper customerMapper;
+    @Resource(name = "gridCustomerMapper")
+    private GridCustomerMapper gridCustomerMapper;
 
     @Override
     public Long createHuinongCustomerLoan(GridHuinongCustomerLoanSaveReqVO createReqVO) {
@@ -39,7 +39,7 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
         // 我们需要更新这条 grid_customer 记录，设置 customerType='HUINONG_LOAN' 并填充贷款字段
 
         // 1. 查询现有的 grid_customer 记录
-        GridCustomerDO customer = customerMapper.selectById(createReqVO.getCustomerId());
+        GridCustomerDO customer = gridCustomerMapper.selectById(createReqVO.getCustomerId());
         if (customer == null) {
             throw exception(HUINONG_CUSTOMER_LOAN_NOT_EXISTS);
         }
@@ -50,7 +50,7 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
         customer.setCustomerType("HUINONG_LOAN"); // 设置客户类型为惠农贷款
 
         // 3. 更新数据库
-        customerMapper.updateById(customer);
+        gridCustomerMapper.updateById(customer);
 
         // 4. 返回客户ID（即 customerId）
         return customer.getId();
@@ -67,7 +67,7 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
         validateHuinongCustomerLoanExists(updateReqVO.getId());
 
         // 查询现有记录
-        GridCustomerDO customer = customerMapper.selectById(updateReqVO.getId());
+        GridCustomerDO customer = gridCustomerMapper.selectById(updateReqVO.getId());
         if (customer == null) {
             throw exception(HUINONG_CUSTOMER_LOAN_NOT_EXISTS);
         }
@@ -77,7 +77,7 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
         customer.setCustomerType("HUINONG_LOAN"); // 确保客户类型不变
 
         // 更新数据库
-        customerMapper.updateById(customer);
+        gridCustomerMapper.updateById(customer);
     }
 
     @Override
@@ -85,17 +85,17 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
         // 校验存在
         validateHuinongCustomerLoanExists(id);
         // 删除（逻辑删除）
-        customerMapper.deleteById(id);
+        gridCustomerMapper.deleteById(id);
     }
 
     @Override
     public void deleteHuinongCustomerLoanListByIds(List<Long> ids) {
         // 批量删除（逻辑删除）
-        customerMapper.deleteByIds(ids);
+        gridCustomerMapper.deleteByIds(ids);
     }
 
     private void validateHuinongCustomerLoanExists(Long id) {
-        GridCustomerDO customer = customerMapper.selectById(id);
+        GridCustomerDO customer = gridCustomerMapper.selectById(id);
         if (customer == null || !"HUINONG_LOAN".equals(customer.getCustomerType())) {
             throw exception(HUINONG_CUSTOMER_LOAN_NOT_EXISTS);
         }
@@ -104,7 +104,7 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
     @Override
     public GridHuinongCustomerLoanRespVO getHuinongCustomerLoan(Long id) {
         // 使用关联查询，直接返回 RespVO（包含客户姓名、手机号和站点ID）
-        return customerMapper.selectHuinongLoanByIdWithRelations(id);
+        return gridCustomerMapper.selectHuinongLoanByIdWithRelations(id);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
         IPage<GridHuinongCustomerLoanRespVO> mpPage = MyBatisUtils.buildPage(pageReqVO);
 
         // 2. 执行分页查询（从 grid_customer 表查询，customerType='HUINONG_LOAN'）
-        mpPage = customerMapper.selectHuinongLoanPageWithRelations(mpPage, pageReqVO);
+        mpPage = gridCustomerMapper.selectHuinongLoanPageWithRelations(mpPage, pageReqVO);
 
         // 3. 转换为框架的 PageResult
         return new PageResult<>(mpPage.getRecords(), mpPage.getTotal());
@@ -122,13 +122,13 @@ public class GridHuinongCustomerLoanServiceImpl implements GridHuinongCustomerLo
     @Override
     public List<GridHuinongCustomerLoanHeatmapDataVO> getHeatmapData(GridHuinongCustomerLoanHeatmapReqVO reqVO) {
         // 直接查询热力图数据（从 grid_customer 表按网格分组，根据 metricType 计算热力值）
-        return customerMapper.selectHuinongLoanHeatmapData(reqVO);
+        return gridCustomerMapper.selectHuinongLoanHeatmapData(reqVO);
     }
 
     @Override
     public List<GridHuinongCustomerLoanCustomerMarkerVO> getCustomerMarkers() {
         // 查询所有客户标记数据（从 grid_customer 表）
-        return customerMapper.selectHuinongLoanCustomerMarkers();
+        return gridCustomerMapper.selectHuinongLoanCustomerMarkers();
     }
 
 }

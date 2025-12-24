@@ -122,6 +122,7 @@
             c.credit_limit AS creditLimit,
             c.loan_balance AS loanBalance,
             c.overdue_status AS overdueStatus,
+            c.is_formal_customer AS isFormalCustomer,
             c.creator AS creatorId,
             c.create_time AS createTime,
             c.updater AS updaterId,
@@ -145,6 +146,7 @@
             c.subdivision_type AS subdivisionType,
             c.business_years AS businessYears,
             c.current_financing AS currentFinancing,
+            c.is_formal_customer AS isFormalCustomer,
             c.create_time AS createTime
         FROM grid_customer c
         WHERE c.customer_type = 'HUINONG_LOAN' AND c.deleted = 0

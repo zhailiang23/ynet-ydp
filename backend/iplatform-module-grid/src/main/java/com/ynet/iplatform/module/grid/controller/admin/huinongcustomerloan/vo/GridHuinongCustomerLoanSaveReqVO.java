@@ -94,6 +94,9 @@ public class GridHuinongCustomerLoanSaveReqVO {
     @Schema(description = "逾期状态", example = "2")
     private String overdueStatus;
 
+    @Schema(description = "是否正式客户")
+    private Boolean isFormalCustomer;
+
     @Schema(description = "创建人ID", example = "15328")
     private Long creatorId;
 

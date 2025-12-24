@@ -116,6 +116,10 @@ public class GridHuinongCustomerLoanRespVO {
     @ExcelProperty("逾期状态")
     private String overdueStatus;
 
+    @Schema(description = "是否正式客户")
+    @ExcelProperty("是否正式客户")
+    private Boolean isFormalCustomer;
+
     @Schema(description = "创建人ID", example = "15328")
     @ExcelProperty("创建人ID")
     private Long creatorId;
