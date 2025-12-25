@@ -9,33 +9,15 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
-    <!-- 查询社区客户扩展分页（带关联信息） -->
+    <!-- 查询社区客户分页（带关联信息）
+         重构说明：
+         1. 不再查询 grid_community_customer 表
+         2. 直接查询 grid_customer 表（customer_type='COMMUNITY'）
+         3. familyMembers, housingType, monthlyIncome 字段已合并到 grid_customer 表
+    -->
     <select id="selectPageWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.communitycustomer.vo.GridCommunityCustomerRespVO">
         SELECT
-            cc.id,
-            cc.customer_id AS customerId,
-            c.customer_name AS customerName,
-            c.phone,
-            c.id_card AS idNumber,
-            u.nickname AS managerName,
-            d.name AS orgName,
-            cc.create_time AS createTime
-        FROM grid_community_customer cc
-        LEFT JOIN grid_customer c ON cc.customer_id = c.id AND c.deleted = 0
-        LEFT JOIN system_users u ON c.manager_id = u.id AND u.deleted = 0
-        LEFT JOIN system_dept d ON u.dept_id = d.id AND d.deleted = 0
-        WHERE cc.deleted = 0
-            <if test="customerName != null and customerName != ''">
-                AND c.customer_name LIKE CONCAT('%', #{customerName}, '%')
-            </if>
-        ORDER BY cc.create_time DESC
-    </select>
-
-    <!-- 查询社区客户扩展详情（带关联信息） -->
-    <select id="selectByIdWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.communitycustomer.vo.GridCommunityCustomerRespVO">
-        SELECT
-            cc.id,
-            cc.customer_id AS customerId,
+            c.id,
             c.customer_name AS customerName,
             c.phone,
             c.id_card AS idNumber,
@@ -43,17 +25,48 @@
             c.manager_id AS managerId,
             u.nickname AS managerName,
             d.name AS orgName,
-            cc.family_members AS familyMembers,
-            cc.housing_type AS housingType,
-            cc.monthly_income AS monthlyIncome,
-            cc.create_time AS createTime,
+            c.family_members AS familyMembers,
+            c.housing_type AS housingType,
+            c.monthly_income AS monthlyIncome,
+            c.create_time AS createTime,
             ST_X(c.location) AS latitude,
             ST_Y(c.location) AS longitude
-        FROM grid_community_customer cc
-        LEFT JOIN grid_customer c ON cc.customer_id = c.id AND c.deleted = 0
+        FROM grid_customer c
         LEFT JOIN system_users u ON c.manager_id = u.id AND u.deleted = 0
         LEFT JOIN system_dept d ON u.dept_id = d.id AND d.deleted = 0
-        WHERE cc.id = #{id} AND cc.deleted = 0
+        WHERE c.deleted = 0 AND c.customer_type = 'COMMUNITY'
+            <if test="customerName != null and customerName != ''">
+                AND c.customer_name LIKE CONCAT('%', #{customerName}, '%')
+            </if>
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- 查询社区客户详情（带关联信息）
+         重构说明：
+         1. 不再查询 grid_community_customer 表
+         2. 直接查询 grid_customer 表（customer_type='COMMUNITY'）
+         3. familyMembers, housingType, monthlyIncome 字段已在 grid_customer 表中
+    -->
+    <select id="selectByIdWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.communitycustomer.vo.GridCommunityCustomerRespVO">
+        SELECT
+            c.id,
+            c.customer_name AS customerName,
+            c.phone,
+            c.id_card AS idNumber,
+            c.address,
+            c.manager_id AS managerId,
+            u.nickname AS managerName,
+            d.name AS orgName,
+            c.family_members AS familyMembers,
+            c.housing_type AS housingType,
+            c.monthly_income AS monthlyIncome,
+            c.create_time AS createTime,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_customer c
+        LEFT JOIN system_users u ON c.manager_id = u.id AND u.deleted = 0
+        LEFT JOIN system_dept d ON u.dept_id = d.id AND d.deleted = 0
+        WHERE c.id = #{id} AND c.deleted = 0 AND c.customer_type = 'COMMUNITY'
     </select>
 
 </mapper>

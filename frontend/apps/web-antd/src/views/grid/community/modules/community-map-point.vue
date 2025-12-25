@@ -6,6 +6,7 @@ import AMapLoader from '@amap/amap-jsapi-loader';
 interface Coordinates {
   longitude: number | null;
   latitude: number | null;
+  address: string | null;
 }
 
 const props = defineProps<{
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 
 let map: any = null;
 let currentMarker: any = null;
+let geocoder: any = null;
 
 // 初始化高德地图
 async function initMap() {
@@ -41,6 +43,9 @@ async function initMap() {
       viewMode: '2D',
     });
 
+    // 初始化地理编码器
+    geocoder = new AMap.Geocoder();
+
     // 监听地图点击事件
     map.on('click', (e: any) => {
       const lng = e.lnglat.getLng();
@@ -58,13 +63,24 @@ async function initMap() {
         title: '社区位置',
       });
 
-      // 更新坐标值
-      emit('update:modelValue', {
-        longitude: Number(lng.toFixed(6)),
-        latitude: Number(lat.toFixed(6)),
-      });
+      // 反向地理编码：获取地址信息
+      geocoder.getAddress([lng, lat], (status: string, result: any) => {
+        let address = '';
 
-      message.success('已选择社区位置');
+        if (status === 'complete' && result.info === 'OK') {
+          address = result.regeocode.formattedAddress;
+          message.success(`已选择位置：${address}`);
+        } else {
+          message.success('已选择社区位置');
+        }
+
+        // 更新坐标和地址
+        emit('update:modelValue', {
+          longitude: Number(lng.toFixed(6)),
+          latitude: Number(lat.toFixed(6)),
+          address: address || null,
+        });
+      });
     });
 
     // 如果有初始值，添加标记
@@ -114,7 +130,7 @@ function clearMarker() {
     currentMarker = null;
   }
 
-  emit('update:modelValue', { longitude: null, latitude: null });
+  emit('update:modelValue', { longitude: null, latitude: null, address: null });
   message.success('已清除社区位置');
 }
 

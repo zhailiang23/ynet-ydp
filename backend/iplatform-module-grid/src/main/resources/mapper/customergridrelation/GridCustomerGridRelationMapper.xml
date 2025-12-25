@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.grid.dal.mysql.customergridrelation.GridCustomerGridRelationMapper">
+
+    <!--
+        物理删除客户的 COMMUNITY 类型网格关系
+        用于更新客户坐标时清除旧关系，避免唯一索引冲突
+
+        说明：
+        1. 使用物理 DELETE 而不是逻辑删除（设置 deleted=1）
+        2. 原因：唯一索引 uk_customer_grid(customer_id, grid_id, deleted) 不允许多条相同的已删除记录
+        3. 网格关系是业务数据，可以安全地物理删除
+    -->
+    <delete id="physicalDeleteCommunityRelationsByCustomerId">
+        DELETE FROM grid_customer_grid_relation
+        WHERE customer_id = #{customerId}
+          AND grid_type = 'COMMUNITY'
+    </delete>
+
+    <!--
+        物理删除客户的 ZERODAI 类型网格关系
+        用于更新客户坐标时清除旧关系，避免唯一索引冲突
+
+        说明：
+        1. 使用物理 DELETE 而不是逻辑删除（设置 deleted=1）
+        2. 原因：唯一索引 uk_customer_grid(customer_id, grid_id, deleted) 不允许多条相同的已删除记录
+        3. 网格关系是业务数据，可以安全地物理删除
+    -->
+    <delete id="physicalDeleteZerodaiRelationsByCustomerId">
+        DELETE FROM grid_customer_grid_relation
+        WHERE customer_id = #{customerId}
+          AND grid_type = 'ZERODAI'
+    </delete>
+
+    <!--
+        物理删除客户的 HUINONG 类型网格关系
+        用于更新客户坐标时清除旧关系，避免唯一索引冲突
+    -->
+    <delete id="physicalDeleteHuinongRelationsByCustomerId">
+        DELETE FROM grid_customer_grid_relation
+        WHERE customer_id = #{customerId}
+          AND grid_type = 'HUINONG'
+    </delete>
+
+    <!--
+        物理删除客户的 LOBBY（厅堂）类型网格关系
+        用于更新客户坐标时清除旧关系，避免唯一索引冲突
+    -->
+    <delete id="physicalDeleteLobbyRelationsByCustomerId">
+        DELETE FROM grid_customer_grid_relation
+        WHERE customer_id = #{customerId}
+          AND grid_type = 'LOBBY'
+    </delete>
+
+</mapper>

@@ -165,4 +165,19 @@ public class GridCustomerDO extends TenantBaseDO {
      */
     private String overdueStatus;
 
+    // ==================== 社区客户专属字段（仅 customerType='COMMUNITY' 时使用） ====================
+
+    /**
+     * 家庭成员数
+     */
+    private Integer familyMembers;
+    /**
+     * 住房类型
+     */
+    private String housingType;
+    /**
+     * 月收入（元）
+     */
+    private java.math.BigDecimal monthlyIncome;
+
 }

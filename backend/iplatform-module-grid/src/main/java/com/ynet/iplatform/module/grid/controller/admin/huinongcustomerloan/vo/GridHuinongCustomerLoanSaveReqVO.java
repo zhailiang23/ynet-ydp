@@ -19,6 +19,15 @@ public class GridHuinongCustomerLoanSaveReqVO {
     @NotNull(message = "客户ID (关联 grid_customer)不能为空")
     private Long customerId;
 
+    @Schema(description = "网格ID（主站点）", example = "1")
+    private Long gridId;
+
+    @Schema(description = "经度", example = "113.12345")
+    private Double longitude;
+
+    @Schema(description = "纬度", example = "23.12345")
+    private Double latitude;
+
     @Schema(description = "客户大类 (关联字典 aicrm_customer_category)", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "客户大类不能为空")
     private String customerCategory;

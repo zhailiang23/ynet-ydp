@@ -24,6 +24,14 @@ public class GridHuinongCustomerLoanRespVO {
     @Schema(description = "站点ID (通过 grid_customer.grid_id 反查)", example = "123")
     private Long stationId;
 
+    @Schema(description = "网格ID（主站点）", example = "1")
+    @ExcelProperty("网格ID")
+    private Long gridId;
+
+    @Schema(description = "网格名称", example = "XX惠农站")
+    @ExcelProperty("网格名称")
+    private String gridName;
+
     @Schema(description = "客户姓名")
     @ExcelProperty("客户姓名")
     private String customerName;

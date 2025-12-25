@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
       <Row :gutter="16">
         <!-- 热力图区域（左侧，占3/4宽度） -->
         <Col :span="18">
-          <Card style="min-height: 600px" title="热力图" :body-style="{ height: '600px' }">
+          <Card style="min-height: 600px" title="惠农网格营销热力图" :body-style="{ height: '600px' }">
             <div id="heatmap-container" class="h-full w-full"></div>
 
             <!-- 图例 -->

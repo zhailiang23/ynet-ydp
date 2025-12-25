@@ -57,6 +57,9 @@ public class CommunitySaveReqVO {
     @Schema(description = "纬度", example = "34.746611")
     private BigDecimal latitude;
 
+    @Schema(description = "社区地址", example = "河南省郑州市金水区文化路街道")
+    private String address;
+
     @Schema(description = "状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "ACTIVE")
     @NotNull(message = "状态不能为空")
     private String status;

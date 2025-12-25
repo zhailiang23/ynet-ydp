@@ -123,4 +123,44 @@ public interface GridInfoMapper extends BaseMapperX<GridInfoDO> {
                               @Param("latitude") Double latitude,
                               @Param("radiusMeters") Integer radiusMeters);
 
+    /**
+     * 根据坐标查找包含该点的社区网格
+     * 使用 ST_Contains 空间函数判断点是否在网格边界内
+     * @param longitude 经度
+     * @param latitude 纬度
+     * @return 包含该点的社区网格列表（可能有多个）
+     */
+    List<GridInfoDO> selectCommunityGridsByLocation(@Param("longitude") Double longitude,
+                                                     @Param("latitude") Double latitude);
+
+    /**
+     * 根据坐标查找包含该点的惠农网格
+     * 使用 ST_Contains 空间函数判断点是否在网格边界内
+     * @param longitude 经度
+     * @param latitude 纬度
+     * @return 包含该点的惠农网格列表（可能有多个）
+     */
+    List<GridInfoDO> selectHuinongGridsByLocation(@Param("longitude") Double longitude,
+                                                   @Param("latitude") Double latitude);
+
+    /**
+     * 根据坐标查找包含该点的零贷网格
+     * 使用 ST_Contains 空间函数判断点是否在网格边界内
+     * @param longitude 经度
+     * @param latitude 纬度
+     * @return 包含该点的零贷网格列表（可能有多个）
+     */
+    List<GridInfoDO> selectZerodaiGridsByLocation(@Param("longitude") Double longitude,
+                                                   @Param("latitude") Double latitude);
+
+    /**
+     * 根据坐标查找包含该点的厅堂（LOBBY）网格
+     * 使用 ST_Contains 空间函数判断点是否在网格边界内
+     * @param longitude 经度
+     * @param latitude 纬度
+     * @return 包含该点的厅堂网格列表（可能有多个）
+     */
+    List<GridInfoDO> selectLobbyGridsByLocation(@Param("longitude") Double longitude,
+                                                 @Param("latitude") Double latitude);
+
 }

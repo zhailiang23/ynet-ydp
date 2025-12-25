@@ -89,6 +89,10 @@ public class CommunityInfoDO extends BaseDO {
      */
     private BigDecimal latitude;
     /**
+     * 社区地址
+     */
+    private String address;
+    /**
      * 状态（ACTIVE=正常，INACTIVE=无效）
      */
     private String status;

@@ -25,6 +25,9 @@
             manager_id,
             source,
             status,
+            family_members,
+            housing_type,
+            monthly_income,
             creator,
             create_time,
             updater,
@@ -52,6 +55,9 @@
             #{customer.managerId},
             #{customer.source},
             #{customer.status},
+            #{customer.familyMembers},
+            #{customer.housingType},
+            #{customer.monthlyIncome},
             #{customer.creator},
             #{customer.createTime},
             #{customer.updater},
@@ -64,16 +70,25 @@
     <!-- 更新客户并设置位置坐标 -->
     <update id="updateWithLocation">
         UPDATE grid_customer
-        SET
-            grid_id = #{customer.gridId},
-            customer_type = #{customer.customerType},
-            customer_name = #{customer.customerName},
-            gender = #{customer.gender},
-            customer_group = #{customer.customerGroup},
-            id_card = #{customer.idCard},
-            phone = #{customer.phone},
-            phone_verified = #{customer.phoneVerified},
-            address = #{customer.address},
+        <set>
+            <if test="customer.gridId != null">grid_id = #{customer.gridId},</if>
+            <if test="customer.customerType != null">customer_type = #{customer.customerType},</if>
+            <if test="customer.customerName != null">customer_name = #{customer.customerName},</if>
+            <if test="customer.gender != null">gender = #{customer.gender},</if>
+            <if test="customer.customerGroup != null">customer_group = #{customer.customerGroup},</if>
+            <if test="customer.idCard != null">id_card = #{customer.idCard},</if>
+            <if test="customer.phone != null">phone = #{customer.phone},</if>
+            <if test="customer.phoneVerified != null">phone_verified = #{customer.phoneVerified},</if>
+            <if test="customer.address != null">address = #{customer.address},</if>
+            <if test="customer.managerId != null">manager_id = #{customer.managerId},</if>
+            <if test="customer.source != null">source = #{customer.source},</if>
+            <if test="customer.status != null">status = #{customer.status},</if>
+            <if test="customer.familyMembers != null">family_members = #{customer.familyMembers},</if>
+            <if test="customer.housingType != null">housing_type = #{customer.housingType},</if>
+            <if test="customer.monthlyIncome != null">monthly_income = #{customer.monthlyIncome},</if>
+            <if test="customer.updater != null">updater = #{customer.updater},</if>
+            <if test="customer.updateTime != null">update_time = #{customer.updateTime},</if>
+            <!-- location 字段始终更新（放在最后，确保前面字段的逗号正确） -->
             location = <choose>
                 <when test="longitude != null and latitude != null">
                     ST_GeomFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
@@ -81,12 +96,8 @@
                 <otherwise>
                     NULL
                 </otherwise>
-            </choose>,
-            manager_id = #{customer.managerId},
-            source = #{customer.source},
-            status = #{customer.status},
-            updater = #{customer.updater},
-            update_time = #{customer.updateTime}
+            </choose>
+        </set>
         WHERE id = #{customer.id}
           AND deleted = 0
     </update>
@@ -99,6 +110,8 @@
             c.id,
             c.id AS customerId,
             gi.id AS stationId,
+            c.grid_id AS gridId,
+            gi.grid_name AS gridName,
             c.customer_name AS customerName,
             c.phone,
             c.customer_category AS customerCategory,
@@ -140,6 +153,8 @@
         SELECT
             c.id,
             c.id AS customerId,
+            c.grid_id AS gridId,
+            gi.grid_name AS gridName,
             c.customer_name AS customerName,
             c.phone,
             c.customer_category AS customerCategory,
@@ -149,6 +164,7 @@
             c.is_formal_customer AS isFormalCustomer,
             c.create_time AS createTime
         FROM grid_customer c
+        LEFT JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0
         WHERE c.customer_type = 'HUINONG_LOAN' AND c.deleted = 0
             <if test="reqVO.customerName != null and reqVO.customerName != ''">
                 AND c.customer_name LIKE CONCAT('%', #{reqVO.customerName}, '%')
@@ -185,51 +201,102 @@
     </select>
 
     <!-- 查询惠农贷款目标客户热力图数据（按网格分组，关联站点位置） -->
+    <!-- 热力图数据查询（支持多对多关系） -->
     <select id="selectHuinongLoanHeatmapData" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanHeatmapDataVO">
-        SELECT
-            c.grid_id AS gridId,
-            gi.grid_name AS stationName,
-            ST_X(gi.center_point) AS latitude,
-            ST_Y(gi.center_point) AS longitude,
-            <choose>
-                <when test="reqVO.metricType == 'CUSTOMER_COUNT'">
-                    COUNT(*) AS value
-                </when>
-                <when test="reqVO.metricType == 'APPLIED_COUNT'">
-                    SUM(CASE WHEN c.is_applied = 1 THEN 1 ELSE 0 END) AS value
-                </when>
-                <when test="reqVO.metricType == 'APPROVED_COUNT'">
-                    SUM(CASE WHEN c.is_approved = 1 THEN 1 ELSE 0 END) AS value
-                </when>
-                <when test="reqVO.metricType == 'LOAN_BALANCE'">
+        <choose>
+            <!-- 贷款余额：只在主站点统计，避免重复累加 -->
+            <when test="reqVO.metricType == 'LOAN_BALANCE'">
+                SELECT
+                    c.grid_id AS gridId,
+                    gi.grid_name AS stationName,
+                    ST_X(gi.center_point) AS latitude,
+                    ST_Y(gi.center_point) AS longitude,
                     SUM(IFNULL(c.loan_balance, 0)) AS value
-                </when>
-                <otherwise>
-                    COUNT(*) AS value
-                </otherwise>
-            </choose>
-        FROM grid_customer c
-        INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
-        WHERE c.customer_type = 'HUINONG_LOAN'
-          AND c.deleted = 0
-          AND gi.center_point IS NOT NULL
-        GROUP BY c.grid_id, gi.grid_name, gi.center_point
-        ORDER BY value DESC
+                FROM grid_customer c
+                INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+                WHERE c.customer_type = 'HUINONG_LOAN'
+                  AND c.deleted = 0
+                  AND gi.center_point IS NOT NULL
+                  <if test="reqVO.gridIds != null and reqVO.gridIds.size() > 0">
+                      AND c.grid_id IN
+                      <foreach collection="reqVO.gridIds" item="gridId" open="(" separator="," close=")">
+                          #{gridId}
+                      </foreach>
+                  </if>
+                  <if test="reqVO.customerCategories != null and reqVO.customerCategories.size() > 0">
+                      AND c.customer_category IN
+                      <foreach collection="reqVO.customerCategories" item="category" open="(" separator="," close=")">
+                          #{category}
+                      </foreach>
+                  </if>
+                  <if test="reqVO.gridMarketingFlag != null and reqVO.gridMarketingFlag != ''">
+                      AND gi.grid_marketing_flag = #{reqVO.gridMarketingFlag}
+                  </if>
+                GROUP BY c.grid_id, gi.grid_name, gi.center_point
+                ORDER BY value DESC
+            </when>
+            <!-- 其他指标：基于关系表统计，支持多对多 -->
+            <otherwise>
+                SELECT
+                    r.grid_id AS gridId,
+                    r.grid_name AS stationName,
+                    ST_X(gi.center_point) AS latitude,
+                    ST_Y(gi.center_point) AS longitude,
+                    <choose>
+                        <when test="reqVO.metricType == 'CUSTOMER_COUNT'">
+                            COUNT(DISTINCT r.customer_id) AS value
+                        </when>
+                        <when test="reqVO.metricType == 'APPLIED_COUNT'">
+                            COUNT(DISTINCT CASE WHEN c.is_applied = 1 THEN r.customer_id ELSE NULL END) AS value
+                        </when>
+                        <when test="reqVO.metricType == 'APPROVED_COUNT'">
+                            COUNT(DISTINCT CASE WHEN c.is_approved = 1 THEN r.customer_id ELSE NULL END) AS value
+                        </when>
+                        <otherwise>
+                            COUNT(DISTINCT r.customer_id) AS value
+                        </otherwise>
+                    </choose>
+                FROM grid_customer_grid_relation r
+                INNER JOIN grid_customer c ON r.customer_id = c.id AND c.deleted = 0 AND c.customer_type = 'HUINONG_LOAN'
+                INNER JOIN grid_info gi ON r.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+                WHERE r.deleted = 0
+                  AND gi.center_point IS NOT NULL
+                  <if test="reqVO.gridIds != null and reqVO.gridIds.size() > 0">
+                      AND r.grid_id IN
+                      <foreach collection="reqVO.gridIds" item="gridId" open="(" separator="," close=")">
+                          #{gridId}
+                      </foreach>
+                  </if>
+                  <if test="reqVO.customerCategories != null and reqVO.customerCategories.size() > 0">
+                      AND c.customer_category IN
+                      <foreach collection="reqVO.customerCategories" item="category" open="(" separator="," close=")">
+                          #{category}
+                      </foreach>
+                  </if>
+                  <if test="reqVO.gridMarketingFlag != null and reqVO.gridMarketingFlag != ''">
+                      AND gi.grid_marketing_flag = #{reqVO.gridMarketingFlag}
+                  </if>
+                GROUP BY r.grid_id, r.grid_name, gi.center_point
+                ORDER BY value DESC
+            </otherwise>
+        </choose>
     </select>
 
-    <!-- 查询惠农贷款目标客户标记列表 -->
+    <!-- 查询惠农贷款目标客户标记列表（支持多对多关系） -->
     <select id="selectHuinongLoanCustomerMarkers" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanCustomerMarkerVO">
-        SELECT
+        SELECT DISTINCT
             c.id AS customerId,
             c.customer_name AS customerName,
             ST_X(c.location) AS latitude,
             ST_Y(c.location) AS longitude,
+            c.grid_id AS gridId,
             gi.grid_marketing_flag AS stationType,
             c.is_applied AS isApplied,
             c.is_approved AS isApproved,
             c.loan_balance AS loanBalance,
             c.customer_category AS customerCategory
         FROM grid_customer c
+        INNER JOIN grid_customer_grid_relation r ON c.id = r.customer_id AND r.deleted = 0
         INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
         WHERE c.customer_type = 'HUINONG_LOAN'
           AND c.deleted = 0

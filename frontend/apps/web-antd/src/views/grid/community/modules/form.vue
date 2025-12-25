@@ -39,15 +39,18 @@ const formState = reactive<CommunityApi.Community>({
   adjustmentReason: undefined,
   longitude: undefined,
   latitude: undefined,
+  address: undefined,
 });
 
 // 地图坐标数据 - 使用 ref 而不是 reactive
 const coordinates = ref<{
   longitude: number | null;
   latitude: number | null;
+  address: string | null;
 }>({
   longitude: null,
   latitude: null,
+  address: null,
 });
 
 // 监听坐标变化，实时同步到 formState
@@ -57,6 +60,7 @@ watch(
     if (newVal) {
       formState.longitude = newVal.longitude ?? undefined;
       formState.latitude = newVal.latitude ?? undefined;
+      formState.address = newVal.address ?? undefined;
     }
   },
   { deep: true }
@@ -70,10 +74,11 @@ async function initFormData(data: CommunityApi.Community | null | undefined) {
       const result = await getCommunity(data.id);
       Object.assign(formState, result);
 
-      // 初始化地图坐标
+      // 初始化地图坐标和地址
       coordinates.value = {
         longitude: result.longitude ?? null,
         latitude: result.latitude ?? null,
+        address: result.address ?? null,
       };
     } catch (error) {
       console.error('加载数据失败:', error);
@@ -95,13 +100,15 @@ async function initFormData(data: CommunityApi.Community | null | undefined) {
     formState.adjustmentReason = undefined;
     formState.longitude = undefined;
     formState.latitude = undefined;
+    formState.address = undefined;
     formState.managerUserId = Number(userStore.userInfo?.userId);
     formState.managerUserName = userStore.userInfo?.nickname || '';
 
-    // 重置地图坐标
+    // 重置地图坐标和地址
     coordinates.value = {
       longitude: null,
       latitude: null,
+      address: null,
     };
   }
 }
@@ -114,15 +121,17 @@ async function handleSubmit() {
     return false;
   }
 
-  // 同步坐标数据到 formState
+  // 同步坐标和地址数据到 formState
   formState.longitude = coordinates.value.longitude ?? undefined;
   formState.latitude = coordinates.value.latitude ?? undefined;
+  formState.address = coordinates.value.address ?? undefined;
 
   // 调试：打印要提交的数据
   console.log('=== 提交社区数据 ===');
   console.log('coordinates:', coordinates.value);
   console.log('formState.longitude:', formState.longitude);
   console.log('formState.latitude:', formState.latitude);
+  console.log('formState.address:', formState.address);
   console.log('完整 formState:', JSON.stringify(formState, null, 2));
 
   try {
@@ -271,6 +280,31 @@ const [Modal, modalApi] = useVbenModal({
           v-model:value="formState.adjustmentReason"
           :rows="3"
           placeholder="请输入校正原因"
+        />
+      </a-form-item>
+
+      <a-form-item label="经度">
+        <a-input
+          :value="formState.longitude"
+          disabled
+          placeholder="请在左侧地图点击选择位置"
+        />
+      </a-form-item>
+
+      <a-form-item label="纬度">
+        <a-input
+          :value="formState.latitude"
+          disabled
+          placeholder="请在左侧地图点击选择位置"
+        />
+      </a-form-item>
+
+      <a-form-item label="社区地址">
+        <a-textarea
+          :value="formState.address"
+          :rows="2"
+          disabled
+          placeholder="请在左侧地图点击选择位置，自动获取地址"
         />
       </a-form-item>
 

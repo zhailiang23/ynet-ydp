@@ -314,4 +314,104 @@
         WHERE id = #{id}
     </update>
 
+    <!-- 根据坐标查找包含该点的社区网格 -->
+    <select id="selectCommunityGridsByLocation" resultType="com.ynet.iplatform.module.grid.dal.dataobject.info.GridInfoDO">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            g.org_id,
+            g.manager_user_id,
+            g.team_count,
+            g.status,
+            g.create_time,
+            g.update_time
+        FROM grid_info g
+        WHERE g.grid_type = 'COMMUNITY'
+          AND g.deleted = 0
+          AND g.boundary_geometry IS NOT NULL
+          AND ST_Contains(
+              g.boundary_geometry,
+              ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+          )
+        ORDER BY g.id ASC
+        LIMIT 10
+    </select>
+
+    <!-- 根据坐标查找包含该点的惠农网格 -->
+    <select id="selectHuinongGridsByLocation" resultType="com.ynet.iplatform.module.grid.dal.dataobject.info.GridInfoDO">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            g.org_id,
+            g.manager_user_id,
+            g.team_count,
+            g.status,
+            g.create_time,
+            g.update_time
+        FROM grid_info g
+        WHERE g.grid_type = 'HUINONG'
+          AND g.deleted = 0
+          AND g.boundary_geometry IS NOT NULL
+          AND ST_Contains(
+              g.boundary_geometry,
+              ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+          )
+        ORDER BY g.id ASC
+        LIMIT 10
+    </select>
+
+    <!-- 根据坐标查找包含该点的零贷网格 -->
+    <select id="selectZerodaiGridsByLocation" resultType="com.ynet.iplatform.module.grid.dal.dataobject.info.GridInfoDO">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            g.org_id,
+            g.manager_user_id,
+            g.team_count,
+            g.status,
+            g.create_time,
+            g.update_time
+        FROM grid_info g
+        WHERE g.grid_type = 'ZERODAI'
+          AND g.deleted = 0
+          AND g.boundary_geometry IS NOT NULL
+          AND ST_Contains(
+              g.boundary_geometry,
+              ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+          )
+        ORDER BY g.id ASC
+        LIMIT 10
+    </select>
+
+    <!-- 根据坐标查找包含该点的厅堂（LOBBY）网格 -->
+    <select id="selectLobbyGridsByLocation" resultType="com.ynet.iplatform.module.grid.dal.dataobject.info.GridInfoDO">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.grid_name,
+            g.grid_type,
+            g.org_id,
+            g.manager_user_id,
+            g.team_count,
+            g.status,
+            g.create_time,
+            g.update_time
+        FROM grid_info g
+        WHERE g.grid_type = 'LOBBY'
+          AND g.deleted = 0
+          AND g.boundary_geometry IS NOT NULL
+          AND ST_Contains(
+              g.boundary_geometry,
+              ST_PointFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+          )
+        ORDER BY g.id ASC
+        LIMIT 10
+    </select>
+
 </mapper>

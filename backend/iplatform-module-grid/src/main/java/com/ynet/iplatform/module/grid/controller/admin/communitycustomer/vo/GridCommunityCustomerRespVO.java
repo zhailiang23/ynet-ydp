@@ -8,18 +8,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "管理后台 - 社区客户扩展 Response VO")
+@Schema(description = "管理后台 - 社区客户 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class GridCommunityCustomerRespVO {
 
-    @Schema(description = "扩展ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "859")
-    @ExcelProperty("扩展ID")
+    @Schema(description = "客户ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "859")
+    @ExcelProperty("客户ID")
     private Long id;
-
-    @Schema(description = "客户ID (关联 grid_customer)", requiredMode = Schema.RequiredMode.REQUIRED, example = "7456")
-    @ExcelProperty("客户ID (关联 grid_customer)")
-    private Long customerId;
 
     @Schema(description = "客户姓名", example = "张三")
     @ExcelProperty("客户姓名")
