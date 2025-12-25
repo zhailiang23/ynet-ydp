@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import type { GridHuinongCustomerLoanApi } from '#/api/grid/huinongcustomerloan';
 
-import { computed, ref, reactive } from 'vue';
+import { computed, ref, reactive, onMounted } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { Form, Input, InputNumber, Select, DatePicker, Switch, message } from 'ant-design-vue';
 import { createHuinongCustomerLoan, getHuinongCustomerLoan, updateHuinongCustomerLoan } from '#/api/grid/huinongcustomerloan';
 import { createCustomer, updateCustomer } from '#/api/grid/customer';
+import { getSimpleHuinongStationList } from '#/api/grid/huinongstation';
 import { useUserStore } from '@vben/stores';
 import { $t } from '#/locales';
 import VillageMapSelect from '../../huinongmarketing/modules/village-map-select.vue';
@@ -14,6 +15,24 @@ import dayjs from 'dayjs';
 const emit = defineEmits(['success']);
 const formData = ref<GridHuinongCustomerLoanApi.HuinongCustomerLoan>();
 const userStore = useUserStore();
+
+// 站点列表
+const stationList = ref<any[]>([]);
+
+// 加载站点列表
+async function loadStationList() {
+  try {
+    stationList.value = await getSimpleHuinongStationList();
+  } catch (error) {
+    console.error('加载站点列表失败:', error);
+    message.error('加载站点列表失败');
+  }
+}
+
+// 组件挂载时加载站点列表
+onMounted(() => {
+  loadStationList();
+});
 
 const getTitle = computed(() => {
   return formData.value?.id
@@ -69,6 +88,7 @@ const customerSourceOptions = [
 const formState = reactive({
   id: undefined as number | undefined,
   customerId: undefined as number | undefined,
+  gridId: undefined as number | undefined, // 网格ID（主站点）
 
   // (1-2) 员工信息（从当前用户获取）
   employeeCode: userStore.userInfo?.username || '', // 员工工号
@@ -115,6 +135,7 @@ function handleMapLocationChange(location: { lng: number; lat: number; address: 
 
 // 表单验证规则
 const rules = {
+  gridId: [{ required: true, message: '请选择所属站点' }],
   customerCategory: [{ required: true, message: '客户大类请选择' }],
   subdivisionType: [{ required: true, message: '细分类型请输入' }],
   businessAddress: [{ required: true, message: '经营地址请输入' }],
@@ -150,6 +171,7 @@ async function initFormData(data?: GridHuinongCustomerLoanApi.HuinongCustomerLoa
     const result = await getHuinongCustomerLoan(data.id);
     formState.id = result.id;
     formState.customerId = result.customerId;
+    formState.gridId = result.gridId;
 
     formState.customerCategory = result.customerCategory;
     formState.subdivisionType = result.subdivisionType || '';
@@ -196,6 +218,10 @@ async function initFormData(data?: GridHuinongCustomerLoanApi.HuinongCustomerLoa
 // 提交表单
 async function handleSubmit() {
   // 验证必填字段
+  if (!formState.gridId) {
+    message.error('请选择所属站点');
+    return false;
+  }
   if (!formState.customerCategory) {
     message.error('客户大类请选择');
     return false;
@@ -288,6 +314,9 @@ async function handleSubmit() {
     const submitData: any = {
       id: formState.id,
       customerId: customerId,
+      gridId: formState.gridId,
+      longitude: mapLocation.value?.lng,
+      latitude: mapLocation.value?.lat,
       customerCategory: formState.customerCategory,
       subdivisionType: formState.subdivisionType,
       businessAddress: formState.businessAddress,
@@ -338,6 +367,7 @@ const [Modal, modalApi] = useVbenModal({
       formData.value = undefined;
       formState.id = undefined;
       formState.customerId = undefined;
+      formState.gridId = undefined;
       formState.customerCategory = undefined;
       formState.subdivisionType = '';
       formState.businessAddress = '';
@@ -388,6 +418,29 @@ const [Modal, modalApi] = useVbenModal({
           <!-- (2) 员工姓名 -->
           <Form.Item label="员工姓名">
             <Input v-model:value="formState.employeeName" disabled />
+          </Form.Item>
+
+          <!-- 所属站点 -->
+          <Form.Item label="所属站点" name="gridId" :rules="rules.gridId">
+            <Select
+              v-model:value="formState.gridId"
+              placeholder="请选择惠农站点"
+              show-search
+              :filter-option="(input: string, option: any) =>
+                option.stationName?.toLowerCase().includes(input.toLowerCase()) ||
+                option.stationCode?.toLowerCase().includes(input.toLowerCase())
+              "
+            >
+              <Select.Option
+                v-for="station in stationList"
+                :key="station.id"
+                :value="station.id"
+                :stationName="station.stationName"
+                :stationCode="station.stationCode"
+              >
+                {{ station.stationName }} ({{ station.stationCode }})
+              </Select.Option>
+            </Select>
           </Form.Item>
 
           <!-- (3) 客户大类 -->

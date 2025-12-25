@@ -274,6 +274,11 @@ export function useGridColumns(): VxeTableGridOptions<GridHuinongCustomerLoanApi
       minWidth: 130,
     },
     {
+      field: 'gridName',
+      title: '所属站点',
+      minWidth: 150,
+    },
+    {
       field: 'customerCategory',
       title: '客户大类',
       minWidth: 120,
