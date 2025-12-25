@@ -12,6 +12,8 @@ import { useFormValues } from 'vee-validate';
 
 import { injectRenderFormProps } from './context';
 
+type LabelType = ((values: any, formApi: any) => string) | string;
+
 export default function useDependencies(
   getDependencies: () => FormItemDependencies | undefined,
 ) {
@@ -31,6 +33,7 @@ export default function useDependencies(
   const isShow = ref(true);
   const isRequired = ref(false);
   const dynamicComponentProps = ref<MaybeComponentProps>({});
+  const dynamicLabel = ref<LabelType>();
   const dynamicRules = ref<FormSchemaRuleType>();
 
   const triggerFieldValues = computed(() => {
@@ -46,6 +49,7 @@ export default function useDependencies(
     isIf.value = true;
     isShow.value = true;
     isRequired.value = false;
+    dynamicLabel.value = undefined;
     dynamicRules.value = undefined;
     dynamicComponentProps.value = {};
   };
@@ -61,6 +65,7 @@ export default function useDependencies(
         componentProps,
         disabled,
         if: whenIf,
+        label,
         required,
         rules,
         show,
@@ -92,6 +97,12 @@ export default function useDependencies(
         dynamicComponentProps.value = await componentProps(formValues, formApi);
       }
 
+      if (isFunction(label)) {
+        dynamicLabel.value = await label(formValues, formApi);
+      } else if (label) {
+        dynamicLabel.value = label;
+      }
+
       if (isFunction(rules)) {
         dynamicRules.value = await rules(formValues, formApi);
       }
@@ -115,6 +126,7 @@ export default function useDependencies(
 
   return {
     dynamicComponentProps,
+    dynamicLabel,
     dynamicRules,
     isDisabled,
     isIf,
