@@ -29,6 +29,16 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('#/views/grid/huinongcustomerloan/heatmap.vue'),
       },
+      {
+        path: 'grid-map',
+        name: 'GridMap',
+        meta: {
+          title: '网格营销地图',
+          icon: 'ant-design:global-outlined',
+          keepAlive: true,
+        },
+        component: () => import('#/views/grid/grid-map/index.vue'),
+      },
     ],
   },
 ];
