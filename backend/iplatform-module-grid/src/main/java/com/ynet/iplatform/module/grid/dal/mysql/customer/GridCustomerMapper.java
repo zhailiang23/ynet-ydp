@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import com.ynet.iplatform.module.grid.controller.admin.customer.vo.*;
 import com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.*;
 import com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongCustomerMarkerVO;
+import com.ynet.iplatform.module.grid.controller.admin.gridmap.vo.GridMapDataRespVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
@@ -103,5 +104,22 @@ public interface GridCustomerMapper extends BaseMapperX<GridCustomerDO> {
      * @return 客户标记列表
      */
     List<GridHuinongCustomerLoanCustomerMarkerVO> selectHuinongLoanCustomerMarkers();
+
+    /**
+     * 根据网格 ID 查找包含在网格内的客户
+     * 使用 ST_Contains 空间函数判断客户的 location 是否在网格的 boundary_geometry 内
+     * @param gridId 网格ID
+     * @param customerType 客户类型（ZERODAI, HUINONG_LOAN, COMMUNITY, TINGTANG）
+     * @return 包含在网格内的客户列表
+     */
+    List<GridCustomerDO> selectCustomersWithinGrid(@Param("gridId") Long gridId,
+                                                   @Param("customerType") String customerType);
+
+    /**
+     * 查询用于地图展示的客户数据（带经纬度）
+     * @param customerTypes 客户类型列表
+     * @return 客户地图数据列表
+     */
+    List<GridMapDataRespVO.CustomerData> selectCustomersForMap(@Param("customerTypes") List<String> customerTypes);
 
 }

@@ -414,4 +414,24 @@
         LIMIT 10
     </select>
 
+    <!-- 查询用于地图显示的网格数据（包含 GeoJSON 格式的边界） -->
+    <select id="selectGridsForMap" resultType="map">
+        SELECT
+            id,
+            grid_name as gridName,
+            grid_type as gridType,
+            ST_AsGeoJSON(boundary_geometry) as boundaryGeometry,
+            ST_Y(center_point) as longitude,
+            ST_X(center_point) as latitude,
+            manager_user_id as managerUserId
+        FROM grid_info
+        WHERE grid_type IN
+        <foreach collection="gridTypes" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+        AND boundary_geometry IS NOT NULL
+        AND deleted = 0
+        ORDER BY id ASC
+    </select>
+
 </mapper>

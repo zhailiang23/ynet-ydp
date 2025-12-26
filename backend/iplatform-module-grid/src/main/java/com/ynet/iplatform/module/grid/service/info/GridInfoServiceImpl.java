@@ -32,11 +32,19 @@ public class GridInfoServiceImpl implements GridInfoService {
     @Resource
     private GridInfoMapper infoMapper;
 
+    @Resource
+    private com.ynet.iplatform.module.grid.service.customer.GridCustomerService gridCustomerService;
+
     @Override
     public Long createInfo(GridInfoSaveReqVO createReqVO) {
         // 插入
         GridInfoDO info = BeanUtils.toBean(createReqVO, GridInfoDO.class);
         infoMapper.insert(info);
+
+        // 自动关联网格内的客户（仅对 COMMUNITY 和 LOBBY 类型的网格）
+        if ("COMMUNITY".equals(info.getGridType()) || "LOBBY".equals(info.getGridType())) {
+            gridCustomerService.autoLinkCustomersToGrid(info.getId(), info.getGridType());
+        }
 
         // 返回
         return info.getId();
@@ -49,6 +57,11 @@ public class GridInfoServiceImpl implements GridInfoService {
         // 更新
         GridInfoDO updateObj = BeanUtils.toBean(updateReqVO, GridInfoDO.class);
         infoMapper.updateById(updateObj);
+
+        // 重新关联网格内的客户（仅对 COMMUNITY 和 LOBBY 类型的网格，边界变化后需要重新计算）
+        if ("COMMUNITY".equals(updateObj.getGridType()) || "LOBBY".equals(updateObj.getGridType())) {
+            gridCustomerService.autoLinkCustomersToGrid(updateObj.getId(), updateObj.getGridType());
+        }
     }
 
     @Override

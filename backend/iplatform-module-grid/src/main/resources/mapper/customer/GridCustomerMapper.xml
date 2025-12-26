@@ -304,4 +304,66 @@
         ORDER BY c.create_time DESC
     </select>
 
+    <!--
+        根据网格 ID 查找包含在网格内的客户
+        使用 ST_Contains 空间函数判断客户的 location 是否在网格的 boundary_geometry 内
+
+        说明：
+        1. 用于网格创建/更新后自动关联包含的客户
+        2. 客户类型需要与网格类型匹配（ZERODAI → ZERODAI, HUINONG_LOAN → HUINONG, COMMUNITY → COMMUNITY, TINGTANG → LOBBY）
+        3. 只查找有坐标的客户（location IS NOT NULL）
+        4. 限制返回结果数量，避免一次性查询过多数据
+    -->
+    <select id="selectCustomersWithinGrid" resultType="com.ynet.iplatform.module.grid.dal.dataobject.customer.GridCustomerDO">
+        SELECT
+            c.id,
+            c.grid_id,
+            c.customer_type,
+            c.customer_name,
+            c.phone,
+            c.address,
+            c.manager_id,
+            c.source,
+            c.status,
+            c.create_time,
+            c.update_time,
+            c.creator,
+            c.updater,
+            c.deleted,
+            c.tenant_id,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_customer c
+        INNER JOIN grid_info g ON g.id = #{gridId} AND g.deleted = 0
+        WHERE c.customer_type = #{customerType}
+          AND c.deleted = 0
+          AND c.location IS NOT NULL
+          AND g.boundary_geometry IS NOT NULL
+          AND ST_Contains(g.boundary_geometry, c.location)
+        ORDER BY c.create_time DESC
+        LIMIT 1000
+    </select>
+
+    <!-- 查询用于地图展示的客户数据（带经纬度） -->
+    <select id="selectCustomersForMap" resultType="com.ynet.iplatform.module.grid.controller.admin.gridmap.vo.GridMapDataRespVO$CustomerData">
+        SELECT
+            c.id,
+            c.customer_name AS customerName,
+            c.customer_type AS customerType,
+            ST_Y(c.location) AS longitude,
+            ST_X(c.location) AS latitude,
+            c.address
+        FROM grid_customer c
+        WHERE c.deleted = 0
+          AND c.location IS NOT NULL
+          <if test="customerTypes != null and customerTypes.size() > 0">
+              AND c.customer_type IN
+              <foreach collection="customerTypes" item="type" open="(" separator="," close=")">
+                  #{type}
+              </foreach>
+          </if>
+        ORDER BY c.create_time DESC
+        LIMIT 10000
+    </select>
+
 </mapper>

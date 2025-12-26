@@ -163,4 +163,11 @@ public interface GridInfoMapper extends BaseMapperX<GridInfoDO> {
     List<GridInfoDO> selectLobbyGridsByLocation(@Param("longitude") Double longitude,
                                                  @Param("latitude") Double latitude);
 
+    /**
+     * 查询用于地图显示的网格数据（包含 GeoJSON 格式的边界）
+     * @param gridTypes 网格类型列表
+     * @return 网格数据（boundary_geometry 已转换为 GeoJSON字符串）
+     */
+    List<Map<String, Object>> selectGridsForMap(@Param("gridTypes") List<String> gridTypes);
+
 }

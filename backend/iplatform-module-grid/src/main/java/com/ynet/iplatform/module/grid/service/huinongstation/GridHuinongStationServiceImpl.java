@@ -42,6 +42,9 @@ public class GridHuinongStationServiceImpl implements GridHuinongStationService 
     @Resource(name = "gridCustomerMapper")
     private GridCustomerMapper gridCustomerMapper;
 
+    @Resource
+    private com.ynet.iplatform.module.grid.service.customer.GridCustomerService gridCustomerService;
+
     @Override
     public Long createHuinongStation(GridHuinongStationSaveReqVO createReqVO) {
         // 1. 获取当前用户信息
@@ -91,6 +94,9 @@ public class GridHuinongStationServiceImpl implements GridHuinongStationService 
         updateBoundaryGeometry(station.getId(), createReqVO.getLongitude().doubleValue(),
             createReqVO.getLatitude().doubleValue(), createReqVO.getRadiusMeters());
 
+        // 6. 自动关联网格内的惠农贷款客户
+        gridCustomerService.autoLinkCustomersToGrid(station.getId(), "HUINONG");
+
         // 返回
         return station.getId();
     }
@@ -132,6 +138,9 @@ public class GridHuinongStationServiceImpl implements GridHuinongStationService 
         // 5. 更新边界几何
         updateBoundaryGeometry(updateReqVO.getId(), updateReqVO.getLongitude().doubleValue(),
             updateReqVO.getLatitude().doubleValue(), updateReqVO.getRadiusMeters());
+
+        // 6. 重新关联网格内的惠农贷款客户（边界变化后需要重新计算）
+        gridCustomerService.autoLinkCustomersToGrid(updateReqVO.getId(), "HUINONG");
     }
 
     @Override

@@ -293,4 +293,86 @@ public class GridCustomerServiceImpl implements GridCustomerService {
         return true;
     }
 
+    /**
+     * 网格创建后自动关联包含在网格内的客户
+     * 用于网格创建/更新后，查找所有坐标在网格边界内的客户，并建立客户-网格关系
+     *
+     * @param gridId 网格ID
+     * @param gridType 网格类型（ZERODAI, HUINONG, COMMUNITY, LOBBY）
+     * @return 关联的客户数量
+     */
+    public int autoLinkCustomersToGrid(Long gridId, String gridType) {
+        // 1. 根据网格类型确定对应的客户类型
+        String customerType = getCustomerTypeByGridType(gridType);
+        if (customerType == null) {
+            System.out.println("[网格关联客户] 未知的网格类型: " + gridType);
+            return 0;
+        }
+
+        // 2. 查找包含在网格内的客户
+        List<GridCustomerDO> customers = gridCustomerMapper.selectCustomersWithinGrid(gridId, customerType);
+        if (customers.isEmpty()) {
+            System.out.println("[网格关联客户] 网格 [" + gridId + "] 内未找到 " + customerType + " 类型的客户");
+            return 0;
+        }
+
+        System.out.println("[网格关联客户] 网格 [" + gridId + "] 内找到 " + customers.size() + " 个 " + customerType + " 类型的客户");
+
+        // 3. 获取网格信息（用于冗余字段）
+        GridInfoDO gridInfo = gridInfoMapper.selectById(gridId);
+        if (gridInfo == null) {
+            System.out.println("[网格关联客户] 网格 [" + gridId + "] 不存在");
+            return 0;
+        }
+
+        // 4. 为每个客户创建客户-网格关系
+        int createdCount = 0;
+        for (GridCustomerDO customer : customers) {
+            try {
+                // 检查关系是否已存在（避免重复创建）
+                List<GridCustomerGridRelationDO> existingRelations =
+                    customerGridRelationMapper.selectListByCustomerId(customer.getId());
+
+                // 检查是否已经有与该网格的关系
+                boolean relationExists = existingRelations.stream()
+                    .anyMatch(r -> r.getGridId().equals(gridId));
+
+                if (!relationExists) {
+                    // 创建新关系
+                    createCustomerGridRelation(customer.getId(), gridInfo);
+                    createdCount++;
+                    System.out.println("[网格关联客户] 创建关系: 客户 [" + customer.getId() + "] -> 网格 [" + gridId + "]");
+                } else {
+                    System.out.println("[网格关联客户] 关系已存在: 客户 [" + customer.getId() + "] -> 网格 [" + gridId + "]");
+                }
+            } catch (Exception e) {
+                System.out.println("[网格关联客户] 创建关系失败: 客户 [" + customer.getId() + "] -> 网格 [" + gridId + "], 错误: " + e.getMessage());
+            }
+        }
+
+        System.out.println("[网格关联客户] 网格 [" + gridId + "] 成功关联 " + createdCount + " 个客户");
+        return createdCount;
+    }
+
+    /**
+     * 根据网格类型获取对应的客户类型
+     *
+     * @param gridType 网格类型（ZERODAI, HUINONG, COMMUNITY, LOBBY）
+     * @return 客户类型（ZERODAI, HUINONG_LOAN, COMMUNITY, TINGTANG）
+     */
+    private String getCustomerTypeByGridType(String gridType) {
+        switch (gridType) {
+            case "ZERODAI":
+                return "ZERODAI";
+            case "HUINONG":
+                return "HUINONG_LOAN";
+            case "COMMUNITY":
+                return "COMMUNITY";
+            case "LOBBY":
+                return "TINGTANG";  // LOBBY 网格类型映射到 TINGTANG 客户类型
+            default:
+                return null;
+        }
+    }
+
 }

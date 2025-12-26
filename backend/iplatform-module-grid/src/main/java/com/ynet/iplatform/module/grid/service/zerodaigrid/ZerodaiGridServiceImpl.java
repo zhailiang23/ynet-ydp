@@ -29,6 +29,9 @@ public class ZerodaiGridServiceImpl implements ZerodaiGridService {
     @Resource
     private ZerodaiGridMapper zerodaiGridMapper;
 
+    @Resource
+    private com.ynet.iplatform.module.grid.service.customer.GridCustomerService gridCustomerService;
+
     @Override
     public PageResult<ZerodaiGridRespVO> getZerodaiGridPage(ZerodaiGridPageReqVO pageReqVO) {
         // 查询总数
@@ -122,8 +125,14 @@ public class ZerodaiGridServiceImpl implements ZerodaiGridService {
         // 插入数据库
         zerodaiGridMapper.insertZerodaiGrid(params);
 
+        // 获取生成的 ID
+        Long gridId = ((Number) params.get("id")).longValue();
+
+        // 自动关联网格内的零贷客户
+        gridCustomerService.autoLinkCustomersToGrid(gridId, "ZERODAI");
+
         // 返回生成的 ID
-        return ((Number) params.get("id")).longValue();
+        return gridId;
     }
 
     @Override
@@ -150,6 +159,9 @@ public class ZerodaiGridServiceImpl implements ZerodaiGridService {
 
         // 更新数据库
         zerodaiGridMapper.updateZerodaiGridById(params);
+
+        // 重新关联网格内的零贷客户（边界变化后需要重新计算）
+        gridCustomerService.autoLinkCustomersToGrid(updateReqVO.getId(), "ZERODAI");
     }
 
     @Override

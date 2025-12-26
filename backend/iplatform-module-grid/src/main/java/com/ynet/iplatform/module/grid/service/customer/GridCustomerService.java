@@ -59,4 +59,14 @@ public interface GridCustomerService {
      */
     PageResult<GridCustomerDO> getCustomerPage(GridCustomerPageReqVO pageReqVO);
 
+    /**
+     * 网格创建后自动关联包含在网格内的客户
+     * 用于网格创建/更新后，查找所有坐标在网格边界内的客户，并建立客户-网格关系
+     *
+     * @param gridId 网格ID
+     * @param gridType 网格类型（ZERODAI, HUINONG, COMMUNITY, LOBBY）
+     * @return 关联的客户数量
+     */
+    int autoLinkCustomersToGrid(Long gridId, String gridType);
+
 }
