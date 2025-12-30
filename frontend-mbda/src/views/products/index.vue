@@ -277,14 +277,16 @@ onUnmounted(() => {
       <!-- Featured Carousel -->
       <div
         v-if="carouselItems.length > 0"
-        class="flex overflow-x-auto no-scrollbar gap-3 pb-2 -mx-4 px-4 snap-x"
+        class="flex overflow-x-auto no-scrollbar gap-3 pb-2 snap-x"
       >
+        <div class="pl-4"></div>
         <CarouselCard
           v-for="item in carouselItems"
           :key="item.id"
           :item="item"
           @click="handleCarouselClick(item)"
         />
+        <div class="pr-4"></div>
       </div>
 
       <!-- Product List -->
