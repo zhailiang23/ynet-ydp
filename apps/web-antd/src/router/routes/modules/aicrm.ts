@@ -12,6 +12,14 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'financial-product',
+        name: 'AicrmFinancialProduct',
+        meta: {
+          title: '金融产品管理',
+        },
+        component: () => import('#/views/aicrm/financial-product/index.vue'),
+      },
+      {
         path: 'retail-customer/detail/:id',
         name: 'AicrmRetailCustomerDetail',
         meta: {

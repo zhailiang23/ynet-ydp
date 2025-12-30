@@ -101,6 +101,24 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('#/views/aicrm/customerclaim/detail.vue'),
       },
+      {
+        path: 'product/catalog',
+        name: 'CrmProductCatalog',
+        meta: {
+          title: '产品目录',
+          activePath: '/crm/product/catalog',
+        },
+        component: () => import('#/views/crm/product/catalog/index.vue'),
+      },
+      {
+        path: 'financial-product',
+        name: 'CrmFinancialProduct',
+        meta: {
+          title: '金融产品',
+          activePath: '/crm/financial-product',
+        },
+        component: () => import('#/views/aicrm/financial-product/index.vue'),
+      },
     ],
   },
 ];
