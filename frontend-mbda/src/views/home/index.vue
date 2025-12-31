@@ -155,7 +155,10 @@ onMounted(() => {
                 <p class="text-blue-100 text-xs leading-relaxed mb-3">
                   基于昨日市场波动分析，建议重点关注持有科技类基金的客户。另有 3 位客户大额存单今日到期。
                 </p>
-                <button class="flex items-center gap-1.5 text-xs font-semibold bg-white text-primary px-4 py-2 rounded-lg w-fit hover:bg-blue-50 transition-colors shadow-sm">
+                <button
+                  class="flex items-center gap-1.5 text-xs font-semibold bg-white text-primary px-4 py-2 rounded-lg w-fit hover:bg-blue-50 transition-colors shadow-sm"
+                  @click="router.push('/insights/detail')"
+                >
                   查看深度分析
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

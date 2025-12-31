@@ -239,4 +239,7 @@ public interface ErrorCodeConstants {
     // ========== 练习虚拟客户 1-020-207-000 ==========
     ErrorCode PRACTICE_VIRTUAL_CUSTOMER_NOT_EXISTS = new ErrorCode(1_020_207_000, "练习虚拟客户不存在");
 
+    // ========== AI CRM 潜客管理 1-020-208-000 ==========
+    ErrorCode POTENTIAL_CUSTOMER_NOT_EXISTS = new ErrorCode(1_020_208_000, "潜客不存在");
+
 }

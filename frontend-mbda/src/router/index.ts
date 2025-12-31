@@ -68,6 +68,15 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: false, // 移动端产品对比无需登录
     },
   },
+  {
+    path: '/insights/detail',
+    name: 'InsightDetail',
+    component: () => import('@/views/insights/detail.vue'),
+    meta: {
+      title: '每日洞察详情',
+      requiresAuth: false, // 移动端洞察详情无需登录
+    },
+  },
 ]
 
 const router = createRouter({
