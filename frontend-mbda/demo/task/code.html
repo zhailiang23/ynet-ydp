@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bank Wealth Manager To-Do List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "card-dark": "#1c2936",
+                        "card-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden pb-24">
+<!-- Header Section -->
+<header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 pt-12 pb-2 shadow-sm border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 overflow-hidden rounded-full border-2 border-white dark:border-gray-700 shadow-sm relative">
+<img alt="Profile" class="h-full w-full object-cover" data-alt="Portrait of a professional bank manager smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGFbVAHpG8yhIw1W6BZkD0FDYY9waz8wIGXpRTvxcAWWFVF9LAt9u7f9Avfacv-5NS99jul82db9cXKIOI2WPTKZw2HvQHPNM9u9-MFKy8tPHzuubM7kMD6V1wtfOyaHjYqBClXgXDGbIHm5gR5nHAFfsPhTueKqzBhlvAGWp4taI1WOmBCQj6Yn2WZ4y6aWTmK2j56z-6WFAuZkHruokL0qMEd-AsqIBGRbGiBMh0zsmL60g7mzdBCRm6jpSL1zoFgRb4h1RAA_SO"/>
+</div>
+<div>
+<h1 class="text-sm text-gray-500 dark:text-gray-400 font-medium">早上好</h1>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">李经理</h2>
+</div>
+</div>
+<button class="relative rounded-full p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white dark:border-background-dark"></span>
+</button>
+</div>
+<!-- Stats Overview -->
+<div class="flex gap-3 overflow-hidden">
+<div class="flex-1 rounded-xl bg-gradient-to-br from-primary to-blue-600 p-4 text-white shadow-lg shadow-blue-500/20">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-white/80 text-[20px]">trending_up</span>
+<span class="text-xs font-medium text-white/90">今日潜在价值</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold tracking-tight">¥500w</span>
+<span class="text-xs font-medium bg-white/20 px-1.5 py-0.5 rounded text-white">+12%</span>
+</div>
+</div>
+<div class="flex-1 rounded-xl bg-white dark:bg-card-dark p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-orange-500 text-[20px]">priority_high</span>
+<span class="text-xs font-medium text-gray-500 dark:text-gray-400">高优待办</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">5</span>
+<span class="text-xs text-gray-400">个任务</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-4 pt-4">
+<!-- Segmented Control -->
+<div class="mb-5 rounded-lg bg-gray-200 dark:bg-gray-800 p-1 flex">
+<button class="flex-1 rounded-md bg-white dark:bg-card-dark shadow-sm py-2 text-sm font-semibold text-primary transition-all">
+                    AI 智能建议
+                </button>
+<button class="flex-1 rounded-md py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-all">
+                    手动待办事项
+                </button>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-1">
+<button class="flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-white shadow-sm shadow-blue-500/20">
+                    全部
+                </button>
+<button class="flex shrink-0 items-center gap-1.5 rounded-full bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300">
+<span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                    高优先级
+                </button>
+<button class="flex shrink-0 items-center gap-1.5 rounded-full bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-[14px] text-green-500">monetization_on</span>
+                    高业务价值
+                </button>
+<button class="flex shrink-0 items-center gap-1.5 rounded-full bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300">
+                    即将逾期
+                </button>
+</div>
+<!-- Task List -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between px-1">
+<h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">今日推荐 (3)</h3>
+<span class="text-xs text-primary font-medium cursor-pointer">查看全部</span>
+</div>
+<!-- AI Task Card 1: High Value -->
+<div class="group relative flex flex-col rounded-xl bg-white dark:bg-card-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-all active:scale-[0.99]">
+<!-- Left Stripe -->
+<div class="absolute left-0 top-4 bottom-4 w-1 rounded-r bg-red-500"></div>
+<div class="flex items-start justify-between mb-2 pl-3">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">auto_awesome</span> AI
+                                </span>
+<span class="text-xs text-gray-400 font-medium">2 小时前</span>
+</div>
+<h3 class="text-base font-bold text-slate-900 dark:text-white">张先生 - 基金持仓再平衡建议</h3>
+</div>
+<div class="flex flex-col items-end">
+<div class="text-xs font-medium text-gray-400 mb-0.5">价值评分</div>
+<div class="text-lg font-bold text-primary">9.8</div>
+</div>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 pl-3 mb-4 line-clamp-2">
+                        监测到市场波动超过 2%，客户持有的 "兴全合润" 收益率已达预期，建议提示止盈或调仓。
+                    </p>
+<div class="flex items-center justify-between pl-3 mt-auto pt-3 border-t border-gray-100 dark:border-gray-700/50">
+<div class="flex gap-2">
+<span class="inline-flex items-center rounded bg-red-50 dark:bg-red-900/20 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400">P0 紧急</span>
+<span class="inline-flex items-center rounded bg-blue-50 dark:bg-blue-900/20 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400">资产提升</span>
+</div>
+<button class="flex items-center gap-1 bg-primary hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md shadow-blue-500/20">
+<span class="material-symbols-outlined text-[16px]">call</span>
+                            去联系
+                        </button>
+</div>
+</div>
+<!-- AI Task Card 2: Opportunity -->
+<div class="group relative flex flex-col rounded-xl bg-white dark:bg-card-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-all active:scale-[0.99]">
+<div class="absolute left-0 top-4 bottom-4 w-1 rounded-r bg-yellow-500"></div>
+<div class="flex items-start justify-between mb-2 pl-3">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">auto_awesome</span> AI
+                                </span>
+<span class="text-xs text-gray-400 font-medium">上午 9:00</span>
+</div>
+<h3 class="text-base font-bold text-slate-900 dark:text-white">王女士 - 大额存单即将到期</h3>
+</div>
+<div class="flex flex-col items-end">
+<div class="text-xs font-medium text-gray-400 mb-0.5">价值评分</div>
+<div class="text-lg font-bold text-primary">8.5</div>
+</div>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 pl-3 mb-4">
+                        客户名下 200万 大额存单将于 3 天后到期，请提前联系确认续存或推荐理财产品。
+                    </p>
+<div class="flex items-center justify-between pl-3 mt-auto pt-3 border-t border-gray-100 dark:border-gray-700/50">
+<div class="flex gap-2">
+<span class="inline-flex items-center rounded bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 text-xs font-medium text-yellow-700 dark:text-yellow-400">P1 重要</span>
+<span class="inline-flex items-center rounded bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-300">到期提醒</span>
+</div>
+<button class="flex items-center gap-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 text-slate-700 dark:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+<span class="material-symbols-outlined text-[16px]">assignment_add</span>
+                            生成方案
+                        </button>
+</div>
+</div>
+<!-- Section Divider -->
+<div class="flex items-center justify-between px-1 mt-2">
+<h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">常规待办</h3>
+</div>
+<!-- Manual Task Card 1 -->
+<div class="group relative flex flex-col rounded-xl bg-white dark:bg-card-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-all active:scale-[0.99] opacity-90">
+<div class="absolute left-0 top-4 bottom-4 w-1 rounded-r bg-gray-300 dark:bg-gray-600"></div>
+<div class="flex items-start justify-between pl-3">
+<div class="flex items-center gap-3">
+<!-- Custom Checkbox -->
+<div class="relative flex items-center justify-center">
+<input class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 dark:border-gray-500 bg-transparent transition-all checked:border-primary checked:bg-primary" type="checkbox"/>
+<span class="material-symbols-outlined pointer-events-none absolute text-white opacity-0 peer-checked:opacity-100 text-[16px]">check</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-slate-900 dark:text-white line-through-peer-checked:text-gray-400">提交季度合规报告</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">截止时间：今日 17:00</p>
+</div>
+</div>
+<span class="inline-flex items-center rounded bg-gray-100 dark:bg-gray-700 px-2 py-1 text-[10px] font-medium text-gray-600 dark:text-gray-300">
+                           行政
+                        </span>
+</div>
+</div>
+<!-- Manual Task Card 2 -->
+<div class="group relative flex flex-col rounded-xl bg-white dark:bg-card-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-all active:scale-[0.99] opacity-90">
+<div class="absolute left-0 top-4 bottom-4 w-1 rounded-r bg-blue-400"></div>
+<div class="flex items-start justify-between pl-3">
+<div class="flex items-center gap-3">
+<div class="relative flex items-center justify-center">
+<input class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 dark:border-gray-500 bg-transparent transition-all checked:border-primary checked:bg-primary" type="checkbox"/>
+<span class="material-symbols-outlined pointer-events-none absolute text-white opacity-0 peer-checked:opacity-100 text-[16px]">check</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-slate-900 dark:text-white">分行营销例会</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">下午 16:00 - 17:30</p>
+</div>
+</div>
+<div class="flex -space-x-2">
+<div class="h-6 w-6 rounded-full border-2 border-white dark:border-card-dark bg-gray-200" data-alt="Team member avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBMtf4mFC58GYBafTlDvWKJDMaAWXGZ2KjgyIHiXyn8IH3YbP-rv760PU4kVIMO4TpP-6P9EkI2JN_s5v_-eO2hp738xZtlalC_XY2GGWIBplnIRTH_-4mfB5Cu32hSIyhTHjuppnmmqG7WEO9cDNP4jixyJU1EmL0LEUX0h3G9jZtzamkKUgjgH9WJEXR5QiqKSCeYvRQZLAnM_tIRjkqVMBbSKm2HqFfHxUbrjUyFYjDdH0PgYgFZaXNf89Xk89LMakW9dEATX8-j'); background-size: cover;"></div>
+<div class="h-6 w-6 rounded-full border-2 border-white dark:border-card-dark bg-gray-300" data-alt="Team member avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDHhOY23fmkMpJEY_zeZEqLFpShdqAzwkEABgbTWfStj1xifBZhSct6Q-rX_UPPdU73-KEA9xDzFjJpMZ0EEAwWb8hjX7vdKt4tZyIiYay1LHOLp8aT6w0YlXvsl9AtlnU8_u4GkyFzy-mJkEPccY2q4zbXhlHMGQAtI2SQawru74Pkk0B2j7doB8I-fQ33mHXUpgiZW3RhlnybvyUi5yZuBoNn4lClbPYi-Bd8Ezu9asHK-gqYYCzpN2g5kzubSue3PjO7IUtOYngO'); background-size: cover;"></div>
+<div class="h-6 w-6 rounded-full border-2 border-white dark:border-card-dark bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-500">+3</div>
+</div>
+</div>
+</div>
+<!-- Done placeholder -->
+<div class="text-center py-6">
+<p class="text-xs text-gray-400 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        已完成 12 项任务
+                    </p>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-blue-500/40 hover:bg-blue-600 transition-transform hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 z-20 w-full border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-card-dark pb-6 pt-3">
+<div class="flex items-center justify-around px-2">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[24px] fill-1">dashboard</span>
+<span class="text-[10px] font-medium">工作台</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+<span class="material-symbols-outlined text-[24px]">group</span>
+<span class="text-[10px] font-medium">客户</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+<span class="material-symbols-outlined text-[24px]">leaderboard</span>
+<span class="text-[10px] font-medium">业绩</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-medium">我的</span>
+</button>
+</div>
+</nav>
+</div>
+</body></html>

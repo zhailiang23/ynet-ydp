@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>银行工作台</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b66c3",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1C252E",
+                        "surface-dark-highlight": "#233648",
+                        "text-secondary": "#92adc9",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }@keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .ai-pulse::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: currentColor;
+            border-radius: 50%;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased text-slate-900 dark:text-white font-display bg-background-light dark:bg-background-dark">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-24">
+<header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-transparent dark:border-white/5">
+<div class="flex items-center justify-between p-4 pb-2">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="Portrait of a professional bank manager" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCRR3T-ANRC1kY0mOsvBpWYQce548AFks_tb0X9eNWIawv_OpH3N8ghaViFT-d03XABvN1rjOBSR2-el09evj4VcitmJouvTXg4gc5EMfEcsvur7vKIjKGn9W2jXpu1V7dm-3JcPV1yb-Y6AdfbSYVfbA_-V-4Q0h7G6s-EdQMwwKMrEVqXDt1T0jtPQZr98g_FWgnqqbPyEjTGCDrdQIG6naX_CICI_zwgpIBxUo9DHt3FIqPk5xZyij7YjBZUSq8-ojlLIeiDwR4F");'></div>
+<div class="flex flex-col">
+<span class="text-xs text-slate-500 dark:text-text-secondary font-medium">早上好，</span>
+<h2 class="text-slate-900 dark:text-white text-base font-bold leading-tight">李经理</h2>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="flex items-center justify-center rounded-full size-10 text-slate-500 dark:text-text-secondary hover:bg-slate-200 dark:hover:bg-surface-dark-highlight transition-colors">
+<span class="material-symbols-outlined text-[24px]">visibility_off</span>
+</button>
+<button class="relative flex items-center justify-center rounded-full size-10 text-slate-500 dark:text-text-secondary hover:bg-slate-200 dark:hover:bg-surface-dark-highlight transition-colors">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+<span class="absolute top-2.5 right-2.5 size-2 bg-red-500 rounded-full border border-background-light dark:border-background-dark"></span>
+</button>
+</div>
+</div>
+<div class="px-4 pb-4">
+<label class="flex flex-col h-12 w-full group">
+<div class="flex w-full flex-1 items-stretch rounded-2xl h-full overflow-hidden shadow-sm dark:shadow-none ring-1 ring-slate-200 dark:ring-white/10 group-focus-within:ring-primary transition-all">
+<div class="text-primary flex border-none bg-white dark:bg-surface-dark-highlight items-center justify-center pl-4">
+<span class="material-symbols-outlined text-[24px]">spark</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-white dark:bg-surface-dark-highlight focus:border-none h-full placeholder:text-slate-400 dark:placeholder:text-text-secondary px-3 pl-2 text-sm font-normal leading-normal" placeholder="向 AI 咨询客户或产品情况..." value=""/>
+<div class="text-slate-400 dark:text-text-secondary flex border-none bg-white dark:bg-surface-dark-highlight items-center justify-center pr-4 cursor-pointer hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">mic</span>
+</div>
+</div>
+</label>
+</div>
+</header>
+<main class="flex flex-col gap-6 px-4 pt-2">
+<section>
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#137fec] to-[#0a4d91] shadow-xl shadow-primary/20 text-white">
+<div class="absolute top-0 right-0 -mr-12 -mt-12 size-48 rounded-full bg-white/10 blur-3xl"></div>
+<div class="absolute bottom-0 left-0 -ml-12 -mb-12 size-40 rounded-full bg-purple-500/30 blur-3xl"></div>
+<div class="relative p-5 z-10">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 w-fit">
+<span class="relative flex items-center justify-center text-yellow-300 ai-pulse">
+<span class="material-symbols-outlined text-[16px] fill-current">auto_awesome</span>
+</span>
+<p class="text-xs font-bold tracking-wide uppercase">AI 每日洞察</p>
+</div>
+<span class="text-[10px] text-white/70 font-medium">更新于 08:30</span>
+</div>
+<div class="flex gap-4">
+<div class="flex-1 flex flex-col justify-center">
+<h3 class="text-lg font-bold leading-snug mb-2">
+                                识别出 <span class="text-yellow-300 text-xl">5 个</span> 高潜力营销线索
+                            </h3>
+<p class="text-blue-100 text-xs leading-relaxed mb-3">
+                                基于昨日市场波动分析，建议重点关注持有科技类基金的客户。另有 3 位客户大额存单今日到期。
+                            </p>
+<button class="flex items-center gap-1.5 text-xs font-semibold bg-white text-primary px-4 py-2 rounded-lg w-fit hover:bg-blue-50 transition-colors shadow-sm">
+                                查看深度分析
+                                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<div class="hidden xs:flex items-center justify-center shrink-0 w-20 h-20 bg-white/10 rounded-xl border border-white/10 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[40px] text-white/80">monitoring</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-3">
+<button class="relative w-full overflow-hidden rounded-2xl bg-white dark:bg-surface-dark-highlight text-slate-900 dark:text-white shadow-md p-4 flex items-center justify-between group active:scale-[0.99] transition-transform border border-slate-100 dark:border-white/5">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary rounded-l-2xl"></div>
+<div class="relative flex items-center gap-3.5 pl-2">
+<div class="flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400">
+<span class="material-symbols-outlined text-[28px]">storefront</span>
+</div>
+<div class="flex flex-col items-start gap-1">
+<h3 class="text-base font-bold tracking-tight">到店客户服务</h3>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">客户识别 · 快速录入 · 业务办理</p>
+</div>
+</div>
+<div class="relative flex items-center justify-center size-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</div>
+</button>
+<div class="grid grid-cols-4 gap-3">
+<div class="flex flex-col items-center gap-2 group cursor-pointer active:scale-95 transition-transform">
+<div class="flex items-center justify-center size-14 rounded-2xl bg-white dark:bg-surface-dark-highlight text-primary shadow-sm border border-slate-100 dark:border-white/5 group-hover:border-primary/50 group-hover:text-primary-dark transition-colors">
+<span class="material-symbols-outlined text-[28px]">compare_arrows</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">产品对比</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer active:scale-95 transition-transform">
+<div class="flex items-center justify-center size-14 rounded-2xl bg-white dark:bg-surface-dark-highlight text-purple-500 shadow-sm border border-slate-100 dark:border-white/5 group-hover:border-purple-500/50 group-hover:text-purple-600 transition-colors">
+<span class="material-symbols-outlined text-[28px]">analytics</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">方案生成</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer active:scale-95 transition-transform">
+<div class="flex items-center justify-center size-14 rounded-2xl bg-white dark:bg-surface-dark-highlight text-orange-500 shadow-sm border border-slate-100 dark:border-white/5 group-hover:border-orange-500/50 group-hover:text-orange-600 transition-colors">
+<span class="material-symbols-outlined text-[28px]">newspaper</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">市场资讯</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer active:scale-95 transition-transform">
+<div class="flex items-center justify-center size-14 rounded-2xl bg-white dark:bg-surface-dark-highlight text-slate-600 dark:text-slate-400 shadow-sm border border-slate-100 dark:border-white/5 group-hover:border-slate-400 group-hover:text-slate-800 transition-colors">
+<span class="material-symbols-outlined text-[28px]">qr_code_scanner</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">扫一扫</span>
+</div>
+</div>
+</section>
+<section>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4">
+<div class="flex min-w-[150px] flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-surface-dark-highlight border border-slate-100 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-text-secondary text-xs font-medium">管理资产 (AUM)</p>
+<span class="material-symbols-outlined text-primary text-[18px]">pie_chart</span>
+</div>
+<p class="text-slate-900 dark:text-white tracking-tight text-xl font-bold mt-2">¥1.2亿</p>
+<p class="text-emerald-500 text-xs font-bold flex items-center gap-0.5 mt-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> +2.5%
+                    </p>
+</div>
+<div class="flex min-w-[150px] flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-surface-dark-highlight border border-slate-100 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-text-secondary text-xs font-medium">资金净流入</p>
+<span class="material-symbols-outlined text-blue-500 text-[18px]">account_balance_wallet</span>
+</div>
+<p class="text-slate-900 dark:text-white tracking-tight text-xl font-bold mt-2">+¥500万</p>
+<p class="text-emerald-500 text-xs font-bold flex items-center gap-0.5 mt-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> +1.2%
+                    </p>
+</div>
+<div class="flex min-w-[150px] flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-surface-dark-highlight border border-slate-100 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-text-secondary text-xs font-medium">业绩完成率</p>
+<span class="material-symbols-outlined text-orange-500 text-[18px]">flag</span>
+</div>
+<p class="text-slate-900 dark:text-white tracking-tight text-xl font-bold mt-2">85%</p>
+<div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-gradient-to-r from-orange-400 to-red-500 h-1.5 rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">今日重点待办</h3>
+<span class="bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 text-[10px] font-bold px-1.5 py-0.5 rounded-md">3</span>
+</div>
+<button class="flex items-center text-primary text-xs font-semibold hover:text-primary-dark transition-colors">
+                    查看全部待办
+                    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+<div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-surface-dark-highlight border-l-4 border-red-500 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-11" data-alt="Portrait of Client Zhang San" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDsLxr0vrwIFVD8ebu9F3QmpC1Tuo9ikmmVdWLHp87g2KdCplZi0c1KDZgX3pN_ZGKWZ8JsncR_7Jo6PN8uj7fd9aXWMnNyD0ggqDw9UXNQT9vtPFYFwKOzefRffjYjahqLxS6-APQgZdFfxGfaGVXivy_iW-kecekpYDO17KSVIqdZtZuOszR3a3fOuAGUje5kKYolDAHH-xP7SrtXhqS43u781DI6l3Fw7SOqvRFyCWvI9ukDDLbTYLY4WPSVc9_kEKS2wyX36mWi");'></div>
+<div class="absolute -bottom-1 -right-1 bg-red-500 text-white flex items-center justify-center size-4 rounded-full border-2 border-white dark:border-surface-dark-highlight">
+<span class="material-symbols-outlined text-[10px] font-bold">priority_high</span>
+</div>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-2">
+<p class="text-slate-900 dark:text-white text-sm font-bold">张三</p>
+<span class="bg-red-50 text-red-600 text-[10px] px-1.5 py-0.5 rounded border border-red-100 font-medium">紧急</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs line-clamp-1">债券到期预警，需确认续期方案</p>
+</div>
+</div>
+<div class="flex gap-2 shrink-0">
+<button class="flex items-center justify-center size-9 rounded-full bg-green-50 text-green-600 dark:bg-green-500/20 dark:text-green-400 hover:bg-green-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">call</span>
+</button>
+<button class="flex items-center justify-center size-9 rounded-full bg-slate-50 text-slate-500 dark:bg-white/5 dark:text-slate-400 hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-surface-dark-highlight border-l-4 border-primary shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-11" data-alt="Portrait of Client Li Si" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCiL5GnO39V652zjP4nXhHbYJw0I3n8iPTgYkPJcckxlMcREAwyaSvHGDnfN4v1ymAkMWPZIqu3cS-vH6Ilu_beD_kEO70avdyaZ_At8DpFWGNTblmO2ZMvfWUWwIvYbmUNe8BwdSWbJug_MjBl3mPToEs6N8UqnvwVlPA5RHhvzO9nbjavRlxcyKmbyQaM7o0TYPklm5QNkzqdqP-vV_YpzgONFPcQiPpwG1WE-2gmrudOWr3so0FVfEnmE9hSO1fBbQ5_ut2pw4e8");'></div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white flex items-center justify-center size-4 rounded-full border-2 border-white dark:border-surface-dark-highlight">
+<span class="material-symbols-outlined text-[10px]">star</span>
+</div>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-2">
+<p class="text-slate-900 dark:text-white text-sm font-bold">李四</p>
+<span class="bg-blue-50 text-primary text-[10px] px-1.5 py-0.5 rounded border border-blue-100 font-medium">商机</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs line-clamp-1">今日生日，建议发送祝福并推荐理财</p>
+</div>
+</div>
+<div class="flex gap-2 shrink-0">
+<button class="flex items-center justify-center h-9 px-3 gap-1 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-xs font-semibold">
+<span class="material-symbols-outlined text-[16px]">card_giftcard</span>
+                        赠礼
+                    </button>
+</div>
+</div>
+<div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-surface-dark-highlight border-l-4 border-slate-300 dark:border-slate-600 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-11" data-alt="Portrait of Client Wang Wu" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD87PAaV9rjUDczzzpKCBkWg2HK9u4IMaRrqzzZMQTo5CHbHrIoWB1Ulu4AW9yFI1GaHjFiVjneJcgewah0pxiT41qDNURaJB3Bcm-efu997LQ5LmRa6LGgx6LajRPbNwjJBR6INszR5Z4yyD6m9QpEkInRzuyW4ffeAUZ-vmpw5JewICeorQ_m3HL2FNDoLggCXGFauc_ndmO4VqCh-Lbaf0NnlgnhL_CX2-HCFYXymYbrklLZ6n2xaKGvcI4sFRy9OR1J5IzcVh_b");'></div>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-2">
+<p class="text-slate-900 dark:text-white text-sm font-bold">王五</p>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs line-clamp-1">风险评估已过期，待更新</p>
+</div>
+</div>
+<div class="flex gap-2 shrink-0">
+<button class="flex items-center justify-center size-9 rounded-full bg-slate-50 text-slate-500 dark:bg-white/5 dark:text-slate-400 hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 w-full bg-white dark:bg-[#151e26] border-t border-slate-200 dark:border-white/5 pb-safe z-50">
+<div class="flex items-center justify-around h-16 pb-2">
+<a class="flex flex-col items-center gap-1 w-full text-primary" href="#">
+<span class="material-symbols-outlined text-[24px] filled">home</span>
+<span class="text-[10px] font-medium">首页</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-full text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">groups</span>
+<span class="text-[10px] font-medium">客户</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-full text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">savings</span>
+<span class="text-[10px] font-medium">产品</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-full text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-medium">我的</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } f
 
 // 创建 axios 实例
 const request: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_API || '/app-api/aicrm',
+  baseURL: import.meta.env.VITE_APP_BASE_URL || 'http://127.0.0.1:48080',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8',
@@ -18,7 +18,14 @@ request.interceptors.request.use(
       config.headers['tenant-id'] = tenantId
     }
 
-    // 从 localStorage 获取 token
+    // 移动端 API (/app-api/) 不需要 token，直接返回
+    // 这些 API 已在后端配置为允许匿名访问
+    const isAppApi = config.url?.startsWith('/app-api/')
+    if (isAppApi) {
+      return config
+    }
+
+    // 管理后台 API (/admin-api/) 需要添加 token
     const token = localStorage.getItem('access_token')
     if (token && config.headers) {
       config.headers['Authorization'] = `Bearer ${token}`

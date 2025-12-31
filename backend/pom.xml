@@ -22,6 +22,7 @@
         <module>iplatform-module-knowledge</module>
         <module>iplatform-module-bpm</module>
         <module>iplatform-module-grid</module>
+        <module>iplatform-module-task</module>
 <!--        <module>iplatform-module-report</module>-->
 <!--        <module>iplatform-module-mp</module>-->
 <!--        <module>iplatform-module-pay</module>-->

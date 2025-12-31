@@ -9,9 +9,11 @@ export default {
     extend: {
       colors: {
         primary: "#137fec",
+        "primary-dark": "#0b66c3",
         "background-light": "#f6f7f8",
         "background-dark": "#101922",
         "surface-dark": "#1c252e",
+        "surface-dark-highlight": "#233648",
         "text-secondary": "#92adc9",
       },
       fontFamily: {

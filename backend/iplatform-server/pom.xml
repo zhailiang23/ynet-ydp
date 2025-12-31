@@ -48,6 +48,11 @@
         </dependency>
         <dependency>
             <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-module-task</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
             <artifactId>iplatform-module-knowledge</artifactId>
             <version>${revision}</version>
         </dependency>

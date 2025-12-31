@@ -232,6 +232,8 @@ iplatform:
     mock-enable: true
     permit-all-urls:
       - /app-api/aicrm/practice-course/** # 允许匿名访问课程 API (学生端)
+      - /app-api/aicrm/financial-product/** # 允许匿名访问金融产品 API (移动端)
+      - /app-api/aicrm/task/** # 允许匿名访问任务管理 API (移动端)
       - /admin-api/aicrm/dify-test/** # 允许匿名访问 Dify 测试 API
       - /admin-api/aicrm/dify-chat-test/** # 允许匿名访问 Dify Chat 测试 API
   pay:
