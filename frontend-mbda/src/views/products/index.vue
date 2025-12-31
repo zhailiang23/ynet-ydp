@@ -153,6 +153,22 @@ const loadMore = () => {
   }
 }
 
+// 开始对比
+const startCompare = () => {
+  const selectedCount = selectedProductIds.value.size
+  if (selectedCount < 2) {
+    alert('至少需要选择 2 个产品进行对比')
+    return
+  }
+  if (selectedCount > 5) {
+    alert('最多可以选择 5 个产品进行对比')
+    return
+  }
+  // 跳转到产品对比页面，带上选中的产品 IDs
+  const ids = Array.from(selectedProductIds.value).join(',')
+  router.push({ path: '/products/compare', query: { ids } })
+}
+
 // 滚动监听（简单实现无限滚动）
 const handleScroll = () => {
   const scrollTop = window.scrollY || document.documentElement.scrollTop
@@ -335,6 +351,7 @@ onUnmounted(() => {
     >
       <button
         class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg transition-all transform hover:scale-105"
+        @click="startCompare"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

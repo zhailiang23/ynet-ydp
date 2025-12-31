@@ -59,6 +59,15 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: false, // 移动端产品详情无需登录
     },
   },
+  {
+    path: '/products/compare',
+    name: 'ProductCompare',
+    component: () => import('@/views/products/compare.vue'),
+    meta: {
+      title: '产品对比',
+      requiresAuth: false, // 移动端产品对比无需登录
+    },
+  },
 ]
 
 const router = createRouter({
