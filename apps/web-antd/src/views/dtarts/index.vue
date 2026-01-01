@@ -4,12 +4,14 @@ import { useRoute } from 'vue-router';
 
 import { IFrame, Page } from '@vben/common-ui';
 import { usePreferences } from '@vben/preferences';
+import { useUserStore } from '@vben/stores';
 
 defineOptions({ name: 'DtartsVizs' });
 
 const route = useRoute();
 const src = ref('');
 const relId = ref('');
+const userStore = useUserStore();
 
 // 获取主题信息
 const { theme } = usePreferences();
@@ -67,7 +69,7 @@ const setIframeSrc = () => {
   }
 
   // 获取当前登录用户的用户名
-  const username = 'demo'; // userStore.userInfo?.username || '';
+  const username = userStore.userInfo?.username || 'demo';
   const path = route.path;
   let iframePath = '';
 
