@@ -132,7 +132,7 @@ onMounted(() => {
     <main class="flex flex-col gap-6 px-4 pt-2">
       <!-- AI 每日洞察 -->
       <section>
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-[#0a4d91] shadow-xl shadow-primary/20 text-white">
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-[#0a4d91] shadow-xl shadow-primary/20 text-white cursor-pointer active:scale-[0.99] transition-transform" @click="router.push('/insights/detail')">
           <div class="absolute top-0 right-0 -mr-12 -mt-12 size-48 rounded-full bg-white/10 blur-3xl"></div>
           <div class="absolute bottom-0 left-0 -ml-12 -mb-12 size-40 rounded-full bg-purple-500/30 blur-3xl"></div>
           <div class="relative p-5 z-10">
@@ -157,7 +157,7 @@ onMounted(() => {
                 </p>
                 <button
                   class="flex items-center gap-1.5 text-xs font-semibold bg-white text-primary px-4 py-2 rounded-lg w-fit hover:bg-blue-50 transition-colors shadow-sm"
-                  @click="router.push('/insights/detail')"
+                  @click.stop="router.push('/insights/detail')"
                 >
                   查看深度分析
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>潜客挖掘</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0f65bd",
+                        "secondary": "#8b5cf6", // AI purple
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#192633",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    boxShadow: {
+                        "card": "0 2px 8px rgba(0,0,0,0.04), 0 0 2px rgba(0,0,0,0.02)",
+                        "glow": "0 0 15px rgba(139, 92, 246, 0.3)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-safe">
+<div class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+<button class="flex items-center justify-center p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">潜客挖掘</h1>
+<button class="flex items-center justify-center p-2 -mr-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300">history</span>
+</button>
+</div>
+<div class="px-4 pt-4 pb-2">
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-secondary to-indigo-600 p-4 text-white shadow-glow">
+<div class="absolute right-0 top-0 -mr-4 -mt-4 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
+<div class="absolute left-0 bottom-0 -ml-4 -mb-4 h-20 w-20 rounded-full bg-white/10 blur-xl"></div>
+<div class="relative z-10 flex items-start justify-between">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-amber-300 text-xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-xs font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded text-white/90">AI 智能洞察</span>
+</div>
+<h2 class="text-xl font-bold mb-1">已挖掘 24 位高潜客户</h2>
+<p class="text-xs text-white/80 leading-relaxed max-w-[85%]">
+                            基于行内大数据分析，筛选出近期有资金异动或产品到期的高意向客户。
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<div class="sticky top-[60px] z-40 bg-background-light dark:bg-background-dark pb-2 pt-2">
+<div class="px-4 mb-3">
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400 text-[20px]">search</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-2.5 border-none rounded-xl bg-white dark:bg-surface-dark shadow-card text-sm text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="搜索姓名、手机号..." type="text"/>
+</div>
+</div>
+<div class="flex gap-2 px-4 overflow-x-auto no-scrollbar pb-2">
+<button class="flex h-8 shrink-0 items-center justify-between gap-1 pl-3 pr-2 rounded-lg bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 shadow-sm active:bg-gray-50 dark:active:bg-gray-800 transition-colors">
+<span class="text-xs font-medium text-gray-700 dark:text-gray-300">资产范围</span>
+<span class="material-symbols-outlined text-gray-400 text-[16px]">expand_more</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-between gap-1 pl-3 pr-2 rounded-lg bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 shadow-sm active:bg-gray-50 dark:active:bg-gray-800 transition-colors">
+<span class="text-xs font-medium text-gray-700 dark:text-gray-300">年龄段</span>
+<span class="material-symbols-outlined text-gray-400 text-[16px]">expand_more</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-between gap-1 pl-3 pr-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 shadow-sm active:bg-blue-100 dark:active:bg-blue-900/30 transition-colors">
+<span class="text-xs font-medium text-blue-700 dark:text-blue-300">地域: 北京</span>
+<span class="material-symbols-outlined text-blue-500 text-[16px]">close</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-between gap-1 pl-3 pr-2 rounded-lg bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 shadow-sm active:bg-gray-50 dark:active:bg-gray-800 transition-colors">
+<span class="text-xs font-medium text-gray-700 dark:text-gray-300">产品偏好</span>
+<span class="material-symbols-outlined text-gray-400 text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="flex gap-2 px-4 overflow-x-auto no-scrollbar pt-1">
+<span class="text-xs font-bold text-gray-400 py-1">推荐标签:</span>
+<button class="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">#理财到期</button>
+<button class="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">#大额异动</button>
+<button class="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">#风险偏好提升</button>
+</div>
+</div>
+<div class="flex-1 px-4 pt-2 pb-24 flex flex-col gap-4">
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 shadow-card border-l-4 border-primary relative overflow-hidden group">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-gray-400 text-3xl">person</span>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-amber-400 text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full border-2 border-surface-light dark:border-surface-dark">V5</div>
+</div>
+<div>
+<h3 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                                王建国
+                                <span class="text-[10px] font-normal text-gray-500 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">52岁</span>
+<span class="text-[10px] font-normal text-gray-500 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">北京</span>
+</h3>
+<div class="flex gap-2 mt-1">
+<span class="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded font-medium">理财即将到期</span>
+<span class="text-[10px] text-green-600 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded font-medium">偏好稳健</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] text-gray-400 uppercase tracking-wider">AUM (万)</div>
+<div class="text-lg font-bold text-slate-900 dark:text-white">358.5</div>
+</div>
+</div>
+<div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/50 rounded-xl p-3 mb-4 border border-blue-100 dark:border-slate-700">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-sm mt-0.5">psychology</span>
+<div>
+<p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+<span class="font-bold text-primary">AI 洞察：</span>该客户名下30万大额存单将于3天后到期，且近期多次浏览"稳健增利"系列理财产品页面，建议推荐中低风险固收类产品。
+                            </p>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center justify-center gap-2 active:bg-gray-50 dark:active:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-lg">playlist_add</span>
+                        加入跟进
+                    </button>
+<button class="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-sm font-semibold text-white flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-lg">campaign</span>
+                        生成触达
+                    </button>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 shadow-card border border-gray-100 dark:border-gray-800 relative">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-purple-400 text-3xl">face_3</span>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-gray-400 text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full border-2 border-surface-light dark:border-surface-dark">V3</div>
+</div>
+<div>
+<h3 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                                李薇
+                                <span class="text-[10px] font-normal text-gray-500 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">35岁</span>
+<span class="text-[10px] font-normal text-gray-500 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">上海</span>
+</h3>
+<div class="flex gap-2 mt-1">
+<span class="text-[10px] text-purple-600 bg-purple-100 dark:bg-purple-900/30 px-1.5 py-0.5 rounded font-medium">资金回流</span>
+<span class="text-[10px] text-orange-600 bg-orange-100 dark:bg-orange-900/30 px-1.5 py-0.5 rounded font-medium">偏好基金</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] text-gray-400 uppercase tracking-wider">AUM (万)</div>
+<div class="text-lg font-bold text-slate-900 dark:text-white">85.2</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 mb-4 border border-gray-100 dark:border-gray-800">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-gray-400 text-sm mt-0.5">analytics</span>
+<div>
+<p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                上月银证转账流出资金已回流，风险承受能力评级由R3升至R4，适合推荐权益类基金组合方案。
+                            </p>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center justify-center gap-2 active:bg-gray-50 dark:active:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-lg">playlist_add</span>
+                        加入跟进
+                    </button>
+<button class="flex-1 py-2.5 rounded-xl bg-surface-light dark:bg-surface-dark border border-primary text-primary hover:bg-primary/5 text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-lg">campaign</span>
+                        生成触达
+                    </button>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 shadow-card border border-gray-100 dark:border-gray-800 relative">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-blue-400 text-3xl">face_6</span>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-amber-500 text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full border-2 border-surface-light dark:border-surface-dark">V6</div>
+</div>
+<div>
+<h3 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                                陈志豪
+                                <span class="text-[10px] font-normal text-gray-500 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">41岁</span>
+<span class="text-[10px] font-normal text-gray-500 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">深圳</span>
+</h3>
+<div class="flex gap-2 mt-1">
+<span class="text-[10px] text-red-600 bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 rounded font-medium">生日临近</span>
+<span class="text-[10px] text-blue-600 bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 rounded font-medium">偏好保险</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-[10px] text-gray-400 uppercase tracking-wider">AUM (万)</div>
+<div class="text-lg font-bold text-slate-900 dark:text-white">620.0</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 mb-4 border border-gray-100 dark:border-gray-800">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-gray-400 text-sm mt-0.5">cake</span>
+<div>
+<p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                下周二是客户生日，且客户家庭保障缺口较大。建议借生日祝福契机，切入终身寿险或年金险话题。
+                            </p>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center justify-center gap-2 active:bg-gray-50 dark:active:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-lg">playlist_add</span>
+                        加入跟进
+                    </button>
+<button class="flex-1 py-2.5 rounded-xl bg-surface-light dark:bg-surface-dark border border-primary text-primary hover:bg-primary/5 text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-lg">campaign</span>
+                        生成触达
+                    </button>
+</div>
+</div>
+</div>
+<div class="fixed bottom-6 left-0 right-0 px-6 flex justify-center z-50">
+<button class="bg-surface-dark dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-xl flex items-center gap-3 font-semibold text-sm hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">checklist</span>
+                批量操作 (3)
+             </button>
+</div>
+</div>
+
+</body></html>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { getFinancialProduct } from '@/api/financial'
+import { getFinancialProduct, getFinancialProductPage } from '@/api/financial'
 import type { FinancialProduct } from '@/types/product'
 
 const router = useRouter()
@@ -69,13 +69,17 @@ const goBack = () => {
 // 删除产品
 const removeProduct = (productId: number) => {
   const newIds = productIds.value.filter(id => id !== productId)
-  if (newIds.length < 2) {
-    alert('至少需要保留 2 个产品进行对比')
+  if (newIds.length === 0) {
+    // 如果删除后没有产品了，返回上一页
+    router.back()
     return
   }
   router.replace({ query: { ids: newIds.join(',') } })
   products.value = products.value.filter(p => p.id !== productId)
 }
+
+// 产品选择弹窗
+const showProductSelector = ref(false)
 
 // 添加产品
 const addProduct = () => {
@@ -83,8 +87,65 @@ const addProduct = () => {
     alert('最多可对比 5 个产品')
     return
   }
-  // TODO: 打开产品选择器
-  console.log('添加产品')
+  openProductSelector()
+}
+
+// 选择产品
+const selectProduct = (product: FinancialProduct) => {
+  // 检查是否已经添加
+  if (productIds.value.includes(product.id!)) {
+    alert('该产品已在对比列表中')
+    return
+  }
+  // 添加产品ID到URL
+  const newIds = [...productIds.value, product.id!]
+  router.replace({ query: { ids: newIds.join(',') } })
+  // 添加到产品列表
+  products.value.push(product)
+  // 关闭弹窗
+  showProductSelector.value = false
+}
+
+// 产品选择器相关
+const availableProducts = ref<FinancialProduct[]>([])
+const loadingProducts = ref(false)
+const searchKeyword = ref('')
+const selectedCategory = ref<string | null>(null)
+
+// 加载可选产品列表
+const loadAvailableProducts = async () => {
+  try {
+    loadingProducts.value = true
+    const result = await getFinancialProductPage({
+      pageNo: 1,
+      pageSize: 50,
+      status: 1, // 只显示在售产品
+      category: selectedCategory.value || undefined,
+      keyword: searchKeyword.value || undefined,
+    })
+    availableProducts.value = result.list
+  } catch (error) {
+    console.error('加载产品列表失败:', error)
+  } finally {
+    loadingProducts.value = false
+  }
+}
+
+// 打开产品选择器时加载产品
+const openProductSelector = () => {
+  showProductSelector.value = true
+  loadAvailableProducts()
+}
+
+// 筛选分类
+const filterByCategory = (category: string | null) => {
+  selectedCategory.value = category
+  loadAvailableProducts()
+}
+
+// 搜索产品
+const searchProducts = () => {
+  loadAvailableProducts()
 }
 
 // 保存对比
@@ -171,12 +232,9 @@ const getCategoryName = (category: string) => {
 
 // 组件挂载
 onMounted(() => {
-  if (productIds.value.length < 2) {
-    alert('至少需要选择 2 个产品进行对比')
-    router.back()
-    return
+  if (productIds.value.length > 0) {
+    loadProducts()
   }
-  loadProducts()
 })
 </script>
 
@@ -544,6 +602,147 @@ onMounted(() => {
         </button>
       </div>
     </div>
+
+    <!-- 产品选择弹窗 -->
+    <div
+      v-if="showProductSelector"
+      class="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-end"
+      @click.self="showProductSelector = false"
+    >
+      <div class="w-full bg-background-dark rounded-t-3xl max-h-[80vh] flex flex-col animate-slide-up">
+        <!-- 弹窗头部 -->
+        <div class="sticky top-0 z-10 bg-background-dark rounded-t-3xl border-b border-white/5 px-4 py-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-bold text-white">选择产品</h3>
+            <button
+              @click="showProductSelector = false"
+              class="flex items-center justify-center size-8 rounded-full hover:bg-white/10 transition-colors text-gray-400"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- 搜索框 -->
+          <div class="relative">
+            <input
+              v-model="searchKeyword"
+              @input="searchProducts"
+              type="text"
+              placeholder="搜索产品名称或代码..."
+              class="w-full pl-10 pr-4 py-2.5 bg-surface-dark-highlight border border-white/10 rounded-xl text-white placeholder-gray-400 text-sm focus:outline-none focus:border-primary transition-colors"
+            />
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          <!-- 分类筛选 -->
+          <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar pb-1">
+            <button
+              @click="filterByCategory(null)"
+              :class="[
+                'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors',
+                selectedCategory === null
+                  ? 'bg-primary text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              ]"
+            >
+              全部
+            </button>
+            <button
+              @click="filterByCategory('WEALTH')"
+              :class="[
+                'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors',
+                selectedCategory === 'WEALTH'
+                  ? 'bg-primary text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              ]"
+            >
+              理财
+            </button>
+            <button
+              @click="filterByCategory('FUND')"
+              :class="[
+                'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors',
+                selectedCategory === 'FUND'
+                  ? 'bg-primary text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              ]"
+            >
+              基金
+            </button>
+            <button
+              @click="filterByCategory('INSURANCE')"
+              :class="[
+                'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors',
+                selectedCategory === 'INSURANCE'
+                  ? 'bg-primary text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              ]"
+            >
+              保险
+            </button>
+            <button
+              @click="filterByCategory('BOND')"
+              :class="[
+                'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors',
+                selectedCategory === 'BOND'
+                  ? 'bg-primary text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              ]"
+            >
+              债券
+            </button>
+          </div>
+        </div>
+
+        <!-- 产品列表 -->
+        <div class="flex-1 overflow-y-auto px-4 py-4">
+          <div v-if="loadingProducts" class="flex items-center justify-center py-12">
+            <div class="size-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+
+          <div v-else-if="availableProducts.length === 0" class="flex flex-col items-center justify-center py-12 text-gray-400">
+            <svg class="w-16 h-16 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-sm">暂无产品</p>
+          </div>
+
+          <div v-else class="space-y-2">
+            <button
+              v-for="product in availableProducts"
+              :key="product.id"
+              @click="selectProduct(product)"
+              :disabled="productIds.includes(product.id!)"
+              class="w-full p-3 bg-surface-dark-highlight border border-white/5 rounded-xl hover:border-primary transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <h4 class="font-bold text-sm text-white line-clamp-1">{{ product.productName }}</h4>
+                  <p class="text-xs text-gray-400 mt-1 font-mono">{{ product.productCode }}</p>
+                  <div class="flex items-center gap-2 mt-2">
+                    <span :class="['px-2 py-0.5 rounded text-[10px] font-medium', getRiskLevelClass(product.riskLevel)]">
+                      {{ getRiskLevelName(product.riskLevel) }}
+                    </span>
+                    <span class="text-xs text-gray-400">|</span>
+                    <span class="text-xs text-gray-300">{{ product.category ? getCategoryName(product.category) : '-' }}</span>
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <div v-if="product.expectedReturn" class="text-lg font-bold text-red-500">
+                    {{ product.expectedReturn }}%
+                  </div>
+                  <div class="text-[10px] text-gray-400 mt-1">预期收益率</div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -584,5 +783,25 @@ onMounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
 }
 </style>

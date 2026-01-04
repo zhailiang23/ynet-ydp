@@ -20,6 +20,14 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/aicrm/financial-product/index.vue'),
       },
       {
+        path: 'potential-customer',
+        name: 'AicrmPotentialCustomer',
+        meta: {
+          title: '潜客管理',
+        },
+        component: () => import('#/views/aicrm/potentialcustomer/index.vue'),
+      },
+      {
         path: 'retail-customer/detail/:id',
         name: 'AicrmRetailCustomerDetail',
         meta: {

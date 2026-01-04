@@ -77,6 +77,78 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: false, // 移动端洞察详情无需登录
     },
   },
+  {
+    path: '/customers',
+    name: 'CustomerList',
+    component: () => import('@/views/customers/index.vue'),
+    meta: {
+      title: '客户列表',
+      requiresAuth: false, // 移动端客户列表无需登录
+    },
+  },
+  {
+    path: '/customer/:id',
+    name: 'CustomerDetail',
+    component: () => import('@/views/customer/detail.vue'),
+    meta: {
+      title: 'AI 客户洞察',
+      requiresAuth: false, // 移动端客户详情无需登录
+    },
+  },
+  {
+    path: '/tools',
+    name: 'Tools',
+    component: () => import('@/views/tools/index.vue'),
+    meta: {
+      title: '销售工具箱',
+      requiresAuth: false, // 移动端工具箱无需登录
+    },
+  },
+  {
+    path: '/tools/poster-generator',
+    name: 'PosterGenerator',
+    component: () => import('@/views/tools/poster-generator.vue'),
+    meta: {
+      title: '海报生成器',
+      requiresAuth: false, // 移动端海报生成器无需登录
+    },
+  },
+  {
+    path: '/tools/potential-customers',
+    name: 'PotentialCustomers',
+    component: () => import('@/views/tools/potential-customers.vue'),
+    meta: {
+      title: '潜客挖掘',
+      requiresAuth: false, // 移动端潜客挖掘无需登录
+    },
+  },
+  {
+    path: '/tools/morning-report',
+    name: 'MorningReport',
+    component: () => import('@/views/tools/morning-report.vue'),
+    meta: {
+      title: '早报生成器',
+      requiresAuth: false, // 移动端早报生成器无需登录
+    },
+  },
+  {
+    path: '/tools/marketing-script',
+    name: 'MarketingScript',
+    component: () => import('@/views/tools/marketing-script.vue'),
+    meta: {
+      title: '智能话术助手',
+      requiresAuth: false, // 移动端话术助手无需登录
+    },
+  },
+  {
+    path: '/tools/profit-calculator',
+    name: 'ProfitCalculator',
+    component: () => import('@/views/tools/profit-calculator.vue'),
+    meta: {
+      title: '收益演示',
+      requiresAuth: false, // 移动端收益演示无需登录
+    },
+  },
 ]
 
 const router = createRouter({

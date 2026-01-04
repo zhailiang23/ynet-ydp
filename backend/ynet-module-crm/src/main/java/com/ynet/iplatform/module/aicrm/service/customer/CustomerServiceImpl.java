@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import com.ynet.iplatform.module.aicrm.controller.admin.customer.vo.*;
+import com.ynet.iplatform.module.aicrm.controller.app.customer.vo.*;
 import com.ynet.iplatform.module.aicrm.dal.dataobject.customer.CustomerDO;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
 import com.ynet.iplatform.framework.common.pojo.PageParam;
@@ -80,6 +81,26 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public PageResult<CustomerDO> getCustomerPage(CustomerPageReqVO pageReqVO) {
         return customerMapper.selectPage(pageReqVO);
+    }
+
+    // ==================== 移动端接口实现 ====================
+
+    @Override
+    public PageResult<AppCustomerRespVO> getAppCustomerPage(AppCustomerPageReqVO pageReqVO) {
+        // 转换为管理后台查询参数
+        CustomerPageReqVO adminPageReqVO = BeanUtils.toBean(pageReqVO, CustomerPageReqVO.class);
+
+        // 查询数据
+        PageResult<CustomerDO> pageResult = customerMapper.selectPage(adminPageReqVO);
+
+        // 转换为移动端响应对象
+        return BeanUtils.toBean(pageResult, AppCustomerRespVO.class);
+    }
+
+    @Override
+    public AppCustomerRespVO getAppCustomer(Long id) {
+        CustomerDO customer = customerMapper.selectById(id);
+        return BeanUtils.toBean(customer, AppCustomerRespVO.class);
     }
 
 }

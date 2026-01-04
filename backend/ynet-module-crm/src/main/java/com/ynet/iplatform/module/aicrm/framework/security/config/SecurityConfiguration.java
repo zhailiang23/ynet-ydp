@@ -23,6 +23,12 @@ public class SecurityConfiguration {
                 // 客户认领流程回调接口 - 无需身份验证
                 // BPM 流程引擎会在流程结束时自动调用此接口
                 registry.requestMatchers(buildAdminApi("/aicrm/customer-claim/callback/**")).permitAll();
+
+                // 移动端 API - 允许匿名访问
+                registry.requestMatchers(buildAppApi("/aicrm/potential-customer/**")).permitAll();
+                registry.requestMatchers(buildAppApi("/aicrm/task/**")).permitAll();
+                registry.requestMatchers(buildAppApi("/aicrm/financial-product/**")).permitAll();
+                registry.requestMatchers(buildAppApi("/aicrm/customer/**")).permitAll();
             }
 
         };

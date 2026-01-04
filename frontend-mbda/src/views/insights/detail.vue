@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-24">
+  <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-24">
     <!-- Header -->
     <header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
       <div class="flex items-center justify-between p-4 h-14">
@@ -161,47 +161,58 @@
           <div
             v-for="customer in customers"
             :key="customer.id"
-            class="bg-white dark:bg-surface-dark-highlight p-4 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm"
-            :class="{ 'opacity-80': customer.aiMatchScore < 90 }"
+            class="bg-white dark:bg-surface-dark-highlight p-4 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm cursor-pointer hover:shadow-md active:scale-[0.99] transition-all"
+            :class="{ 'opacity-80': !customer.isHighQuality }"
+            @click="goToCustomerDetail(customer.id)"
           >
             <div class="flex justify-between items-start mb-3">
               <div class="flex gap-3">
                 <div class="relative">
-                  <div
-                    class="bg-center bg-no-repeat bg-cover rounded-full size-12"
-                    :style="customer.avatar ? `background-image: url('${customer.avatar}')` : 'background-color: #e0e7ff'"
+                  <div class="bg-gradient-to-br rounded-full size-12 flex items-center justify-center text-white font-bold text-lg ring-2 ring-white/10"
+                    :class="{
+                      'from-yellow-400 to-yellow-600': customer.customerLevel === 'diamond',
+                      'from-purple-400 to-purple-600': customer.customerLevel === 'vip',
+                      'from-blue-400 to-blue-600': customer.customerLevel === 'gold',
+                      'from-gray-400 to-gray-600': !customer.customerLevel || customer.customerLevel === 'normal',
+                      'from-red-400 to-red-600': customer.customerLevel === 'strategic',
+                      'from-orange-400 to-orange-600': customer.customerLevel === 'key',
+                    }"
                   >
-                    <div v-if="!customer.avatar" class="flex items-center justify-center h-full text-primary font-bold text-lg">
-                      {{ customer.customerName[0] }}
-                    </div>
+                    {{ customer.customerName?.charAt(0) }}
                   </div>
                   <span
                     v-if="customer.customerLevel"
-                    class="absolute -bottom-1 -right-1 flex size-5 items-center justify-center bg-yellow-400 text-yellow-900 rounded-full text-[10px] font-bold border-2 border-white dark:border-surface-dark-highlight"
+                    class="absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full text-[9px] font-bold border-2 border-white dark:border-surface-dark-highlight"
+                    :class="{
+                      'bg-gradient-to-br from-yellow-400 to-yellow-600 text-black': customer.customerLevel === 'diamond',
+                      'bg-gradient-to-br from-purple-400 to-purple-600 text-white': customer.customerLevel === 'vip',
+                      'bg-gradient-to-br from-blue-400 to-blue-600 text-white': customer.customerLevel === 'gold',
+                      'bg-gradient-to-br from-gray-400 to-gray-600 text-white': customer.customerLevel === 'normal',
+                      'bg-gradient-to-br from-red-400 to-red-600 text-white': customer.customerLevel === 'strategic',
+                      'bg-gradient-to-br from-orange-400 to-orange-600 text-white': customer.customerLevel === 'key',
+                    }"
                   >
-                    {{ customer.customerLevel }}
+                    {{ getLevelLabel(customer.customerLevel) }}
                   </span>
                 </div>
                 <div>
                   <div class="flex items-center gap-2">
                     <h4 class="font-bold text-slate-900 dark:text-white">{{ customer.customerName }}</h4>
                     <span
-                      :class="[
-                        'px-1.5 py-0.5 rounded text-[10px] font-medium',
-                        getRiskLevelClass(customer.riskLevel)
-                      ]"
+                      v-if="customer.creditLevel"
+                      class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
                     >
-                      {{ getRiskLevelName(customer.riskLevel) }}
+                      {{ customer.creditLevel }}
                     </span>
                   </div>
                   <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    AUM: ¥{{ formatAmount(customer.aum) }}
+                    信用评分: {{ customer.creditScore || 0 }}
                   </p>
                 </div>
               </div>
               <div class="flex flex-col items-end">
-                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">AI 匹配度</span>
-                <span class="text-lg font-bold text-primary">{{ customer.aiMatchScore }}%</span>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">信用评分</span>
+                <span class="text-lg font-bold text-primary">{{ customer.creditScore || 0 }}</span>
               </div>
             </div>
 
@@ -211,8 +222,8 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
                 <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <span class="font-bold text-slate-900 dark:text-white">分析结论：</span>
-                  {{ customer.analysisConclusion }}
+                  <span class="font-bold text-slate-900 dark:text-white">备注：</span>
+                  {{ customer.remark || '该客户持有相关科技类基金产品，建议关注回调补仓机会' }}
                 </p>
               </div>
             </div>
@@ -270,13 +281,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getPotentialCustomerPage } from '@/api/potentialcustomer'
-import type { PotentialCustomer } from '@/types/potentialCustomer'
+import { getCustomerPage } from '@/api/customer'
+import type { Customer } from '@/types/customer'
 
 const router = useRouter()
 
-// 潜客列表
-const customers = ref<PotentialCustomer[]>([])
+// 客户列表
+const customers = ref<Customer[]>([])
 const loading = ref(false)
 const pageNo = ref(1)
 const pageSize = ref(10)
@@ -285,20 +296,20 @@ const total = ref(0)
 // 计算总客户数
 const totalCustomers = computed(() => total.value)
 
-// 计算总潜在价值（万元）
+// 计算总潜在价值（万元）- 使用信用评分模拟
 const totalPotentialValue = computed(() => {
-  const totalValue = customers.value.reduce((sum, c) => sum + (c.potentialValue || 0), 0)
-  return (totalValue / 10000).toFixed(0)
+  const totalValue = customers.value.reduce((sum, c) => sum + Number(c.creditScore || 0), 0)
+  return (totalValue / 100).toFixed(0)
 })
 
 // 是否还有更多数据
 const hasMore = computed(() => customers.value.length < total.value)
 
-// 加载潜客列表
+// 加载客户列表
 const loadCustomers = async () => {
   try {
     loading.value = true
-    const res = await getPotentialCustomerPage({
+    const res = await getCustomerPage({
       pageNo: pageNo.value,
       pageSize: pageSize.value,
     })
@@ -309,7 +320,7 @@ const loadCustomers = async () => {
     }
     total.value = res.total
   } catch (error) {
-    console.error('加载潜客列表失败:', error)
+    console.error('加载客户列表失败:', error)
   } finally {
     loading.value = false
   }
@@ -321,29 +332,26 @@ const loadMore = () => {
   loadCustomers()
 }
 
-// 获取风险等级样式
-const getRiskLevelClass = (level: string) => {
-  if (level === 'AGGRESSIVE') return 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
-  if (level === 'BALANCED') return 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400'
-  return 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
-}
-
-// 获取风险等级名称
-const getRiskLevelName = (level: string) => {
+// 获取客户等级标签
+const getLevelLabel = (level?: string) => {
   const map: Record<string, string> = {
-    AGGRESSIVE: '激进型',
-    BALANCED: '稳健型',
-    CONSERVATIVE: '保守型',
+    // 零售客户等级
+    normal: '普通',
+    gold: '金卡',
+    vip: 'VIP',
+    diamond: '钻石',
+    // 对公客户等级
+    strategic: '战略',
+    key: '重点',
+    general: '普通',
+    important: '重要',
   }
-  return map[level] || level
+  return level ? map[level] || level : '普通'
 }
 
-// 格式化金额
-const formatAmount = (amount: number) => {
-  if (amount >= 10000) {
-    return `${(amount / 10000).toFixed(1)}万`
-  }
-  return amount.toLocaleString()
+// 跳转到客户详情页
+const goToCustomerDetail = (customerId: number) => {
+  router.push(`/customer/${customerId}`)
 }
 
 // 页面挂载时加载数据

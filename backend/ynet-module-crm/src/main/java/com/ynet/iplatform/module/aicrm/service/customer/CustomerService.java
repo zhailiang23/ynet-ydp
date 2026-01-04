@@ -3,6 +3,7 @@ package com.ynet.iplatform.module.aicrm.service.customer;
 import java.util.*;
 import jakarta.validation.*;
 import com.ynet.iplatform.module.aicrm.controller.admin.customer.vo.*;
+import com.ynet.iplatform.module.aicrm.controller.app.customer.vo.*;
 import com.ynet.iplatform.module.aicrm.dal.dataobject.customer.CustomerDO;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
 import com.ynet.iplatform.framework.common.pojo.PageParam;
@@ -58,5 +59,23 @@ public interface CustomerService {
      * @return CRM客户主表(零售+对公共用)分页
      */
     PageResult<CustomerDO> getCustomerPage(CustomerPageReqVO pageReqVO);
+
+    // ==================== 移动端接口 ====================
+
+    /**
+     * 获得客户分页（移动端）
+     *
+     * @param pageReqVO 分页查询
+     * @return 客户分页
+     */
+    PageResult<AppCustomerRespVO> getAppCustomerPage(AppCustomerPageReqVO pageReqVO);
+
+    /**
+     * 获得客户详情（移动端）
+     *
+     * @param id 编号
+     * @return 客户详情
+     */
+    AppCustomerRespVO getAppCustomer(Long id);
 
 }
