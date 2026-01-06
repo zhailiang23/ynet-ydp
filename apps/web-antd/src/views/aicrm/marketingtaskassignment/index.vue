@@ -1,54 +1,51 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AicrmCustomerMarketingActivityApi } from '#/api/aicrm/customermarketingactivity';
+import type { AicrmMarketingTaskAssignmentApi } from '#/api/aicrm/marketingtaskassignment';
 
 import { ref } from 'vue';
 
-import { confirm, Page, useVbenModal } from '@vben/common-ui';
+import { confirm, Page } from '@vben/common-ui';
 import { downloadFileFromBlobPart, isEmpty } from '@vben/utils';
 
 import { message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteCustomerMarketingActivity,
-  deleteCustomerMarketingActivityList,
-  exportCustomerMarketingActivity,
-  getCustomerMarketingActivityPage,
-} from '#/api/aicrm/customermarketingactivity';
+  deleteMarketingTaskAssignment,
+  deleteMarketingTaskAssignmentList,
+  exportMarketingTaskAssignment,
+  getMarketingTaskAssignmentPage,
+} from '#/api/aicrm/marketingtaskassignment';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
 
-const [FormModal, formModalApi] = useVbenModal({
-  connectedComponent: Form,
-  destroyOnClose: true,
-});
+const formRef = ref();
 
 /** 刷新表格 */
 function handleRefresh() {
   gridApi.query();
 }
 
-/** 创建客户营销活动信息 */
+/** 创建营销活动任务下发 */
 function handleCreate() {
-  formModalApi.setData(null).open();
+  formRef.value.modalApi.setData(null).open();
 }
 
-/** 编辑客户营销活动信息 */
-function handleEdit(row: AicrmCustomerMarketingActivityApi.CustomerMarketingActivity) {
-  formModalApi.setData(row).open();
+/** 编辑营销活动任务下发 */
+function handleEdit(row: AicrmMarketingTaskAssignmentApi.MarketingTaskAssignment) {
+  formRef.value.modalApi.setData(row).open();
 }
 
-/** 删除客户营销活动信息 */
-async function handleDelete(row: AicrmCustomerMarketingActivityApi.CustomerMarketingActivity) {
+/** 删除营销活动任务下发 */
+async function handleDelete(row: AicrmMarketingTaskAssignmentApi.MarketingTaskAssignment) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.id]),
     duration: 0,
   });
   try {
-    await deleteCustomerMarketingActivity(row.id!);
+    await deleteMarketingTaskAssignment(row.id!);
     message.success($t('ui.actionMessage.deleteSuccess', [row.id]));
     handleRefresh();
   } finally {
@@ -56,7 +53,7 @@ async function handleDelete(row: AicrmCustomerMarketingActivityApi.CustomerMarke
   }
 }
 
-/** 批量删除客户营销活动信息 */
+/** 批量删除营销活动任务下发 */
 async function handleDeleteBatch() {
   await confirm($t('ui.actionMessage.deleteBatchConfirm'));
   const hideLoading = message.loading({
@@ -64,7 +61,7 @@ async function handleDeleteBatch() {
     duration: 0,
   });
   try {
-    await deleteCustomerMarketingActivityList(checkedIds.value);
+    await deleteMarketingTaskAssignmentList(checkedIds.value);
     checkedIds.value = [];
     message.success($t('ui.actionMessage.deleteSuccess'));
     handleRefresh();
@@ -77,15 +74,15 @@ const checkedIds = ref<number[]>([]);
 function handleRowCheckboxChange({
   records,
 }: {
-  records: AicrmCustomerMarketingActivityApi.CustomerMarketingActivity[];
+  records: AicrmMarketingTaskAssignmentApi.MarketingTaskAssignment[];
 }) {
   checkedIds.value = records.map((item) => item.id!);
 }
 
 /** 导出表格 */
 async function handleExport() {
-  const data = await exportCustomerMarketingActivity(await gridApi.formApi.getValues());
-  downloadFileFromBlobPart({ fileName: '客户营销活动信息.xls', source: data });
+  const data = await exportMarketingTaskAssignment(await gridApi.formApi.getValues());
+  downloadFileFromBlobPart({ fileName: '营销活动任务下发.xls', source: data });
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -99,7 +96,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getCustomerMarketingActivityPage({
+          return await getMarketingTaskAssignmentPage({
             pageNo: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -115,7 +112,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: true,
       search: true,
     },
-  } as VxeTableGridOptions<AicrmCustomerMarketingActivityApi.CustomerMarketingActivity>,
+  } as VxeTableGridOptions<AicrmMarketingTaskAssignmentApi.MarketingTaskAssignment>,
   gridEvents: {
     checkboxAll: handleRowCheckboxChange,
     checkboxChange: handleRowCheckboxChange,
@@ -125,23 +122,23 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 <template>
   <Page auto-content-height>
-    <FormModal @success="handleRefresh" />
-    <Grid table-title="客户营销活动信息列表">
+    <Form ref="formRef" @success="handleRefresh" />
+    <Grid table-title="营销活动任务下发列表">
       <template #toolbar-tools>
         <TableAction
           :actions="[
             {
-              label: $t('ui.actionTitle.create', ['客户营销活动信息']),
+              label: $t('ui.actionTitle.create', ['任务下发']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
-              auth: ['aicrm:marketing-activity:create'],
+              auth: ['aicrm:marketing-task-assignment:create'],
               onClick: handleCreate,
             },
             {
               label: $t('ui.actionTitle.export'),
               type: 'primary',
               icon: ACTION_ICON.DOWNLOAD,
-              auth: ['aicrm:marketing-activity:export'],
+              auth: ['aicrm:marketing-task-assignment:export'],
               onClick: handleExport,
             },
             {
@@ -149,7 +146,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'primary',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              auth: ['aicrm:marketing-activity:delete'],
+              auth: ['aicrm:marketing-task-assignment:delete'],
               disabled: isEmpty(checkedIds),
               onClick: handleDeleteBatch,
             },
@@ -163,7 +160,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               label: $t('common.edit'),
               type: 'link',
               icon: ACTION_ICON.EDIT,
-              auth: ['aicrm:marketing-activity:update'],
+              auth: ['aicrm:marketing-task-assignment:update'],
               onClick: handleEdit.bind(null, row),
             },
             {
@@ -171,7 +168,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'link',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              auth: ['aicrm:marketing-activity:delete'],
+              auth: ['aicrm:marketing-task-assignment:delete'],
               popConfirm: {
                 title: $t('ui.actionMessage.deleteConfirm', [row.id]),
                 confirm: handleDelete.bind(null, row),

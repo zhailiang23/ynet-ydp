@@ -101,6 +101,19 @@ export function useFormSchema(): VbenFormSchema[] {
       },
     },
     {
+      fieldName: 'responsibleUserId',
+      label: '任务负责人',
+      rules: 'required',
+      component: 'ApiSelect',
+      componentProps: {
+        placeholder: '请选择任务负责人',
+        api: '/admin-api/system/user/simple-list',
+        labelField: 'nickname',
+        valueField: 'id',
+        immediate: true,
+      },
+    },
+    {
       fieldName: 'deadline',
       label: '截止时间',
       component: 'DatePicker',
@@ -229,6 +242,19 @@ export function useGridFormSchema(): VbenFormSchema[] {
       },
     },
     {
+      fieldName: 'responsibleUserId',
+      label: '任务负责人',
+      component: 'ApiSelect',
+      componentProps: {
+        allowClear: true,
+        placeholder: '请选择任务负责人',
+        api: '/admin-api/system/user/simple-list',
+        labelField: 'nickname',
+        valueField: 'id',
+        immediate: true,
+      },
+    },
+    {
       fieldName: 'createTime',
       label: '创建时间',
       component: 'RangePicker',
@@ -300,6 +326,11 @@ export function useGridColumns(): VxeTableGridOptions<AicrmTaskApi.Task>['column
     {
       field: 'customerName',
       title: '关联客户',
+      minWidth: 120,
+    },
+    {
+      field: 'responsibleUserName',
+      title: '任务负责人',
       minWidth: 120,
     },
     {
