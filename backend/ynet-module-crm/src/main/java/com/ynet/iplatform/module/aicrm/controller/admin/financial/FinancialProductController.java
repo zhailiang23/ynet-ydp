@@ -7,6 +7,7 @@ import com.ynet.iplatform.framework.apilog.core.annotation.ApiAccessLog;
 import com.ynet.iplatform.module.aicrm.controller.admin.financial.vo.product.FinancialProductPageReqVO;
 import com.ynet.iplatform.module.aicrm.controller.admin.financial.vo.product.FinancialProductRespVO;
 import com.ynet.iplatform.module.aicrm.controller.admin.financial.vo.product.FinancialProductSaveReqVO;
+import com.ynet.iplatform.module.aicrm.controller.app.financial.vo.AppCarouselRespVO;
 import com.ynet.iplatform.module.aicrm.service.financial.FinancialProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,6 +98,14 @@ public class FinancialProductController {
         pageReqVO.setPageSize(Integer.MAX_VALUE);
         PageResult<FinancialProductRespVO> pageResult = financialProductService.getFinancialProductPage(pageReqVO);
         ExcelUtils.write(response, "金融产品.xls", "数据", FinancialProductRespVO.class, pageResult.getList());
+    }
+
+    @GetMapping("/carousel/list")
+    @Operation(summary = "获得轮播推荐列表（管理端）")
+    @PreAuthorize("@ss.hasPermission('crm:financial-product:query')")
+    public CommonResult<List<AppCarouselRespVO>> getCarouselList() {
+        List<AppCarouselRespVO> carouselList = financialProductService.getCarouselList();
+        return success(carouselList);
     }
 
 }

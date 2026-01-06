@@ -27,4 +27,7 @@ public class AppTaskPageReqVO extends PageParam {
     @Schema(description = "最小业务价值评分", example = "8.0")
     private Double minBusinessValue;
 
+    @Schema(description = "任务负责人ID", example = "1")
+    private Long responsibleUserId;
+
 }

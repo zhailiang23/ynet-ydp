@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>到店客户智能任务</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1c2a38",
+                        "surface-highlight": "#253445",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', "Noto Sans", sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display text-white overflow-x-hidden pb-24">
+<!-- Top App Bar -->
+<div class="flex items-center bg-[#111a22] p-4 pb-2 justify-between sticky top-0 z-50 border-b border-gray-800">
+<div class="text-white flex size-12 shrink-0 items-center justify-start cursor-pointer">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">智能任务助手</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-12 bg-transparent text-white">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+</button>
+</div>
+</div>
+<!-- Profile Header -->
+<div class="relative flex w-full flex-col bg-[#111a22] pt-2">
+<div class="flex px-4 py-2 @container">
+<div class="flex w-full flex-col gap-4 items-start">
+<div class="flex gap-4 flex-row items-center w-full">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-20 w-20 shrink-0 border-2 border-primary/30" data-alt="Portrait of bank customer Zhang Wei" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDSx57k934SLeThD_hBssDSWku6iGidqN5ygZ9EjEPGPQYkay9GmgZbPSdA5ZL8syHmX4tDxEyGVSs2DWdghbI-HZwm_nxDNVu4gM5DIhmsC_cjtl3scd_h_dEglwQobN4pANFIhyOUDkYjRJDQ-uEUaoC3kPzmJptkZxEpgTAp9Mk5MU_DVYXXGwdTLUIPTMMOiD_wmGSBCzbFJlNlw474PaL6k6ymhkdb0sxKAgPH785J98jMeA2uMeYI94Oq-O7x6BT0PQUdZuaX");'>
+</div>
+<div class="flex flex-col justify-center flex-1">
+<div class="flex items-center gap-2 mb-1">
+<h1 class="text-white text-xl font-bold leading-tight tracking-[-0.015em]">张伟</h1>
+<span class="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-0.5 rounded-full border border-yellow-500/30">私行客户</span>
+</div>
+<p class="text-[#92adc9] text-sm font-normal leading-normal">AUM: ¥1,200w | 风险等级: R4</p>
+<div class="flex items-center gap-1 mt-1 text-primary text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]">storefront</span>
+<span>刚刚到店</span>
+</div>
+</div>
+</div>
+<h2 class="text-white text-xl font-bold leading-tight mt-2">张伟 到店智能任务提醒</h2>
+</div>
+</div>
+<div class="h-4 bg-[#111a22]"></div>
+</div>
+<!-- Section 1: In-Store Exclusive (Urgent) -->
+<div class="flex flex-col w-full bg-[#111a22]">
+<div class="px-4 pb-2 pt-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 animate-pulse">emergency_home</span>
+<h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">客户在场，请立即处理！</h3>
+</div>
+<!-- Card 1: Risk Assessment -->
+<div class="p-4 pt-2">
+<div class="flex flex-col rounded-xl bg-gradient-to-br from-[#1e293b] to-[#0f172a] border border-red-500/30 shadow-lg relative overflow-hidden group">
+<!-- Urgent Stripe -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-red-500"></div>
+<div class="p-5 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-red-500/20">临柜专属</span>
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-primary/20">AI 洞察</span>
+</div>
+<h4 class="text-white text-xl font-bold mt-1">签署风险评估书</h4>
+</div>
+<span class="material-symbols-outlined text-red-400 text-[24px]">priority_high</span>
+</div>
+<p class="text-[#92adc9] text-sm leading-relaxed">
+                        客户风险测评已于昨日过期，影响理财产品购买。
+                        <br/>
+<span class="text-xs opacity-70">触发原因: 系统自动扫描 (有效期管理)</span>
+</p>
+<!-- Action Buttons -->
+<div class="flex gap-3 mt-2 flex-wrap">
+<button class="flex-1 min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit_document</span>
+<span>去办理</span>
+</div>
+</button>
+<button class="flex-1 min-w-[80px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-surface-highlight hover:bg-[#2f4055] text-white text-sm font-medium border border-gray-700 transition-colors">
+<span class="truncate">已完成</span>
+</button>
+<button class="flex-none w-[40px] cursor-pointer items-center justify-center rounded-lg h-10 bg-transparent text-[#92adc9] hover:bg-white/5 transition-colors" title="忽略">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Large Transaction confirmation -->
+<div class="px-4 pb-4">
+<div class="flex flex-col rounded-xl bg-surface-dark border border-gray-800 shadow relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-orange-400"></div>
+<div class="p-4 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<span class="bg-orange-400/20 text-orange-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase w-fit">需临柜确认</span>
+<h4 class="text-white text-lg font-bold">大额转账意愿核实</h4>
+</div>
+</div>
+<p class="text-[#92adc9] text-sm">
+                        预约 14:00 大额转账 ¥500w。需现场核实身份。
+                    </p>
+<div class="flex gap-2 mt-2">
+<button class="flex-1 cursor-pointer items-center justify-center rounded-lg h-9 px-3 bg-primary/20 text-primary hover:bg-primary/30 text-sm font-bold border border-primary/20">
+                            去核实
+                        </button>
+<button class="flex-1 cursor-pointer items-center justify-center rounded-lg h-9 px-3 bg-surface-highlight text-gray-300 text-sm font-medium border border-gray-700">
+                            已完成
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="h-2 bg-[#0b1219]"></div>
+<!-- Section 2: Remote/Other Tasks -->
+<div class="flex flex-col w-full bg-[#111a22] flex-1">
+<div class="px-4 pb-2 pt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">phonelink_ring</span>
+<h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">可远程跟进任务</h3>
+</div>
+<div class="flex flex-col gap-3 px-4 pb-4">
+<!-- Remote Card 1 -->
+<div class="bg-surface-dark rounded-xl p-4 border border-gray-800 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-white text-base font-bold">推荐结构性存款产品</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-xs text-[#92adc9]">优先级: </span>
+<span class="text-xs text-green-400 font-medium">高</span>
+<span class="text-[#92adc9] text-[10px]">•</span>
+<span class="text-xs text-[#92adc9]">来源: 资金回流预测</span>
+</div>
+</div>
+<div class="bg-primary/10 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-primary text-[20px]">savings</span>
+</div>
+</div>
+<div class="h-px bg-gray-700/50 w-full"></div>
+<div class="flex gap-3 justify-end">
+<button class="text-[#92adc9] text-sm font-medium hover:text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+                        添加到待办
+                    </button>
+<div class="w-px bg-gray-700 h-4 self-center"></div>
+<button class="text-primary text-sm font-bold hover:text-primary/80 flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        去处理
+                    </button>
+</div>
+</div>
+<!-- Remote Card 2 -->
+<div class="bg-surface-dark rounded-xl p-4 border border-gray-800 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-white text-base font-bold">子女教育金规划邀约</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-xs text-[#92adc9]">优先级: </span>
+<span class="text-xs text-yellow-400 font-medium">中</span>
+<span class="text-[#92adc9] text-[10px]">•</span>
+<span class="text-xs text-[#92adc9]">来源: 生命周期事件</span>
+</div>
+</div>
+<div class="bg-primary/10 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-primary text-[20px]">school</span>
+</div>
+</div>
+<div class="h-px bg-gray-700/50 w-full"></div>
+<div class="flex gap-3 justify-end">
+<button class="text-[#92adc9] text-sm font-medium hover:text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+                        添加到待办
+                    </button>
+<div class="w-px bg-gray-700 h-4 self-center"></div>
+<button class="text-primary text-sm font-bold hover:text-primary/80 flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        去处理
+                    </button>
+</div>
+</div>
+<!-- Remote Card 3 -->
+<div class="bg-surface-dark rounded-xl p-4 border border-gray-800 flex flex-col gap-3 opacity-75">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-white text-base font-bold">生日关怀 (下周)</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-xs text-[#92adc9]">优先级: </span>
+<span class="text-xs text-gray-400 font-medium">低</span>
+</div>
+</div>
+<div class="bg-gray-700/30 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-gray-400 text-[20px]">cake</span>
+</div>
+</div>
+<div class="h-px bg-gray-700/50 w-full"></div>
+<div class="flex gap-3 justify-end">
+<button class="text-[#92adc9] text-sm font-medium hover:text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+                        添加到待办
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Footer -->
+<div class="fixed bottom-0 left-0 w-full bg-[#111a22] border-t border-gray-800 p-4 pb-8 z-40 shadow-[0_-4px_10px_rgba(0,0,0,0.3)]">
+<div class="flex gap-3 max-w-md mx-auto">
+<button class="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 px-4 bg-transparent border border-gray-600 text-white text-sm font-bold hover:bg-gray-800 transition-colors">
+                查看客户详情
+            </button>
+<button class="flex-[1.5] cursor-pointer items-center justify-center rounded-lg h-12 px-4 bg-primary text-white text-sm font-bold shadow-lg shadow-blue-900/20 hover:bg-blue-600 transition-colors">
+                完成本次到店服务
+            </button>
+</div>
+</div>
+</body></html>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/user'
 import TaskCard from '@/components/TaskCard.vue'
 import BottomNav from '@/components/BottomNav.vue'
 import {
@@ -15,6 +16,7 @@ import {
 } from '@/api/task'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 // 状态管理
 const activeTab = ref<'ai' | 'manual'>('ai')
@@ -73,10 +75,18 @@ const regularTasks = computed(() =>
 const loadTasks = async () => {
   try {
     loading.value = true
+
+    // 确保用户信息已加载
+    if (!userStore.userInfo) {
+      await userStore.fetchUserInfo()
+    }
+
+    // 构建查询参数，只查询当前用户作为责任人的任务
     const params: TaskPageParams = {
       pageNo: 1,
       pageSize: 100,
       status: TaskStatus.PENDING,
+      responsibleUserId: userStore.userInfo?.id, // 只查询当前用户的任务
     }
 
     const result = await getTaskPage(params)

@@ -33,6 +33,11 @@
             <artifactId>iplatform-module-bpm</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-module-task</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <!-- 业务组件 -->
         <dependency>

@@ -163,259 +163,155 @@
       <!-- 分隔线 -->
       <div class="h-2 bg-[#192633]/50 w-full my-2"></div>
 
-      <!-- 多维资产配置诊断 -->
+      <!-- 客户任务 -->
       <div class="mt-2">
         <div class="flex items-center gap-2 px-4 pb-4 pt-2">
           <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
           </svg>
-          <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">多维资产配置诊断</h3>
+          <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">客户任务</h3>
         </div>
 
-        <div class="px-4 flex flex-col gap-3">
-          <!-- AI 综合评分 -->
-          <div class="bg-gradient-to-r from-surface-dark to-[#1e293b] rounded-xl p-4 border border-white/10 relative overflow-hidden">
-            <div class="flex justify-between items-start z-10 relative">
-              <div>
-                <p class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">AI 综合评分</p>
-                <div class="flex items-baseline gap-2">
-                  <span class="text-4xl font-bold text-white">72</span>
-                  <span class="text-sm text-yellow-400 font-medium">待优化</span>
+        <!-- 紧急任务区域 -->
+        <div v-if="urgentTasks.length > 0" class="flex flex-col w-full px-4">
+          <div class="pb-2 pt-2 flex items-center gap-2">
+            <svg class="w-5 h-5 text-red-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <h3 class="text-white text-base font-bold leading-tight">客户在场，请立即处理！</h3>
+          </div>
+
+          <!-- 紧急任务卡片 -->
+          <div v-for="task in urgentTasks" :key="task.id" class="pb-3">
+            <div
+              class="flex flex-col rounded-xl bg-gradient-to-br from-[#1e293b] to-[#0f172a] border border-red-500/30 shadow-lg relative overflow-hidden cursor-pointer hover:border-red-500/50 transition-colors"
+              @click="goToTaskDetail(task.id)"
+            >
+              <!-- 紧急标识条 -->
+              <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-red-500"></div>
+
+              <div class="p-4 flex flex-col gap-3">
+                <div class="flex justify-between items-start">
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2">
+                      <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-red-500/20">
+                        临柜专属
+                      </span>
+                      <span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-primary/20">
+                        AI 洞察
+                      </span>
+                    </div>
+                    <h4 class="text-white text-lg font-bold mt-1">{{ task.title }}</h4>
+                  </div>
+                  <svg class="w-6 h-6 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
                 </div>
-                <p class="text-white text-sm mt-3 font-semibold">存在明显权益类资产缺口</p>
-                <p class="text-slate-400 text-xs mt-1">当前配置过于保守，可能无法跑赢长期通胀。</p>
-              </div>
-              <div class="h-14 w-14 rounded-full border-4 border-yellow-500/30 flex items-center justify-center border-t-yellow-500">
-                <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
+
+                <p class="text-[#92adc9] text-sm leading-relaxed">
+                  {{ task.description }}
+                  <br/>
+                  <span class="text-xs opacity-70">触发原因: {{ task.triggerSource || 'AI 自动生成' }}</span>
+                </p>
+
+                <!-- 操作按钮 -->
+                <div class="flex gap-2 mt-2 justify-end" @click.stop>
+                  <button class="cursor-pointer items-center justify-center rounded-lg h-8 px-3 bg-surface-highlight hover:bg-[#2f4055] text-white text-xs font-medium border border-gray-700 transition-colors">
+                    <span>已完成</span>
+                  </button>
+                  <button
+                    @click="goToTaskDetail(task.id)"
+                    class="cursor-pointer items-center justify-center rounded-lg h-8 px-3 bg-primary hover:bg-primary/90 text-white text-xs font-bold shadow-md transition-colors"
+                  >
+                    <div class="flex items-center gap-1.5">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      <span>去办理</span>
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- 配置缺口与风险敞口 -->
-          <details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden" open>
-            <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="p-1.5 rounded-md bg-blue-500/10 text-blue-400">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                  </svg>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-white font-semibold text-sm">配置缺口与风险敞口</span>
-                  <span class="text-slate-500 text-[10px]">权益类偏低 · 固收类过高</span>
-                </div>
-              </div>
-              <svg class="w-5 h-5 text-slate-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
-              <div class="mt-3 flex gap-4 items-center">
-                <div class="flex-1 space-y-3">
-                  <div>
-                    <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                      <span>权益类 (股票/基金)</span>
-                      <span class="text-red-400 font-medium">缺口 20%</span>
-                    </div>
-                    <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden flex">
-                      <div class="bg-blue-500 h-full w-[25%]"></div>
-                      <div class="bg-blue-500/30 h-full w-[20%] border-l border-dashed border-white/30"></div>
-                    </div>
-                    <div class="flex justify-between text-[10px] mt-1">
-                      <span class="text-white">当前: 25%</span>
-                      <span class="text-blue-300">目标: 45%</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                      <span>固收类 (存款/债券)</span>
-                      <span class="text-yellow-400 font-medium">过配 15%</span>
-                    </div>
-                    <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative">
-                      <div class="bg-purple-500 h-full w-[65%]"></div>
-                      <div class="absolute right-[35%] h-full w-0.5 bg-white z-10"></div>
-                    </div>
-                    <div class="flex justify-between text-[10px] mt-1">
-                      <span class="text-white">当前: 65%</span>
-                      <span class="text-purple-300">目标: 50%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-3 bg-blue-500/10 rounded-lg p-2.5 flex gap-2 items-start">
-                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                <p class="text-xs text-blue-100 leading-relaxed">
-                  <span class="font-bold">AI 建议：</span> 建议逐步将定存到期资金转向低波动权益基金，以修复20%的权益缺口，提升组合长期收益弹性。
-                </p>
-              </div>
-            </div>
-          </details>
+        <!-- 远程任务区域 -->
+        <div v-if="remoteTasks.length > 0" class="flex flex-col w-full px-4 mt-4">
+          <div class="pb-2 flex items-center gap-2">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <h3 class="text-white text-base font-bold leading-tight">可远程跟进任务</h3>
+          </div>
 
-          <!-- 目标达成诊断 -->
-          <details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
-            <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="p-1.5 rounded-md bg-green-500/10 text-green-400">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-                  </svg>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-white font-semibold text-sm">目标达成诊断</span>
-                  <span class="text-slate-500 text-[10px]">子女教育达成率高</span>
-                </div>
-              </div>
-              <svg class="w-5 h-5 text-slate-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
-              <div class="space-y-4 mt-3">
+          <div class="flex flex-col gap-3">
+            <!-- 远程任务卡片 -->
+            <div
+              v-for="task in remoteTasks"
+              :key="task.id"
+              class="bg-surface-dark rounded-xl p-4 border border-gray-800 flex flex-col gap-3 cursor-pointer hover:border-gray-600 transition-colors"
+              @click="goToTaskDetail(task.id)"
+            >
+              <div class="flex justify-between items-start">
                 <div>
-                  <div class="flex justify-between items-end mb-1">
-                    <span class="text-xs text-white font-medium">子女教育金 (5年)</span>
-                    <span class="text-xs text-green-400 font-bold">达成概率 92%</span>
+                  <h4 class="text-white text-base font-bold">{{ task.title }}</h4>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-xs text-[#92adc9]">优先级: </span>
+                    <span
+                      class="text-xs font-medium"
+                      :class="{
+                        'text-red-400': task.priority === 'P0',
+                        'text-yellow-400': task.priority === 'P1',
+                        'text-blue-400': task.priority === 'P2',
+                        'text-gray-400': task.priority === 'P3'
+                      }"
+                    >
+                      {{ task.priority }}
+                    </span>
+                    <span class="text-[#92adc9] text-[10px]">•</span>
+                    <span class="text-xs text-[#92adc9]">来源: {{ task.triggerSource || 'AI 生成' }}</span>
                   </div>
-                  <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div class="bg-green-500 h-full w-[85%]"></div>
-                  </div>
-                  <p class="text-[10px] text-slate-400 mt-1">当前进度良好，无需调整。</p>
                 </div>
-                <div>
-                  <div class="flex justify-between items-end mb-1">
-                    <span class="text-xs text-white font-medium">品质养老 (15年)</span>
-                    <span class="text-xs text-yellow-400 font-bold">达成概率 65%</span>
-                  </div>
-                  <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div class="bg-yellow-500 h-full w-[55%]"></div>
-                  </div>
-                  <p class="text-[10px] text-slate-400 mt-1">受通胀影响，需增加增值型资产配置以确保购买力。</p>
-                </div>
-              </div>
-            </div>
-          </details>
-
-          <!-- 现金流匹配诊断 -->
-          <details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
-            <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="p-1.5 rounded-md bg-teal-500/10 text-teal-400">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                <div class="bg-primary/10 p-1.5 rounded-lg">
+                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 </div>
-                <div class="flex flex-col">
-                  <span class="text-white font-semibold text-sm">现金流匹配诊断</span>
-                  <span class="text-slate-500 text-[10px]">流动性极佳</span>
-                </div>
               </div>
-              <svg class="w-5 h-5 text-slate-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
-              <p class="text-xs text-slate-300 mt-3 leading-relaxed">
-                客户的月度现金流非常健康。考虑到未来12个月没有大额刚性支出，当前持有的现金比例（45%）过高，造成了资金闲置。
-              </p>
-              <div class="mt-2 flex items-center gap-2">
-                <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span class="text-xs text-teal-400">建议预留6个月支出作为备用金，其余投入市场。</span>
-              </div>
-            </div>
-          </details>
 
-          <!-- 税务优化诊断 -->
-          <details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
-            <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-white font-semibold text-sm">税务优化诊断</span>
-                  <span class="text-slate-500 text-[10px]">存在优化空间</span>
-                </div>
-              </div>
-              <svg class="w-5 h-5 text-slate-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
-              <p class="text-xs text-slate-300 mt-3">
-                您目前的资产配置主要集中在普通应税账户。AI 建议利用年金保险或个人养老金账户的税收递延功能，每年可潜在节省税务支出约 ¥12,000。
-              </p>
-            </div>
-          </details>
+              <div class="h-px bg-gray-700/50 w-full"></div>
 
-          <!-- 行为偏好诊断 -->
-          <details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
-            <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="p-1.5 rounded-md bg-pink-500/10 text-pink-400">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              <div class="flex gap-2.5 justify-end" @click.stop>
+                <button class="text-[#92adc9] text-xs font-medium hover:text-white flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-white font-semibold text-sm">行为偏好诊断</span>
-                  <span class="text-slate-500 text-[10px]">发现"损失厌恶"偏差</span>
-                </div>
+                  添加到待办
+                </button>
+                <div class="w-px bg-gray-700 h-3.5 self-center"></div>
+                <button
+                  @click="goToTaskDetail(task.id)"
+                  class="text-primary text-xs font-bold hover:text-primary/80 flex items-center gap-1"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                  去处理
+                </button>
               </div>
-              <svg class="w-5 h-5 text-slate-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
-              <p class="text-xs text-slate-300 mt-3">
-                历史交易数据显示，您在市场下跌5%时赎回频率较高，表明存在较强的"损失厌恶"。建议配置定投策略或保本浮动收益产品，以减少择时冲动。
-              </p>
             </div>
-          </details>
+          </div>
+        </div>
 
-          <!-- 市场适应性诊断 -->
-          <details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
-            <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="p-1.5 rounded-md bg-orange-500/10 text-orange-400">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-white font-semibold text-sm">市场适应性诊断</span>
-                  <span class="text-slate-500 text-[10px]">牛市踏空风险高</span>
-                </div>
-              </div>
-              <svg class="w-5 h-5 text-slate-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
-              <div class="grid grid-cols-3 gap-2 mt-3 text-center">
-                <div class="bg-white/5 rounded p-2">
-                  <p class="text-[10px] text-slate-400">震荡市</p>
-                  <p class="text-xs text-green-400 font-bold mt-1">表现优异</p>
-                </div>
-                <div class="bg-white/5 rounded p-2">
-                  <p class="text-[10px] text-slate-400">熊市</p>
-                  <p class="text-xs text-green-400 font-bold mt-1">抗跌性强</p>
-                </div>
-                <div class="bg-white/5 rounded p-2 border border-orange-500/30">
-                  <p class="text-[10px] text-slate-400">牛市</p>
-                  <p class="text-xs text-orange-400 font-bold mt-1">跑输大盘</p>
-                </div>
-              </div>
-              <p class="text-[10px] text-slate-400 mt-2 text-center">当前配置在牛市环境下收益获取能力较弱。</p>
-            </div>
-          </details>
+        <!-- 无任务提示 -->
+        <div v-if="tasks.length === 0" class="flex items-center justify-center p-8">
+          <div class="text-center text-gray-400">
+            <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <p class="text-base">暂无任务</p>
+          </div>
         </div>
       </div>
 
@@ -450,7 +346,7 @@
 
     <!-- 底部固定按钮 -->
     <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-dark via-background-dark to-transparent pt-8 z-40">
-      <button class="w-full h-12 bg-primary hover:bg-primary-dark active:scale-[0.98] transition-all rounded-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 text-white font-bold text-base">
+      <button class="w-full h-12 bg-primary hover:bg-blue-600 active:scale-[0.98] transition-all rounded-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 text-white font-bold text-sm">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
         </svg>
@@ -464,12 +360,15 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { Customer } from '@/types/customer'
+import type { Task } from '@/api/task'
 import { getCustomer } from '@/api/customer'
+import { getTasksByCustomerId } from '@/api/task'
 
 const route = useRoute()
 const router = useRouter()
 
 const customer = ref<Customer | null>(null)
+const tasks = ref<Task[]>([])
 const loading = ref(true)
 const error = ref('')
 
@@ -484,6 +383,23 @@ const mockData = computed(() => ({
   riskLevel: customer.value?.creditLevel === 'AAA' || customer.value?.creditLevel === 'AA' ? 'AGGRESSIVE' : customer.value?.creditLevel === 'A' ? 'BALANCED' : 'CONSERVATIVE',
   source: customer.value?.customerSource || 'branch'
 }))
+
+// 紧急任务（P0 或 isUrgent，且状态为待处理或进行中）
+const urgentTasks = computed(() =>
+  tasks.value.filter(task =>
+    (task.priority === 'P0' || task.isUrgent) &&
+    (task.status === 0 || task.status === 1) // 0=待处理, 1=进行中
+  )
+)
+
+// 远程任务（非紧急，且状态为待处理或进行中）
+const remoteTasks = computed(() =>
+  tasks.value.filter(task =>
+    task.priority !== 'P0' &&
+    !task.isUrgent &&
+    (task.status === 0 || task.status === 1) // 0=待处理, 1=进行中
+  )
+)
 
 // 格式化金额
 function formatMoney(value: number | undefined): string {
@@ -537,13 +453,25 @@ function goBack() {
   router.back()
 }
 
-// 加载客户详情
+// 跳转到任务详情页
+function goToTaskDetail(taskId: number) {
+  router.push(`/tasks/${taskId}`)
+}
+
+// 加载客户详情和任务列表
 async function loadCustomerDetail() {
   try {
     loading.value = true
     error.value = ''
-    const data = await getCustomer(customerId.value)
-    customer.value = data
+
+    // 并行加载客户信息和任务列表
+    const [customerData, tasksData] = await Promise.all([
+      getCustomer(customerId.value),
+      getTasksByCustomerId(customerId.value)
+    ])
+
+    customer.value = customerData
+    tasks.value = tasksData
   } catch (err: any) {
     console.error('加载客户详情失败:', err)
     error.value = err.message || '加载客户详情失败'

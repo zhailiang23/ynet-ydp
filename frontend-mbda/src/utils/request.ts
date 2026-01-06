@@ -18,14 +18,7 @@ request.interceptors.request.use(
       config.headers['tenant-id'] = tenantId
     }
 
-    // 移动端 API (/app-api/) 不需要 token，直接返回
-    // 这些 API 已在后端配置为允许匿名访问
-    const isAppApi = config.url?.startsWith('/app-api/')
-    if (isAppApi) {
-      return config
-    }
-
-    // 管理后台 API (/admin-api/) 需要添加 token
+    // 添加 token（移动端和管理后台都需要）
     const token = localStorage.getItem('access_token')
     if (token && config.headers) {
       config.headers['Authorization'] = `Bearer ${token}`

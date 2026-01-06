@@ -96,6 +96,15 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/customer/:id/tasks',
+    name: 'CustomerTasks',
+    component: () => import('@/views/customer/tasks.vue'),
+    meta: {
+      title: '智能任务助手',
+      requiresAuth: false, // 移动端客户任务无需登录
+    },
+  },
+  {
     path: '/tools',
     name: 'Tools',
     component: () => import('@/views/tools/index.vue'),

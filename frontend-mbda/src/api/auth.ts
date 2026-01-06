@@ -27,9 +27,18 @@ export interface UserInfo {
   email?: string
   mobile?: string
   deptId?: number
+  deptName?: string
   postIds?: number[]
   roles?: any[]
   permissions?: string[]
+}
+
+/** 权限信息响应（包含用户、角色、权限、菜单） */
+export interface PermissionInfo {
+  user: UserInfo
+  roles: string[]
+  permissions: string[]
+  menus: any[]
 }
 
 /** 租户信息 */
@@ -66,6 +75,10 @@ export function getUserInfo(): Promise<UserInfo> {
   return request({
     url: '/admin-api/system/auth/get-permission-info',
     method: 'get',
+  }).then((data: PermissionInfo) => {
+    // 后端返回的数据包含 user、roles、permissions、menus
+    // 这里只提取 user 信息返回
+    return data.user
   })
 }
 

@@ -9,7 +9,7 @@ import type { Customer, CustomerPageParams, PageResult } from '@/types/customer'
  */
 export function getCustomerPage(params: CustomerPageParams): Promise<PageResult<Customer>> {
   return request({
-    url: '/app-api/aicrm/customer/page',
+    url: '/admin-api/aicrm/customer/page',
     method: 'get',
     params,
   })
@@ -20,7 +20,7 @@ export function getCustomerPage(params: CustomerPageParams): Promise<PageResult<
  */
 export function getCustomer(id: number): Promise<Customer> {
   return request({
-    url: '/app-api/aicrm/customer/get',
+    url: '/admin-api/aicrm/customer/get',
     method: 'get',
     params: { id },
   })

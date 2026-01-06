@@ -114,7 +114,10 @@ public interface ErrorCodeConstants {
     // ========== 客户营销活动 1-020-041-000 ==========
     ErrorCode CUSTOMER_MARKETING_ACTIVITY_NOT_EXISTS = new ErrorCode(1_020_041_000, "客户营销活动不存在");
 
-    // ========== 客户产品推荐 1-020-042-000 ==========
+    // ========== 营销活动任务下发 1-020-042-000 ==========
+    ErrorCode MARKETING_TASK_ASSIGNMENT_NOT_EXISTS = new ErrorCode(1_020_042_000, "营销活动任务下发不存在");
+
+    // ========== 客户产品推荐 1-020-043-000 ==========
     ErrorCode CUSTOMER_PRODUCT_RECOMMENDATION_NOT_EXISTS = new ErrorCode(1_020_042_000, "客户产品推荐不存在");
 
     // ========== 客户贡献度 1-020-043-000 ==========
@@ -241,5 +244,11 @@ public interface ErrorCodeConstants {
 
     // ========== AI CRM 潜客管理 1-020-208-000 ==========
     ErrorCode POTENTIAL_CUSTOMER_NOT_EXISTS = new ErrorCode(1_020_208_000, "潜客不存在");
+
+    // ========== 任务行动 1-020-209-000 ==========
+    ErrorCode TASK_ACTION_NOT_EXISTS = new ErrorCode(1_020_209_000, "任务行动不存在");
+
+    // ========== AI CRM 任务 1-020-210-000 ==========
+    ErrorCode TASK_NOT_EXISTS = new ErrorCode(1_020_210_000, "任务不存在");
 
 }

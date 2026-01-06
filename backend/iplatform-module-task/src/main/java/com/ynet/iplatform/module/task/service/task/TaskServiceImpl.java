@@ -188,6 +188,11 @@ public class TaskServiceImpl implements TaskService {
             .build();
     }
 
+    @Override
+    public List<TaskDO> getTaskListByCustomerId(Long customerId) {
+        return taskMapper.selectListByCustomerId(customerId);
+    }
+
     private TaskDO validateTaskExists(Long id) {
         TaskDO task = taskMapper.selectById(id);
         if (task == null) {

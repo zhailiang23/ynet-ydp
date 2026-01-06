@@ -37,6 +37,12 @@ public class TaskRespVO {
     @Schema(description = "客户姓名", example = "张三")
     private String customerName;
 
+    @Schema(description = "任务负责人ID", example = "1")
+    private Long responsibleUserId;
+
+    @Schema(description = "任务负责人姓名", example = "张三")
+    private String responsibleUserName;
+
     @Schema(description = "截止时间", example = "2024-12-31 18:00:00")
     private LocalDateTime deadline;
 

@@ -24,9 +24,12 @@ public class SecurityConfiguration {
                 // BPM 流程引擎会在流程结束时自动调用此接口
                 registry.requestMatchers(buildAdminApi("/aicrm/customer-claim/callback/**")).permitAll();
 
-                // 移动端 API - 允许匿名访问
+                // 移动端 API - 需要身份验证（移除 permitAll 配置，让 Spring Security 验证 token）
+                // 注意：移动端任务 API 已移除 permitAll()，现在需要用户登录才能访问
+                // registry.requestMatchers(buildAppApi("/aicrm/task/**")).permitAll();  // 已移除，需要认证
+
+                // 以下 API 仍保留匿名访问（根据业务需求）
                 registry.requestMatchers(buildAppApi("/aicrm/potential-customer/**")).permitAll();
-                registry.requestMatchers(buildAppApi("/aicrm/task/**")).permitAll();
                 registry.requestMatchers(buildAppApi("/aicrm/financial-product/**")).permitAll();
                 registry.requestMatchers(buildAppApi("/aicrm/customer/**")).permitAll();
             }

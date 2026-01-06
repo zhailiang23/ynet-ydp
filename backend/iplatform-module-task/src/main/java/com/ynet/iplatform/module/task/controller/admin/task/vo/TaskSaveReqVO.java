@@ -44,6 +44,10 @@ public class TaskSaveReqVO {
     @Schema(description = "客户姓名", example = "张三")
     private String customerName;
 
+    @Schema(description = "任务负责人ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @NotNull(message = "任务负责人不能为空")
+    private Long responsibleUserId;
+
     @Schema(description = "截止时间", example = "2024-12-31 18:00:00")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime deadline;

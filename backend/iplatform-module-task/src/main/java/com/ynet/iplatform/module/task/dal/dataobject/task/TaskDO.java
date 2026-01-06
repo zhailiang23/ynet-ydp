@@ -68,6 +68,11 @@ public class TaskDO extends TenantBaseDO {
     private String customerName;
 
     /**
+     * 任务负责人ID
+     */
+    private Long responsibleUserId;
+
+    /**
      * 截止时间
      */
     private LocalDateTime deadline;
@@ -106,5 +111,15 @@ public class TaskDO extends TenantBaseDO {
      * AI建议
      */
     private String aiSuggestion;
+
+    /**
+     * 触发来源
+     */
+    private String triggerSource;
+
+    /**
+     * 是否紧急（0=否 1=是）
+     */
+    private Integer isUrgent;
 
 }

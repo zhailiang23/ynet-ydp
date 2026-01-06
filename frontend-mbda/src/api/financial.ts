@@ -9,7 +9,7 @@ import type { FinancialProduct, ProductPageParams, PageResult, CarouselItem } fr
  */
 export function getFinancialProductPage(params: ProductPageParams): Promise<PageResult<FinancialProduct>> {
   return request({
-    url: '/app-api/aicrm/financial-product/page',
+    url: '/admin-api/aicrm/financial-product/page',
     method: 'get',
     params,
   })
@@ -20,7 +20,7 @@ export function getFinancialProductPage(params: ProductPageParams): Promise<Page
  */
 export function getFinancialProduct(id: number): Promise<FinancialProduct> {
   return request({
-    url: '/app-api/aicrm/financial-product/get',
+    url: '/admin-api/aicrm/financial-product/get',
     method: 'get',
     params: { id },
   })
@@ -35,7 +35,7 @@ export function searchFinancialProduct(params: {
   pageSize?: number
 }): Promise<PageResult<FinancialProduct>> {
   return request({
-    url: '/app-api/aicrm/financial-product/search',
+    url: '/admin-api/aicrm/financial-product/search',
     method: 'get',
     params,
   })
@@ -46,7 +46,7 @@ export function searchFinancialProduct(params: {
  */
 export function getCarouselList(): Promise<CarouselItem[]> {
   return request({
-    url: '/app-api/aicrm/financial-product/carousel/list',
+    url: '/admin-api/aicrm/financial-product/carousel/list',
     method: 'get',
   })
 }

@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getTask, completeTask, deleteTask, type Task } from '@/api/task'
+import { createTaskAction } from '@/api/task-action'
 
 const router = useRouter()
 const route = useRoute()
@@ -113,6 +114,58 @@ const handleSnooze = () => {
 const handleAddToCalendar = () => {
   console.log('加入日程')
   // TODO: 实现加入日程功能
+}
+
+// 拨打电话
+const handleCall = async () => {
+  if (!task.value) return
+
+  try {
+    // 获取当前时间
+    const now = new Date()
+    const actionTime = now.toISOString().replace('T', ' ').substring(0, 19)
+
+    // 创建行动记录
+    await createTaskAction({
+      taskId: task.value.id,
+      actionType: 'CALL',
+      actionTime,
+      actionUserId: 1, // TODO: 使用实际登录用户 ID
+      actionUserName: '当前用户', // TODO: 使用实际用户姓名
+      remark: `电话联系客户：${task.value.customerName || '未知客户'}`,
+    })
+
+    alert('已记录拨打电话行动')
+  } catch (error) {
+    console.error('记录电话行动失败:', error)
+    alert('记录失败，请重试')
+  }
+}
+
+// 发送短信
+const handleSms = async () => {
+  if (!task.value) return
+
+  try {
+    // 获取当前时间
+    const now = new Date()
+    const actionTime = now.toISOString().replace('T', ' ').substring(0, 19)
+
+    // 创建行动记录
+    await createTaskAction({
+      taskId: task.value.id,
+      actionType: 'SMS',
+      actionTime,
+      actionUserId: 1, // TODO: 使用实际登录用户 ID
+      actionUserName: '当前用户', // TODO: 使用实际用户姓名
+      remark: `短信联系客户：${task.value.customerName || '未知客户'}`,
+    })
+
+    alert('已记录发送短信行动')
+  } catch (error) {
+    console.error('记录短信行动失败:', error)
+    alert('记录失败，请重试')
+  }
 }
 
 // 组件挂载
@@ -229,7 +282,7 @@ onMounted(() => {
         </div>
 
         <!-- Action Buttons -->
-        <div class="mt-4 flex gap-3">
+        <div class="mt-4 flex gap-3 flex-wrap">
           <button
             class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-dark border border-gray-700 hover:bg-surface-dark-highlight transition-colors"
             @click="handleAddToCalendar"
@@ -238,6 +291,26 @@ onMounted(() => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span class="text-sm font-medium text-gray-300">加入日程</span>
+          </button>
+
+          <button
+            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-dark border border-green-700/50 hover:bg-green-900/20 transition-colors"
+            @click="handleCall"
+          >
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            <span class="text-sm font-medium text-green-400">拨打电话</span>
+          </button>
+
+          <button
+            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-dark border border-blue-700/50 hover:bg-blue-900/20 transition-colors"
+            @click="handleSms"
+          >
+            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            <span class="text-sm font-medium text-blue-400">发送短信</span>
           </button>
         </div>
       </section>

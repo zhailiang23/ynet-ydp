@@ -101,4 +101,11 @@ public class CustomerMarketingActivityController {
                         BeanUtils.toBean(list, CustomerMarketingActivityRespVO.class));
     }
 
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取营销活动简化列表（用于下拉选择）")
+    public CommonResult<List<CustomerMarketingActivitySimpleVO>> getCustomerMarketingActivitySimpleList() {
+        List<CustomerMarketingActivityDO> list = customerMarketingActivityService.getCustomerMarketingActivitySimpleList();
+        return success(BeanUtils.toBean(list, CustomerMarketingActivitySimpleVO.class));
+    }
+
 }

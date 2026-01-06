@@ -8,6 +8,8 @@ import com.ynet.iplatform.module.task.controller.app.task.vo.AppTaskPageReqVO;
 import com.ynet.iplatform.module.task.dal.dataobject.task.TaskDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * AI智能任务 Mapper
  *
@@ -25,6 +27,7 @@ public interface TaskMapper extends BaseMapperX<TaskDO> {
                 .eqIfPresent(TaskDO::getCategory, reqVO.getCategory())
                 .eqIfPresent(TaskDO::getBusinessValue, reqVO.getBusinessValue())
                 .eqIfPresent(TaskDO::getCustomerId, reqVO.getCustomerId())
+                .eqIfPresent(TaskDO::getResponsibleUserId, reqVO.getResponsibleUserId())
                 .betweenIfPresent(TaskDO::getDeadline, reqVO.getDeadlineStart(), reqVO.getDeadlineEnd())
                 .betweenIfPresent(TaskDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(TaskDO::getComprehensiveScore));
@@ -37,6 +40,14 @@ public interface TaskMapper extends BaseMapperX<TaskDO> {
                 .eqIfPresent(TaskDO::getAiGenerated, reqVO.getAiGenerated())
                 .likeIfPresent(TaskDO::getCustomerName, reqVO.getCustomerName())
                 .geIfPresent(TaskDO::getComprehensiveScore, reqVO.getMinBusinessValue())
+                .eqIfPresent(TaskDO::getResponsibleUserId, reqVO.getResponsibleUserId())
+                .orderByDesc(TaskDO::getComprehensiveScore)
+                .orderByDesc(TaskDO::getCreateTime));
+    }
+
+    default List<TaskDO> selectListByCustomerId(Long customerId) {
+        return selectList(new LambdaQueryWrapperX<TaskDO>()
+                .eq(TaskDO::getCustomerId, customerId)
                 .orderByDesc(TaskDO::getComprehensiveScore)
                 .orderByDesc(TaskDO::getCreateTime));
     }

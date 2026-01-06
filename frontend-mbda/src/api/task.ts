@@ -34,7 +34,9 @@ export interface Task {
   id: number
   taskType: string
   title: string
+  taskTitle?: string         // 任务标题（兼容字段）
   description: string
+  taskDescription?: string   // 任务描述（兼容字段）
   priority: string
   comprehensiveScore: number  // 综合评分 (0-10)
   category?: string
@@ -48,6 +50,8 @@ export interface Task {
   aiGenerated: number       // 是否AI生成（0=否 1=是）
   aiReason?: string         // AI生成原因
   aiSuggestion?: string     // AI建议
+  triggerSource?: string    // 触发来源
+  isUrgent?: boolean        // 是否紧急
   createTime: number        // 创建时间（时间戳）
   updateTime: number        // 更新时间（时间戳）
 }
@@ -61,6 +65,7 @@ export interface TaskPageParams {
   aiGenerated?: number      // 是否AI生成（0=否 1=是）
   customerName?: string     // 客户姓名（模糊匹配）
   minBusinessValue?: number // 最小业务价值评分
+  responsibleUserId?: number // 任务负责人ID
 }
 
 /** 分页结果 */
@@ -82,7 +87,7 @@ export interface TaskStats {
  */
 export function getTaskPage(params: TaskPageParams): Promise<PageResult<Task>> {
   return request({
-    url: '/app-api/aicrm/task/page',
+    url: '/admin-api/task/task/page',
     method: 'get',
     params,
   })
@@ -93,7 +98,7 @@ export function getTaskPage(params: TaskPageParams): Promise<PageResult<Task>> {
  */
 export function getTask(id: number): Promise<Task> {
   return request({
-    url: '/app-api/aicrm/task/get',
+    url: '/admin-api/task/task/get',
     method: 'get',
     params: { id },
   })
@@ -104,7 +109,7 @@ export function getTask(id: number): Promise<Task> {
  */
 export function createTask(data: Partial<Task>): Promise<number> {
   return request({
-    url: '/app-api/aicrm/task/create',
+    url: '/admin-api/task/task/create',
     method: 'post',
     data,
   })
@@ -115,7 +120,7 @@ export function createTask(data: Partial<Task>): Promise<number> {
  */
 export function updateTask(data: Partial<Task>): Promise<void> {
   return request({
-    url: '/app-api/aicrm/task/update',
+    url: '/admin-api/task/task/update',
     method: 'put',
     data,
   })
@@ -126,7 +131,7 @@ export function updateTask(data: Partial<Task>): Promise<void> {
  */
 export function deleteTask(id: number): Promise<void> {
   return request({
-    url: '/app-api/aicrm/task/delete',
+    url: '/admin-api/task/task/delete',
     method: 'delete',
     params: { id },
   })
@@ -137,7 +142,7 @@ export function deleteTask(id: number): Promise<void> {
  */
 export function completeTask(id: number): Promise<void> {
   return request({
-    url: '/app-api/aicrm/task/complete',
+    url: '/admin-api/task/task/complete',
     method: 'post',
     params: { id },
   })
@@ -148,7 +153,18 @@ export function completeTask(id: number): Promise<void> {
  */
 export function getTaskStats(): Promise<TaskStats> {
   return request({
-    url: '/app-api/aicrm/task/stats',
+    url: '/admin-api/task/task/stats',
     method: 'get',
+  })
+}
+
+/**
+ * 根据客户ID获取任务列表
+ */
+export function getTasksByCustomerId(customerId: number): Promise<Task[]> {
+  return request({
+    url: '/admin-api/task/task/list-by-customer-id',
+    method: 'get',
+    params: { customerId },
   })
 }

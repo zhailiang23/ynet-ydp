@@ -84,4 +84,12 @@ public interface TaskService {
      */
     AppTaskStatsRespVO getTaskStats();
 
+    /**
+     * 根据客户ID获取任务列表
+     *
+     * @param customerId 客户ID
+     * @return 任务列表
+     */
+    List<TaskDO> getTaskListByCustomerId(Long customerId);
+
 }
