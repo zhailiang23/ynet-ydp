@@ -13,8 +13,11 @@ export namespace AicrmMarketingTaskAssignmentApi {
     targetValue: number;
     taskScript?: string;
     posterUrl?: string;
-    assignedUserIds: number[];
-    assignedUserCount?: number;
+    assignmentType: string; // 派发类型：customer=客户, cohort=客群
+    assignedUserIds?: number[]; // 客户ID集合
+    assignedUserCount?: number; // 派发人数（客户）
+    assignedCohortIds?: string[]; // 客群ID集合（字符串格式，如 CH20260106112344986807842）
+    assignedCohortCount?: number; // 派发数量（客群）
     status?: string;
     remark?: string;
     creator?: string;

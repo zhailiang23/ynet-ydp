@@ -7,6 +7,7 @@ import { getDictOptions } from '@vben/hooks';
 import { getRangePickerDefaultProps } from '#/utils';
 import { getCustomerMarketingActivitySimpleList } from '#/api/aicrm/customermarketingactivity';
 import { getSimpleUserList } from '#/api/system/user';
+import { getCohortList } from '#/api/aicrm/cohort';
 
 /** 新增/修改的表单 */
 export function useFormSchema(): VbenFormSchema[] {
@@ -107,17 +108,60 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'ImageUpload',
     },
 
-    // 派发对象
+    // 派发类型
+    {
+      fieldName: 'assignmentType',
+      label: '派发类型',
+      rules: 'required',
+      component: 'RadioGroup',
+      defaultValue: 'customer',
+      componentProps: {
+        options: [
+          { label: '客户', value: 'customer' },
+          { label: '客群', value: 'cohort' },
+        ],
+      },
+    },
+
+    // 派发对象 - 客户
     {
       fieldName: 'assignedUserIds',
       label: '任务派发对象',
-      rules: 'required',
       component: 'ApiSelect',
+      dependencies: {
+        triggerFields: ['assignmentType'],
+        show: (values) => values.assignmentType === 'customer',
+        rules: (values) => (values.assignmentType === 'customer' ? 'required' : ''),
+      },
       componentProps: {
-        placeholder: '请选择任务派发对象',
+        placeholder: '请选择任务派发对象（客户）',
         api: getSimpleUserList,
         labelField: 'nickname',
         valueField: 'id',
+        mode: 'multiple',
+        showSearch: true,
+      },
+    },
+
+    // 派发对象 - 客群
+    {
+      fieldName: 'assignedCohortIds',
+      label: '任务派发对象',
+      component: 'ApiSelect',
+      dependencies: {
+        triggerFields: ['assignmentType'],
+        show: (values) => values.assignmentType === 'cohort',
+        rules: (values) => (values.assignmentType === 'cohort' ? 'required' : ''),
+      },
+      componentProps: {
+        placeholder: '请选择任务派发对象（客群）',
+        api: async () => {
+          const cohorts = await getCohortList({ type: 0, pageNo: 1, pageSize: 100 });
+          return cohorts.map((cohort) => ({
+            label: cohort.labelName,
+            value: cohort.labelId,
+          }));
+        },
         mode: 'multiple',
         showSearch: true,
       },
@@ -232,9 +276,16 @@ export function useGridColumns(): VxeTableGridOptions<AicrmMarketingTaskAssignme
       minWidth: 100,
     },
     {
-      field: 'assignedUserCount',
-      title: '派发人数',
+      field: 'assignmentType',
+      title: '派发类型',
       minWidth: 100,
+      slots: { default: 'assignmentType' },
+    },
+    {
+      field: 'assignedUserCount',
+      title: '派发数量',
+      minWidth: 120,
+      slots: { default: 'assignedCount' },
     },
     {
       field: 'status',
