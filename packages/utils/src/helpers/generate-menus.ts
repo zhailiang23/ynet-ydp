@@ -42,6 +42,7 @@ function generateMenus(
       badgeVariants,
       hideChildrenInMenu = false,
       icon,
+      iframeSrc,
       link,
       order,
       title = '',
@@ -64,7 +65,9 @@ function generateMenus(
     }
 
     // 确定最终路径
-    const resultPath = hideChildrenInMenu ? redirect || path : link || path;
+    const resultPath = hideChildrenInMenu
+      ? redirect || path
+      : link || meta.iframeSrc || path;
 
     return {
       activeIcon,
@@ -72,6 +75,7 @@ function generateMenus(
       badgeType,
       badgeVariants,
       icon,
+      iframeSrc,
       name,
       order,
       parent: route.parent,
@@ -101,6 +105,25 @@ function convertServerMenuToRouteRecordStringComponent(
 ): RouteRecordStringComponent[] {
   const menus: RouteRecordStringComponent[] = [];
   menuList.forEach((menu) => {
+    // 1. path是完整的HTTP/HTTPS URL
+    // 2. component为空或特定值-添加可视化看板类型
+    if (isHttpUrl(menu.path) && menu.component === 'visualKanban') {
+      const embeddedMenu: RouteRecordStringComponent = {
+        component: 'IFrameView',
+        meta: {
+          hideInMenu: !menu.visible,
+          icon: menu.icon,
+          iframeSrc: menu.path, // 使用path作为iframe的src
+          orderNo: menu.sort,
+          title: menu.name,
+        },
+        name: menu.name + menu.id,
+        path: `/VisualKanban-${menu.id}`, // 生成唯一的路由路径
+      };
+      menus.push(embeddedMenu);
+      return;
+    }
+
     // 处理顶级链接菜单
     if (isHttpUrl(menu.path) && menu.parentId === 0) {
       const urlMenu: RouteRecordStringComponent = {

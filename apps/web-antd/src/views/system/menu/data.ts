@@ -89,7 +89,10 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '菜单类型',
       component: 'RadioGroup',
       componentProps: {
-        options: getDictOptions(DICT_TYPE.SYSTEM_MENU_TYPE, 'number'),
+        options: [
+          ...getDictOptions(DICT_TYPE.SYSTEM_MENU_TYPE, 'number'),
+          { value: SystemMenuTypeEnum.EMBEDDED, label: '可视化看板' },
+        ],
         buttonStyle: 'solid',
         optionType: 'button',
       },
@@ -107,9 +110,11 @@ export function useFormSchema(): VbenFormSchema[] {
       dependencies: {
         triggerFields: ['type'],
         show: (values) => {
-          return [SystemMenuTypeEnum.DIR, SystemMenuTypeEnum.MENU].includes(
-            values.type,
-          );
+          return [
+            SystemMenuTypeEnum.DIR,
+            SystemMenuTypeEnum.EMBEDDED,
+            SystemMenuTypeEnum.MENU,
+          ].includes(values.type);
         },
       },
     },
@@ -124,12 +129,27 @@ export function useFormSchema(): VbenFormSchema[] {
       help: '访问的路由地址，如：`user`。如需外网地址时，则以 `http(s)://` 开头',
       dependencies: {
         triggerFields: ['type', 'parentId'],
-        show: (values) => {
-          return [SystemMenuTypeEnum.DIR, SystemMenuTypeEnum.MENU].includes(
-            values.type,
-          );
+        show: (values: any) => {
+          return [
+            SystemMenuTypeEnum.DIR,
+            SystemMenuTypeEnum.EMBEDDED,
+            SystemMenuTypeEnum.MENU,
+          ].includes(values?.type);
+        },
+        label: (values) => {
+          // 当菜单类型为可视化看板时，label显示为看板地址
+          if (values?.type === SystemMenuTypeEnum.EMBEDDED) {
+            return '看板地址';
+          }
+          return '路由地址';
+        },
+        help: () => {
+          return '访问的路由地址，如：`user`。如需外网地址时，则以 `http(s)://` 开头';
         },
         rules: (values) => {
+          if (values?.type === SystemMenuTypeEnum.EMBEDDED) {
+            return z.string().min(1, '看板地址不能为空');
+          }
           const schema = z.string().min(1, '路由地址不能为空');
           if (isHttpUrl(values.path)) {
             return schema;
@@ -151,13 +171,31 @@ export function useFormSchema(): VbenFormSchema[] {
       fieldName: 'component',
       label: '组件地址',
       component: 'Input',
-      componentProps: {
-        placeholder: '请输入组件地址',
+      componentProps: (values) => {
+        if (values?.type === SystemMenuTypeEnum.EMBEDDED) {
+          return {
+            disabled: true,
+          };
+        }
+        return {
+          placeholder: '请输入组件地址',
+        };
       },
       dependencies: {
         triggerFields: ['type'],
         show: (values) => {
-          return [SystemMenuTypeEnum.MENU].includes(values.type);
+          return [
+            SystemMenuTypeEnum.EMBEDDED,
+            SystemMenuTypeEnum.MENU,
+          ].includes(values.type);
+        },
+        trigger: (values, formApi) => {
+          if (values?.type === SystemMenuTypeEnum.EMBEDDED) {
+            formApi.setFieldValue('component', 'visualKanban');
+          } else {
+            // 如果不是可视化看板类型，可以清空组件地址或者保持原样，根据业务需求决定
+            // formApi.setFieldValue('component', undefined);
+          }
         },
       },
     },
@@ -189,9 +227,11 @@ export function useFormSchema(): VbenFormSchema[] {
       },
       dependencies: {
         show: (values) => {
-          return [SystemMenuTypeEnum.BUTTON, SystemMenuTypeEnum.MENU].includes(
-            values.type,
-          );
+          return [
+            SystemMenuTypeEnum.BUTTON,
+            SystemMenuTypeEnum.EMBEDDED,
+            SystemMenuTypeEnum.MENU,
+          ].includes(values.type);
         },
         triggerFields: ['type'],
       },
