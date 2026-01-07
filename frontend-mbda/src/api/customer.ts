@@ -25,3 +25,19 @@ export function getCustomer(id: number): Promise<Customer> {
     params: { id },
   })
 }
+
+/**
+ * 客户识别查询（通过手机号或证件号查询客户）
+ */
+export interface CustomerSearchParams {
+  mobile?: string
+  idCardNo?: string
+}
+
+export function searchCustomer(params: CustomerSearchParams): Promise<Customer | null> {
+  return request({
+    url: '/admin-api/aicrm/customer/search',
+    method: 'get',
+    params,
+  })
+}

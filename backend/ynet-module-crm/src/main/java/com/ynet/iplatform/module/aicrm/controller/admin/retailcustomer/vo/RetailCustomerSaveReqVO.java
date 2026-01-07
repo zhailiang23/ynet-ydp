@@ -25,6 +25,15 @@ public class RetailCustomerSaveReqVO {
     @Schema(description = "性别(0=未知, 1=男, 2=女)")
     private Integer gender;
 
+    @Schema(description = "手机号码", example = "13800138000")
+    private String mobile;
+
+    @Schema(description = "证件类型(如:身份证、护照等)")
+    private String idCardType;
+
+    @Schema(description = "证件号码")
+    private String idCardNo;
+
     @Schema(description = "出生日期")
     private LocalDate birthday;
 

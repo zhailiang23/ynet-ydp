@@ -78,6 +78,15 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/customer-recognition',
+    name: 'CustomerRecognition',
+    component: () => import('@/views/customer-recognition/index.vue'),
+    meta: {
+      title: '客户识别',
+      requiresAuth: false, // 移动端客户识别无需登录
+    },
+  },
+  {
     path: '/customers',
     name: 'CustomerList',
     component: () => import('@/views/customers/index.vue'),

@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } f
 
 // 创建 axios 实例
 const request: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_URL || 'http://127.0.0.1:48080',
+  baseURL: import.meta.env.VITE_APP_BASE_URL || 'http://192.168.169.124:48080',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8',

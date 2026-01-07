@@ -81,6 +81,10 @@ public class RetailCustomerDO extends BaseDO {
      */
     private String idCardNo;
     /**
+     * 手机号码
+     */
+    private String mobile;
+    /**
      * 年龄(可通过出生日期计算)
      */
     private Integer age;

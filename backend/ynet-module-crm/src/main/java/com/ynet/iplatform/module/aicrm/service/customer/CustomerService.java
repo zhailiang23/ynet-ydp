@@ -78,4 +78,20 @@ public interface CustomerService {
      */
     AppCustomerRespVO getAppCustomer(Long id);
 
+    /**
+     * 根据手机号或证件号查询客户（客户识别）
+     *
+     * @param mobile 手机号（可选）
+     * @param idCardNo 证件号（可选）
+     * @return 客户DO（找到）或 null（未找到）
+     */
+    CustomerDO searchCustomerByMobileOrIdCard(String mobile, String idCardNo);
+
+    /**
+     * 获得客户简单列表（用于下拉选择）
+     *
+     * @return 客户列表（仅包含 id、customerName、customerNo 等基本信息）
+     */
+    List<CustomerDO> getSimpleCustomerList();
+
 }

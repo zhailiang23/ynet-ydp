@@ -177,7 +177,10 @@ onMounted(() => {
 
       <!-- 到店客户服务 -->
       <section class="flex flex-col gap-3">
-        <button class="relative w-full overflow-hidden rounded-2xl bg-surface-dark-highlight text-white shadow-md p-4 flex items-center justify-between group active:scale-[0.99] transition-transform border border-white/5">
+        <button
+          class="relative w-full overflow-hidden rounded-2xl bg-surface-dark-highlight text-white shadow-md p-4 flex items-center justify-between group active:scale-[0.99] transition-transform border border-white/5"
+          @click="router.push('/customer-recognition')"
+        >
           <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary rounded-l-2xl"></div>
           <div class="relative flex items-center gap-3.5 pl-2">
             <div class="flex items-center justify-center size-12 rounded-xl bg-primary/20 text-blue-400">

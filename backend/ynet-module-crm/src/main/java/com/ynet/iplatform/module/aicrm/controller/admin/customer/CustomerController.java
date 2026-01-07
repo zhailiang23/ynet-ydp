@@ -88,6 +88,17 @@ public class CustomerController {
         return success(BeanUtils.toBean(pageResult, CustomerRespVO.class));
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "客户识别查询", description = "通过手机号或证件号查询客户信息，用于到店客户识别场景")
+    @Parameter(name = "mobile", description = "手机号", example = "13800138000")
+    @Parameter(name = "idCardNo", description = "证件号码", example = "110101199001011234")
+    public CommonResult<CustomerRespVO> searchCustomer(
+            @RequestParam(value = "mobile", required = false) String mobile,
+            @RequestParam(value = "idCardNo", required = false) String idCardNo) {
+        CustomerDO customer = customerService.searchCustomerByMobileOrIdCard(mobile, idCardNo);
+        return success(BeanUtils.toBean(customer, CustomerRespVO.class));
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出CRM客户主表(零售+对公共用) Excel")
     @PreAuthorize("@ss.hasPermission('aicrm:customer:export')")
@@ -99,6 +110,13 @@ public class CustomerController {
         // 导出 Excel
         ExcelUtils.write(response, "CRM客户主表(零售+对公共用).xls", "数据", CustomerRespVO.class,
                         BeanUtils.toBean(list, CustomerRespVO.class));
+    }
+
+    @GetMapping("/simple-list")
+    @Operation(summary = "获得客户简单列表", description = "用于下拉选择，返回 id、customerName、customerNo 等基本信息")
+    public CommonResult<List<CustomerRespVO>> getSimpleCustomerList() {
+        List<CustomerDO> list = customerService.getSimpleCustomerList();
+        return success(BeanUtils.toBean(list, CustomerRespVO.class));
     }
 
 }
