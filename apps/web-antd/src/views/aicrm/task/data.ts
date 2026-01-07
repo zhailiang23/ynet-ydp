@@ -4,6 +4,8 @@ import type { AicrmTaskApi } from '#/api/aicrm/task';
 
 import { getDictOptions } from '@vben/hooks';
 
+import { getSimpleCustomerList } from '#/api/aicrm/customer';
+import { getSimpleUserList } from '#/api/system/user';
 import { getRangePickerDefaultProps } from '#/utils';
 
 /** 新增/修改的表单 */
@@ -86,18 +88,28 @@ export function useFormSchema(): VbenFormSchema[] {
     },
     {
       fieldName: 'customerId',
-      label: '关联客户ID',
-      component: 'InputNumber',
+      label: '关联客户',
+      component: 'ApiSelect',
       componentProps: {
-        placeholder: '请输入关联客户ID',
+        placeholder: '请选择关联客户',
+        api: getSimpleCustomerList,
+        labelField: 'customerName',
+        valueField: 'id',
+        immediate: true,
+        showSearch: true,
       },
     },
     {
       fieldName: 'customerName',
       label: '客户姓名',
       component: 'Input',
+      dependencies: {
+        triggerFields: ['customerId'],
+        // 隐藏该字段
+        show: () => false,
+      },
       componentProps: {
-        placeholder: '请输入客户姓名',
+        placeholder: '客户姓名（自动填充）',
       },
     },
     {
@@ -107,7 +119,7 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'ApiSelect',
       componentProps: {
         placeholder: '请选择任务负责人',
-        api: '/admin-api/system/user/simple-list',
+        api: getSimpleUserList,
         labelField: 'nickname',
         valueField: 'id',
         immediate: true,
@@ -248,7 +260,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       componentProps: {
         allowClear: true,
         placeholder: '请选择任务负责人',
-        api: '/admin-api/system/user/simple-list',
+        api: getSimpleUserList,
         labelField: 'nickname',
         valueField: 'id',
         immediate: true,

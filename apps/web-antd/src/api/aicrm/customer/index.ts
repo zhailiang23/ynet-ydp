@@ -103,3 +103,10 @@ export function getUnassignedCustomers() {
     },
   ).then(res => res.list || []);
 }
+
+/** 获取客户简单列表(用于下拉选择) */
+export function getSimpleCustomerList() {
+  return requestClient.get<AicrmCustomerApi.Customer[]>(
+    '/aicrm/customer/simple-list',
+  );
+}

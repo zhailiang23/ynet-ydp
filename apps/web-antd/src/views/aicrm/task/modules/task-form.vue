@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { AicrmTaskApi } from '#/api/aicrm/task';
 
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
@@ -9,6 +9,7 @@ import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { createTask, getTask, updateTask } from '#/api/aicrm/task';
+import { getSimpleCustomerList } from '#/api/aicrm/customer';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
@@ -34,6 +35,35 @@ const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
 });
 
+// 监听客户选择，自动填充客户姓名
+const customerList = ref<any[]>([]);
+
+// 加载客户列表（用于自动填充客户姓名）
+async function loadCustomerList() {
+  try {
+    customerList.value = await getSimpleCustomerList();
+  } catch (error) {
+    console.error('加载客户列表失败:', error);
+  }
+}
+
+// 监听 customerId 变化，自动填充 customerName
+watch(
+  () => formApi.values?.customerId,
+  async (customerId) => {
+    if (!customerId) {
+      await formApi.setFieldValue('customerName', '');
+      return;
+    }
+
+    // 从客户列表中查找对应的客户姓名
+    const customer = customerList.value.find((c) => c.id === customerId);
+    if (customer) {
+      await formApi.setFieldValue('customerName', customer.customerName);
+    }
+  },
+);
+
 const [Modal, modalApi] = useVbenModal({
   async onConfirm() {
     const { valid } = await formApi.validate();
@@ -58,6 +88,9 @@ const [Modal, modalApi] = useVbenModal({
       formData.value = undefined;
       return;
     }
+    // 加载客户列表
+    await loadCustomerList();
+
     // 加载数据
     const data = modalApi.getData<AicrmTaskApi.Task>();
     if (!data || !data.id) {
