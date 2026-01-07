@@ -44,9 +44,15 @@ public class MarketingTaskAssignmentSaveReqVO {
     @Schema(description = "推广海报URL", example = "https://example.com/poster.jpg")
     private String posterUrl;
 
-    @Schema(description = "任务派发对象（用户ID集合）", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "任务派发对象不能为空")
+    @Schema(description = "派发类型（customer=客户, cohort=客群）", requiredMode = Schema.RequiredMode.REQUIRED, example = "customer")
+    @NotEmpty(message = "派发类型不能为空")
+    private String assignmentType;
+
+    @Schema(description = "任务派发对象 - 客户ID集合")
     private Set<Long> assignedUserIds;
+
+    @Schema(description = "任务派发对象 - 客群ID集合", example = "[\"CH20260106112344986807842\",\"CH20260106110828284783788\"]")
+    private Set<String> assignedCohortIds;
 
     @Schema(description = "任务状态", example = "active")
     private String status;

@@ -70,15 +70,30 @@ public class MarketingTaskAssignmentDO extends BaseDO {
     private String posterUrl;
 
     /**
-     * 任务派发对象（存储多个用户ID，逗号分隔）
+     * 派发类型（customer=客户, cohort=客群）
+     */
+    private String assignmentType;
+
+    /**
+     * 任务派发对象 - 客户ID集合（存储多个用户ID，逗号分隔）
      */
     @TableField(typeHandler = LongSetTypeHandler.class)
     private Set<Long> assignedUserIds;
 
     /**
-     * 派发人数（冗余字段，便于统计）
+     * 派发人数 - 客户（冗余字段，便于统计）
      */
     private Integer assignedUserCount;
+
+    /**
+     * 任务派发对象 - 客群ID集合（存储多个客群ID，逗号分隔，字符串格式如 "CH20260106112344986807842,CH20260106110828284783788"）
+     */
+    private String assignedCohortIds;
+
+    /**
+     * 派发数量 - 客群（冗余字段，便于统计）
+     */
+    private Integer assignedCohortCount;
 
     /**
      * 任务状态（字典: aicrm_task_assignment_status，active=进行中，completed=已完成，cancelled=已取消）

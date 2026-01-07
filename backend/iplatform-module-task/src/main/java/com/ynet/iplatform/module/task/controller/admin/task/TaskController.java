@@ -6,6 +6,7 @@ import com.ynet.iplatform.framework.common.util.object.BeanUtils;
 import com.ynet.iplatform.framework.security.core.util.SecurityFrameworkUtils;
 import com.ynet.iplatform.module.system.api.user.AdminUserApi;
 import com.ynet.iplatform.module.system.api.user.dto.AdminUserRespDTO;
+import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskBatchCreateReqVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskPageReqVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskRespVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskSaveReqVO;
@@ -154,6 +155,14 @@ public class TaskController {
         }
 
         return success(result);
+    }
+
+    @PostMapping("/batch-create-from-csv")
+    @Operation(summary = "基于 CSV 文件批量创建任务")
+    @PreAuthorize("@ss.hasPermission('task:task:create')")
+    public CommonResult<Integer> batchCreateTasksFromCsv(@Valid @RequestBody TaskBatchCreateReqVO reqVO) {
+        int createdCount = taskService.batchCreateTasksFromCsv(reqVO);
+        return success(createdCount);
     }
 
 }

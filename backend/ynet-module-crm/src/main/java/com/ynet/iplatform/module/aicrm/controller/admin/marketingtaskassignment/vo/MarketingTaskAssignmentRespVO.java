@@ -51,12 +51,23 @@ public class MarketingTaskAssignmentRespVO {
     @ExcelProperty("推广海报URL")
     private String posterUrl;
 
-    @Schema(description = "任务派发对象（用户ID集合）", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "派发类型（customer=客户, cohort=客群）", requiredMode = Schema.RequiredMode.REQUIRED, example = "customer")
+    @ExcelProperty("派发类型")
+    private String assignmentType;
+
+    @Schema(description = "任务派发对象 - 客户ID集合")
     private Set<Long> assignedUserIds;
 
-    @Schema(description = "派发人数", requiredMode = Schema.RequiredMode.REQUIRED, example = "10")
-    @ExcelProperty("派发人数")
+    @Schema(description = "派发人数 - 客户", example = "10")
+    @ExcelProperty("派发人数（客户）")
     private Integer assignedUserCount;
+
+    @Schema(description = "任务派发对象 - 客群ID集合")
+    private Set<String> assignedCohortIds;
+
+    @Schema(description = "派发数量 - 客群", example = "5")
+    @ExcelProperty("派发数量（客群）")
+    private Integer assignedCohortCount;
 
     @Schema(description = "任务状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "active")
     @ExcelProperty("任务状态")

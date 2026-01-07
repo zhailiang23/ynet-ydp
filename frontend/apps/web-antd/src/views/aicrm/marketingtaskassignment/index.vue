@@ -153,6 +153,19 @@ const [Grid, gridApi] = useVbenVxeGrid({
           ]"
         />
       </template>
+      <template #assignmentType="{ row }">
+        <a-tag :color="row.assignmentType === 'customer' ? 'blue' : 'green'">
+          {{ row.assignmentType === 'customer' ? '客户' : '客群' }}
+        </a-tag>
+      </template>
+      <template #assignedCount="{ row }">
+        <span v-if="row.assignmentType === 'customer'">
+          {{ row.assignedUserCount || 0 }} 人
+        </span>
+        <span v-else>
+          {{ row.assignedCohortCount || 0 }} 个
+        </span>
+      </template>
       <template #actions="{ row }">
         <TableAction
           :actions="[

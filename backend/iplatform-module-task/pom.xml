@@ -58,6 +58,13 @@
             <artifactId>iplatform-spring-boot-starter-excel</artifactId>
         </dependency>
 
+        <!-- SFTP 相关 -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.55</version>
+        </dependency>
+
         <!-- Test 测试相关 -->
         <dependency>
             <groupId>com.ynet.iplatform</groupId>

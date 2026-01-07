@@ -1,6 +1,7 @@
 package com.ynet.iplatform.module.task.service.task;
 
 import com.ynet.iplatform.framework.common.pojo.PageResult;
+import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskBatchCreateReqVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskPageReqVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskSaveReqVO;
 import com.ynet.iplatform.module.task.controller.app.task.vo.AppTaskPageReqVO;
@@ -91,5 +92,13 @@ public interface TaskService {
      * @return 任务列表
      */
     List<TaskDO> getTaskListByCustomerId(Long customerId);
+
+    /**
+     * 基于 CSV 文件批量创建任务
+     *
+     * @param reqVO 批量创建请求参数
+     * @return 创建的任务数量
+     */
+    int batchCreateTasksFromCsv(@Valid TaskBatchCreateReqVO reqVO);
 
 }

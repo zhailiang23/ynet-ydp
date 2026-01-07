@@ -1,15 +1,21 @@
 package com.ynet.iplatform.module.task.service.task;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.ynet.iplatform.framework.common.pojo.PageResult;
+import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskBatchCreateReqVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskPageReqVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskSaveReqVO;
 import com.ynet.iplatform.module.task.controller.app.task.vo.AppTaskPageReqVO;
 import com.ynet.iplatform.module.task.controller.app.task.vo.AppTaskStatsRespVO;
 import com.ynet.iplatform.module.task.dal.dataobject.task.TaskDO;
+import com.ynet.iplatform.module.task.dal.mysql.task.CrmCustomerAssignmentMapper;
 import com.ynet.iplatform.module.task.dal.mysql.task.TaskMapper;
+import com.ynet.iplatform.module.task.util.SftpUtil;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
@@ -17,6 +23,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ynet.iplatform.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -29,10 +36,14 @@ import static com.ynet.iplatform.module.task.enums.ErrorCodeConstants.TASK_NOT_E
  */
 @Service
 @Validated
+@Slf4j
 public class TaskServiceImpl implements TaskService {
 
     @Resource
     private TaskMapper taskMapper;
+
+    @Resource
+    private CrmCustomerAssignmentMapper crmCustomerAssignmentMapper;
 
     @Override
     public Long createTask(TaskSaveReqVO createReqVO) {
@@ -191,6 +202,123 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskDO> getTaskListByCustomerId(Long customerId) {
         return taskMapper.selectListByCustomerId(customerId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int batchCreateTasksFromCsv(TaskBatchCreateReqVO reqVO) {
+        log.info("开始批量创建任务，文件名: {}", reqVO.getFileName());
+
+        try {
+            // 1. 从 SFTP 服务器下载 CSV 文件
+            SftpUtil sftpUtil = new SftpUtil(
+                "192.168.156.100",
+                22,
+                "mysftp",
+                "87654321"
+            );
+
+            String remoteFilePath = "/cl/dev/upload/data/label/canvas/" + reqVO.getFileName();
+            log.info("开始从 SFTP 下载文件: {}", remoteFilePath);
+            String csvContent = sftpUtil.downloadFileContent(remoteFilePath);
+            log.info("文件下载成功，内容大小: {} 字节", csvContent.length());
+
+            // 2. 解析 CSV 文件，获取客户编号列表
+            List<String> customerNos = new ArrayList<>();
+            String[] lines = csvContent.split("\n");
+            for (String line : lines) {
+                if (StrUtil.isNotBlank(line)) {
+                    // CSV 格式: 客户编号&#&客户姓名
+                    // 示例: 1000000010&#&吴迪
+                    String trimmedLine = line.trim();
+                    if (trimmedLine.contains("&#&")) {
+                        String[] parts = trimmedLine.split("&#&");
+                        if (parts.length > 0 && StrUtil.isNotBlank(parts[0])) {
+                            customerNos.add(parts[0].trim());
+                        }
+                    }
+                }
+            }
+
+            log.info("解析 CSV 文件完成，共 {} 个客户编号", customerNos.size());
+
+            if (customerNos.isEmpty()) {
+                log.warn("CSV 文件中没有有效的客户数据");
+                return 0;
+            }
+
+            // 3. 循环客户编号，查询主办客户经理并创建任务
+            int createdCount = 0;
+            int skippedCount = 0;
+
+            for (String customerNo : customerNos) {
+                try {
+                    // 根据客户编号查询客户 ID
+                    // 注意：这里假设 customer_no 和 customer_id 是同一个值
+                    // 如果不是，需要先查询 crm_customer 表获取客户 ID
+                    Long customerId = parseCustomerNo(customerNo);
+                    if (customerId == null) {
+                        log.warn("客户编号 {} 无法解析为有效的客户 ID，跳过", customerNo);
+                        skippedCount++;
+                        continue;
+                    }
+
+                    // 查询主办客户经理 ID
+                    Long accountManagerId = crmCustomerAssignmentMapper.selectPrimaryAccountManagerId(customerId);
+                    if (accountManagerId == null) {
+                        log.warn("客户 {} (ID: {}) 没有主办客户经理，跳过", customerNo, customerId);
+                        skippedCount++;
+                        continue;
+                    }
+
+                    log.info("为客户 {} (ID: {}) 的主办客户经理 {} 创建任务", customerNo, customerId, accountManagerId);
+
+                    // 创建任务
+                    TaskDO task = new TaskDO();
+                    task.setTitle(reqVO.getTaskName());
+                    task.setDescription("批量创建任务 - 客户编号: " + customerNo);
+                    task.setTaskType("BATCH");  // 批量任务类型
+                    task.setPriority("P2");     // 普通优先级
+                    task.setDeadline(reqVO.getDeadline());
+                    task.setStatus(0);          // 待办状态
+                    task.setAiGenerated(0);     // 非AI生成
+                    task.setResponsibleUserId(accountManagerId);  // 主办客户经理
+                    task.setCustomerId(customerId);               // 关联客户ID
+
+                    // 设置默认值
+                    task.setComprehensiveScore(new BigDecimal("70.00"));
+                    task.setCategory("批量任务");
+                    task.setBusinessValue("MEDIUM");
+
+                    taskMapper.insert(task);
+                    createdCount++;
+
+                } catch (Exception e) {
+                    log.error("为客户 {} 创建任务失败", customerNo, e);
+                    skippedCount++;
+                }
+            }
+
+            log.info("批量任务创建完成，成功创建 {} 个任务，跳过 {} 个客户", createdCount, skippedCount);
+            return createdCount;
+
+        } catch (Exception e) {
+            log.error("批量创建任务失败", e);
+            throw new RuntimeException("批量创建任务失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 解析客户编号为客户 ID
+     * 假设客户编号就是客户 ID，如果不是需要查询数据库
+     */
+    private Long parseCustomerNo(String customerNo) {
+        try {
+            return Long.parseLong(customerNo);
+        } catch (NumberFormatException e) {
+            log.warn("客户编号 {} 不是有效的数字", customerNo);
+            return null;
+        }
     }
 
     private TaskDO validateTaskExists(Long id) {
