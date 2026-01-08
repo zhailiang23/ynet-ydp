@@ -80,8 +80,8 @@ build-and-push:
     - echo "=========================================="
     - echo "开始构建 Docker 镜像"
     - echo "=========================================="
-    - echo "环境: $VITE_ENV"
-    - echo "镜像: $IMAGE_WITH_TAG"
+    - echo "环境 $VITE_ENV"
+    - echo "镜像 $IMAGE_WITH_TAG"
     - echo "=========================================="
     - docker build --build-arg VITE_ENV=$VITE_ENV -t "$IMAGE_WITH_TAG" .
     - echo "✓ 镜像构建完成"
@@ -168,15 +168,15 @@ deploy-to-fat:
     - echo "=========================================="
     - echo "开始部署到 FAT 环境"
     - echo "=========================================="
-    - echo "目标服务器: $DEPLOY_SERVER"
-    - echo "镜像: $IMAGE_WITH_TAG"
-    - echo "环境: $VITE_ENV"
+    - echo "目标服务器 $DEPLOY_SERVER"
+    - echo "镜像 $IMAGE_WITH_TAG"
+    - echo "环境 $VITE_ENV"
     - echo "=========================================="
-    - echo "步骤 1: 创建部署目录"
+    - echo "步骤 1 - 创建部署目录"
     - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "mkdir -p /root/zhailiang/frontend-mbda /root/zhailiang/logs/frontend-mbda"
-    - echo "步骤 2: 复制部署脚本"
+    - echo "步骤 2 - 复制部署脚本"
     - scp -o StrictHostKeyChecking=no deploy.sh $DEPLOY_USER@$DEPLOY_SERVER:/root/zhailiang/frontend-mbda/
-    - echo "步骤 3: 执行部署脚本"
+    - echo "步骤 3 - 执行部署脚本"
     - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "bash /root/zhailiang/frontend-mbda/deploy.sh $IMAGE_WITH_TAG $HARBOR_URL $HARBOR_USER $HARBOR_PASSWORD $VITE_ENV"
 
   after_script:
