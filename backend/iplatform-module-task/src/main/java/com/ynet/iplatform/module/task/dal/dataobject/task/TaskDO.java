@@ -1,6 +1,7 @@
 package com.ynet.iplatform.module.task.dal.dataobject.task;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ynet.iplatform.framework.tenant.core.db.TenantBaseDO;
@@ -63,7 +64,7 @@ public class TaskDO extends TenantBaseDO {
     private Long customerId;
 
     /**
-     * 客户姓名
+     * 客户姓名（通过 JOIN crm_customer 表动态查询获取，非 aicrm_task 表字段）
      */
     private String customerName;
 

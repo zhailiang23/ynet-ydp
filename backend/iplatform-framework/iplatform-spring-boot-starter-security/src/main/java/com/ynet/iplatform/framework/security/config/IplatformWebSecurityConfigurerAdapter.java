@@ -45,7 +45,7 @@ import static com.ynet.iplatform.framework.common.util.collection.CollectionUtil
  */
 @AutoConfiguration
 @AutoConfigureOrder(-1) // 目的：先于 Spring Security 自动配置，避免一键改包后，org.* 基础包无法生效
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class IplatformWebSecurityConfigurerAdapter {
 
     @Resource

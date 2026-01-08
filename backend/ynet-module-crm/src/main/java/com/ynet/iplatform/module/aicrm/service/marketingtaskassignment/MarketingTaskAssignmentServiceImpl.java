@@ -47,6 +47,9 @@ public class MarketingTaskAssignmentServiceImpl implements MarketingTaskAssignme
     @Resource
     private com.ynet.iplatform.module.aicrm.dal.mysql.customerassignment.CustomerAssignmentMapper customerAssignmentMapper;
 
+    @Resource
+    private com.ynet.iplatform.module.aicrm.service.customer.CustomerService customerService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createMarketingTaskAssignment(MarketingTaskAssignmentSaveReqVO createReqVO) {
@@ -132,38 +135,71 @@ public class MarketingTaskAssignmentServiceImpl implements MarketingTaskAssignme
 
         log.info("共有 {} 个客户需要创建任务", customerIds.size());
 
-        // 2. 为每个客户查询主办客户经理，并创建任务
+        // 2. 批量查询所有客户的主办客户经理
+        log.info("开始批量查询客户的主办客户经理");
+        List<Map<String, Object>> managerMappings = customerAssignmentMapper.selectPrimaryAccountManagerIdsBatch(customerIds);
+
+        // 构建客户ID -> 经理ID的映射
+        Map<Long, Long> customerToManagerMap = new HashMap<>();
+        for (Map<String, Object> mapping : managerMappings) {
+            Long customerId = ((Number) mapping.get("customer_id")).longValue();
+            Long managerId = ((Number) mapping.get("user_id")).longValue();
+            customerToManagerMap.put(customerId, managerId);
+        }
+        log.info("批量查询完成，找到 {} 个客户有主办客户经理", customerToManagerMap.size());
+
+        // 3. 批量查询客户信息，构建客户ID -> 客户名称的映射
+        log.info("开始批量查询客户信息");
+        Map<Long, String> customerNameMap = new HashMap<>();
+        for (Long customerId : customerIds) {
+            com.ynet.iplatform.module.aicrm.dal.dataobject.customer.CustomerDO customer = customerService.getCustomer(customerId);
+            if (customer != null && customer.getCustomerName() != null) {
+                customerNameMap.put(customerId, customer.getCustomerName());
+            }
+        }
+        log.info("批量查询客户信息完成，找到 {} 个客户名称", customerNameMap.size());
+
+        // 4. 为每个客户创建任务
         int createdCount = 0;
         int skippedCount = 0;
         for (Long customerId : customerIds) {
-            // 查询客户的主办客户经理ID
-            Long accountManagerId = customerAssignmentMapper.selectPrimaryAccountManagerId(customerId);
+            // 从映射中获取主办客户经理ID
+            Long accountManagerId = customerToManagerMap.get(customerId);
 
             // 如果没有主办客户经理，跳过该客户
             if (accountManagerId == null) {
-                log.warn("客户 {} 没有主办客户经理，跳过", customerId);
+                log.debug("客户 {} 没有主办客户经理，跳过", customerId);
                 skippedCount++;
                 continue;
             }
 
-            log.info("为客户 {} 的主办客户经理 {} 创建任务", customerId, accountManagerId);
+            // 从映射中获取客户名称
+            String customerName = customerNameMap.get(customerId);
+            if (customerName == null) {
+                log.debug("客户 {} 名称为空，使用默认值", customerId);
+                customerName = "客户ID:" + customerId;
+            }
+
+            log.debug("为客户 {} ({}) 的主办客户经理 {} 创建任务", customerId, customerName, accountManagerId);
 
             // 创建任务
             TaskSaveReqVO taskReqVO = new TaskSaveReqVO();
             taskReqVO.setTaskType("MARKETING"); // 营销任务类型
             taskReqVO.setTitle(assignment.getTaskName());
-            taskReqVO.setDescription(String.format("营销活动：%s\n目标：%s %d\n任务话术：%s\n关联客户ID：%d",
+            taskReqVO.setDescription(String.format("营销活动：%s\n目标：%s %d\n任务话术：%s\n关联客户：%s (ID:%d)",
                     activity.getActivityName(),
                     getTargetTypeLabel(assignment.getTargetType()),
                     assignment.getTargetValue(),
                     assignment.getTaskScript() != null ? assignment.getTaskScript() : "",
+                    customerName,
                     customerId));
-            taskReqVO.setPriority("P2"); // 普通优先级
+            taskReqVO.setPriority("P0"); // 最高优先级
             taskReqVO.setDeadline(assignment.getEndTime());
             taskReqVO.setStatus(0); // 待办状态
-            taskReqVO.setAiGenerated(0); // 非AI生成
+            taskReqVO.setAiGenerated(1); // AI生成
             taskReqVO.setResponsibleUserId(accountManagerId); // 设置任务负责人为主办客户经理
             taskReqVO.setCustomerId(customerId); // 设置关联的客户ID
+            taskReqVO.setCustomerName(customerName); // 设置客户名称
 
             // 设置默认值
             taskReqVO.setComprehensiveScore(new java.math.BigDecimal("70.00")); // 默认综合评分70分

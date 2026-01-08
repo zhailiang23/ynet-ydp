@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -159,7 +160,7 @@ public class TaskController {
 
     @PostMapping("/batch-create-from-csv")
     @Operation(summary = "基于 CSV 文件批量创建任务")
-    @PreAuthorize("@ss.hasPermission('task:task:create')")
+    @PermitAll // 允许匿名访问
     public CommonResult<Integer> batchCreateTasksFromCsv(@Valid @RequestBody TaskBatchCreateReqVO reqVO) {
         int createdCount = taskService.batchCreateTasksFromCsv(reqVO);
         return success(createdCount);

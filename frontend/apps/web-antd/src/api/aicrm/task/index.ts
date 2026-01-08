@@ -12,6 +12,8 @@ export namespace AicrmTaskApi {
     category?: string;
     customerId?: number;
     customerName?: string;
+    responsibleUserId?: number;
+    responsibleUserName?: string;
     deadline?: string;
     completedTime?: string;
     businessValue?: string;

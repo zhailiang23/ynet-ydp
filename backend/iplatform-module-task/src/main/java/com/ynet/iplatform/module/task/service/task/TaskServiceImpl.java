@@ -94,7 +94,20 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public PageResult<TaskDO> getTaskPage(TaskPageReqVO pageReqVO) {
-        return taskMapper.selectPage(pageReqVO);
+        // 查询任务列表
+        PageResult<TaskDO> pageResult = taskMapper.selectPage(pageReqVO);
+
+        // 填充客户名称（根据客户 ID 逐个查询）
+        if (pageResult.getList() != null && !pageResult.getList().isEmpty()) {
+            for (TaskDO task : pageResult.getList()) {
+                if (task.getCustomerId() != null) {
+                    String customerName = taskMapper.selectCustomerNameById(task.getCustomerId());
+                    task.setCustomerName(customerName);
+                }
+            }
+        }
+
+        return pageResult;
     }
 
     @Override
@@ -250,6 +263,7 @@ public class TaskServiceImpl implements TaskService {
             // 3. 循环客户编号，查询主办客户经理并创建任务
             int createdCount = 0;
             int skippedCount = 0;
+            int duplicateCount = 0;
 
             for (String customerNo : customerNos) {
                 try {
@@ -268,6 +282,22 @@ public class TaskServiceImpl implements TaskService {
                     if (accountManagerId == null) {
                         log.warn("客户 {} (ID: {}) 没有主办客户经理，跳过", customerNo, customerId);
                         skippedCount++;
+                        continue;
+                    }
+
+                    // 检查是否已存在相同的任务（去重）
+                    // 去重条件：同样的客户、同样的负责人、同样的任务名称、同样的截止时间
+                    boolean isDuplicate = taskMapper.existsDuplicateTask(
+                        customerId,
+                        accountManagerId,
+                        reqVO.getTaskName(),
+                        reqVO.getDeadline()
+                    );
+
+                    if (isDuplicate) {
+                        log.info("任务已存在，跳过创建 - 客户: {} (ID: {}), 负责人: {}, 任务名称: {}",
+                            customerNo, customerId, accountManagerId, reqVO.getTaskName());
+                        duplicateCount++;
                         continue;
                     }
 
@@ -299,7 +329,8 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
 
-            log.info("批量任务创建完成，成功创建 {} 个任务，跳过 {} 个客户", createdCount, skippedCount);
+            log.info("批量任务创建完成，成功创建 {} 个任务，去重跳过 {} 个任务，其他跳过 {} 个客户",
+                createdCount, duplicateCount, skippedCount);
             return createdCount;
 
         } catch (Exception e) {

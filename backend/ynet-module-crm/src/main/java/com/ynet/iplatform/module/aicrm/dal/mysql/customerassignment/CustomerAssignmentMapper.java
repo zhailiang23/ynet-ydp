@@ -111,4 +111,22 @@ public interface CustomerAssignmentMapper extends BaseMapperX<CustomerAssignment
             "LIMIT 1")
     Long selectPrimaryAccountManagerId(@Param("customerId") Long customerId);
 
+    /**
+     * 批量查询客户的主办客户经理ID（assignmentType = 1）
+     *
+     * @param customerIds 客户ID列表
+     * @return Map<客户ID, 主办客户经理用户ID>
+     */
+    @Select("<script>" +
+            "SELECT customer_id, user_id " +
+            "FROM crm_customer_assignment " +
+            "WHERE assignment_type = 1 " +
+            "  AND deleted = 0 " +
+            "  AND customer_id IN " +
+            "<foreach collection='customerIds' item='id' open='(' separator=',' close=')'>" +
+            "  #{id}" +
+            "</foreach>" +
+            "</script>")
+    List<Map<String, Object>> selectPrimaryAccountManagerIdsBatch(@Param("customerIds") List<Long> customerIds);
+
 }

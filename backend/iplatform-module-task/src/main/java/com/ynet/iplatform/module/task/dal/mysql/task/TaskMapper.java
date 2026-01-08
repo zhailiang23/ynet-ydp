@@ -7,7 +7,9 @@ import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskPageReqVO;
 import com.ynet.iplatform.module.task.controller.app.task.vo.AppTaskPageReqVO;
 import com.ynet.iplatform.module.task.dal.dataobject.task.TaskDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -50,6 +52,33 @@ public interface TaskMapper extends BaseMapperX<TaskDO> {
                 .eq(TaskDO::getCustomerId, customerId)
                 .orderByDesc(TaskDO::getComprehensiveScore)
                 .orderByDesc(TaskDO::getCreateTime));
+    }
+
+    /**
+     * 根据客户 ID 查询客户名称
+     */
+    @Select("SELECT customer_name FROM crm_customer WHERE id = #{customerId} AND deleted = 0 LIMIT 1")
+    String selectCustomerNameById(Long customerId);
+
+    /**
+     * 检查是否存在相同的任务（用于去重）
+     * 去重条件：同样的客户、同样的负责人、同样的任务名称、同样的截止时间
+     */
+    default boolean existsDuplicateTask(Long customerId, Long responsibleUserId, String title, LocalDateTime deadline) {
+        LambdaQueryWrapperX<TaskDO> wrapper = new LambdaQueryWrapperX<TaskDO>()
+                .eq(TaskDO::getCustomerId, customerId)
+                .eq(TaskDO::getResponsibleUserId, responsibleUserId)
+                .eq(TaskDO::getTitle, title);
+
+        // 特殊处理 deadline 为 null 的情况
+        if (deadline == null) {
+            wrapper.isNull(TaskDO::getDeadline);
+        } else {
+            wrapper.eq(TaskDO::getDeadline, deadline);
+        }
+
+        Long count = selectCount(wrapper);
+        return count != null && count > 0;
     }
 
 }
