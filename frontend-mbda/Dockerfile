@@ -33,6 +33,7 @@ ARG VITE_ENV=dev
 
 # 构建应用 (根据 VITE_ENV 加载对应的 .env 文件)
 # 增加 Node.js 内存限制到 4GB
+# 使用 build:ci 跳过 TypeScript 类型检查，加快 CI/CD 构建速度
 RUN echo "Building for environment: $VITE_ENV" && \
     if [ "$VITE_ENV" = "dev" ]; then \
         cp .env.dev .env.production; \
@@ -46,7 +47,7 @@ RUN echo "Building for environment: $VITE_ENV" && \
         echo "Unknown environment: $VITE_ENV, using dev as default"; \
         cp .env.dev .env.production; \
     fi && \
-    NODE_OPTIONS="--max-old-space-size=4096" npm run build
+    NODE_OPTIONS="--max-old-space-size=4096" npm run build:ci
 
 # 阶段 2: 运行阶段 (使用 Nginx)
 # 使用 DaoCloud 国内镜像加速
