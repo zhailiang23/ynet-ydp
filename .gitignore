@@ -78,8 +78,9 @@ coverage/
 # 锁文件 (使用 pnpm)
 yarn.lock
 package-lock.json
-# 例外：chat-service-frontend-user 使用 npm，需要 package-lock.json
+# 例外：chat-service-frontend-user 和 frontend-mbda 使用 npm，需要 package-lock.json
 !chat-service-frontend-user/package-lock.json
+!frontend-mbda/package-lock.json
 
 # VitePress
 **/.vitepress/cache
