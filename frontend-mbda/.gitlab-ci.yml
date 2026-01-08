@@ -1,0 +1,275 @@
+################################################################################
+# GitLab CI/CD 配置 - frontend-mbda (金融产品展业平台)
+#
+# 流水线阶段:
+#   1. build  - 构建 Docker 镜像并推送到 Harbor
+#   2. deploy - 部署到目标服务器 (FAT 环境)
+#   3. cleanup - 清理旧镜像
+#
+# 环境变量:
+#   HARBOR_URL - Harbor 仓库地址 (192.168.152.56)
+#   HARBOR_USER - Harbor 用户名 (search)
+#   HARBOR_PASSWORD - Harbor 密码 (Search123)
+#   DEPLOY_SERVER - 部署服务器地址 (192.168.153.111)
+#   VITE_ENV - 部署环境 (dev/fat/uat/pro)
+################################################################################
+
+# 工作流规则: 在 master 分支触发
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: always
+    - when: never
+
+# 定义阶段
+stages:
+  - build
+  - deploy
+  - cleanup
+
+# 全局变量
+variables:
+  # Harbor 配置
+  HARBOR_URL: "192.168.152.56"
+  HARBOR_PROJECT: "ai-mobile-terminal"
+  HARBOR_USER: "search"
+  HARBOR_PASSWORD: "Search123"
+
+  # 部署服务器配置
+  DEPLOY_SERVER: "192.168.153.111"
+  DEPLOY_USER: "root"
+
+  # Docker 镜像配置
+  IMAGE_NAME: "frontend-mbda"
+  IMAGE_TAG: "${CI_PIPELINE_ID}"
+  IMAGE_WITH_TAG: "${HARBOR_URL}/${HARBOR_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG}"
+
+  # 环境配置 (部署到 FAT 环境)
+  VITE_ENV: "fat"
+
+################################################################################
+# 阶段 1: 构建并推送 Docker 镜像
+################################################################################
+build-and-push:
+  stage: build
+  image: docker:27.5.0
+  services:
+    - docker:27.5.0-dind
+  before_script:
+    - echo "配置 Docker 镜像加速器..."
+    - mkdir -p /etc/docker
+    - |
+      cat > /etc/docker/daemon.json <<'EOF'
+      {
+        "registry-mirrors": [
+          "https://docker.rainbond.cc",
+          "https://docker.1panel.live",
+          "https://hub.rat.dev"
+        ],
+        "insecure-registries": ["${HARBOR_URL}"]
+      }
+      EOF
+    - cat /etc/docker/daemon.json
+    - echo "等待 Docker daemon 启动..."
+    - timeout 60 sh -c 'until docker info >/dev/null 2>&1; do sleep 1; done' || exit 1
+    - echo "Docker daemon 已就绪"
+    - echo "登录 Harbor 仓库..."
+    - echo "$HARBOR_PASSWORD" | docker login "$HARBOR_URL" -u "$HARBOR_USER" --password-stdin
+
+  script:
+    - echo "=========================================="
+    - echo "开始构建 Docker 镜像"
+    - echo "=========================================="
+    - echo "环境: $VITE_ENV"
+    - echo "镜像: $IMAGE_WITH_TAG"
+    - echo "=========================================="
+    - docker build --build-arg VITE_ENV=$VITE_ENV -t "$IMAGE_WITH_TAG" .
+    - echo "✓ 镜像构建完成"
+    - echo "推送镜像到 Harbor..."
+    - docker push "$IMAGE_WITH_TAG"
+    - echo "✓ 镜像推送完成"
+    - docker logout "$HARBOR_URL"
+
+  after_script:
+    - echo "构建阶段完成"
+
+  only:
+    - master
+
+################################################################################
+# 阶段 2: 部署到目标服务器 (FAT 环境)
+################################################################################
+deploy-to-fat:
+  stage: deploy
+  image: alpine:3.21
+  before_script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache openssh-client bash curl
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - |
+      cat > ~/.ssh/id_rsa << 'EOFKEY'
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIJKgIBAAKCAgEAxHX3vcOKkOPL8sAbX/xQAcw5F2ziyEVoPpW9nVGWL0GPa9Wq
+      ecYJ7SuXdKEEOZeU5w4doGx59Po+9vzzgv6u9Hz1CtjPPcfLKEt6EvKmKAKyeDQV
+      i6T0w+Ymc6cqMTf+aLduZvbyFyZ4d6rNYfLpneWXYDRfw+Eg4hcZkj38TLlv3B6S
+      nKgTJgGOtPUlS0cywzUC5xueiGl7kzdZ8pKOr1dxB/w7+GXIbp2qwuKB+EMZ1VWx
+      QgH5WXBJUpb9RggwjziiAtx4LuqCWDdJMzEKcaoWcrbBUKMvRPCKH194fWocY9Sp
+      uGKIbujRxJ/B3rCywlknFuO2beWprhYT9AnX/TsK//y7D79M5NDjGba47XiTxZgT
+      LRxUXjs0HTUtQFvlCax5WFslL6SCr/YYu5EL+ieDSvjIrHfToTtZyo4094ulRvnD
+      i5t+Tm+Nad0A+itaxjteoFN3meMAUvmw59oRckosuqmlFgUY9G3gp7Ti4TPzh5Td
+      GnqVPfTlUMkP8qZusmUv7lvc1pJo+hHKGjePU1j/BQLWsoglruaZgdXbjyYtqNkC
+      9HiL7l6zLNII2KSeH4TDiTWRbIr6brQ7M0wrrKugc74homTsoHlqfkYcuxv9be6G
+      d2HQEf2pUKPs0MYTW/ksCzUoBijTKwAWaDlyKqG0P01pb9uBhwBgs2/SxgsCAwEA
+      AQKCAgA4CH10fkUTNiWBQxGLuucG3DycVc4I2OL2lrbSG+b963EAjJxmxvklz/0O
+      oq4VzwoFLJ1+l/Hg0U8MGvFJN2KnEMzDHztcn5NuFrjmlpaVas+EQTaz8YRuK0Jk
+      UhVSnGnPbCHs9BnwSGSrnOefPC0tf8JBCi8WKyu50GTWtR80st8YpQ+j5rwvZtpQ
+      +mp8of30dzYwvEvnFE7OmkbpTKutjv8KDAL+wej8w7Nkij4PlPPVSO+Zp/56Z/BB
+      whbS1psi/kAXGNKebvxmNL6H/0C/Uoe8iCty2FgvDXwXnp87Bfy67HjLwi6vk2/g
+      6L/ex/70N4FSoffyOELBCEMAo54adws1tJn3ex5nvI9DW+zOGIJv6cpgAqumMXoH
+      us1bjJ46DMbFNgnz4ASsiNnHMcibcAFZI4zoAjWyPXNL9aGzygAnBM9Mytu/B8gS
+      Me+sy7J+0V8L+EUCt9Xjhe54Esvr8EVLdXINNnMvi5EJ2+xE3KMC10Lo/vmEJRkR
+      U3W9FxYybbVzbFiulH5BMMHKQKCD7QzajFH1UdsJb/VoHiIW/MhXOmNpmXZyO2aC
+      hWZBbcsx8K/8+9m5FdQQB9TJf2UX7wSl4Jj1gEKo8hdGNLkXMpGNrVNWFFZlHSl+
+      n4XNF9SbP7NcWZ1lyfQSxc4fqYG6YaFvFvA7TCcxHo55o2pzwQKCAQEA+VN1zqkY
+      V/OuU4M6c+t/oacwN6XHTk7tQcS7I5f/pnHBDSXHvx+lkoLq7osWRz4ujNsaTRg9
+      hlDhj2IM7Fv5zGmNkpVFW5a4oJ4GMLO54cbMqmff10JEF5A7Ns6f4i1dhwMv3rx6
+      K8dnGdl8yI3plPCBrOvvcEKgOLRj9NjPfhonCh2nkNehiUrZPMEfyo3jzHX/4NoB
+      Vt5h/BEasfyQNF4UUZhCG6aSjH6w2sqV4usjZK5btVZrQCLIVrtYmpy7ft+bieqw
+      i6MDDJVUyoaCsOEpHsS4RlrI9pAtjivXgyKctCfwWN0s6AwwiiPPPe4bwYcL8yr1
+      OV2/n5dphpWkIwKCAQEAybg93r/KhZAQ7ETBeGC2Wp1cnlr3SyZam4jJKJOvx/9T
+      pbmLELhvCQ/eQ3Q5z3oEBaMUY/NURrq7BuLZZPYPuEbUyAFGmoIL+zZAT4dknfQH
+      iab4Q3CfvWe4Rv4jWyhNkck82pxQkgpqqvXWNz7hCckD5xipuiQeHDVwWvBnu/rK
+      FVWk1Jsbi6dWCjA3Xa7s3tzz6jYVAmEq6Oe5UhPYjqnHqKI/JIYYd7+bMXd4VWKR
+      PuYmtcVfomyiNASFHtCGuvYizRMWiVt1JkT4O6o3mfB+dVnw9s1NJHsXdQPo6fMr
+      kitUJmO6a1Fnj/UK743don5g+0KOn7H6P1HOBXNg+QKCAQEA2NRHePG/1QV8Tu6q
+      UBO3jLtciJioyyaC2Zag9WSEFZmKPcfkfgeks9UdQVU+i7i9PQxzRCbXos8GSu8H
+      tCqNBMOrNpaQmgVrDWxAj+xNtNdyOKRbm9XqZ9+sT47Epyuy0e7om7moOhiRRn7J
+      MZWRVVEQRXVuZ1/Z/VaMM2y2jsFpwDdn+eQ9fKvWXyrJXhulx7O7Uy3kykpeRpwN
+      bkrqklBbNVbH70oe2wZ3Ad/7GDxMLIwh/4NnhIB7YEpP1S6HNOB8YSX0YYvj4/ae
+      pf7y+6blXvfQFodvjFZ499KS+12HkHnHYVEAc9HeCNT5r686/kRXFSP/3eL0+nLw
+      d/X9pwKCAQEAxMRr1bTQIKj/WPlYn8v3FT0a831YbH3lNIKhdmtZtIVjWu06sfy2
+      kuhfrvzYx4IGGlmRsk3Rj4zmkzkFRm6ftumg9dgIvv7MISgyY2F2zH0WPTgaQ+7A
+      Y0mhf963LlyKDgN20OhZz5tJoapcY1d6vMjQfcSZC3HfzTRzfMG07rEcHuOD/b+v
+      hvKcAyQ1XbUcaeiuJXDL3Z5a9QXUyDODsuX6VIyvezky9Nx6zi3zu5aCiBCJAhad
+      yxqcvpEKKZzPT+B44gIUobgM9l+gpNLNmeP19xLc8mIhNcy8fPBraopBnjuVwjzV
+      w4mMs+gb2sFPyQnuICo0ZaJ+sPVjOf3qQQKCAQEA2Ohy+v9O+COFo+VBcrS3kfD/
+      jQ9Zh0V8a2MZpk1UXNIAdnATsCrXJEL7etwfTSANJJjscYAmksUg70yw4BpJKq7V
+      1VJHV5B39ytYELHpRRYPN6vEeG+SVHkbJdvzabWAu6Jtqyc/8sPxj1CTJWGpDozY
+      ZQQ/upGcgO26hPQMb3w+tRU/a5gLUR96vRcryJM97G8+jlV/o0Ea4GGQ1GBW0B/S
+      fvNqVFFgO6QYjoDworgRzHk0jd/yEq2vdaCBQi5oU9HRGszADnYSV3Aa8FLVGOGL
+      EG/VztERA0WSrelxUuZrZ8BI7DtirED7L6tccANLJGFLx8mD5K3nC3n7S/N2nA==
+      -----END RSA PRIVATE KEY-----
+      EOFKEY
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+
+  script:
+    - echo "=========================================="
+    - echo "开始部署到 FAT 环境"
+    - echo "=========================================="
+    - echo "目标服务器: $DEPLOY_SERVER"
+    - echo "镜像: $IMAGE_WITH_TAG"
+    - echo "环境: $VITE_ENV"
+    - echo "=========================================="
+    - echo "步骤 1: 创建部署目录"
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "mkdir -p /root/zhailiang/frontend-mbda /root/zhailiang/logs/frontend-mbda"
+    - echo "步骤 2: 复制部署脚本"
+    - scp -o StrictHostKeyChecking=no deploy.sh $DEPLOY_USER@$DEPLOY_SERVER:/root/zhailiang/frontend-mbda/
+    - echo "步骤 3: 执行部署脚本"
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "bash /root/zhailiang/frontend-mbda/deploy.sh $IMAGE_WITH_TAG $HARBOR_URL $HARBOR_USER $HARBOR_PASSWORD $VITE_ENV"
+
+  after_script:
+    - echo "部署阶段完成"
+
+  dependencies:
+    - build-and-push
+
+  only:
+    - master
+
+################################################################################
+# 阶段 3: 清理旧镜像
+################################################################################
+cleanup-old-images:
+  stage: cleanup
+  image: alpine:3.21
+  before_script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache openssh-client bash
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - |
+      cat > ~/.ssh/id_rsa << 'EOFKEY'
+      -----BEGIN RSA PRIVATE KEY-----
+      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
+      -----END RSA PRIVATE KEY-----
+      EOFKEY
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+
+  script:
+    - echo "=========================================="
+    - echo "清理服务器上的旧镜像"
+    - echo "=========================================="
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER "docker images '${HARBOR_URL}/${HARBOR_PROJECT}/${IMAGE_NAME}' --format '{{.ID}} {{.CreatedAt}}' | sort -rk2 | awk '{print \$1}' | tail -n +6 | xargs -r docker rmi || true"
+    - echo "✓ 旧镜像清理完成（保留最新 5 个版本）"
+
+  after_script:
+    - echo "清理阶段完成"
+
+  dependencies:
+    - deploy-to-fat
+
+  only:
+    - master
+
+  when: on_success
