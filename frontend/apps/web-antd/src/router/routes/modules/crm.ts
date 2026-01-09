@@ -119,6 +119,15 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('#/views/aicrm/financial-product/index.vue'),
       },
+      {
+        path: 'scoring-factor',
+        name: 'TaskScoringFactor',
+        meta: {
+          title: '评分因子配置',
+          icon: 'ep:data-analysis',
+        },
+        component: () => import('#/views/task/scoring-factor/index.vue'),
+      },
     ],
   },
 ];
