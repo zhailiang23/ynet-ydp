@@ -49,7 +49,7 @@ public class TaskController {
 
     @PostMapping("/create")
     @Operation(summary = "创建任务")
-    @PreAuthorize("@ss.hasPermission('task:task:create')")
+    @PermitAll // 允许匿名访问
     public CommonResult<Long> createTask(@Valid @RequestBody TaskSaveReqVO createReqVO) {
         return success(taskService.createTask(createReqVO));
     }

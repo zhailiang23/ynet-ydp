@@ -47,6 +47,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Long createTask(TaskSaveReqVO createReqVO) {
+        // 如果未指定任务负责人，且存在关联客户，则自动从客户归属关系中获取主办客户经理
+        if (createReqVO.getResponsibleUserId() == null && createReqVO.getCustomerId() != null) {
+            Long primaryManagerId = crmCustomerAssignmentMapper.selectPrimaryAccountManagerId(createReqVO.getCustomerId());
+            if (primaryManagerId != null) {
+                createReqVO.setResponsibleUserId(primaryManagerId);
+                log.info("[createTask] 自动设置任务负责人: customerId={}, responsibleUserId={}",
+                    createReqVO.getCustomerId(), primaryManagerId);
+            } else {
+                log.warn("[createTask] 客户无主办客户经理，需手动指定任务负责人: customerId={}",
+                    createReqVO.getCustomerId());
+            }
+        }
+
         // 插入
         TaskDO task = BeanUtil.toBean(createReqVO, TaskDO.class);
         taskMapper.insert(task);

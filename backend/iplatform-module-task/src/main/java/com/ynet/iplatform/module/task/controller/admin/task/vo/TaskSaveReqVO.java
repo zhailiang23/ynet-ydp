@@ -44,8 +44,7 @@ public class TaskSaveReqVO {
     @Schema(description = "客户姓名", example = "张三")
     private String customerName;
 
-    @Schema(description = "任务负责人ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @NotNull(message = "任务负责人不能为空")
+    @Schema(description = "任务负责人ID（若不传则自动从客户归属关系中获取主办客户经理）", example = "1")
     private Long responsibleUserId;
 
     @Schema(description = "截止时间", example = "2024-12-31 18:00:00")

@@ -72,9 +72,10 @@ export function useFormSchema(): VbenFormSchema[] {
     {
       fieldName: 'category',
       label: '任务分类',
-      component: 'Input',
+      component: 'Select',
       componentProps: {
-        placeholder: '请输入任务分类',
+        options: getDictOptions('aicrm_task_subtype'),
+        placeholder: '请选择任务分类',
       },
     },
     {
@@ -237,10 +238,11 @@ export function useGridFormSchema(): VbenFormSchema[] {
     {
       fieldName: 'category',
       label: '任务分类',
-      component: 'Input',
+      component: 'Select',
       componentProps: {
         allowClear: true,
-        placeholder: '请输入任务分类',
+        options: getDictOptions('aicrm_task_subtype'),
+        placeholder: '请选择任务分类',
       },
     },
     {
@@ -325,6 +327,10 @@ export function useGridColumns(): VxeTableGridOptions<AicrmTaskApi.Task>['column
       field: 'category',
       title: '任务分类',
       minWidth: 120,
+      cellRender: {
+        name: 'CellDict',
+        props: { type: 'aicrm_task_subtype' },
+      },
     },
     {
       field: 'businessValue',
