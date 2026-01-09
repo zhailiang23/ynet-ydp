@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getTask, completeTask, deleteTask, type Task } from '@/api/task'
 import { createTaskAction } from '@/api/task-action'
+import { getDictLabel } from '@/utils/dict'
 
 const router = useRouter()
 const route = useRoute()
@@ -10,6 +11,7 @@ const route = useRoute()
 const task = ref<Task | null>(null)
 const loading = ref(false)
 const remarks = ref('')
+const taskTypeLabel = ref('')
 
 // 获取任务ID
 const taskId = computed(() => Number(route.params.id))
@@ -19,6 +21,11 @@ const loadTaskDetail = async () => {
   try {
     loading.value = true
     task.value = await getTask(taskId.value)
+
+    // 加载任务类型标签
+    if (task.value?.taskType) {
+      taskTypeLabel.value = await getDictLabel('aicrm_task_type', task.value.taskType)
+    }
   } catch (error) {
     console.error('加载任务详情失败:', error)
   } finally {
@@ -321,13 +328,13 @@ onMounted(() => {
           <h3 class="text-white text-sm font-semibold">详细信息</h3>
         </div>
         <div class="p-4 grid grid-cols-[30%_1fr] gap-y-4 gap-x-4">
-          <!-- 任务来源 -->
-          <p class="text-text-secondary text-sm">任务来源</p>
+          <!-- 任务类型 -->
+          <p class="text-text-secondary text-sm">任务类型</p>
           <div class="flex items-center gap-2">
-            <svg v-if="task.aiGenerated === 1" class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
-            <p class="text-white text-sm">{{ task.aiGenerated === 1 ? 'AI 自动生成' : '手动创建' }}</p>
+            <p class="text-white text-sm">{{ taskTypeLabel || task.taskType }}</p>
           </div>
 
           <!-- 创建时间 -->

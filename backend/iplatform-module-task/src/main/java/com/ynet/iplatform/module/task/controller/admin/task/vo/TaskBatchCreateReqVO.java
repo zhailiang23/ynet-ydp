@@ -26,4 +26,7 @@ public class TaskBatchCreateReqVO {
     @NotBlank(message = "CSV 文件名不能为空")
     private String fileName;
 
+    @Schema(description = "任务描述", example = "批量创建任务的统一描述")
+    private String description;
+
 }

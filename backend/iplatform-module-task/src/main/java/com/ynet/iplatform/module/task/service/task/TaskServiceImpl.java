@@ -319,18 +319,23 @@ public class TaskServiceImpl implements TaskService {
                     // 创建任务
                     TaskDO task = new TaskDO();
                     task.setTitle(reqVO.getTaskName());
-                    task.setDescription("批量创建任务 - 客户编号: " + customerNo);
+                    // 使用请求参数中的描述，如果未提供则使用默认描述
+                    String description = reqVO.getDescription() != null ? reqVO.getDescription() :
+                                       "批量创建任务 - 客户编号: " + customerNo;
+                    task.setDescription(description);
                     task.setTaskType("BATCH");  // 批量任务类型
                     task.setPriority("P2");     // 普通优先级
                     task.setDeadline(reqVO.getDeadline());
                     task.setStatus(0);          // 待办状态
-                    task.setAiGenerated(0);     // 非AI生成
+                    task.setAiGenerated(1);     // AI批量生成
                     task.setResponsibleUserId(accountManagerId);  // 主办客户经理
                     task.setCustomerId(customerId);               // 关联客户ID
 
                     // 设置默认值
                     task.setComprehensiveScore(new BigDecimal("70.00"));
-                    task.setCategory("批量任务");
+                    // 根据任务名称判断分类：如果包含"到期"关键字，设为到期提醒，否则设为其他
+                    String category = reqVO.getTaskName().contains("到期") ? "EXPIRE_REMINDER" : "OTHER";
+                    task.setCategory(category);
                     task.setBusinessValue("MEDIUM");
 
                     taskMapper.insert(task);
