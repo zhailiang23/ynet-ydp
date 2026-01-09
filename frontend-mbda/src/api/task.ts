@@ -52,6 +52,7 @@ export interface Task {
   aiSuggestion?: string     // AI建议
   triggerSource?: string    // 触发来源
   isUrgent?: boolean        // 是否紧急
+  isOnsiteTask?: number     // 是否到店任务（0=否 1=是）
   createTime: number        // 创建时间（时间戳）
   updateTime: number        // 更新时间（时间戳）
 }
@@ -66,6 +67,8 @@ export interface TaskPageParams {
   customerName?: string     // 客户姓名（模糊匹配）
   minBusinessValue?: number // 最小业务价值评分
   responsibleUserId?: number // 任务负责人ID
+  customerId?: number       // 关联客户ID
+  onsitePriority?: boolean  // 到店任务优先（true=到店任务排在前面）
 }
 
 /** 分页结果 */

@@ -10,6 +10,8 @@ import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskBatchCreateRe
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskPageReqVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskRespVO;
 import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskSaveReqVO;
+import com.ynet.iplatform.module.task.controller.admin.task.vo.TaskStatsRespVO;
+import com.ynet.iplatform.module.task.controller.app.task.vo.AppTaskStatsRespVO;
 import com.ynet.iplatform.module.task.dal.dataobject.task.TaskDO;
 import com.ynet.iplatform.module.task.service.task.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -164,6 +166,24 @@ public class TaskController {
     public CommonResult<Integer> batchCreateTasksFromCsv(@Valid @RequestBody TaskBatchCreateReqVO reqVO) {
         int createdCount = taskService.batchCreateTasksFromCsv(reqVO);
         return success(createdCount);
+    }
+
+    @PostMapping("/complete")
+    @Operation(summary = "完成任务")
+    @Parameter(name = "id", description = "任务编号", required = true, example = "1")
+    @PermitAll // 允许匿名访问
+    public CommonResult<Boolean> completeTask(@RequestParam("id") Long id) {
+        taskService.completeTask(id);
+        return success(true);
+    }
+
+    @GetMapping("/stats")
+    @Operation(summary = "获取任务统计信息")
+    @PermitAll // 允许匿名访问
+    public CommonResult<TaskStatsRespVO> getTaskStats() {
+        AppTaskStatsRespVO stats = taskService.getTaskStats();
+        TaskStatsRespVO result = BeanUtils.toBean(stats, TaskStatsRespVO.class);
+        return success(result);
     }
 
 }

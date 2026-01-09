@@ -60,7 +60,6 @@ const emitUpdate = () => {
 const dataSourceOptions = ref([
   { label: '客户画像', value: 'customer_profile' },
   { label: '任务属性', value: 'task_attribute' },
-  { label: '交易历史', value: 'transaction_history' },
 ]);
 
 // 操作符选项
@@ -90,12 +89,6 @@ const getFieldOptions = (dataSource: string) => {
       { label: '任务类型', value: 'task_type' },
       { label: '任务优先级', value: 'task_priority' },
       { label: '截止天数', value: 'deadline_days' },
-    ];
-  }
-  if (dataSource === 'transaction_history') {
-    return [
-      { label: '交易金额', value: 'transaction_amount' },
-      { label: '交易次数', value: 'transaction_count' },
     ];
   }
   return [];

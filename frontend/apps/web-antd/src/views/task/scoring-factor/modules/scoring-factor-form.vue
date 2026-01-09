@@ -28,12 +28,12 @@ const enabled = ref(true);
 const conditions = ref<TaskScoringFactorApi.TaskScoringCondition[]>([]);
 const logicType = ref<'AND' | 'OR'>('AND');
 
-// 所属评分因子字典选项
+// 所属评分因子字典选项（value 必须与数据库中的 factor_name_en 字段完全匹配）
 const categoryOptions = [
-  { label: '业务价值', value: 'business_value' },
-  { label: '紧急程度', value: 'urgency' },
-  { label: '合规强制', value: 'compliance' },
-  { label: '客户意向', value: 'customer_intent' },
+  { label: '业务价值', value: 'Business Value' },
+  { label: '紧急程度', value: 'Urgency' },
+  { label: '合规强制', value: 'Compliance' },
+  { label: '客户意向', value: 'Customer Intent' },
 ];
 
 // 结果配置

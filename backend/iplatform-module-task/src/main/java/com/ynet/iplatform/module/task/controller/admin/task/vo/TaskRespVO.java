@@ -67,6 +67,9 @@ public class TaskRespVO {
     @Schema(description = "AI建议", example = "建议在本周内完成首次沟通")
     private String aiSuggestion;
 
+    @Schema(description = "是否到店任务（0=否 1=是）", example = "0")
+    private Integer isOnsiteTask;
+
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createTime;
 

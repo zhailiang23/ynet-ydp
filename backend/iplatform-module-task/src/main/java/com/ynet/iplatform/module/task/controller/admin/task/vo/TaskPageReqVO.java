@@ -53,4 +53,7 @@ public class TaskPageReqVO extends PageParam {
     @Schema(description = "任务负责人ID", example = "1")
     private Long responsibleUserId;
 
+    @Schema(description = "到店任务优先（true=到店任务排在前面，false=不优先）", example = "false")
+    private Boolean onsitePriority;
+
 }

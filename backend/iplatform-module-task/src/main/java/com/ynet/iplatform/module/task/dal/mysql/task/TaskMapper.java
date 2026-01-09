@@ -21,7 +21,7 @@ import java.util.List;
 public interface TaskMapper extends BaseMapperX<TaskDO> {
 
     default PageResult<TaskDO> selectPage(TaskPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<TaskDO>()
+        LambdaQueryWrapperX<TaskDO> wrapper = new LambdaQueryWrapperX<TaskDO>()
                 .likeIfPresent(TaskDO::getTitle, reqVO.getTitle())
                 .eqIfPresent(TaskDO::getTaskType, reqVO.getTaskType())
                 .eqIfPresent(TaskDO::getPriority, reqVO.getPriority())
@@ -31,8 +31,17 @@ public interface TaskMapper extends BaseMapperX<TaskDO> {
                 .eqIfPresent(TaskDO::getCustomerId, reqVO.getCustomerId())
                 .eqIfPresent(TaskDO::getResponsibleUserId, reqVO.getResponsibleUserId())
                 .betweenIfPresent(TaskDO::getDeadline, reqVO.getDeadlineStart(), reqVO.getDeadlineEnd())
-                .betweenIfPresent(TaskDO::getCreateTime, reqVO.getCreateTime())
-                .orderByDesc(TaskDO::getComprehensiveScore));
+                .betweenIfPresent(TaskDO::getCreateTime, reqVO.getCreateTime());
+
+        // 如果需要到店任务优先，则先按 is_onsite_task 降序排序（1在前，0在后）
+        if (Boolean.TRUE.equals(reqVO.getOnsitePriority())) {
+            wrapper.orderByDesc(TaskDO::getIsOnsiteTask);
+        }
+
+        // 最后按综合评分降序排序
+        wrapper.orderByDesc(TaskDO::getComprehensiveScore);
+
+        return selectPage(reqVO, wrapper);
     }
 
     default PageResult<TaskDO> selectPage(AppTaskPageReqVO reqVO) {

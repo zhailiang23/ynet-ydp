@@ -62,6 +62,8 @@ public class TaskServiceImpl implements TaskService {
 
         // 插入
         TaskDO task = BeanUtil.toBean(createReqVO, TaskDO.class);
+        // 根据任务分类自动设置是否到店任务
+        task.setIsOnsiteTask(isOnsiteTaskCategory(task.getCategory()) ? 1 : 0);
         taskMapper.insert(task);
         // 返回
         return task.getId();
@@ -75,6 +77,8 @@ public class TaskServiceImpl implements TaskService {
         }
         // 更新
         TaskDO updateObj = BeanUtil.toBean(updateReqVO, TaskDO.class);
+        // 根据任务分类自动设置是否到店任务
+        updateObj.setIsOnsiteTask(isOnsiteTaskCategory(updateObj.getCategory()) ? 1 : 0);
         taskMapper.updateById(updateObj);
     }
 
@@ -337,6 +341,8 @@ public class TaskServiceImpl implements TaskService {
                     String category = reqVO.getTaskName().contains("到期") ? "EXPIRE_REMINDER" : "OTHER";
                     task.setCategory(category);
                     task.setBusinessValue("MEDIUM");
+                    // 根据任务分类自动设置是否到店任务
+                    task.setIsOnsiteTask(isOnsiteTaskCategory(category) ? 1 : 0);
 
                     taskMapper.insert(task);
                     createdCount++;
@@ -376,6 +382,23 @@ public class TaskServiceImpl implements TaskService {
             throw exception(TASK_NOT_EXISTS);
         }
         return task;
+    }
+
+    /**
+     * 判断任务分类是否属于到店任务
+     * 到店任务分类包括：资产提升(ASSET_UPGRADE)、到期提醒(EXPIRE_REMINDER)、合规提醒(COMPLIANCE)、业务开通(BUSINESS_ACTIVATION)
+     *
+     * @param category 任务分类
+     * @return 是否到店任务
+     */
+    private boolean isOnsiteTaskCategory(String category) {
+        if (StrUtil.isBlank(category)) {
+            return false;
+        }
+        return "ASSET_UPGRADE".equals(category)
+            || "EXPIRE_REMINDER".equals(category)
+            || "COMPLIANCE".equals(category)
+            || "BUSINESS_ACTIVATION".equals(category);
     }
 
 }

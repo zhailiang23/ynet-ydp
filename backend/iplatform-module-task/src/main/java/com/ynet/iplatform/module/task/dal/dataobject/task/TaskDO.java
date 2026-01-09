@@ -123,4 +123,9 @@ public class TaskDO extends TenantBaseDO {
      */
     private Integer isUrgent;
 
+    /**
+     * 是否到店任务（0=否 1=是）
+     */
+    private Integer isOnsiteTask;
+
 }
