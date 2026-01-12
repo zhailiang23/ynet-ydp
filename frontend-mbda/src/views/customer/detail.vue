@@ -373,6 +373,8 @@ const loading = ref(true)
 const error = ref('')
 
 const customerId = ref(Number(route.params.id))
+// 是否从客户识别页面进入（决定是否展示到店任务）
+const fromOnsite = ref(route.query.fromOnsite === 'true')
 
 // 模拟字段（Customer 类型没有的字段）
 const mockData = computed(() => ({
@@ -385,12 +387,18 @@ const mockData = computed(() => ({
 }))
 
 // 到店任务（isOnsiteTask=1，且状态为待处理或进行中）
-const urgentTasks = computed(() =>
-  tasks.value.filter(task =>
+// 只有从客户识别页面进入时才显示到店任务
+const urgentTasks = computed(() => {
+  // 如果不是从客户识别页面进入，不显示到店任务
+  if (!fromOnsite.value) {
+    return []
+  }
+
+  return tasks.value.filter(task =>
     task.isOnsiteTask === 1 &&
     (task.status === 0 || task.status === 1) // 0=待处理, 1=进行中
   )
-)
+})
 
 // 远程任务（isOnsiteTask不为1，且状态为待处理或进行中）
 const remoteTasks = computed(() =>
@@ -463,12 +471,15 @@ async function loadCustomerDetail() {
     loading.value = true
     error.value = ''
 
+    // 判断是否从客户识别页面进入（需要展示到店任务）
+    const fromOnsite = route.query.fromOnsite === 'true'
+
     // 并行加载客户信息和任务列表
     const [customerData, tasksResult] = await Promise.all([
       getCustomer(customerId.value),
       getTaskPage({
         customerId: customerId.value,
-        onsitePriority: true,  // 启用到店任务优先排序
+        onsitePriority: fromOnsite,  // 只有从客户识别页面进入时才启用到店任务优先排序
         pageNo: 1,
         pageSize: 100  // 获取足够多的任务
       })
