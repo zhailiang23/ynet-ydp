@@ -3,26 +3,40 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BottomNav from '@/components/BottomNav.vue'
 import { getTaskPage, type Task, type TaskPageParams } from '@/api/task'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 // 今日重点待办
 const importantTasks = ref<Task[]>([])
 const tasksLoading = ref(false)
 
-// 加载重点待办（取前3个高优先级任务）
+// 加载重点待办（与任务中心保持一致：AI生成任务，按综合评分降序，取前3个）
 const loadImportantTasks = async () => {
   try {
     tasksLoading.value = true
+
+    // 确保用户信息已加载（与任务中心保持一致）
+    if (!userStore.userInfo) {
+      await userStore.fetchUserInfo()
+    }
+
     const params: TaskPageParams = {
       pageNo: 1,
-      pageSize: 3,
+      pageSize: 100, // 查询所有任务，前端筛选
       status: 0, // 待办
-      priority: 'P0', // 只取P0紧急任务
+      responsibleUserId: userStore.userInfo?.id, // 只查询当前用户的任务（与任务中心保持一致）
     }
 
     const result = await getTaskPage(params)
-    importantTasks.value = result.list || []
+
+    // 与任务中心保持一致：筛选 AI 生成任务，按综合评分降序，取前3个
+    importantTasks.value = (result.list || [])
+      .filter(t => t.aiGenerated === 1) // AI 生成任务
+      .filter(t => t.comprehensiveScore >= 8) // 高综合评分
+      .sort((a, b) => b.comprehensiveScore - a.comprehensiveScore) // 评分降序
+      .slice(0, 3) // 取前3个
   } catch (error) {
     console.error('加载重点待办失败:', error)
     importantTasks.value = []
