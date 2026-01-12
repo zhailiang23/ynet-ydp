@@ -172,13 +172,13 @@
           <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">客户任务</h3>
         </div>
 
-        <!-- 紧急任务区域 -->
+        <!-- 到店任务区域 -->
         <div v-if="urgentTasks.length > 0" class="flex flex-col w-full px-4">
           <div class="pb-2 pt-2 flex items-center gap-2">
             <svg class="w-5 h-5 text-red-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
             </svg>
-            <h3 class="text-white text-base font-bold leading-tight">客户在场，请立即处理！</h3>
+            <h3 class="text-white text-base font-bold leading-tight">客户在现场，请立即处理</h3>
           </div>
 
           <!-- 紧急任务卡片 -->
@@ -242,7 +242,7 @@
             <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
             </svg>
-            <h3 class="text-white text-base font-bold leading-tight">可远程跟进任务</h3>
+            <h3 class="text-white text-base font-bold leading-tight">可选远程跟进任务</h3>
           </div>
 
           <div class="flex flex-col gap-3">
@@ -362,7 +362,7 @@ import { useRoute, useRouter } from 'vue-router'
 import type { Customer } from '@/types/customer'
 import type { Task } from '@/api/task'
 import { getCustomer } from '@/api/customer'
-import { getTasksByCustomerId } from '@/api/task'
+import { getTaskPage } from '@/api/task'
 
 const route = useRoute()
 const router = useRouter()
@@ -373,6 +373,8 @@ const loading = ref(true)
 const error = ref('')
 
 const customerId = ref(Number(route.params.id))
+// 是否从客户识别页面进入（决定是否展示到店任务）
+const fromOnsite = ref(route.query.fromOnsite === 'true')
 
 // 模拟字段（Customer 类型没有的字段）
 const mockData = computed(() => ({
@@ -384,19 +386,24 @@ const mockData = computed(() => ({
   source: customer.value?.customerSource || 'branch'
 }))
 
-// 紧急任务（P0 或 isUrgent，且状态为待处理或进行中）
-const urgentTasks = computed(() =>
-  tasks.value.filter(task =>
-    (task.priority === 'P0' || task.isUrgent) &&
+// 到店任务（isOnsiteTask=1，且状态为待处理或进行中）
+// 只有从客户识别页面进入时才显示到店任务
+const urgentTasks = computed(() => {
+  // 如果不是从客户识别页面进入，不显示到店任务
+  if (!fromOnsite.value) {
+    return []
+  }
+
+  return tasks.value.filter(task =>
+    task.isOnsiteTask === 1 &&
     (task.status === 0 || task.status === 1) // 0=待处理, 1=进行中
   )
-)
+})
 
-// 远程任务（非紧急，且状态为待处理或进行中）
+// 远程任务（isOnsiteTask不为1，且状态为待处理或进行中）
 const remoteTasks = computed(() =>
   tasks.value.filter(task =>
-    task.priority !== 'P0' &&
-    !task.isUrgent &&
+    task.isOnsiteTask !== 1 &&
     (task.status === 0 || task.status === 1) // 0=待处理, 1=进行中
   )
 )
@@ -464,14 +471,22 @@ async function loadCustomerDetail() {
     loading.value = true
     error.value = ''
 
+    // 判断是否从客户识别页面进入（需要展示到店任务）
+    const fromOnsite = route.query.fromOnsite === 'true'
+
     // 并行加载客户信息和任务列表
-    const [customerData, tasksData] = await Promise.all([
+    const [customerData, tasksResult] = await Promise.all([
       getCustomer(customerId.value),
-      getTasksByCustomerId(customerId.value)
+      getTaskPage({
+        customerId: customerId.value,
+        onsitePriority: fromOnsite,  // 只有从客户识别页面进入时才启用到店任务优先排序
+        pageNo: 1,
+        pageSize: 100  // 获取足够多的任务
+      })
     ])
 
     customer.value = customerData
-    tasks.value = tasksData
+    tasks.value = tasksResult.list  // 从分页结果中提取任务列表
   } catch (err: any) {
     console.error('加载客户详情失败:', err)
     error.value = err.message || '加载客户详情失败'

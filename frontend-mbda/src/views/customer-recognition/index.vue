@@ -54,9 +54,11 @@ const handleSearch = async () => {
 
     if (customer && customer.id) {
       // 找到客户，跳转到客户详情页
+      // 添加 fromOnsite 参数，表示从客户识别页面进入，需要展示到店任务
       router.push({
         name: 'CustomerDetail',
         params: { id: customer.id },
+        query: { fromOnsite: 'true' }
       })
     } else {
       // 未找到客户，显示创建提示
