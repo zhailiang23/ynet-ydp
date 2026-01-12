@@ -82,6 +82,9 @@ package-lock.json
 # VitePress
 **/.vitepress/cache
 
+# Vite 缓存
+**/.vite/
+
 # 后端 Mock 数据
 **/backend-mock/data
 
@@ -198,6 +201,10 @@ coverage/
 
 # UI App 打包产物
 /yudao-ui-app/unpackage/
+
+# 临时目录和测试数据
+/temp/
+/zhengzhou/
 
 # 敏感配置文件 (包含密钥、密码等)
 **/application-prod.yaml
