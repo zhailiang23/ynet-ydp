@@ -11,6 +11,9 @@ import com.ynet.iplatform.module.task.controller.app.task.vo.AppTaskStatsRespVO;
 import com.ynet.iplatform.module.task.dal.dataobject.task.TaskDO;
 import com.ynet.iplatform.module.task.dal.mysql.task.CrmCustomerAssignmentMapper;
 import com.ynet.iplatform.module.task.dal.mysql.task.TaskMapper;
+import com.ynet.iplatform.module.task.service.scoring.CustomerDataLoader;
+import com.ynet.iplatform.module.task.service.scoring.CustomerScoreData;
+import com.ynet.iplatform.module.task.service.scoring.TaskScoringService;
 import com.ynet.iplatform.module.task.util.SftpUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +27,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.ynet.iplatform.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.ynet.iplatform.module.task.enums.ErrorCodeConstants.TASK_NOT_EXISTS;
@@ -44,6 +52,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Resource
     private CrmCustomerAssignmentMapper crmCustomerAssignmentMapper;
+
+    @Resource
+    private TaskScoringService taskScoringService;
+
+    @Resource
+    private CustomerDataLoader customerDataLoader;
 
     @Override
     public Long createTask(TaskSaveReqVO createReqVO) {
@@ -122,6 +136,17 @@ public class TaskServiceImpl implements TaskService {
                     task.setCustomerName(customerName);
                 }
             }
+        }
+
+        // 动态评分：当查询条件包含任务负责人ID时，根据评分因子配置重新计算分数并排序
+        if (pageReqVO.getResponsibleUserId() != null && pageResult.getList() != null && !pageResult.getList().isEmpty()) {
+            log.info("[getTaskPage] 检测到任务负责人ID: {}, 启用动态评分", pageReqVO.getResponsibleUserId());
+
+            // 加载客户数据以支持客户画像相关的评分条件
+            Map<Long, CustomerScoreData> customerDataMap = loadCustomerDataForScoring(pageResult.getList());
+
+            List<TaskDO> scoredAndSortedTasks = taskScoringService.scoreAndSortTasks(pageResult.getList(), customerDataMap);
+            pageResult.setList(scoredAndSortedTasks);
         }
 
         return pageResult;
@@ -399,6 +424,31 @@ public class TaskServiceImpl implements TaskService {
             || "EXPIRE_REMINDER".equals(category)
             || "COMPLIANCE".equals(category)
             || "BUSINESS_ACTIVATION".equals(category);
+    }
+
+    /**
+     * 加载客户数据用于任务评分
+     * 从 CRM 模块批量查询客户数据，转换为评分所需的数据格式
+     *
+     * @param tasks 任务列表
+     * @return 客户数据映射（key: 客户ID, value: 客户评分数据）
+     */
+    private Map<Long, CustomerScoreData> loadCustomerDataForScoring(List<TaskDO> tasks) {
+        // 收集所有任务关联的客户 ID
+        Set<Long> customerIds = tasks.stream()
+                .map(TaskDO::getCustomerId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        if (customerIds.isEmpty()) {
+            log.debug("[loadCustomerDataForScoring] 没有任务关联客户，跳过客户数据加载");
+            return new HashMap<>();
+        }
+
+        log.info("[loadCustomerDataForScoring] 开始加载客户数据，客户数量: {}", customerIds.size());
+
+        // 使用 CustomerDataLoader 动态加载客户数据（避免循环依赖）
+        return customerDataLoader.loadCustomerData(customerIds);
     }
 
 }

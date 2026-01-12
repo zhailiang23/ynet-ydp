@@ -22,15 +22,13 @@ public interface TaskScoringFactorMapper extends BaseMapperX<TaskScoringFactorDO
         return selectPage(reqVO, new LambdaQueryWrapperX<TaskScoringFactorDO>()
                 .likeIfPresent(TaskScoringFactorDO::getFactorName, reqVO.getFactorName())
                 .eqIfPresent(TaskScoringFactorDO::getEnabled, reqVO.getEnabled())
-                .orderByAsc(TaskScoringFactorDO::getSort)
-                .orderByDesc(TaskScoringFactorDO::getId));
+                .orderByAsc(TaskScoringFactorDO::getCreateTime));
     }
 
     default List<TaskScoringFactorDO> selectList(TaskScoringFactorListReqVO reqVO) {
         return selectList(new LambdaQueryWrapperX<TaskScoringFactorDO>()
                 .likeIfPresent(TaskScoringFactorDO::getFactorName, reqVO.getFactorName())
                 .eqIfPresent(TaskScoringFactorDO::getEnabled, reqVO.getEnabled())
-                .orderByAsc(TaskScoringFactorDO::getSort)
-                .orderByDesc(TaskScoringFactorDO::getId));
+                .orderByAsc(TaskScoringFactorDO::getCreateTime));
     }
 }

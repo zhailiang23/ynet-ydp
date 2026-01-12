@@ -122,12 +122,6 @@ async function handleBatchSave() {
 // 表格列定义
 const columns: ColumnType<TaskScoringFactorApi.TaskScoringFactor>[] = [
   {
-    title: '排序',
-    dataIndex: 'sort',
-    width: 80,
-    align: 'center',
-  },
-  {
     title: '因子名称',
     dataIndex: 'factorName',
     width: 150,
