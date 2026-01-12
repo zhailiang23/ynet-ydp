@@ -41,12 +41,10 @@ variables:
   ARTIFACT_COMPRESSION_LEVEL: "fast"
   CACHE_COMPRESSION_LEVEL: "fast"
 
-# 在推送到 master 或 feature/intelligent-practice 分支时触发
+# 仅在推送到 master 分支时触发
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
-      when: always
-    - if: $CI_COMMIT_BRANCH == "feature/intelligent-practice"
       when: always
     - when: never
 
