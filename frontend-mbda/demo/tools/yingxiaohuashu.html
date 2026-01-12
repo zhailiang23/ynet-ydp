@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>智能话术助手</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b63c1",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#192633",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-24">
+<div class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">智能话术助手</h1>
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300">history</span>
+</button>
+</div>
+<div class="px-4 py-6 space-y-6">
+<div>
+<h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">选择沟通场景</h2>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+<label class="cursor-pointer group flex-shrink-0">
+<input checked="" class="peer sr-only" name="scenario" type="radio"/>
+<div class="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-transparent peer-checked:border-primary peer-checked:bg-primary/5 transition-all shadow-sm">
+<span class="material-symbols-outlined text-3xl mb-2 text-primary group-hover:scale-110 transition-transform">campaign</span>
+<span class="text-xs font-medium text-center">产品推荐</span>
+</div>
+</label>
+<label class="cursor-pointer group flex-shrink-0">
+<input class="peer sr-only" name="scenario" type="radio"/>
+<div class="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-transparent peer-checked:border-primary peer-checked:bg-primary/5 transition-all shadow-sm">
+<span class="material-symbols-outlined text-3xl mb-2 text-orange-500 group-hover:scale-110 transition-transform">psychology_alt</span>
+<span class="text-xs font-medium text-center">异议处理</span>
+</div>
+</label>
+<label class="cursor-pointer group flex-shrink-0">
+<input class="peer sr-only" name="scenario" type="radio"/>
+<div class="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-transparent peer-checked:border-primary peer-checked:bg-primary/5 transition-all shadow-sm">
+<span class="material-symbols-outlined text-3xl mb-2 text-green-500 group-hover:scale-110 transition-transform">handshake</span>
+<span class="text-xs font-medium text-center">客户维护</span>
+</div>
+</label>
+<label class="cursor-pointer group flex-shrink-0">
+<input class="peer sr-only" name="scenario" type="radio"/>
+<div class="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-transparent peer-checked:border-primary peer-checked:bg-primary/5 transition-all shadow-sm">
+<span class="material-symbols-outlined text-3xl mb-2 text-purple-500 group-hover:scale-110 transition-transform">event_upcoming</span>
+<span class="text-xs font-medium text-center">邀约见面</span>
+</div>
+</label>
+</div>
+</div>
+<div>
+<h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">客户画像</h2>
+<div class="grid grid-cols-2 gap-3">
+<label class="cursor-pointer relative">
+<input checked="" class="peer sr-only" name="customer" type="radio"/>
+<div class="p-3 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 peer-checked:ring-2 peer-checked:ring-primary peer-checked:bg-primary/5 flex items-center gap-3 transition-all">
+<div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+<span class="material-symbols-outlined text-xl">diamond</span>
+</div>
+<div>
+<div class="font-bold text-sm">高净值客户</div>
+<div class="text-[10px] text-gray-500 dark:text-gray-400">注重资产保值</div>
+</div>
+</div>
+<div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary text-base" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</label>
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="customer" type="radio"/>
+<div class="p-3 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 peer-checked:ring-2 peer-checked:ring-primary peer-checked:bg-primary/5 flex items-center gap-3 transition-all">
+<div class="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 dark:text-pink-400">
+<span class="material-symbols-outlined text-xl">face_3</span>
+</div>
+<div>
+<div class="font-bold text-sm">年轻白领</div>
+<div class="text-[10px] text-gray-500 dark:text-gray-400">追求灵活收益</div>
+</div>
+</div>
+<div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary text-base" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</label>
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="customer" type="radio"/>
+<div class="p-3 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 peer-checked:ring-2 peer-checked:ring-primary peer-checked:bg-primary/5 flex items-center gap-3 transition-all">
+<div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined text-xl">business_center</span>
+</div>
+<div>
+<div class="font-bold text-sm">企业主</div>
+<div class="text-[10px] text-gray-500 dark:text-gray-400">关注现金流</div>
+</div>
+</div>
+<div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary text-base" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</label>
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="customer" type="radio"/>
+<div class="p-3 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 peer-checked:ring-2 peer-checked:ring-primary peer-checked:bg-primary/5 flex items-center gap-3 transition-all">
+<div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-xl">add</span>
+</div>
+<div>
+<div class="font-bold text-sm">自定义</div>
+<div class="text-[10px] text-gray-500 dark:text-gray-400">输入特征</div>
+</div>
+</div>
+</label>
+</div>
+</div>
+<div>
+<h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">关键信息 (可选)</h2>
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-sm placeholder-gray-400 resize-none h-20" placeholder="输入产品名称（如：稳盈3号）或特定的客户异议点..."></textarea>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+<button class="flex items-center gap-1 text-xs text-primary font-medium hover:bg-primary/10 px-2 py-1 rounded transition-colors">
+<span class="material-symbols-outlined text-sm">mic</span> 语音输入
+                        </button>
+<span class="text-xs text-gray-400">0/200</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-primary/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                生成AI话术
+            </button>
+<div class="pt-4">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold flex items-center gap-2">
+                        推荐话术
+                        <span class="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-[10px] px-2 py-0.5 rounded-full uppercase">AI 生成</span>
+</h2>
+<div class="flex gap-2">
+<button class="text-xs text-gray-500 flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">tune</span> 调整语气
+                        </button>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 relative group">
+<div class="flex items-center gap-2 mb-3">
+<span class="bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-100 dark:border-blue-800">专业顾问风</span>
+<span class="text-gray-400 text-xs">· 适合初次接触</span>
+</div>
+<p class="text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                            “王总您好，注意到您平时比较关注资产的稳健增值。我们行近期推出了一款‘稳盈3号’理财产品，特别适合像您这样注重资金流动性与安全性的客户。它的过往业绩非常稳定，而且比同类产品更加灵活，您看方便花两分钟了解一下吗？”
+                        </p>
+<div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+<div class="flex gap-3">
+<button class="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors text-xs">
+<span class="material-symbols-outlined text-base">content_copy</span> 复制
+                                </button>
+<button class="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors text-xs">
+<span class="material-symbols-outlined text-base">favorite</span> 收藏
+                                </button>
+</div>
+<button class="flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors text-xs">
+<span class="material-symbols-outlined text-base">share</span> 分享
+                            </button>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 relative group">
+<div class="flex items-center gap-2 mb-3">
+<span class="bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded border border-purple-100 dark:border-purple-800">情感共鸣风</span>
+<span class="text-gray-400 text-xs">· 适合维护关系</span>
+</div>
+<p class="text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                            “王总，最近市场波动比较大，想着提醒您关注一下账户配置。其实很多高净值客户现在都在配置一些防御性资产来对冲风险。‘稳盈3号’就像给您的财富加了一道安全锁，虽然它不是那种大起大落的产品，但能在这种行情下给您稳稳的幸福感。”
+                        </p>
+<div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+<div class="flex gap-3">
+<button class="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors text-xs">
+<span class="material-symbols-outlined text-base">content_copy</span> 复制
+                                </button>
+<button class="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors text-xs">
+<span class="material-symbols-outlined text-base">favorite</span> 收藏
+                                </button>
+</div>
+<button class="flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors text-xs">
+<span class="material-symbols-outlined text-base">share</span> 分享
+                            </button>
+</div>
+</div>
+</div>
+<div class="flex justify-center mt-6 mb-8">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-primary hover:text-primary transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px]">refresh</span> 换一批话术
+                     </button>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 w-full bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 z-50">
+<div class="flex justify-around items-center h-16">
+<button class="flex flex-col items-center gap-1 w-full text-gray-400 dark:text-gray-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-medium">工作台</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-full text-primary">
+<span class="material-symbols-outlined text-[24px] fill-current">record_voice_over</span>
+<span class="text-[10px] font-medium">话术</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-full text-gray-400 dark:text-gray-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">people</span>
+<span class="text-[10px] font-medium">客户</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-full text-gray-400 dark:text-gray-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-medium">我的</span>
+</button>
+</div>
+<div class="h-[env(safe-area-inset-bottom)] w-full bg-surface-light dark:bg-surface-dark"></div>
+</div>
+</div>
+
+</body></html>

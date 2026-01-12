@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>产品比对详情页</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b66c3",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1C252E",
+                        "surface-dark-highlight": "#233648",
+                        "text-secondary": "#92adc9",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+        .sticky-left-shadow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 5px;
+            transform: translateX(100%);
+            background: linear-gradient(to right, rgba(0,0,0,0.05), transparent);
+            pointer-events: none;
+        }
+        .dark .sticky-left-shadow::after {
+            background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+        }
+        .custom-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.3);
+            border-radius: 9999px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased text-slate-900 dark:text-white font-display bg-background-light dark:bg-background-dark">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden pb-24">
+<header class="sticky top-0 z-30 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
+<div class="flex items-center justify-between p-4 h-14">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-surface-dark-highlight transition-colors -ml-2">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="text-base font-bold">产品对比</h1>
+<div class="flex items-center -mr-2">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-surface-dark-highlight transition-colors text-slate-600 dark:text-slate-300 mr-1" title="历史比对">
+<span class="material-symbols-outlined text-[24px]">history</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-surface-dark-highlight transition-colors">
+<span class="material-symbols-outlined text-[24px]">tune</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
+<div class="px-4 pt-4 pb-2">
+<div class="mb-4 flex items-start gap-3 rounded-2xl bg-white p-3 shadow-sm dark:bg-surface-dark-highlight border border-slate-100 dark:border-white/5">
+<div class="relative shrink-0">
+<img alt="Customer Avatar" class="size-10 rounded-full object-cover ring-2 ring-slate-50 dark:ring-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeA1ocafU52z2K0h5-2Yb0w3XR0WDxpdOdUZc6zfMkdgTSicqTbr9XUFQeBVtx-RSUthcY3RF3EJ9Yxek3w8W-rmjh9fo0z4UUelPkHg5kN2h9GT7xDsA7XyUuCaApW0ULxHU8Xqw9p_MubUJYXsePWTS1pIu_L0zTYPrp43V9ajbIgsjL0dJBmGkP5M9OFNBfq_2rPfDkNFMi7HdkWFozVrTgwGrnpbp_1y7FsefjZE2QTYFvMxV92MSEJz3gglP9rUWCfvNPBWtu"/>
+<div class="absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-white bg-green-500 dark:border-surface-dark-highlight"></div>
+</div>
+<div class="flex flex-1 flex-col">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 dark:text-white">王晓明</span>
+<span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 dark:bg-blue-500/20 dark:text-blue-300">稳健型</span>
+</div>
+<p class="mt-1 text-xs leading-snug text-slate-500 dark:text-slate-400">
+                        针对王晓明的资产配置建议，对比推荐产品
+                    </p>
+</div>
+</div>
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-primary p-4 text-white shadow-lg">
+<div class="absolute right-0 top-0 -mt-8 -mr-8 size-32 rounded-full bg-white/10 blur-2xl"></div>
+<div class="flex items-start gap-3 relative z-10">
+<div class="flex items-center justify-center size-8 rounded-full bg-white/20 backdrop-blur-sm shrink-0 mt-1">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</div>
+<div>
+<h3 class="font-bold text-sm mb-1 opacity-90">AI 智能对比结论</h3>
+<p class="text-xs leading-relaxed text-indigo-50">
+<span class="font-bold text-white">华夏成长</span>近一年收益表现更优（+12.4%），但波动率较高。若客户偏好稳健，建议选择<span class="font-bold text-white">招商中证</span>，其回撤控制在 5% 以内，更加抗跌。
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<div class="relative w-full custom-scroll overflow-x-auto">
+<div class="min-w-max">
+<div class="sticky top-0 z-20 flex border-b border-slate-200 dark:border-white/5 bg-background-light dark:bg-background-dark shadow-sm">
+<div class="sticky left-0 z-30 w-24 shrink-0 bg-background-light dark:bg-background-dark p-3 flex flex-col justify-end items-start border-r border-slate-100 dark:border-white/5 sticky-left-shadow">
+<span class="text-xs font-bold text-slate-700 dark:text-slate-200">对比指标</span>
+<span class="text-[10px] font-medium text-slate-400 mt-0.5">已选 2/5</span>
+</div>
+<div class="w-36 shrink-0 p-3 flex flex-col gap-1 border-r border-slate-100 dark:border-white/5 bg-background-light dark:bg-background-dark relative group">
+<button aria-label="删除" class="absolute top-1.5 right-1.5 size-6 flex items-center justify-center rounded-full bg-slate-200/50 dark:bg-white/10 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/20 dark:hover:text-red-400 transition-colors z-10">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-blue-100 dark:bg-blue-900/40 text-primary w-fit font-medium">推荐</span>
+<h4 class="font-bold text-sm text-slate-900 dark:text-white line-clamp-2 mt-1">华夏成长精选混合A</h4>
+<span class="text-[10px] text-slate-500 font-mono">001234</span>
+</div>
+<div class="w-36 shrink-0 p-3 flex flex-col gap-1 border-r border-slate-100 dark:border-white/5 bg-background-light dark:bg-background-dark relative group">
+<button aria-label="删除" class="absolute top-1.5 right-1.5 size-6 flex items-center justify-center rounded-full bg-slate-200/50 dark:bg-white/10 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/20 dark:hover:text-red-400 transition-colors z-10">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 w-fit font-medium">持仓</span>
+<h4 class="font-bold text-sm text-slate-900 dark:text-white line-clamp-2 mt-1">招商中证白酒指数A</h4>
+<span class="text-[10px] text-slate-500 font-mono">005678</span>
+</div>
+<div class="w-36 shrink-0 p-3 flex flex-col items-center justify-center bg-background-light dark:bg-background-dark">
+<button class="flex flex-col items-center justify-center gap-1.5 size-full min-h-[90px] rounded-xl border-2 border-dashed border-slate-300 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:border-primary hover:bg-primary/5 transition-all group">
+<div class="size-8 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</div>
+<span class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-primary font-bold">添加产品</span>
+</button>
+</div>
+<div class="w-4 shrink-0"></div>
+</div>
+<div class="bg-white dark:bg-surface-dark-highlight">
+<div class="flex items-center bg-slate-50/80 dark:bg-white/5 py-1.5 px-3 sticky left-0 z-10 w-full border-b border-slate-100 dark:border-white/5 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] mr-1.5 text-primary">trending_up</span>
+<span class="text-xs font-bold text-slate-700 dark:text-slate-200">业绩表现</span>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            近1年收益
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-bold text-red-500 bg-red-50/30 border-r border-slate-100 dark:border-white/5">
+                            +12.45%
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-bold text-red-500 border-r border-slate-100 dark:border-white/5">
+                            +8.20%
+                        </div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            最大回撤
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            -18.2%
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-bold text-green-600 bg-green-50/30 border-r border-slate-100 dark:border-white/5">
+                            -4.8%
+                        </div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            夏普比率
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            1.82
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-bold text-primary border-r border-slate-100 dark:border-white/5">
+                            2.15
+                        </div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="flex items-center bg-slate-50/80 dark:bg-white/5 py-1.5 px-3 sticky left-0 z-10 w-full border-b border-slate-100 dark:border-white/5 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] mr-1.5 text-primary">info</span>
+<span class="text-xs font-bold text-slate-700 dark:text-slate-200">基本信息</span>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            风险等级
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center border-r border-slate-100 dark:border-white/5">
+<span class="px-2 py-0.5 rounded text-xs bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 font-medium">R4 中高风险</span>
+</div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center border-r border-slate-100 dark:border-white/5">
+<span class="px-2 py-0.5 rounded text-xs bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 font-medium">R3 中风险</span>
+</div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            基金规模
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            45.2 亿
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            620.5 亿
+                        </div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            基金经理
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            张大伟
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            侯昊
+                        </div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="flex items-center bg-slate-50/80 dark:bg-white/5 py-1.5 px-3 sticky left-0 z-10 w-full border-b border-slate-100 dark:border-white/5 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] mr-1.5 text-primary">gavel</span>
+<span class="text-xs font-bold text-slate-700 dark:text-slate-200">交易规则</span>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            起购金额
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            10 元
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            100 元
+                        </div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            申购费率
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+<span class="text-slate-400 line-through text-xs mr-1">1.5%</span> 0.15%
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+<span class="text-slate-400 line-through text-xs mr-1">1.2%</span> 0.12%
+                        </div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="flex border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<div class="sticky left-0 z-10 w-24 shrink-0 bg-white dark:bg-surface-dark-highlight p-3 flex items-center text-xs text-slate-500 dark:text-slate-400 border-r border-slate-100 dark:border-white/5 sticky-left-shadow font-medium">
+                            持有期
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            无限制
+                        </div>
+<div class="w-36 shrink-0 p-3 flex items-center justify-center text-sm font-medium text-slate-900 dark:text-white border-r border-slate-100 dark:border-white/5">
+                            最短7天
+                        </div>
+<div class="w-36 shrink-0"></div>
+</div>
+<div class="h-8"></div>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 w-full bg-white dark:bg-[#151e26] border-t border-slate-200 dark:border-white/5 pb-safe z-50 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="flex gap-2">
+<button class="flex flex-col items-center justify-center px-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors gap-0.5 min-w-[48px]">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+<span class="text-[10px]">保存</span>
+</button>
+<button class="flex flex-col items-center justify-center px-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors gap-0.5 min-w-[48px]">
+<span class="material-symbols-outlined text-[20px]">ios_share</span>
+<span class="text-[10px]">导出</span>
+</button>
+<button class="flex flex-col items-center justify-center px-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors gap-0.5 min-w-[48px]">
+<span class="material-symbols-outlined text-[20px]">add_chart</span>
+<span class="text-[10px]">组合</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-primary text-white font-semibold rounded-xl text-sm hover:bg-primary-dark transition-colors shadow-lg shadow-primary/30 h-11">
+<span class="material-symbols-outlined text-[18px]">send</span>
+                发送对比报告给客户
+            </button>
+</div>
+</div>
+</div>
+
+</body></html>

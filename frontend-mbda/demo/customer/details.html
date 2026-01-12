@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI 客户洞察</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b63be",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111a22", 
+                        "surface-dark": "#192633", 
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white pb-32">
+<div class="sticky top-0 z-50 flex items-center bg-background-dark/95 backdrop-blur-md p-4 pb-2 justify-between border-b border-white/5">
+<div class="text-white flex size-12 shrink-0 items-center justify-start cursor-pointer">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">AI 客户洞察</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[24px]">more_horiz</span>
+</button>
+</div>
+</div>
+<div class="flex p-4 @container bg-background-dark">
+<div class="flex w-full flex-col gap-4">
+<div class="flex gap-4 items-start">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-20 w-20 ring-2 ring-white/10" data-alt="Portrait of a middle-aged asian businessman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0xQZLrWBaMF1zqwf5Ffg0-Lz0zdwQztCXSz7q-ZxX33U4y9qXOvzaWx9DWKwL3VJYofydBicrijwPVSldE6wDawwRpkSypU-nCRcGoKj5Hp7mSpJFib8tVx2XnxjQZaB05XLeRJqfW_hxddDUXFUm8SrFa_ACEsCvUqf9qzFq3yaOLkwjGBKEZD8ITeAYe47s3KemJrGamkDMkDKwnHg_PSQIgoUunaPfsBEJczgXfLYMzfZirOo7R8MixR0af9hTZQivfGMozYa4");'></div>
+<div class="absolute -bottom-1 -right-1 bg-gradient-to-br from-yellow-400 to-yellow-600 text-black text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-background-dark">
+                        VIP
+                    </div>
+</div>
+<div class="flex flex-col justify-center flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">王先生</h1>
+<p class="text-[#92adc9] text-sm mt-1">钻石客户 • ID: 8839201</p>
+</div>
+</div>
+<div class="mt-2 flex gap-4">
+<div>
+<p class="text-[#92adc9] text-xs font-medium uppercase tracking-wider">总资产 (AUM)</p>
+<p class="text-white text-lg font-bold font-mono">¥1,850万</p>
+</div>
+<div>
+<p class="text-[#92adc9] text-xs font-medium uppercase tracking-wider">年初至今收益</p>
+<p class="text-green-400 text-lg font-bold font-mono">+8.4%</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex gap-3 mt-2">
+<button class="flex-1 cursor-pointer flex items-center justify-center rounded-lg h-10 px-4 bg-[#233648] hover:bg-[#2f455a] transition-colors text-white text-sm font-bold gap-2">
+<span class="material-symbols-outlined text-[18px]">call</span>
+<span>拨打电话</span>
+</button>
+<button class="flex-1 cursor-pointer flex items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary-dark transition-colors text-white text-sm font-bold gap-2">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span>发送消息</span>
+</button>
+</div>
+</div>
+</div>
+<div class="px-4 py-2">
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#1e1b4b] border border-primary/30 shadow-lg shadow-primary/5">
+<div class="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
+<div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl"></div>
+<div class="relative p-5">
+<div class="flex items-center gap-2 mb-3">
+<div class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-600 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-[18px]">auto_awesome</span>
+</div>
+<p class="text-primary-100 font-semibold text-sm tracking-wide text-blue-200">AI 洞察摘要</p>
+</div>
+<h3 class="text-white text-lg font-bold leading-tight mb-2">监测到流动性事件</h3>
+<p class="text-slate-300 text-sm leading-relaxed mb-4">
+                    王先生有一笔大额定期存款将于下周到期。根据近期的聊天记录，他对用于孙子教育基金的<span class="text-white font-medium">低风险、稳健增长</span>型产品表现出兴趣。
+                </p>
+<div class="flex items-center gap-2">
+<div class="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+<p class="text-xs text-slate-400">情绪: <span class="text-green-400 font-medium">积极 &amp; 投入</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4">
+<div class="flex items-center justify-between px-4 pb-2">
+<h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">客户画像</h3>
+<span class="text-xs text-primary cursor-pointer font-medium">查看完整档案</span>
+</div>
+<div class="flex gap-2 px-4 flex-wrap mb-4">
+<div class="flex h-7 items-center justify-center px-3 rounded-full bg-[#233648] border border-white/5">
+<p class="text-blue-200 text-xs font-medium">保守型</p>
+</div>
+<div class="flex h-7 items-center justify-center px-3 rounded-full bg-[#233648] border border-white/5">
+<p class="text-purple-200 text-xs font-medium">家庭至上</p>
+</div>
+<div class="flex h-7 items-center justify-center px-3 rounded-full bg-[#233648] border border-white/5">
+<p class="text-emerald-200 text-xs font-medium">高净值</p>
+</div>
+<div class="flex h-7 items-center justify-center px-3 rounded-full bg-[#233648] border border-white/5">
+<p class="text-amber-200 text-xs font-medium">高尔夫爱好者</p>
+</div>
+</div>
+<div class="px-4 pb-2">
+<p class="text-[#92adc9] text-xs font-semibold uppercase tracking-wider mb-3 pl-1">关键生活事件</p>
+<div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x">
+<div class="snap-start shrink-0 w-64 bg-surface-dark rounded-lg p-3 border-l-4 border-primary flex items-start gap-3">
+<div class="bg-primary/10 p-2 rounded-full shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">cake</span>
+</div>
+<div>
+<p class="text-white text-sm font-semibold">儿子18岁生日</p>
+<p class="text-[#92adc9] text-xs mt-1">2周后 (11月12日)</p>
+<p class="text-xs text-primary mt-2 font-medium">已有礼物建议</p>
+</div>
+</div>
+<div class="snap-start shrink-0 w-64 bg-surface-dark rounded-lg p-3 border-l-4 border-orange-500 flex items-start gap-3">
+<div class="bg-orange-500/10 p-2 rounded-full shrink-0">
+<span class="material-symbols-outlined text-orange-500 text-[20px]">description</span>
+</div>
+<div>
+<p class="text-white text-sm font-semibold">保单续期</p>
+<p class="text-[#92adc9] text-xs mt-1">30天内到期</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="h-2 bg-[#192633]/50 w-full my-2"></div>
+<div class="mt-2">
+<div class="flex items-center gap-2 px-4 pb-4 pt-2">
+<span class="material-symbols-outlined text-primary">pie_chart</span>
+<h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">多维资产配置诊断</h3>
+</div>
+<div class="px-4 flex flex-col gap-3">
+<div class="bg-gradient-to-r from-surface-dark to-[#1e293b] rounded-xl p-4 border border-white/10 relative overflow-hidden">
+<div class="flex justify-between items-start z-10 relative">
+<div>
+<p class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">AI 综合评分</p>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-bold text-white">72</span>
+<span class="text-sm text-yellow-400 font-medium">待优化</span>
+</div>
+<p class="text-white text-sm mt-3 font-semibold">存在明显权益类资产缺口</p>
+<p class="text-slate-400 text-xs mt-1">当前配置过于保守，可能无法跑赢长期通胀。</p>
+</div>
+<div class="h-14 w-14 rounded-full border-4 border-yellow-500/30 flex items-center justify-center border-t-yellow-500">
+<span class="material-symbols-outlined text-yellow-500 text-xl">warning</span>
+</div>
+</div>
+</div>
+<details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden" open="">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-3">
+<div class="p-1.5 rounded-md bg-blue-500/10 text-blue-400">
+<span class="material-symbols-outlined text-[20px]">balance</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white font-semibold text-sm">配置缺口与风险敞口</span>
+<span class="text-slate-500 text-[10px]">权益类偏低 · 固收类过高</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
+<div class="mt-3 flex gap-4 items-center">
+<div class="flex-1 space-y-3">
+<div>
+<div class="flex justify-between text-[10px] text-slate-400 mb-1">
+<span>权益类 (股票/基金)</span>
+<span class="text-red-400 font-medium">缺口 20%</span>
+</div>
+<div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden flex">
+<div class="bg-blue-500 h-full w-[25%]"></div> 
+<div class="bg-blue-500/30 h-full w-[20%] border-l border-dashed border-white/30"></div> 
+</div>
+<div class="flex justify-between text-[10px] mt-1">
+<span class="text-white">当前: 25%</span>
+<span class="text-blue-300">目标: 45%</span>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] text-slate-400 mb-1">
+<span>固收类 (存款/债券)</span>
+<span class="text-yellow-400 font-medium">过配 15%</span>
+</div>
+<div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative">
+<div class="bg-purple-500 h-full w-[65%]"></div>
+<div class="absolute right-[35%] h-full w-0.5 bg-white z-10"></div> 
+</div>
+<div class="flex justify-between text-[10px] mt-1">
+<span class="text-white">当前: 65%</span>
+<span class="text-purple-300">目标: 50%</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-3 bg-blue-500/10 rounded-lg p-2.5 flex gap-2 items-start">
+<span class="material-symbols-outlined text-primary text-[16px] mt-0.5">smart_toy</span>
+<p class="text-xs text-blue-100 leading-relaxed">
+<span class="font-bold">AI 建议：</span> 建议逐步将定存到期资金转向低波动权益基金，以修复20%的权益缺口，提升组合长期收益弹性。
+                        </p>
+</div>
+</div>
+</details>
+<details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-3">
+<div class="p-1.5 rounded-md bg-green-500/10 text-green-400">
+<span class="material-symbols-outlined text-[20px]">flag</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white font-semibold text-sm">目标达成诊断</span>
+<span class="text-slate-500 text-[10px]">子女教育达成率高</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
+<div class="space-y-4 mt-3">
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="text-xs text-white font-medium">孙辈教育金 (5年)</span>
+<span class="text-xs text-green-400 font-bold">达成概率 92%</span>
+</div>
+<div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-[85%]"></div>
+</div>
+<p class="text-[10px] text-slate-400 mt-1">当前进度良好，无需调整。</p>
+</div>
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="text-xs text-white font-medium">品质养老 (15年)</span>
+<span class="text-xs text-yellow-400 font-bold">达成概率 65%</span>
+</div>
+<div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+<div class="bg-yellow-500 h-full w-[55%]"></div>
+</div>
+<p class="text-[10px] text-slate-400 mt-1">受通胀影响，需增加增值型资产配置以确保购买力。</p>
+</div>
+</div>
+</div>
+</details>
+<details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-3">
+<div class="p-1.5 rounded-md bg-teal-500/10 text-teal-400">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white font-semibold text-sm">现金流匹配诊断</span>
+<span class="text-slate-500 text-[10px]">流动性极佳</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
+<p class="text-xs text-slate-300 mt-3 leading-relaxed">
+                        您的月度现金流非常健康。考虑到未来12个月没有大额刚性支出，您目前持有的现金比例（45%）过高，造成了资金闲置。
+                    </p>
+<div class="mt-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-teal-400 text-[16px]">check_circle</span>
+<span class="text-xs text-teal-400">建议预留6个月支出作为备用金，其余投入市场。</span>
+</div>
+</div>
+</details>
+<details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-3">
+<div class="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white font-semibold text-sm">税务优化诊断</span>
+<span class="text-slate-500 text-[10px]">存在优化空间</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
+<p class="text-xs text-slate-300 mt-3">
+                        您目前的资产配置主要集中在普通应税账户。AI 建议利用年金保险或个人养老金账户的税收递延功能，每年可潜在节省税务支出约 ¥12,000。
+                    </p>
+</div>
+</details>
+<details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-3">
+<div class="p-1.5 rounded-md bg-pink-500/10 text-pink-400">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white font-semibold text-sm">行为偏好诊断</span>
+<span class="text-slate-500 text-[10px]">发现“损失厌恶”偏差</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
+<p class="text-xs text-slate-300 mt-3">
+                        历史交易数据显示，您在市场下跌5%时赎回频率较高，表明存在较强的“损失厌恶”。建议配置定投策略或保本浮动收益产品，以减少择时冲动。
+                    </p>
+</div>
+</details>
+<details class="group bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-3">
+<div class="p-1.5 rounded-md bg-orange-500/10 text-orange-400">
+<span class="material-symbols-outlined text-[20px]">trending_up</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white font-semibold text-sm">市场适应性诊断</span>
+<span class="text-slate-500 text-[10px]">牛市踏空风险高</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-4 pb-4 pt-0 border-t border-white/5 bg-black/20">
+<div class="grid grid-cols-3 gap-2 mt-3 text-center">
+<div class="bg-white/5 rounded p-2">
+<p class="text-[10px] text-slate-400">震荡市</p>
+<p class="text-xs text-green-400 font-bold mt-1">表现优异</p>
+</div>
+<div class="bg-white/5 rounded p-2">
+<p class="text-[10px] text-slate-400">熊市</p>
+<p class="text-xs text-green-400 font-bold mt-1">抗跌性强</p>
+</div>
+<div class="bg-white/5 rounded p-2 border border-orange-500/30">
+<p class="text-[10px] text-slate-400">牛市</p>
+<p class="text-xs text-orange-400 font-bold mt-1">跑输大盘</p>
+</div>
+</div>
+<p class="text-[10px] text-slate-400 mt-2 text-center">当前配置在牛市环境下收益获取能力较弱。</p>
+</div>
+</details>
+</div>
+</div>
+<div class="mt-6 px-4">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-[20px]">recommend</span>
+<h3 class="text-white text-lg font-bold leading-tight">推荐行动 (基于诊断结果)</h3>
+</div>
+<div class="flex flex-col gap-3">
+<div class="bg-surface-dark rounded-xl p-0 overflow-hidden border border-white/5 flex flex-col">
+<div class="p-4 flex gap-4">
+<div class="h-12 w-12 rounded-lg bg-blue-900/30 flex items-center justify-center text-primary shrink-0 border border-primary/20">
+<span class="material-symbols-outlined text-[24px]">show_chart</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="text-white text-base font-bold">华夏回报混合型基金</h4>
+<span class="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded font-bold">匹配度 95%</span>
+</div>
+<p class="text-[#92adc9] text-xs mt-1">针对权益缺口推荐。历史波动率低，适合稳健型客户补仓。</p>
+<div class="flex gap-4 mt-2">
+<div>
+<p class="text-[10px] text-slate-500">近3年年化</p>
+<p class="text-sm font-bold text-white font-mono">5.2%</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-500">起投金额</p>
+<p class="text-sm font-bold text-white font-mono">¥5万</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#1e293b] px-4 py-2 flex justify-between items-center">
+<span class="text-[10px] text-slate-400">风险等级: R3 (中风险)</span>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:text-white transition-colors">
+                        加入对比 <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-dark rounded-xl p-0 overflow-hidden border border-white/5 flex flex-col opacity-80">
+<div class="p-4 flex gap-4">
+<div class="h-12 w-12 rounded-lg bg-indigo-900/30 flex items-center justify-center text-indigo-400 shrink-0 border border-indigo-500/20">
+<span class="material-symbols-outlined text-[24px]">family_restroom</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="text-white text-base font-bold">家庭信托服务方案</h4>
+<span class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded font-bold">税务优化</span>
+</div>
+<p class="text-[#92adc9] text-xs mt-1">针对税务与传承需求。利用法律架构实现资产隔离。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="h-6"></div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-dark via-background-dark to-transparent pt-8 z-40">
+<button class="w-full h-12 bg-primary hover:bg-primary-dark active:scale-[0.98] transition-all rounded-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 text-white font-bold text-base">
+<span class="material-symbols-outlined">add_task</span>
+<span>添加到待办事项</span>
+</button>
+</div>
+
+</body></html>

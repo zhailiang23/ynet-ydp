@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>早报生成器</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#192633",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: 100vh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden">
+<div class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+<button class="flex items-center justify-center p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">早报生成器</h1>
+<button class="flex items-center justify-center p-2 -mr-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300">history</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto pb-32">
+<div class="px-4 py-4 bg-surface-light dark:bg-surface-dark mb-4 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-sm">tune</span>
+                        早报定制设置
+                    </h2>
+<span class="text-xs text-primary font-medium">已选 3 项</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary text-primary text-sm font-medium transition-colors">
+<span class="material-symbols-outlined text-base">check</span>
+                        宏观经济
+                    </button>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary text-primary text-sm font-medium transition-colors">
+<span class="material-symbols-outlined text-base">check</span>
+                        行业动态
+                    </button>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary text-primary text-sm font-medium transition-colors">
+<span class="material-symbols-outlined text-base">check</span>
+                        特定产品
+                    </button>
+<button class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-transparent text-gray-600 dark:text-gray-400 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        黄金/外汇
+                    </button>
+<button class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-transparent text-gray-600 dark:text-gray-400 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        保险市场
+                    </button>
+<button class="px-3 py-1.5 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 text-gray-400 text-sm font-medium flex items-center gap-1 hover:border-primary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">add</span>
+                        添加
+                    </button>
+</div>
+<div class="mt-3 relative">
+<input class="w-full text-sm bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:ring-primary focus:border-primary placeholder-gray-400" placeholder="输入您关注的理财产品名称（如：安鑫盈3号）" type="text"/>
+<span class="absolute right-3 top-2.5 material-symbols-outlined text-gray-400 text-sm">search</span>
+</div>
+</div>
+<div class="px-4">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-amber-500 fill-current">auto_awesome</span>
+<h2 class="text-base font-bold">今日已生成 (10月24日)</h2>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+<div class="h-28 w-full relative bg-gray-800">
+<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA-tu0kfbrM_EZ1v2XKiWvGM73_dmOlu0UqG1i0UTXM-sgXAKJ3p0ysBRtZeJBEex_EjQ7zJxranQir5yRZi4osIV-Y2qGKtA-f4CU07vksGNahrZWmq6wOWElEEZmejPyPAZRZ__K7k23ZPeaiN6jTZM1XmaBhm3rYX6_7Bkq-vGAG2ALHsO0Q1JhVCFlVcE_17-0YD5qowa7IVJigzf3a4YA5aqAAFnI_QRJ0khGJJLDwu1cQ4IEsQOQarhIHZKQl2RHHrUGg83TG');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-80"></div>
+<div class="absolute bottom-0 left-0 p-5 w-full">
+<div class="flex items-center justify-between w-full">
+<div>
+<h3 class="text-white font-bold text-xl tracking-tight">财经早报</h3>
+<p class="text-gray-300 text-xs mt-1 font-medium">AI 智能聚合 · 专属定制</p>
+</div>
+<div class="bg-white/10 backdrop-blur-sm px-2 py-1 rounded-lg border border-white/10">
+<span class="text-white text-xs font-bold">周二 · 10.24</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-5 space-y-6">
+<div class="flex gap-3">
+<div class="flex-1 bg-blue-50 dark:bg-blue-900/10 rounded-xl p-3 border border-blue-100 dark:border-blue-900/20">
+<p class="text-sm text-slate-800 dark:text-blue-100 leading-relaxed">
+<span class="font-bold text-primary">早安！</span> 昨夜美联储释放鸽派信号，全球资产风险偏好回升。建议今日重点跟进<span class="font-bold">权益类基金</span>客户，并关注安鑫盈系列产品的净值波动。
+                                </p>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-lg">public</span>
+<h4 class="font-bold text-sm text-slate-900 dark:text-white">宏观速递</h4>
+</div>
+<ul class="space-y-3 pl-1">
+<li class="relative pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+<h5 class="text-sm font-semibold text-slate-900 dark:text-gray-200">央行降准0.25个百分点</h5>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">释放长期资金约5000亿元，旨在巩固经济回升向好态势，保持流动性合理充裕。</p>
+</li>
+<li class="relative pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+<h5 class="text-sm font-semibold text-slate-900 dark:text-gray-200">美债收益率小幅回落</h5>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">10年期美债收益率跌破4.85%，美元指数承压下跌。</p>
+</li>
+</ul>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-red-500 text-lg">show_chart</span>
+<h4 class="font-bold text-sm text-slate-900 dark:text-white">市场行情</h4>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg text-center">
+<div class="text-[10px] text-gray-500 mb-0.5">上证指数</div>
+<div class="text-sm font-bold text-red-500">3,056.2</div>
+<div class="text-[10px] text-red-500 font-medium">+0.82%</div>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg text-center">
+<div class="text-[10px] text-gray-500 mb-0.5">恒生指数</div>
+<div class="text-sm font-bold text-red-500">17,452</div>
+<div class="text-[10px] text-red-500 font-medium">+1.15%</div>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg text-center">
+<div class="text-[10px] text-gray-500 mb-0.5">现货黄金</div>
+<div class="text-sm font-bold text-green-500">1,985.4</div>
+<div class="text-[10px] text-green-500 font-medium">-0.32%</div>
+</div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-purple-500 text-lg">stars</span>
+<h4 class="font-bold text-sm text-slate-900 dark:text-white">关注产品：安鑫盈3号</h4>
+</div>
+<span class="text-[10px] bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-1.5 py-0.5 rounded font-medium">利好</span>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700">
+<p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                                    受降准影响，市场流动性宽松预期增强。该产品底层资产主要配置高等级信用债，当前收益率具有较强吸引力。建议利用“稳健抗通胀”话术进行客户触达。
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-gray-900/50 px-5 py-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs text-gray-400">
+<span>AI 生成内容仅供参考</span>
+<div class="flex gap-4">
+<button class="hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-base">thumb_up</span>
+</button>
+<button class="hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-base">thumb_down</span>
+</button>
+<button class="hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-base">content_copy</span>
+                                复制
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<div class="h-8"></div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 px-4 py-4 pb-8 z-50">
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-center justify-center gap-1 min-w-[3.5rem] cursor-pointer" role="button">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+<span class="text-[10px] text-gray-500 font-medium">每日订阅</span>
+</div>
+<button class="flex flex-col items-center justify-center h-12 w-14 rounded-xl bg-gray-100 dark:bg-gray-800 text-slate-700 dark:text-gray-300 active:bg-gray-200 dark:active:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined text-xl">ios_share</span>
+<span class="text-[10px] font-medium -mt-0.5">分享</span>
+</button>
+<button class="flex-1 h-12 bg-primary hover:bg-primary/90 active:scale-[0.98] text-white rounded-xl font-bold text-base shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined fill-current animate-pulse">refresh</span>
+                    立即生成
+                </button>
+</div>
+<div class="h-[env(safe-area-inset-bottom)]"></div>
+</div>
+</div>
+
+</body></html>
