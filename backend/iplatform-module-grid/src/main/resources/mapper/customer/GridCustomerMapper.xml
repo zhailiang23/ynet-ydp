@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.grid.dal.mysql.customer.GridCustomerMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 插入客户并设置位置坐标 -->
+    <insert id="insertWithLocation" useGeneratedKeys="true" keyProperty="customer.id">
+        INSERT INTO grid_customer (
+            grid_id,
+            customer_type,
+            customer_name,
+            gender,
+            customer_group,
+            id_card,
+            phone,
+            phone_verified,
+            address,
+            location,
+            manager_id,
+            source,
+            status,
+            family_members,
+            housing_type,
+            monthly_income,
+            creator,
+            create_time,
+            updater,
+            update_time,
+            deleted,
+            tenant_id
+        ) VALUES (
+            #{customer.gridId},
+            #{customer.customerType},
+            #{customer.customerName},
+            #{customer.gender},
+            #{customer.customerGroup},
+            #{customer.idCard},
+            #{customer.phone},
+            #{customer.phoneVerified},
+            #{customer.address},
+            <choose>
+                <when test="longitude != null and latitude != null">
+                    ST_GeomFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+                </when>
+                <otherwise>
+                    NULL
+                </otherwise>
+            </choose>,
+            #{customer.managerId},
+            #{customer.source},
+            #{customer.status},
+            #{customer.familyMembers},
+            #{customer.housingType},
+            #{customer.monthlyIncome},
+            #{customer.creator},
+            #{customer.createTime},
+            #{customer.updater},
+            #{customer.updateTime},
+            #{customer.deleted},
+            #{customer.tenantId}
+        )
+    </insert>
+
+    <!-- 更新客户并设置位置坐标 -->
+    <update id="updateWithLocation">
+        UPDATE grid_customer
+        <set>
+            <if test="customer.gridId != null">grid_id = #{customer.gridId},</if>
+            <if test="customer.customerType != null">customer_type = #{customer.customerType},</if>
+            <if test="customer.customerName != null">customer_name = #{customer.customerName},</if>
+            <if test="customer.gender != null">gender = #{customer.gender},</if>
+            <if test="customer.customerGroup != null">customer_group = #{customer.customerGroup},</if>
+            <if test="customer.idCard != null">id_card = #{customer.idCard},</if>
+            <if test="customer.phone != null">phone = #{customer.phone},</if>
+            <if test="customer.phoneVerified != null">phone_verified = #{customer.phoneVerified},</if>
+            <if test="customer.address != null">address = #{customer.address},</if>
+            <if test="customer.managerId != null">manager_id = #{customer.managerId},</if>
+            <if test="customer.source != null">source = #{customer.source},</if>
+            <if test="customer.status != null">status = #{customer.status},</if>
+            <if test="customer.familyMembers != null">family_members = #{customer.familyMembers},</if>
+            <if test="customer.housingType != null">housing_type = #{customer.housingType},</if>
+            <if test="customer.monthlyIncome != null">monthly_income = #{customer.monthlyIncome},</if>
+            <if test="customer.updater != null">updater = #{customer.updater},</if>
+            <if test="customer.updateTime != null">update_time = #{customer.updateTime},</if>
+            <!-- location 字段始终更新（放在最后，确保前面字段的逗号正确） -->
+            location = <choose>
+                <when test="longitude != null and latitude != null">
+                    ST_GeomFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+                </when>
+                <otherwise>
+                    NULL
+                </otherwise>
+            </choose>
+        </set>
+        WHERE id = #{customer.id}
+          AND deleted = 0
+    </update>
+
+    <!-- ==================== 惠农贷款客户查询（customerType='HUINONG_LOAN'） ==================== -->
+
+    <!-- 根据ID查询惠农贷款客户（带关联信息） -->
+    <select id="selectHuinongLoanByIdWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanRespVO">
+        SELECT
+            c.id,
+            c.id AS customerId,
+            gi.id AS stationId,
+            c.grid_id AS gridId,
+            gi.grid_name AS gridName,
+            c.customer_name AS customerName,
+            c.phone,
+            c.customer_category AS customerCategory,
+            c.subdivision_type AS subdivisionType,
+            c.business_address AS businessAddress,
+            c.gender,
+            c.customer_situation AS customerSituation,
+            c.business_years AS businessYears,
+            c.current_financing AS currentFinancing,
+            c.credit_demand AS creditDemand,
+            c.demand_month AS demandMonth,
+            c.demand_period AS demandPeriod,
+            c.business_progress AS businessProgress,
+            c.customer_source AS customerSource,
+            c.is_applied AS isApplied,
+            c.apply_time AS applyTime,
+            c.is_approved AS isApproved,
+            c.approve_time AS approveTime,
+            c.loan_product_name AS loanProductName,
+            c.loan_amount AS loanAmount,
+            c.credit_limit AS creditLimit,
+            c.loan_balance AS loanBalance,
+            c.overdue_status AS overdueStatus,
+            c.is_formal_customer AS isFormalCustomer,
+            c.creator AS creatorId,
+            c.create_time AS createTime,
+            c.updater AS updaterId,
+            -- 从 grid_customer 的 location 字段提取经纬度（POINT 类型）
+            -- 注意：POINT存储格式为 POINT(latitude, longitude)
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_customer c
+        LEFT JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+        WHERE c.id = #{id} AND c.customer_type = 'HUINONG_LOAN' AND c.deleted = 0
+    </select>
+
+    <!-- 分页查询惠农贷款客户（带关联信息） -->
+    <select id="selectHuinongLoanPageWithRelations" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanRespVO">
+        SELECT
+            c.id,
+            c.id AS customerId,
+            c.grid_id AS gridId,
+            gi.grid_name AS gridName,
+            c.customer_name AS customerName,
+            c.phone,
+            c.customer_category AS customerCategory,
+            c.subdivision_type AS subdivisionType,
+            c.business_years AS businessYears,
+            c.current_financing AS currentFinancing,
+            c.is_formal_customer AS isFormalCustomer,
+            c.create_time AS createTime
+        FROM grid_customer c
+        LEFT JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0
+        WHERE c.customer_type = 'HUINONG_LOAN' AND c.deleted = 0
+            <if test="reqVO.customerName != null and reqVO.customerName != ''">
+                AND c.customer_name LIKE CONCAT('%', #{reqVO.customerName}, '%')
+            </if>
+            <if test="reqVO.phone != null and reqVO.phone != ''">
+                AND c.phone LIKE CONCAT('%', #{reqVO.phone}, '%')
+            </if>
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- 查询站点下的客户地图标记列表 -->
+    <select id="selectHuinongLoanMarkersByStationId" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongstation.vo.GridHuinongCustomerMarkerVO">
+        SELECT
+            c.id,
+            c.id AS customerId,
+            c.customer_name AS customerName,
+            c.phone,
+            c.customer_category AS customerCategory,
+            c.subdivision_type AS subdivisionType,
+            c.business_address AS businessAddress,
+            c.loan_amount AS loanAmount,
+            c.overdue_status AS overdueStatus,
+            -- 从 grid_customer 的 location 字段提取经纬度（POINT 类型）
+            -- 注意：POINT存储格式为 POINT(latitude, longitude)
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_customer c
+        INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+        WHERE gi.id = #{stationId}
+          AND c.customer_type = 'HUINONG_LOAN'
+          AND c.deleted = 0
+          AND c.location IS NOT NULL
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- 查询惠农贷款目标客户热力图数据（按网格分组，关联站点位置） -->
+    <!-- 热力图数据查询（支持多对多关系） -->
+    <select id="selectHuinongLoanHeatmapData" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanHeatmapDataVO">
+        <choose>
+            <!-- 贷款余额：只在主站点统计，避免重复累加 -->
+            <when test="reqVO.metricType == 'LOAN_BALANCE'">
+                SELECT
+                    c.grid_id AS gridId,
+                    gi.grid_name AS stationName,
+                    ST_X(gi.center_point) AS latitude,
+                    ST_Y(gi.center_point) AS longitude,
+                    SUM(IFNULL(c.loan_balance, 0)) AS value
+                FROM grid_customer c
+                INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+                WHERE c.customer_type = 'HUINONG_LOAN'
+                  AND c.deleted = 0
+                  AND gi.center_point IS NOT NULL
+                  <if test="reqVO.gridIds != null and reqVO.gridIds.size() > 0">
+                      AND c.grid_id IN
+                      <foreach collection="reqVO.gridIds" item="gridId" open="(" separator="," close=")">
+                          #{gridId}
+                      </foreach>
+                  </if>
+                  <if test="reqVO.customerCategories != null and reqVO.customerCategories.size() > 0">
+                      AND c.customer_category IN
+                      <foreach collection="reqVO.customerCategories" item="category" open="(" separator="," close=")">
+                          #{category}
+                      </foreach>
+                  </if>
+                  <if test="reqVO.gridMarketingFlag != null and reqVO.gridMarketingFlag != ''">
+                      AND gi.grid_marketing_flag = #{reqVO.gridMarketingFlag}
+                  </if>
+                GROUP BY c.grid_id, gi.grid_name, gi.center_point
+                ORDER BY value DESC
+            </when>
+            <!-- 其他指标：基于关系表统计，支持多对多 -->
+            <otherwise>
+                SELECT
+                    r.grid_id AS gridId,
+                    r.grid_name AS stationName,
+                    ST_X(gi.center_point) AS latitude,
+                    ST_Y(gi.center_point) AS longitude,
+                    <choose>
+                        <when test="reqVO.metricType == 'CUSTOMER_COUNT'">
+                            COUNT(DISTINCT r.customer_id) AS value
+                        </when>
+                        <when test="reqVO.metricType == 'APPLIED_COUNT'">
+                            COUNT(DISTINCT CASE WHEN c.is_applied = 1 THEN r.customer_id ELSE NULL END) AS value
+                        </when>
+                        <when test="reqVO.metricType == 'APPROVED_COUNT'">
+                            COUNT(DISTINCT CASE WHEN c.is_approved = 1 THEN r.customer_id ELSE NULL END) AS value
+                        </when>
+                        <otherwise>
+                            COUNT(DISTINCT r.customer_id) AS value
+                        </otherwise>
+                    </choose>
+                FROM grid_customer_grid_relation r
+                INNER JOIN grid_customer c ON r.customer_id = c.id AND c.deleted = 0 AND c.customer_type = 'HUINONG_LOAN'
+                INNER JOIN grid_info gi ON r.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+                WHERE r.deleted = 0
+                  AND gi.center_point IS NOT NULL
+                  <if test="reqVO.gridIds != null and reqVO.gridIds.size() > 0">
+                      AND r.grid_id IN
+                      <foreach collection="reqVO.gridIds" item="gridId" open="(" separator="," close=")">
+                          #{gridId}
+                      </foreach>
+                  </if>
+                  <if test="reqVO.customerCategories != null and reqVO.customerCategories.size() > 0">
+                      AND c.customer_category IN
+                      <foreach collection="reqVO.customerCategories" item="category" open="(" separator="," close=")">
+                          #{category}
+                      </foreach>
+                  </if>
+                  <if test="reqVO.gridMarketingFlag != null and reqVO.gridMarketingFlag != ''">
+                      AND gi.grid_marketing_flag = #{reqVO.gridMarketingFlag}
+                  </if>
+                GROUP BY r.grid_id, r.grid_name, gi.center_point
+                ORDER BY value DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询惠农贷款目标客户标记列表（支持多对多关系） -->
+    <select id="selectHuinongLoanCustomerMarkers" resultType="com.ynet.iplatform.module.grid.controller.admin.huinongcustomerloan.vo.GridHuinongCustomerLoanCustomerMarkerVO">
+        SELECT DISTINCT
+            c.id AS customerId,
+            c.customer_name AS customerName,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude,
+            c.grid_id AS gridId,
+            gi.grid_marketing_flag AS stationType,
+            c.is_applied AS isApplied,
+            c.is_approved AS isApproved,
+            c.loan_balance AS loanBalance,
+            c.customer_category AS customerCategory
+        FROM grid_customer c
+        INNER JOIN grid_customer_grid_relation r ON c.id = r.customer_id AND r.deleted = 0
+        INNER JOIN grid_info gi ON c.grid_id = gi.id AND gi.deleted = 0 AND gi.grid_type = 'HUINONG'
+        WHERE c.customer_type = 'HUINONG_LOAN'
+          AND c.deleted = 0
+          AND c.location IS NOT NULL
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!--
+        根据网格 ID 查找包含在网格内的客户
+        使用 ST_Contains 空间函数判断客户的 location 是否在网格的 boundary_geometry 内
+
+        说明：
+        1. 用于网格创建/更新后自动关联包含的客户
+        2. 客户类型需要与网格类型匹配（ZERODAI → ZERODAI, HUINONG_LOAN → HUINONG, COMMUNITY → COMMUNITY, TINGTANG → LOBBY）
+        3. 只查找有坐标的客户（location IS NOT NULL）
+        4. 限制返回结果数量，避免一次性查询过多数据
+    -->
+    <select id="selectCustomersWithinGrid" resultType="com.ynet.iplatform.module.grid.dal.dataobject.customer.GridCustomerDO">
+        SELECT
+            c.id,
+            c.grid_id,
+            c.customer_type,
+            c.customer_name,
+            c.phone,
+            c.address,
+            c.manager_id,
+            c.source,
+            c.status,
+            c.create_time,
+            c.update_time,
+            c.creator,
+            c.updater,
+            c.deleted,
+            c.tenant_id,
+            ST_X(c.location) AS latitude,
+            ST_Y(c.location) AS longitude
+        FROM grid_customer c
+        INNER JOIN grid_info g ON g.id = #{gridId} AND g.deleted = 0
+        WHERE c.customer_type = #{customerType}
+          AND c.deleted = 0
+          AND c.location IS NOT NULL
+          AND g.boundary_geometry IS NOT NULL
+          AND ST_Contains(g.boundary_geometry, c.location)
+        ORDER BY c.create_time DESC
+        LIMIT 1000
+    </select>
+
+    <!-- 查询用于地图展示的客户数据（带经纬度） -->
+    <select id="selectCustomersForMap" resultType="com.ynet.iplatform.module.grid.controller.admin.gridmap.vo.GridMapDataRespVO$CustomerData">
+        SELECT
+            c.id,
+            c.customer_name AS customerName,
+            c.customer_type AS customerType,
+            ST_Y(c.location) AS longitude,
+            ST_X(c.location) AS latitude,
+            c.address
+        FROM grid_customer c
+        WHERE c.deleted = 0
+          AND c.location IS NOT NULL
+          <if test="customerTypes != null and customerTypes.size() > 0">
+              AND c.customer_type IN
+              <foreach collection="customerTypes" item="type" open="(" separator="," close=")">
+                  #{type}
+              </foreach>
+          </if>
+        ORDER BY c.create_time DESC
+        LIMIT 10000
+    </select>
+
+</mapper>

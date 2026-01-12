@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.ynet.iplatform</groupId>
+        <artifactId>iplatform</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>iplatform-module-ynet-infra</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        数字分身
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-module-system</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-module-infra</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-module-bpm</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 业务组件 -->
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-spring-boot-starter-biz-ip</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-spring-boot-starter-biz-tenant</artifactId>
+        </dependency>
+
+        <!-- Web 相关 -->
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- DB 相关 -->
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-spring-boot-starter-mybatis</artifactId>
+        </dependency>
+
+        <!-- 工具类相关 -->
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-spring-boot-starter-excel</artifactId>
+        </dependency>
+
+        <!-- 钉钉 SDK -->
+        <dependency>
+            <groupId>com.dingtalk.open</groupId>
+            <artifactId>dingtalk-stream</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dingtalk</artifactId>
+        </dependency>
+
+        <!-- Jakarta EE API (JDK 17 需要) -->
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
+        <!-- Test 测试相关 -->
+        <dependency>
+            <groupId>com.ynet.iplatform</groupId>
+            <artifactId>iplatform-spring-boot-starter-test</artifactId>
+        </dependency>
+    </dependencies>
+</project>

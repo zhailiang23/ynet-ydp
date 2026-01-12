@@ -147,6 +147,9 @@ public class PracticeScriptServiceImpl implements PracticeScriptService {
             updateScript.setId(scriptId);
             updateScript.setGenerationStatus("failed");
             practiceScriptMapper.updateById(updateScript);
+
+            // 重新抛出异常，让调用者知道生成失败
+            throw new RuntimeException("生成剧本内容失败: " + e.getMessage(), e);
         }
     }
 

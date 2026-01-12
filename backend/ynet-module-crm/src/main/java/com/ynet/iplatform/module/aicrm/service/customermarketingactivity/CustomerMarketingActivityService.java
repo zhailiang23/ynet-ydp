@@ -59,4 +59,11 @@ public interface CustomerMarketingActivityService {
      */
     PageResult<CustomerMarketingActivityDO> getCustomerMarketingActivityPage(CustomerMarketingActivityPageReqVO pageReqVO);
 
+    /**
+     * 获取营销活动简化列表（用于下拉选择）
+     *
+     * @return 营销活动简化列表
+     */
+    List<CustomerMarketingActivityDO> getCustomerMarketingActivitySimpleList();
+
 }

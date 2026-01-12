@@ -47,6 +47,9 @@ public class AuthPermissionInfoRespVO {
         @Schema(description = "部门编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "2048")
         private Long deptId;
 
+        @Schema(description = "部门名称", example = "研发部")
+        private String deptName;
+
         @Schema(description = "用户账号", requiredMode = Schema.RequiredMode.REQUIRED, example = "iplatform")
         private String username;
 

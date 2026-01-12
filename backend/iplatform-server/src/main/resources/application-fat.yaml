@@ -306,11 +306,3 @@ knowledge:
     timeout: 60000                       # 超时时间（毫秒）
     chunk-size: 512                      # 默认分片大小
     overlap: 64                          # 默认重叠大小
-
---- #################### 客群中心相关配置 ####################
-
-# 客群中心服务配置
-aicrm:
-  cohort:
-    api-url: http://192.168.65.155:8108/ibbp-label-center/cohortListService/queryCohortList  # 客群列表服务地址
-    customer-list-url: http://192.168.65.155:8108/ibbp-label-center/cohortTagService/findMultiCohortCustomList  # 客群客户列表服务地址

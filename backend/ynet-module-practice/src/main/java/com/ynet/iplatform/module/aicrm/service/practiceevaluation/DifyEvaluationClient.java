@@ -1,11 +1,9 @@
 package com.ynet.iplatform.module.aicrm.service.practiceevaluation;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.ynet.iplatform.module.aicrm.config.DifyProperties;
+import com.ynet.iplatform.module.aicrm.util.DifyClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +12,21 @@ import jakarta.annotation.Resource;
 /**
  * Dify 评估客户端
  * 调用 Dify Workflow API 进行课程评估
+ *
+ * 注意: 本类基于 DifyClientUtil 实现,需要在 infra_external_agent 表中配置智能体编码
  */
 @Component
 @Slf4j
 public class DifyEvaluationClient {
 
     @Resource
-    private DifyProperties difyProperties;
+    private DifyClientUtil difyClientUtil;
+
+    /**
+     * 智能体编码 - 对应 infra_external_agent 表的 code 字段
+     * 默认使用 "practice-evaluate" 编码,可通过配置文件修改
+     */
+    private static final String AGENT_CODE = "practice-evaluate";
 
     /**
      * 调用 Dify 评估服务
@@ -32,88 +38,39 @@ public class DifyEvaluationClient {
      * @throws Exception 调用失败时抛出异常
      */
     public DifyEvaluationResponse evaluateTraining(String trainingContent, String scriptId, String courseList) throws Exception {
-        if (!difyProperties.getEnabled()) {
-            throw new Exception("Dify 服务未启用");
-        }
-
-        String apiUrl = difyProperties.getApiUrl();
-        String evaluationApiKey = difyProperties.getEvaluationApiKey();
-
-        if (StrUtil.isBlank(apiUrl)) {
-            throw new Exception("Dify API URL 未配置");
-        }
-        if (StrUtil.isBlank(evaluationApiKey)) {
-            throw new Exception("Dify 评估应用 API Key 未配置");
-        }
-
-        // 构建请求 URL - workflow 应用使用 /workflows/run 接口
-        String url = apiUrl + "/workflows/run";
-
-        // 构建请求参数
-        JSONObject requestBody = new JSONObject();
-
-        // inputs: 传递给 workflow 的输入变量
-        JSONObject inputs = new JSONObject();
-        inputs.set("training_content", trainingContent);
-        if (StrUtil.isNotBlank(scriptId)) {
-            inputs.set("scriptId", scriptId);
-        }
-        inputs.set("course", courseList);
-        requestBody.set("inputs", inputs);
-
-        // response_mode: blocking(阻塞式)
-        requestBody.set("response_mode", "blocking");
-
-        // user: 用户标识
-        requestBody.set("user", difyProperties.getUser());
-
         log.info("调用 Dify 评估 API, scriptId: {}, 对话内容长度: {}, 课程列表长度: {}",
                 scriptId, trainingContent != null ? trainingContent.length() : 0, courseList != null ? courseList.length() : 0);
-        log.debug("Dify 评估请求参数: {}", requestBody.toString());
 
-        // 发送 HTTP 请求
-        try (HttpResponse response = HttpRequest.post(url)
-                .header("Authorization", "Bearer " + evaluationApiKey)
-                .header("Content-Type", "application/json")
-                .body(requestBody.toString())
-                .timeout(difyProperties.getTimeout())
-                .execute()) {
+        try {
+            // 使用 Builder 构建请求参数
+            DifyClientUtil.WorkflowsRunBuilder builder = new DifyClientUtil.WorkflowsRunBuilder()
+                    .responseMode("blocking")                    // 响应模式: blocking(阻塞式)
+                    .user("backend-system")                      // 用户标识
+                    .input("training_content", trainingContent)  // 输入变量: 陪练对话内容
+                    .input("course", courseList);                // 输入变量: 所有课程表信息
 
-            int status = response.getStatus();
-            String body = response.body();
-
-            log.info("Dify 评估响应状态: {}, 响应体长度: {}", status, body != null ? body.length() : 0);
-
-            if (status != 200) {
-                log.error("Dify 评估调用失败, 响应: {}", body);
-                throw new Exception("调用 Dify 评估失败, HTTP状态码: " + status + ", 响应: " + body);
+            // scriptId 是可选参数
+            if (StrUtil.isNotBlank(scriptId)) {
+                builder.input("scriptId", scriptId);
             }
+
+            JSONObject requestParams = builder.build();
+
+            // 调用 Dify Workflow API (根据 AGENT_CODE 自动获取 URL 和 API Key)
+            JSONObject responseJson = difyClientUtil.workflowsRun(AGENT_CODE, requestParams);
 
             // 解析响应
-            JSONObject responseJson = JSONUtil.parseObj(body);
-            log.info("Dify 评估响应 JSON: {}", responseJson.toString());
-
-            // 检查是否有错误
-            if (responseJson.containsKey("code")) {
-                String errorCode = responseJson.getStr("code");
-                String errorMessage = responseJson.getStr("message");
-                throw new Exception("Dify 评估调用失败: " + errorCode + " - " + errorMessage);
-            }
-
-            // Dify Workflow API 响应格式:
-            // {
-            //   "workflow_run_id": "xxx",
-            //   "task_id": "xxx",
-            //   "data": {
-            //     "outputs": {
-            //       "evaluation_result": "JSON字符串"
-            //     }
-            //   }
-            // }
-
             JSONObject data = responseJson.getJSONObject("data");
             if (data == null) {
                 throw new Exception("Dify 评估响应中缺少 data 字段");
+            }
+
+            // 检查执行状态
+            String status = data.getStr("status");
+            if (!"succeeded".equals(status)) {
+                String error = data.getStr("error");
+                log.error("Dify Workflow 执行失败, 状态: {}, 错误: {}", status, error);
+                throw new Exception("Dify Workflow 执行失败: " + error);
             }
 
             JSONObject outputs = data.getJSONObject("outputs");
@@ -158,6 +115,7 @@ public class DifyEvaluationClient {
             // 解析评估结果
             JSONObject evaluationJson = JSONUtil.parseObj(evaluationResultStr);
 
+            // 封装响应
             DifyEvaluationResponse evalResponse = new DifyEvaluationResponse();
             evalResponse.setWorkflowRunId(responseJson.getStr("workflow_run_id"));
             evalResponse.setTaskId(responseJson.getStr("task_id"));

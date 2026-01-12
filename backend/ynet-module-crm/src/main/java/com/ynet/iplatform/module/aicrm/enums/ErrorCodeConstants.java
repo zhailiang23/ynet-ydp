@@ -114,7 +114,10 @@ public interface ErrorCodeConstants {
     // ========== 客户营销活动 1-020-041-000 ==========
     ErrorCode CUSTOMER_MARKETING_ACTIVITY_NOT_EXISTS = new ErrorCode(1_020_041_000, "客户营销活动不存在");
 
-    // ========== 客户产品推荐 1-020-042-000 ==========
+    // ========== 营销活动任务下发 1-020-042-000 ==========
+    ErrorCode MARKETING_TASK_ASSIGNMENT_NOT_EXISTS = new ErrorCode(1_020_042_000, "营销活动任务下发不存在");
+
+    // ========== 客户产品推荐 1-020-043-000 ==========
     ErrorCode CUSTOMER_PRODUCT_RECOMMENDATION_NOT_EXISTS = new ErrorCode(1_020_042_000, "客户产品推荐不存在");
 
     // ========== 客户贡献度 1-020-043-000 ==========
@@ -148,6 +151,22 @@ public interface ErrorCodeConstants {
     ErrorCode PRODUCT_CATEGORY_PARENT_NOT_EXITS = new ErrorCode(1_020_060_003, "父产品分类不存在");
     ErrorCode PRODUCT_CATEGORY_PARENT_IS_CHILD = new ErrorCode(1_020_060_004, "父产品分类不能是自己的子分类");
     ErrorCode PRODUCT_CATEGORY_CATEGORY_NAME_DUPLICATE = new ErrorCode(1_020_060_005, "同一父分类下已存在该分类名称");
+
+    // ========== 产品目录 1-020-061-000 ==========
+    ErrorCode PRODUCT_CATALOG_NOT_EXISTS = new ErrorCode(1_020_061_000, "产品目录不存在");
+    ErrorCode PRODUCT_CATALOG_NAME_DUPLICATE = new ErrorCode(1_020_061_001, "已经存在该名字的产品目录");
+    ErrorCode PRODUCT_CATALOG_PARENT_ERROR = new ErrorCode(1_020_061_002, "不能设置自己为父目录");
+    ErrorCode PRODUCT_CATALOG_PARENT_NOT_EXISTS = new ErrorCode(1_020_061_003, "父目录不存在");
+    ErrorCode PRODUCT_CATALOG_PARENT_IS_CHILD = new ErrorCode(1_020_061_004, "不能设置子目录为父目录");
+    ErrorCode PRODUCT_CATALOG_EXISTS_CHILDREN = new ErrorCode(1_020_061_005, "存在子目录，无法删除");
+    ErrorCode PRODUCT_CATALOG_NOT_ENABLE = new ErrorCode(1_020_061_006, "产品目录【{}】已禁用");
+
+    // ========== 金融产品 1-020-062-000 ==========
+    ErrorCode FINANCIAL_PRODUCT_NOT_EXISTS = new ErrorCode(1_020_062_000, "金融产品不存在");
+    ErrorCode FINANCIAL_PRODUCT_CODE_DUPLICATE = new ErrorCode(1_020_062_001, "产品代码已存在");
+    ErrorCode FINANCIAL_PRODUCT_CATALOG_NOT_EXISTS = new ErrorCode(1_020_062_002, "关联的产品目录不存在");
+    ErrorCode FINANCIAL_PRODUCT_CATALOG_DISABLED = new ErrorCode(1_020_062_003, "关联的产品目录已禁用");
+    ErrorCode FINANCIAL_PRODUCT_CAROUSEL_NOT_EXISTS = new ErrorCode(1_020_062_100, "轮播推荐不存在");
 
     // ========== 对公客户补充信息 1-020-070-000 ==========
     ErrorCode COMPANY_ADDRESS_NOT_EXISTS = new ErrorCode(1_020_070_000, "对公客户地址不存在");
@@ -222,5 +241,14 @@ public interface ErrorCodeConstants {
 
     // ========== 练习虚拟客户 1-020-207-000 ==========
     ErrorCode PRACTICE_VIRTUAL_CUSTOMER_NOT_EXISTS = new ErrorCode(1_020_207_000, "练习虚拟客户不存在");
+
+    // ========== AI CRM 潜客管理 1-020-208-000 ==========
+    ErrorCode POTENTIAL_CUSTOMER_NOT_EXISTS = new ErrorCode(1_020_208_000, "潜客不存在");
+
+    // ========== 任务行动 1-020-209-000 ==========
+    ErrorCode TASK_ACTION_NOT_EXISTS = new ErrorCode(1_020_209_000, "任务行动不存在");
+
+    // ========== AI CRM 任务 1-020-210-000 ==========
+    ErrorCode TASK_NOT_EXISTS = new ErrorCode(1_020_210_000, "任务不存在");
 
 }

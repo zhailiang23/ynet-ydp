@@ -96,6 +96,15 @@ public interface ErrorCodeConstants {
     ErrorCode BUSINESS_STATUS_DELETE_FAIL_USED = new ErrorCode(1_020_010_002, "已经被使用的商机状态组，无法进行删除");
     ErrorCode BUSINESS_STATUS_NOT_EXISTS = new ErrorCode(1_020_010_003, "商机状态不存在");
 
+    // ========== 产品目录 1_020_011_000 ==========
+    ErrorCode PRODUCT_CATALOG_NOT_EXISTS = new ErrorCode(1_020_011_000, "产品目录不存在");
+    ErrorCode PRODUCT_CATALOG_NAME_DUPLICATE = new ErrorCode(1_020_011_001, "已经存在该名字的产品目录");
+    ErrorCode PRODUCT_CATALOG_PARENT_ERROR = new ErrorCode(1_020_011_002, "不能设置自己为父目录");
+    ErrorCode PRODUCT_CATALOG_PARENT_NOT_EXISTS = new ErrorCode(1_020_011_003, "父目录不存在");
+    ErrorCode PRODUCT_CATALOG_PARENT_IS_CHILD = new ErrorCode(1_020_011_004, "不能设置子目录为父目录");
+    ErrorCode PRODUCT_CATALOG_EXISTS_CHILDREN = new ErrorCode(1_020_011_005, "存在子目录，无法删除");
+    ErrorCode PRODUCT_CATALOG_NOT_ENABLE = new ErrorCode(1_020_011_006, "产品目录【{}】已禁用");
+
     // ========== 客户公海规则设置 1_020_012_000 ==========
     ErrorCode CUSTOMER_LIMIT_CONFIG_NOT_EXISTS = new ErrorCode(1_020_012_001, "客户限制配置不存在");
 

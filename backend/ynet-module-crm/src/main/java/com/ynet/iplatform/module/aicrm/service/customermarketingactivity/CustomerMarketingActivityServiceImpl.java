@@ -82,4 +82,9 @@ public class CustomerMarketingActivityServiceImpl implements CustomerMarketingAc
         return customerMarketingActivityMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<CustomerMarketingActivityDO> getCustomerMarketingActivitySimpleList() {
+        return customerMarketingActivityMapper.selectList();
+    }
+
 }

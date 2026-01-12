@@ -182,11 +182,8 @@ public class CohortController {
 
             // 解析响应
             CohortApiResponse apiResponse = response.getBody();
-            log.info("收到客群服务响应，response: {}", apiResponse);
-
             if (apiResponse != null && apiResponse.getResHeaderData() != null) {
                 String errorCode = apiResponse.getResHeaderData().getErrorCode();
-                log.info("errorCode: {}, bodyOutData: {}", errorCode, apiResponse.getBodyOutData());
 
                 // errorCode 为 "0" 表示成功
                 if ("0".equals(errorCode) && apiResponse.getBodyOutData() != null
@@ -197,13 +194,11 @@ public class CohortController {
                     return success(cohorts);
                 } else {
                     String errorMsg = apiResponse.getResHeaderData().getErrorMsg();
-                    log.error("调用客群服务失败 - errorCode: {}, errorMsg: {}, bodyOutData是否为null: {}",
-                            errorCode, errorMsg, apiResponse.getBodyOutData() == null);
+                    log.error("调用客群服务失败 - errorCode: {}, errorMsg: {}", errorCode, errorMsg);
                     return success(List.of());
                 }
             } else {
-                log.error("调用客群服务失败: 响应为空, apiResponse: {}, resHeaderData: {}",
-                        apiResponse, apiResponse != null ? apiResponse.getResHeaderData() : null);
+                log.error("调用客群服务失败: 响应为空");
                 return success(List.of());
             }
         } catch (Exception e) {

@@ -1,0 +1,28 @@
+-- 零贷客户扩展表
+CREATE TABLE IF NOT EXISTS `grid_zerodai_customer` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '扩展ID',
+  `customer_id` bigint NOT NULL COMMENT '客户ID (关联 grid_customer)',
+  `principal_name` varchar(100) NOT NULL COMMENT '负责人姓名',
+  `gender` varchar(10) NOT NULL COMMENT '性别（男/女）',
+  `phone` varchar(11) DEFAULT NULL COMMENT '手机号',
+  `business_situation` text COMMENT '经营情况',
+  `financing_situation` text COMMENT '当前融资情况',
+  `credit_demand` text COMMENT '对我行信贷等产品需求',
+  `customer_no` varchar(50) DEFAULT NULL COMMENT '客户号（信贷系统客户号）',
+  `customer_classification` varchar(20) DEFAULT NULL COMMENT '客户分类（潜力客户/月标客户/存量客户）',
+  `credit_amount` decimal(10,2) DEFAULT NULL COMMENT '授信金额（万元）',
+  `loan_amount` decimal(10,2) DEFAULT NULL COMMENT '在贷金额（万元）',
+  `status` varchar(20) DEFAULT NULL COMMENT '状态（营销中/二次营销/待分支行审批/待总行审批/已审批/被拒）',
+  `photos` json DEFAULT NULL COMMENT '上传照片（JSON数组）',
+  `employee_no` varchar(50) DEFAULT NULL COMMENT '员工号',
+  `employee_name` varchar(100) DEFAULT NULL COMMENT '员工姓名',
+  `creator` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updater` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
+  `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
+  PRIMARY KEY (`id`),
+  KEY `idx_customer_id` (`customer_id`),
+  KEY `idx_tenant_id` (`tenant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='零贷客户扩展表';

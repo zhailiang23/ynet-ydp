@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.iplatform.module.grid.dal.mysql.lobbygrid.LobbyGridMapper">
+
+    <!-- 分页查询（包含部门三级层级） -->
+    <select id="selectLobbyGridPageWithJoin" resultType="map">
+        SELECT
+            g.id,
+            g.grid_code,
+            g.org_id,
+            d1.name as org_name,
+            d2.id as second_level_id,
+            d2.name as second_level_name,
+            d3.id as first_level_id,
+            d3.name as first_level_name,
+            g.management_level,
+            g.region,
+            g.district,
+            g.location_name,
+            g.longitude,
+            g.latitude,
+            g.outlet_type,
+            g.resident_count,
+            g.merchant_count,
+            g.radius_meters,
+            g.creator,
+            cu.nickname as creator_name,
+            g.create_time
+        FROM grid_info g
+        LEFT JOIN system_dept d1 ON g.org_id = d1.id
+        LEFT JOIN system_dept d2 ON d1.parent_id = d2.id AND d2.deleted = 0
+        LEFT JOIN system_dept d3 ON d2.parent_id = d3.id AND d3.deleted = 0
+        LEFT JOIN system_users cu ON g.creator = cu.id
+        WHERE g.deleted = 0
+        AND g.grid_type = 'LOBBY'
+        <if test="reqVO.orgId != null">
+            AND g.org_id = #{reqVO.orgId}
+        </if>
+        ORDER BY g.create_time DESC
+        LIMIT #{reqVO.pageSize} OFFSET ${(reqVO.pageNo - 1) * reqVO.pageSize}
+    </select>
+
+    <!-- 查询总数 -->
+    <select id="selectLobbyGridCount" resultType="long">
+        SELECT COUNT(*)
+        FROM grid_info g
+        WHERE g.deleted = 0
+        AND g.grid_type = 'LOBBY'
+        <if test="reqVO.orgId != null">
+            AND g.org_id = #{reqVO.orgId}
+        </if>
+    </select>
+
+    <!-- 插入厅堂网格 -->
+    <insert id="insertLobbyGrid" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO grid_info (
+            grid_code, grid_name, grid_type, org_id,
+            management_level, region, district,
+            location_name, longitude, latitude,
+            outlet_type, resident_count, merchant_count,
+            radius_meters, status,
+            boundary_geometry, center_point,
+            creator, create_time, updater, update_time,
+            tenant_id, deleted
+        ) VALUES (
+            #{gridCode}, #{gridName}, #{gridType}, #{orgId},
+            #{managementLevel}, #{region}, #{district},
+            #{locationName}, #{longitude}, #{latitude},
+            #{outletType}, #{residentCount}, #{merchantCount},
+            #{radiusMeters}, #{status},
+            <choose>
+                <when test="boundaryGeometry != null and boundaryGeometry != ''">
+                    ST_GeomFromGeoJSON(#{boundaryGeometry})
+                </when>
+                <otherwise>NULL</otherwise>
+            </choose>,
+            <choose>
+                <when test="longitude != null and latitude != null">
+                    ST_GeomFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326)
+                </when>
+                <otherwise>NULL</otherwise>
+            </choose>,
+            #{creator}, #{createTime}, #{updater}, #{updateTime},
+            #{tenantId}, 0
+        )
+    </insert>
+
+    <!-- 更新厅堂网格 -->
+    <update id="updateLobbyGridById" parameterType="map">
+        UPDATE grid_info
+        <set>
+            <if test="gridName != null">grid_name = #{gridName},</if>
+            <if test="orgId != null">org_id = #{orgId},</if>
+            <if test="managementLevel != null">management_level = #{managementLevel},</if>
+            <if test="region != null">region = #{region},</if>
+            <if test="district != null">district = #{district},</if>
+            <if test="locationName != null">location_name = #{locationName},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="outletType != null">outlet_type = #{outletType},</if>
+            <if test="residentCount != null">resident_count = #{residentCount},</if>
+            <if test="merchantCount != null">merchant_count = #{merchantCount},</if>
+            <if test="radiusMeters != null">radius_meters = #{radiusMeters},</if>
+            <if test="boundaryGeometry != null and boundaryGeometry != ''">
+                boundary_geometry = ST_GeomFromGeoJSON(#{boundaryGeometry}),
+            </if>
+            <if test="longitude != null and latitude != null">
+                center_point = ST_GeomFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326),
+            </if>
+            <if test="updater != null">updater = #{updater},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id} AND deleted = 0
+    </update>
+
+    <!-- 查询详情（包含边界 GeoJSON） -->
+    <select id="selectLobbyGridById" resultType="map">
+        SELECT
+            g.id, g.grid_code, g.grid_name, g.grid_type,
+            g.org_id,
+            d1.name as org_name,
+            d2.id as second_level_id,
+            d2.name as second_level_name,
+            d3.id as first_level_id,
+            d3.name as first_level_name,
+            g.management_level, g.region, g.district,
+            g.location_name, g.longitude, g.latitude,
+            g.outlet_type, g.resident_count, g.merchant_count,
+            g.radius_meters, g.status,
+            g.creator, cu.nickname as creator_name, g.create_time,
+            ST_AsGeoJSON(g.boundary_geometry) as boundary_geometry,
+            g.tenant_id, g.deleted
+        FROM grid_info g
+        LEFT JOIN system_dept d1 ON g.org_id = d1.id
+        LEFT JOIN system_dept d2 ON d1.parent_id = d2.id AND d2.deleted = 0
+        LEFT JOIN system_dept d3 ON d2.parent_id = d3.id AND d3.deleted = 0
+        LEFT JOIN system_users cu ON g.creator = cu.id
+        WHERE g.id = #{id}
+        AND g.deleted = 0
+        AND g.grid_type = 'LOBBY'
+    </select>
+
+</mapper>

@@ -15,11 +15,14 @@
         <!-- 各种 module 拓展 -->
         <module>iplatform-module-system</module>
         <module>iplatform-module-infra</module>
+        <module>iplatform-module-ynet-infra</module>
         <module>ynet-module-crm</module>
         <module>ynet-module-practice</module>
         <module>iplatform-module-twins</module>
         <module>iplatform-module-knowledge</module>
         <module>iplatform-module-bpm</module>
+        <module>iplatform-module-grid</module>
+        <module>iplatform-module-task</module>
 <!--        <module>iplatform-module-report</module>-->
 <!--        <module>iplatform-module-mp</module>-->
 <!--        <module>iplatform-module-pay</module>-->

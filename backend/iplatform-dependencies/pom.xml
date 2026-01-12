@@ -76,6 +76,11 @@
         <jimureport.version>2.1.1</jimureport.version>
         <jimubi.version>2.1.0</jimubi.version>
         <weixin-java.version>4.7.7-20250808.182223</weixin-java.version>
+        <dingtalk-stream.version>1.3.12</dingtalk-stream.version>
+        <dingtalk-sdk.version>2.1.67</dingtalk-sdk.version>
+        <!-- Jakarta EE 相关（JDK 17 需要）-->
+        <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
+        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <!-- 文件处理相关 -->
         <poi.version>5.4.0</poi.version>
         <pdfbox.version>3.0.3</pdfbox.version>
@@ -614,6 +619,30 @@
                 <groupId>com.github.binarywang</groupId>
                 <artifactId>wx-java-miniapp-spring-boot-starter</artifactId>
                 <version>${weixin-java.version}</version>
+            </dependency>
+
+            <!-- 钉钉 SDK -->
+            <dependency>
+                <groupId>com.dingtalk.open</groupId>
+                <artifactId>dingtalk-stream</artifactId>
+                <version>${dingtalk-stream.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>dingtalk</artifactId>
+                <version>${dingtalk-sdk.version}</version>
+            </dependency>
+
+            <!-- Jakarta EE API (JDK 17 需要) -->
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta.validation-api.version}</version>
             </dependency>
 
             <!-- 积木报表-->

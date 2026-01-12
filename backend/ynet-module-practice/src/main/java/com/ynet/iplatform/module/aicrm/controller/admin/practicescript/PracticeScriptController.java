@@ -109,4 +109,24 @@ public class PracticeScriptController {
         return success(versionHistory);
     }
 
+    @PostMapping("/generate-content")
+    @Operation(summary = "生成剧本内容")
+    @PreAuthorize("@ss.hasPermission('aicrm:practice-script:update')")
+    public CommonResult<String> generateScriptContent(@Valid @RequestBody GenerateScriptContentReqVO reqVO) {
+        // 调用服务生成剧本内容
+        practiceScriptService.generateScriptContentSync(
+                reqVO.getScriptId(),
+                reqVO.getCaseId(),
+                reqVO.getMaterialIds(),
+                reqVO.getSkillId(),
+                reqVO.getMarketingStep(),
+                reqVO.getDifficultyLevel(),
+                reqVO.getScriptDescription()
+        );
+
+        // 获取生成后的剧本
+        PracticeScriptDO script = practiceScriptService.getPracticeScript(reqVO.getScriptId());
+        return success(script.getContent());
+    }
+
 }
