@@ -14,10 +14,12 @@
 #   VITE_ENV - 部署环境 (dev/fat/uat/pro)
 ################################################################################
 
-# 工作流规则: 仅在 master 分支触发
+# 工作流规则: 在 master 或 feature/intelligent-practice 分支触发
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
+      when: always
+    - if: $CI_COMMIT_BRANCH == "feature/intelligent-practice"
       when: always
     - when: never
 
