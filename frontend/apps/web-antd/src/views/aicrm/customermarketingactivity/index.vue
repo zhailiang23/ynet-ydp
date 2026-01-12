@@ -134,14 +134,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
               label: $t('ui.actionTitle.create', ['客户营销活动信息']),
               type: 'primary',
               icon: ACTION_ICON.ADD,
-              auth: ['aicrm:customer-marketing-activity:create'],
+              auth: ['aicrm:marketing-activity:create'],
               onClick: handleCreate,
             },
             {
               label: $t('ui.actionTitle.export'),
               type: 'primary',
               icon: ACTION_ICON.DOWNLOAD,
-              auth: ['aicrm:customer-marketing-activity:export'],
+              auth: ['aicrm:marketing-activity:export'],
               onClick: handleExport,
             },
             {
@@ -149,7 +149,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'primary',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              auth: ['aicrm:customer-marketing-activity:delete'],
+              auth: ['aicrm:marketing-activity:delete'],
               disabled: isEmpty(checkedIds),
               onClick: handleDeleteBatch,
             },
@@ -163,7 +163,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               label: $t('common.edit'),
               type: 'link',
               icon: ACTION_ICON.EDIT,
-              auth: ['aicrm:customer-marketing-activity:update'],
+              auth: ['aicrm:marketing-activity:update'],
               onClick: handleEdit.bind(null, row),
             },
             {
@@ -171,7 +171,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'link',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              auth: ['aicrm:customer-marketing-activity:delete'],
+              auth: ['aicrm:marketing-activity:delete'],
               popConfirm: {
                 title: $t('ui.actionMessage.deleteConfirm', [row.id]),
                 confirm: handleDelete.bind(null, row),

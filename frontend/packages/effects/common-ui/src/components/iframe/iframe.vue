@@ -22,6 +22,11 @@ onMounted(() => {
     init();
   }, 300);
 });
+
+// 暴露内部iframe引用
+defineExpose({
+  frameRef,
+});
 </script>
 
 <template>

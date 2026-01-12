@@ -98,3 +98,10 @@ export function deleteCustomerMarketingActivityList(ids: number[]) {
 export function exportCustomerMarketingActivity(params: any) {
   return requestClient.download('/aicrm/customer-marketing-activity/export-excel', { params });
 }
+
+/** 获取营销活动简化列表（用于下拉选择） */
+export function getCustomerMarketingActivitySimpleList() {
+  return requestClient.get<{ id: number; activityName: string }[]>(
+    '/aicrm/customer-marketing-activity/simple-list',
+  );
+}

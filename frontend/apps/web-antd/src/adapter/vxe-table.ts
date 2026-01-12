@@ -160,6 +160,39 @@ setupVbenVxeTable({
       },
     });
 
+    // 表格配置项可以用 cellRender: { name: 'CellDictTags', props:{type: 'dict_type'} },
+    // 用于渲染多选字典值（JSON 数组）
+    vxeUI.renderer.add('CellDictTags', {
+      renderTableDefault(renderOpts, params) {
+        const { props } = renderOpts;
+        const { column, row } = params;
+        if (!props || !row[column.field]) {
+          return '';
+        }
+        try {
+          // 解析 JSON 数组
+          const values = JSON.parse(row[column.field]);
+          if (!Array.isArray(values) || values.length === 0) {
+            return '';
+          }
+          // 渲染多个 DictTag
+          return h(
+            'div',
+            { class: 'flex flex-wrap gap-1 items-center justify-center' },
+            {
+              default: () =>
+                values.map((value: string) =>
+                  h(DictTag, { type: props.type, value }),
+                ),
+            },
+          );
+        } catch {
+          // 如果解析失败，返回原始值
+          return row[column.field];
+        }
+      },
+    });
+
     // 表格配置项可以用 cellRender: { name: 'CellSwitch', props: { beforeChange: () => {} } },
     // add by 芋艿：from https://github.com/vbenjs/vue-vben-admin/blob/main/playground/src/adapter/vxe-table.ts#L97-L123
     vxeUI.renderer.add('CellSwitch', {

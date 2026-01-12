@@ -12,6 +12,48 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'financial-product',
+        name: 'AicrmFinancialProduct',
+        meta: {
+          title: '金融产品管理',
+        },
+        component: () => import('#/views/aicrm/financial-product/index.vue'),
+      },
+      {
+        path: 'potential-customer',
+        name: 'AicrmPotentialCustomer',
+        meta: {
+          title: '潜客管理',
+        },
+        component: () => import('#/views/aicrm/potentialcustomer/index.vue'),
+      },
+      {
+        path: 'marketing-activity',
+        name: 'AicrmMarketingActivity',
+        meta: {
+          title: '营销活动管理',
+        },
+        component: () =>
+          import('#/views/aicrm/customermarketingactivity/index.vue'),
+      },
+      {
+        path: 'marketing-task-assignment',
+        name: 'AicrmMarketingTaskAssignment',
+        meta: {
+          title: '营销活动下发任务',
+        },
+        component: () =>
+          import('#/views/aicrm/marketingtaskassignment/index.vue'),
+      },
+      {
+        path: 'task',
+        name: 'AicrmTask',
+        meta: {
+          title: '任务管理',
+        },
+        component: () => import('#/views/aicrm/task/index.vue'),
+      },
+      {
         path: 'retail-customer/detail/:id',
         name: 'AicrmRetailCustomerDetail',
         meta: {

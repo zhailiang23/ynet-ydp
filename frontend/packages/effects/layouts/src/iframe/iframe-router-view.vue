@@ -4,7 +4,7 @@ import type { RouteLocationNormalized } from 'vue-router';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { preferences } from '@vben/preferences';
+import { preferences, usePreferences } from '@vben/preferences';
 import { useTabbarStore } from '@vben/stores';
 
 import { VbenSpinner } from '@vben-core/shadcn-ui';
@@ -14,6 +14,9 @@ defineOptions({ name: 'IFrameRouterView' });
 const spinningList = ref<boolean[]>([]);
 const tabbarStore = useTabbarStore();
 const route = useRoute();
+
+// 获取主题信息
+const { theme } = usePreferences();
 
 const enableTabbar = computed(() => preferences.tabbar.enable);
 
@@ -65,6 +68,26 @@ function showSpinning(index: number) {
   // 首次加载时显示loading
   return curSpinning === undefined ? true : curSpinning;
 }
+
+// 构建带有主题参数的 iframe URL
+const getIframeSrc = computed(() => {
+  return (item: RouteLocationNormalized) => {
+    const baseSrc = item.meta?.iframeSrc;
+    if (!baseSrc) {
+      return '';
+    }
+
+    try {
+      const url = new URL(baseSrc);
+      url.searchParams.set('theme', theme.value);
+      url.searchParams.set('hideTitle', 'true');
+      return url.toString();
+    } catch {
+      // 如果 URL 解析失败，返回原始 URL
+      return baseSrc;
+    }
+  };
+});
 </script>
 <template>
   <template v-if="showIframe">
@@ -76,7 +99,7 @@ function showSpinning(index: number) {
       >
         <VbenSpinner :spinning="showSpinning(index)" />
         <iframe
-          :src="item.meta.iframeSrc as string"
+          :src="getIframeSrc(item)"
           class="size-full"
           @load="hideLoading(index)"
         ></iframe>

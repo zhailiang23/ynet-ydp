@@ -14,6 +14,12 @@
     <!-- 由 vite 注入 VITE_APP_TITLE 变量，在 .env 文件内配置 -->
     <title><%= VITE_APP_TITLE %></title>
     <link rel="icon" href="/favicon.ico" />
+    <!-- 高德地图安全密钥配置（必须在地图 API 加载前配置） -->
+    <script>
+      window._AMapSecurityConfig = {
+        securityJsCode: '<%= VITE_AMAP_SECURITY_JS_CODE %>'
+      };
+    </script>
     <script>
       var HM_ID = '<%= VITE_APP_BAIDU_CODE %>'
       if (HM_ID) {

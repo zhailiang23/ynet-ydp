@@ -9,12 +9,14 @@ import { Button } from 'ant-design-vue';
 
 import { getPracticeCasePage } from '#/api/aicrm/practicecase';
 import { getPracticeMaterialPage } from '#/api/aicrm/practicematerial';
+import { generateScriptContent, updatePracticeScript } from '#/api/aicrm/practicescript';
 import { getPracticeSkillPage } from '#/api/aicrm/practiceskill';
 import { getPracticeVirtualCustomerPage } from '#/api/aicrm/practicevirtualcustomer';
 import { getRangePickerDefaultProps } from '#/utils';
+import { message } from 'ant-design-vue';
 
 /** 新增/修改的表单 */
-export function useFormSchema(): VbenFormSchema[] {
+export function useFormSchema(formApi?: any, isEdit?: boolean): VbenFormSchema[] {
   return [
     {
       fieldName: 'id',
@@ -136,11 +138,15 @@ export function useFormSchema(): VbenFormSchema[] {
     {
       fieldName: 'content',
       label: '剧本内容',
-      rules: 'required',
       component: 'Textarea',
       componentProps: {
-        placeholder: '请输入剧本内容',
+        placeholder: '可以手工编辑内容，或点击生成按钮重新生成',
         rows: 10,
+      },
+      // 仅在编辑模式下显示
+      dependencies: {
+        triggerFields: ['id'],
+        show: () => isEdit,
       },
     },
     {
@@ -148,6 +154,11 @@ export function useFormSchema(): VbenFormSchema[] {
       label: ' ',
       component: 'DefaultButton',
       formItemClass: 'col-span-2',
+      // 仅在编辑模式下显示
+      dependencies: {
+        triggerFields: ['id'],
+        show: () => isEdit,
+      },
       renderComponentContent: () => {
         return {
           default: () =>
@@ -155,9 +166,51 @@ export function useFormSchema(): VbenFormSchema[] {
               Button,
               {
                 type: 'primary',
-                onClick: () => {
-                  // TODO: 实现生成剧本逻辑
-                  console.log('生成剧本');
+                loading: false,
+                onClick: async () => {
+                  if (!formApi) {
+                    message.error('表单未初始化');
+                    return;
+                  }
+
+                  try {
+                    // 验证必填字段
+                    const { valid } = await formApi.validate();
+                    if (!valid) {
+                      message.error('请先填写完整表单信息');
+                      return;
+                    }
+
+                    const values = await formApi.getValues();
+
+                    // 显示加载提示
+                    const hideLoading = message.loading('正在生成剧本内容...', 0);
+
+                    try {
+                      // 直接调用 API 生成剧本内容（不先保存）
+                      // 因为保存会创建新版本导致版本号冲突
+                      const content = await generateScriptContent({
+                        scriptId: values.id,
+                        caseId: values.caseId,
+                        materialIds: values.materialIds,
+                        skillId: values.skillId,
+                        marketingStep: values.marketingStep,
+                        difficultyLevel: values.difficultyLevel,
+                        scriptDescription: values.description || '个性化陪练剧本',
+                      });
+
+                      // 更新表单中的 content 字段
+                      await formApi.setFieldValue('content', content);
+                      message.success('剧本内容生成成功！点击确定保存');
+                    } catch (error: any) {
+                      console.error('生成剧本内容失败:', error);
+                      message.error(error.message || '生成剧本内容失败，请重试');
+                    } finally {
+                      hideLoading();
+                    }
+                  } catch (error: any) {
+                    console.error('表单验证失败:', error);
+                  }
                 },
               },
               () => '生成',

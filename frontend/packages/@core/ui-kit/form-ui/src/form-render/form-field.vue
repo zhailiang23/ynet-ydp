@@ -76,6 +76,7 @@ const FieldComponent = computed(() => {
 
 const {
   dynamicComponentProps,
+  dynamicLabel,
   dynamicRules,
   isDisabled,
   isIf,
@@ -316,14 +317,20 @@ onUnmounted(() => {
             labelClass,
           )
         "
-        :help="help"
+        :help="isFunction(help) ? help(values?.value || {}, formApi!) : help"
         :colon="colon"
-        :label="label"
+        :label="dynamicLabel || label"
         :required="shouldRequired && !hideRequiredMark"
         :style="labelStyle"
       >
-        <template v-if="label">
-          <VbenRenderContent :content="label" />
+        <template v-if="dynamicLabel || label">
+          <VbenRenderContent
+            :content="
+              isFunction(dynamicLabel || label)
+                ? (dynamicLabel || label)(values?.value || {}, formApi!)
+                : dynamicLabel || label
+            "
+          />
         </template>
       </FormLabel>
       <div class="flex-auto overflow-hidden p-[1px]">

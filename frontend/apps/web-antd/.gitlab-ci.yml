@@ -1,0 +1,269 @@
+################################################################################
+# GitLab CI/CD 配置 - web-antd (易诚管理系统前端)
+#
+# 流水线阶段:
+#   1. build  - 构建 Docker 镜像并推送到 Harbor
+#   2. deploy - 部署到目标服务器 (FAT 环境)
+#   3. cleanup - 清理旧镜像
+#
+# 环境变量:
+#   HARBOR_URL - Harbor 仓库地址 (192.168.152.56)
+#   HARBOR_USER - Harbor 用户名 (search)
+#   HARBOR_PASSWORD - Harbor 密码 (Search123)
+#   DEPLOY_SERVER - 部署服务器地址 (192.168.153.111)
+#   VITE_ENV - 部署环境 (dev/fat/uat/pro)
+################################################################################
+
+# 工作流规则: 仅在 master 分支触发
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: always
+    - when: never
+
+# 定义阶段
+stages:
+  - build
+  - deploy
+  - cleanup
+
+# 全局变量
+variables:
+  # Harbor 配置
+  HARBOR_URL: "192.168.152.56"
+  HARBOR_PROJECT: "sysadmin-2025"
+  HARBOR_USER: "search"
+  HARBOR_PASSWORD: "Search123"
+
+  # 部署服务器配置
+  DEPLOY_SERVER: "192.168.153.111"
+  DEPLOY_USER: "root"
+
+  # Docker 镜像配置
+  IMAGE_NAME: "web-antd"
+  IMAGE_TAG: "${CI_PIPELINE_ID}"
+  IMAGE_WITH_TAG: "${HARBOR_URL}/${HARBOR_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG}"
+
+  # 环境配置 (部署到 FAT 环境)
+  VITE_ENV: "fat"
+
+################################################################################
+# 阶段 1: 构建并推送 Docker 镜像
+################################################################################
+build-and-push:
+  stage: build
+  image: docker:27.5.0
+  services:
+    - docker:27.5.0-dind
+  before_script:
+    # 配置 Docker 镜像加速器
+    - mkdir -p /etc/docker
+    - |
+      cat > /etc/docker/daemon.json <<EOF
+      {
+        "registry-mirrors": [
+          "https://docker.rainbond.cc",
+          "https://docker.1panel.live",
+          "https://hub.rat.dev"
+        ],
+        "insecure-registries": ["${HARBOR_URL}"]
+      }
+      EOF
+    - cat /etc/docker/daemon.json
+
+    # 等待 Docker daemon 启动
+    - echo "等待 Docker daemon 启动..."
+    - timeout 60 sh -c 'until docker info >/dev/null 2>&1; do sleep 1; done' || exit 1
+    - echo "Docker daemon 已就绪"
+
+    # 登录 Harbor
+    - echo "登录 Harbor 仓库..."
+    - echo "$HARBOR_PASSWORD" | docker login "$HARBOR_URL" -u "$HARBOR_USER" --password-stdin
+
+  script:
+    - echo "=========================================="
+    - echo "开始构建 Docker 镜像"
+    - echo "=========================================="
+    - echo "环境: $VITE_ENV"
+    - echo "镜像: $IMAGE_WITH_TAG"
+    - echo "=========================================="
+
+    # 构建 Docker 镜像 (传递 VITE_ENV 参数)
+    - |
+      docker build \
+        --build-arg VITE_ENV=$VITE_ENV \
+        -t "$IMAGE_WITH_TAG" \
+        -f Dockerfile \
+        .
+
+    - echo "✓ 镜像构建完成"
+
+    # 推送镜像到 Harbor
+    - echo "推送镜像到 Harbor..."
+    - docker push "$IMAGE_WITH_TAG"
+    - echo "✓ 镜像推送完成"
+
+    # 登出 Harbor
+    - docker logout "$HARBOR_URL"
+
+  after_script:
+    - echo "构建阶段完成"
+
+  only:
+    - master
+
+################################################################################
+# 阶段 2: 部署到目标服务器 (FAT 环境)
+################################################################################
+deploy-to-fat:
+  stage: deploy
+  image: alpine:3.21
+  before_script:
+    # 替换为阿里云镜像源
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+    # 安装必要工具
+    - apk add --no-cache openssh-client bash curl
+
+    # 配置 SSH 私钥 (直接嵌入)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - |
+      cat > ~/.ssh/id_rsa << 'EOFKEY'
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEowIBAAKCAQEAocBfAVuTaUcB2+OWHNjDQ1rDY+RzpS4d8HU0mOjXy3WoCqbT
+      5S3YEj2zJVTDn7aWpfPL1G2LJ0MxKj66UaP0nLjEO3sH2Q6wOExe7Fg1aT0tZQBi
+      uLZ3jt4XzmFO3b9iDlhEJRQgCDG9V7zZOmVJAevJ5m+9r/+Y2Kx0d7DhVGkXoH7k
+      KrGvqyOxWc1hQlJtQcaWNx8SoZXX5uFTUnG8uBME7Kj8hKYBvj/hCMdjxLsKiWYP
+      w3uM4IvBYPMuJcFIr/BfZ1VzGLRDN5eOqrqsB2ByLxaOewYMX0S6OqKqwuA0bEPU
+      xD3TlJZQa67yshVUaWLOtXmYNgFKLY9yPQGDQQIDAQABAoIBAC26nCNW98h+z5vM
+      5eqJU+7KpxiTFmv/0HdBAXxlMK6vTe6bG+GzqN2VN1kf5tZ8mL9PUJJCTNJBDZiw
+      XKjTxdSS05L7FVjGVo7s9B+Mh6cjfswCPVdKMaZKkP2w/lCx22eFSwTRfpg1u+Fk
+      HT8hJJIACKSHSaAaxhkMXjFd/RaYFPvlCpz+p42wqVJ5guhJYdLxj9S9KCkvVc0a
+      VdAWh5lFbzU8lmOYqiJqSNnpKHOGU1RDgZ6N4S+rPdB6dZC9DZpUr1SHVV5/Fwbm
+      9NNFccOHFHJ9iU77bBTJCnHD5yzOPAHsB3VLWPPOAFy/RGPvJhEqLADNUb7hY5ov
+      cDrwUEECgYEA0qNHOQaCMZ9/R0FBw5SLt9/XF2QlPkPexZ6FQdKKMYlPw+8S9xQd
+      m2EVS9e+O4Ll54vqN2BLaG0xQUi8J4L/7ZhOEU0N8OtAaFJ8HZC+K/l+j7uAQWuB
+      KeS2DW9hFPBsJQ3W9X1hZPjZWg3TfN2qE8VQnl4PprLLNAJQ4sXMi0ECgYEAxLYy
+      eQXmfDGJPzNGKqJTFp3Zy/8gC0qDVMWPU8VZZPcXvW1Y8CYbJMePBuPkwb3QTJFC
+      r6VeZMHSqCLzR0mQQZJwVZLfLlMbPdHJN+fKZfuDFqZ4MXxOJpGN3UqPU0lZLQYC
+      B2GS7qIGIYkrJ7cXJ1WVcAf8E7LEfCqOQHMZr0ECgYBkT8HCHjJZqH/vN/4A9hB9
+      DUsY3Z8JVt5Y4v3TFLBqW7fCt2ZCMlJQE5Z9w7HZQdXdM3eSLCqCMHRKCLcKNjz4
+      JZXV5HPrC7CjEH2K9dGy4u4pN2h9BqYVF7lUXJQmLGU5qyTQ5WkQCMFqGqAFmV3E
+      pLYpE6qQJ3Pv9B8QU5SAQQKBgGBf8QmzrPf6DHUdJQ7bFJHJ3wB5O8r0jPZZHjPL
+      aY0vF5FRNyRSb7oBQNXHbNE3L9qPJh0LPuY3r8Z3y8Qhj9L5N3wPjJZ3fQ8L9qPJ
+      h0LPuY3r8Z3y8Qhj9L5N3wPjJZ3fQ8L9qPJh0LPuY3r8Z3y8Qhj9L5N3wPjJZ3fQ
+      8L9BAoGBALfZ3J9Qa67yshVUaWLOtXmYNgFKLY9yPQGDQb9vPAHsB3VLWPPOAFy/
+      RGPvJhEqLADNUb7hY5ovcDrwUEFBw5SLt9/XF2QlPkPexZ6FQdKKMYlPw+8S9xQd
+      m2EVS9e+O4Ll54vqN2BLaG0xQUi8J4L/7ZhOEU0N8OtAaFJ8HZC+K/l+j7uAQWuB
+      -----END RSA PRIVATE KEY-----
+      EOFKEY
+    - chmod 600 ~/.ssh/id_rsa
+
+    # 添加服务器到 known_hosts
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+
+  script:
+    - echo "=========================================="
+    - echo "开始部署到 FAT 环境"
+    - echo "=========================================="
+    - echo "目标服务器: $DEPLOY_SERVER"
+    - echo "镜像: $IMAGE_WITH_TAG"
+    - echo "环境: $VITE_ENV"
+    - echo "=========================================="
+
+    # 上传部署脚本到服务器
+    - |
+      scp -o StrictHostKeyChecking=no deploy.sh $DEPLOY_USER@$DEPLOY_SERVER:/root/zhailiang/web-antd/
+
+    # SSH 到服务器执行部署
+    - |
+      ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER \
+        "bash /root/zhailiang/web-antd/deploy.sh \
+        $IMAGE_WITH_TAG \
+        $HARBOR_URL \
+        $HARBOR_USER \
+        $HARBOR_PASSWORD \
+        $VITE_ENV"
+
+  after_script:
+    - echo "部署阶段完成"
+
+  dependencies:
+    - build-and-push
+
+  only:
+    - master
+
+################################################################################
+# 阶段 3: 清理旧镜像
+################################################################################
+cleanup-old-images:
+  stage: cleanup
+  image: alpine:3.21
+  before_script:
+    # 替换为阿里云镜像源
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+    # 安装必要工具
+    - apk add --no-cache openssh-client bash
+
+    # 配置 SSH 私钥 (同上)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - |
+      cat > ~/.ssh/id_rsa << 'EOFKEY'
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEowIBAAKCAQEAocBfAVuTaUcB2+OWHNjDQ1rDY+RzpS4d8HU0mOjXy3WoCqbT
+      5S3YEj2zJVTDn7aWpfPL1G2LJ0MxKj66UaP0nLjEO3sH2Q6wOExe7Fg1aT0tZQBi
+      uLZ3jt4XzmFO3b9iDlhEJRQgCDG9V7zZOmVJAevJ5m+9r/+Y2Kx0d7DhVGkXoH7k
+      KrGvqyOxWc1hQlJtQcaWNx8SoZXX5uFTUnG8uBME7Kj8hKYBvj/hCMdjxLsKiWYP
+      w3uM4IvBYPMuJcFIr/BfZ1VzGLRDN5eOqrqsB2ByLxaOewYMX0S6OqKqwuA0bEPU
+      xD3TlJZQa67yshVUaWLOtXmYNgFKLY9yPQGDQQIDAQABAoIBAC26nCNW98h+z5vM
+      5eqJU+7KpxiTFmv/0HdBAXxlMK6vTe6bG+GzqN2VN1kf5tZ8mL9PUJJCTNJBDZiw
+      XKjTxdSS05L7FVjGVo7s9B+Mh6cjfswCPVdKMaZKkP2w/lCx22eFSwTRfpg1u+Fk
+      HT8hJJIACKSHSaAaxhkMXjFd/RaYFPvlCpz+p42wqVJ5guhJYdLxj9S9KCkvVc0a
+      VdAWh5lFbzU8lmOYqiJqSNnpKHOGU1RDgZ6N4S+rPdB6dZC9DZpUr1SHVV5/Fwbm
+      9NNFccOHFHJ9iU77bBTJCnHD5yzOPAHsB3VLWPPOAFy/RGPvJhEqLADNUb7hY5ov
+      cDrwUEECgYEA0qNHOQaCMZ9/R0FBw5SLt9/XF2QlPkPexZ6FQdKKMYlPw+8S9xQd
+      m2EVS9e+O4Ll54vqN2BLaG0xQUi8J4L/7ZhOEU0N8OtAaFJ8HZC+K/l+j7uAQWuB
+      KeS2DW9hFPBsJQ3W9X1hZPjZWg3TfN2qE8VQnl4PprLLNAJQ4sXMi0ECgYEAxLYy
+      eQXmfDGJPzNGKqJTFp3Zy/8gC0qDVMWPU8VZZPcXvW1Y8CYbJMePBuPkwb3QTJFC
+      r6VeZMHSqCLzR0mQQZJwVZLfLlMbPdHJN+fKZfuDFqZ4MXxOJpGN3UqPU0lZLQYC
+      B2GS7qIGIYkrJ7cXJ1WVcAf8E7LEfCqOQHMZr0ECgYBkT8HCHjJZqH/vN/4A9hB9
+      DUsY3Z8JVt5Y4v3TFLBqW7fCt2ZCMlJQE5Z9w7HZQdXdM3eSLCqCMHRKCLcKNjz4
+      JZXV5HPrC7CjEH2K9dGy4u4pN2h9BqYVF7lUXJQmLGU5qyTQ5WkQCMFqGqAFmV3E
+      pLYpE6qQJ3Pv9B8QU5SAQQKBgGBf8QmzrPf6DHUdJQ7bFJHJ3wB5O8r0jPZZHjPL
+      aY0vF5FRNyRSb7oBQNXHbNE3L9qPJh0LPuY3r8Z3y8Qhj9L5N3wPjJZ3fQ8L9qPJ
+      h0LPuY3r8Z3y8Qhj9L5N3wPjJZ3fQ8L9qPJh0LPuY3r8Z3y8Qhj9L5N3wPjJZ3fQ
+      8L9BAoGBALfZ3J9Qa67yshVUaWLOtXmYNgFKLY9yPQGDQb9vPAHsB3VLWPPOAFy/
+      RGPvJhEqLADNUb7hY5ovcDrwUEFBw5SLt9/XF2QlPkPexZ6FQdKKMYlPw+8S9xQd
+      m2EVS9e+O4Ll54vqN2BLaG0xQUi8J4L/7ZhOEU0N8OtAaFJ8HZC+K/l+j7uAQWuB
+      -----END RSA PRIVATE KEY-----
+      EOFKEY
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+
+  script:
+    - echo "=========================================="
+    - echo "清理服务器上的旧镜像"
+    - echo "=========================================="
+
+    # SSH 到服务器清理旧镜像
+    - |
+      ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER \
+        "docker images '${HARBOR_URL}/${HARBOR_PROJECT}/${IMAGE_NAME}' --format '{{.ID}} {{.CreatedAt}}' | \
+        sort -rk2 | awk '{print \$1}' | tail -n +6 | xargs -r docker rmi || true"
+
+    - echo "✓ 旧镜像清理完成（保留最新 5 个版本）"
+
+  after_script:
+    - echo "清理阶段完成"
+
+  dependencies:
+    - deploy-to-fat
+
+  only:
+    - master
+
+  when: on_success

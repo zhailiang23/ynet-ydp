@@ -8,9 +8,9 @@ const route = useRoute();
 const chatUrl = ref<string>('');
 const loading = ref(true);
 
-/** Chat 服务后端地址 */
-const CHAT_BACKEND_URL = 'http://localhost:8080';
-const CHAT_FRONTEND_URL = 'http://localhost:8000';
+/** Chat 服务地址 (从环境变量读取) */
+const CHAT_BACKEND_URL = import.meta.env.VITE_CHAT_BACKEND_URL || 'http://localhost:8080';
+const CHAT_FRONTEND_URL = import.meta.env.VITE_CHAT_FRONTEND_URL || 'http://localhost:8000';
 
 /** 通过 ID 登录获取 token */
 async function loginById(adminId: number): Promise<string> {

@@ -25,6 +25,14 @@ function useNavigation() {
 
   // 检查是否应该在新窗口打开
   const shouldOpenInNewWindow = (path: string): boolean => {
+    // 检查是否有对应的路由记录且meta.iframeSrc存在
+    const routeWithIframe = [...routeMetaMap.values()].find(
+      (r) => r.meta?.iframeSrc === path,
+    );
+    if (routeWithIframe) {
+      return false;
+    }
+
     if (isHttpUrl(path)) {
       return true;
     }
@@ -42,14 +50,37 @@ function useNavigation() {
     // 例如: /twins/http://localhost:10086 -> http://localhost:10086
     const httpMatch = path.match(/(https?:\/\/.+)$/);
     if (httpMatch) {
-      // 提取出真正的 HTTP URL 并在新窗口打开 (同步执行,避免被浏览器阻止)
-      openWindow(httpMatch[1], { target: '_blank' });
+      const actualPath = httpMatch[1];
+      // 检查是否有对应的路由记录且meta.iframeSrc存在
+      const route = [...routeMetaMap.values()].find(
+        (r) => r.meta?.iframeSrc === actualPath,
+      );
+      if (route) {
+        // 有iframeSrc属性，进行正常路由导航
+        router.push(route.path).catch((error) => {
+          console.error('Navigation failed:', error);
+        });
+        return;
+      }
+      // 否则在新窗口打开
+      openWindow(actualPath, { target: '_blank' });
       return;
     }
 
-    // 优先检查路径本身是否是 HTTP URL,如果是则直接在新窗口打开
+    // 优先检查路径本身是否是 HTTP URL
     if (isHttpUrl(path)) {
-      // 同步执行,避免被浏览器阻止弹窗
+      // 检查是否有对应的路由记录且meta.iframeSrc存在
+      const route = [...routeMetaMap.values()].find(
+        (r) => r.meta?.iframeSrc === path,
+      );
+      if (route) {
+        // 有iframeSrc属性，进行正常路由导航
+        router.push(route.path).catch((error) => {
+          console.error('Navigation failed:', error);
+        });
+        return;
+      }
+      // 否则在新窗口打开
       openWindow(path, { target: '_blank' });
       return;
     }
@@ -67,12 +98,14 @@ function useNavigation() {
       openRouteInNewWindow(resolveHref(path));
     } else {
       // 只有路由导航才需要 async
-      router.push({
-        path,
-        query,
-      }).catch((error) => {
-        console.error('Navigation failed:', error);
-      });
+      router
+        .push({
+          path,
+          query,
+        })
+        .catch((error) => {
+          console.error('Navigation failed:', error);
+        });
     }
   };
 

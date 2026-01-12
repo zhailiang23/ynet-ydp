@@ -1,0 +1,46 @@
+import type { RouteRecordRaw } from 'vue-router';
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/grid',
+    name: 'GridCenter',
+    meta: {
+      title: '网格管理',
+      icon: 'mdi:grid',
+      keepAlive: true,
+      hideInMenu: true,
+    },
+    children: [
+      {
+        path: 'huinong-marketing-heatmap',
+        name: 'HuinongMarketingHeatmap',
+        meta: {
+          title: '惠农网格营销热力图',
+          icon: 'ant-design:heat-map-outlined',
+        },
+        component: () => import('#/views/grid/huinongmarketing/heatmap.vue'),
+      },
+      {
+        path: 'huinong-customer-loan-heatmap',
+        name: 'HuinongCustomerLoanHeatmap',
+        meta: {
+          title: '惠农贷款目标客户热力图',
+          icon: 'ant-design:fire-outlined',
+        },
+        component: () => import('#/views/grid/huinongcustomerloan/heatmap.vue'),
+      },
+      {
+        path: 'grid-map',
+        name: 'GridMap',
+        meta: {
+          title: '网格营销地图',
+          icon: 'ant-design:global-outlined',
+          keepAlive: true,
+        },
+        component: () => import('#/views/grid/grid-map/index.vue'),
+      },
+    ],
+  },
+];
+
+export default routes;
