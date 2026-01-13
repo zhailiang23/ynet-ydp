@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
       icon: 'lucide:layout-dashboard',
       order: -1,
       title: $t('page.dashboard.title'),
+      hideInMenu: true, // 隐藏菜单，但保留路由和页面
     },
     name: 'Dashboard',
     path: '/dashboard',
@@ -19,6 +20,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           icon: 'carbon:workspace',
           title: $t('page.dashboard.workspace'),
+          hideInMenu: true, // 隐藏菜单，但保留路由和页面
         },
       },
       {
@@ -29,6 +31,7 @@ const routes: RouteRecordRaw[] = [
           affixTab: true,
           icon: 'lucide:area-chart',
           title: $t('page.dashboard.analytics'),
+          hideInMenu: true, // 隐藏菜单，但保留路由和页面
         },
       },
     ],
